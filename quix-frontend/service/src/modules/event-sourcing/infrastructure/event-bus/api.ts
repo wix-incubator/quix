@@ -11,7 +11,7 @@ import {Dictionary} from '../../../../types';
 import {
   BaseAction,
   DefaultAction,
-} from '../../../../../../shared/dist/entities/common/common-types';
+} from '../../../../../../shared/entities/common/common-types';
 
 export class RegisterApi {
   constructor(private descriptor: PluginDescriptor) {}

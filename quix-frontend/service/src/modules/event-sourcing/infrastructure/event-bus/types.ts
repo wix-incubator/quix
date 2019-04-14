@@ -3,7 +3,7 @@ import {Context} from './context';
 import {
   DefaultAction,
   BaseAction,
-} from '../../../../../../shared/dist/entities/common/common-types';
+} from '../../../../../../shared/entities/common/common-types';
 
 export type EventBusMiddleware = <A extends BaseAction = DefaultAction>(
   action: A,

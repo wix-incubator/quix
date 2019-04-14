@@ -13,7 +13,7 @@ import {
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {QuixHookNames} from '../types';
 import {last} from 'lodash';
-import {FileType} from '../../../../../shared/dist/entities/file';
+import {FileType} from '../../../../../shared/entities/file';
 import uuid from 'uuid/v4';
 import {FileTreeRepository} from '../../../entities/filenode.repository';
 
@@ -75,7 +75,9 @@ export class FileTreePlugin implements EventBusPlugin {
           }
           case FileActionTypes.updateName: {
             const {id} = action;
-            const folder = await this.folderRepo.findOne(id);
+            const folder = await this.folderRepo.findOne(id, {
+              loadRelationIds: true,
+            });
             if (folder) {
               folder.name = action.name;
               return this.folderRepo.save(folder);

@@ -1,7 +1,7 @@
 import {Body, Controller, Inject, Post, Req, UsePipes} from '@nestjs/common';
 import {Request} from 'express';
 
-import {DefaultAction} from '../../../../shared/dist/entities/common/common-types';
+import {DefaultAction} from '../../../../shared/entities/common/common-types';
 import {BaseActionValidation} from './base-action-validation';
 import {QuixEventBus} from './quix-event-bus';
 import {AuthService} from '../auth/auth.service';

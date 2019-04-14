@@ -6,7 +6,7 @@ import {
 } from '@nestjs/typeorm';
 import {Connection, Repository} from 'typeorm';
 import uuid from 'uuid/v4';
-import {FileType} from '../../../../shared/dist/entities/file';
+import {FileType} from '../../../../shared/entities/file';
 import {ConfigModule} from '../../config/config.module';
 import {ConfigService} from '../../config/config.service';
 import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from '../../entities';

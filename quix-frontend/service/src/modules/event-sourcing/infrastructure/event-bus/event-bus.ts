@@ -10,7 +10,7 @@ import {MiddlewareApi} from './api';
 import {
   BaseAction,
   DefaultAction,
-} from '../../../../../../shared/dist/entities/common/common-types';
+} from '../../../../../../shared/entities/common/common-types';
 
 /**
  * @name EventBus

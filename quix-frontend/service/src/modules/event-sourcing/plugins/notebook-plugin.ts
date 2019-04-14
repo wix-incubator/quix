@@ -7,7 +7,7 @@ import {notebookReducer} from '../../../../../shared/entities/notebook';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {QuixHookNames} from '../types';
 import {last} from 'lodash';
-import {FileType} from '../../../../../shared/dist/entities/file';
+import {FileType} from '../../../../../shared/entities/file';
 import {FileTreeRepository} from '../../../entities/filenode.repository';
 
 @Injectable()
