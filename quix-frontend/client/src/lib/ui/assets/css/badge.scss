@@ -1,0 +1,22 @@
+@import './def/badge.def';
+@import './def/colors.def';
+
+.bi-badge {
+  @include badge();
+}
+
+.bi-badge--primary {
+  @include badge($primary);
+}
+
+.bi-badge--success {
+  @include badge($success);
+}
+
+.bi-badge--warning {
+  @include badge($warning);
+}
+
+.bi-badge--danger {
+  @include badge($danger);
+}

@@ -1,0 +1,79 @@
+{
+  "name": "quix-node-backend",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -b && npm run update-statics",
+    "start": "ts-node --files build-scripts/start.ts",
+    "update-statics": "ts-node build-scripts/update-statics.ts",
+    "start:dev": "nodemon",
+    "start:debug": "nodemon --config nodemon-debug.json",
+    "prestart:prod": "rimraf dist && npm run build",
+    "start:prod": "node dist/main.js",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "test": "QUIX_ENV=TEST jest",
+    "test:mysql": "QUIX_ENV=TESTMYSQL jest --runInBand",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json"
+  },
+  "dependencies": {
+    "@nest-middlewares/helmet": "^5.1.1",
+    "@nestjs/common": "^6.0.0",
+    "@nestjs/core": "^6.0.0",
+    "@nestjs/platform-express": "^6.0.0",
+    "@nestjs/typeorm": "^6.0.0",
+    "dotenv": "^7.0.0",
+    "lodash": "^4.17.11",
+    "mysql": "^2.16.0",
+    "reflect-metadata": "^0.1.13",
+    "rimraf": "^2.6.2",
+    "rxjs": "^6.3.3",
+    "tapable": "^1.1.1",
+    "typeorm": "^0.2.15",
+    "uuid": "^3.3.2",
+    "velocity": "^0.7.2",
+    "tsconfig-paths": "^3.8.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^6.0.0",
+    "@types/express": "^4.16.0",
+    "@types/jest": "^23.3.13",
+    "@types/lodash": "^4.14.123",
+    "@types/node": "^10.12.18",
+    "@types/shelljs": "^0.8.3",
+    "@types/supertest": "^2.0.7",
+    "@types/tapable": "^1.0.4",
+    "@types/uuid": "^3.4.4",
+    "@types/dotenv": "^6.1.1",
+    "jest": "^23.6.0",
+    "nodemon": "^1.18.9",
+    "prettier": "^1.16.4",
+    "shelljs": "^0.8.3",
+    "sql.js": "^0.5.0",
+    "supertest": "^3.4.1",
+    "ts-jest": "^23.10.5",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
+    "typescript": "^3.4.1"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}

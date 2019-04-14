@@ -1,0 +1,41 @@
+@import './def/defaults.def';
+@import './def/colors.def';
+
+.bi-home-action {
+  transition: box-shadow .3s;
+  display: flex;
+  height: 300px;
+  flex-direction: column;
+  flex-basis: 300px;
+  background-color: $white;
+  border-radius: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: $default-box-shadow;
+
+    i {
+      color: $primary !important;
+    }
+  }
+
+  &:active {
+    transition: box-shadow .1s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .175);
+  }
+
+  i {
+    transition: color .3s;
+    margin: -10px 0 20px 0;
+    font-size: 140px;
+    color: $grey--500;
+  }
+
+  span {
+    font-size: 20px;
+    font-weight: 300;
+    color: $muted;
+  }
+}

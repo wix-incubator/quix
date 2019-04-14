@@ -1,0 +1,53 @@
+@mixin animation-scale ($duration: .11s) {
+  @keyframes scale {
+    from {
+      transform: scale(.5);
+      opacity: 0;
+    }
+
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  transform-origin: top;
+  animation: scale $duration;
+}
+
+%animation-fade-in {
+  @keyframes fade-in {
+    from {opacity: .5;}
+    to {opacity: 1;}
+  }
+
+  animation: fade-in .3s;
+}
+
+%animation-rotate {
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(-360deg);
+    }
+  }
+
+  animation: rotate .5s linear infinite;
+}
+
+%animation-fade-in2 {
+  @keyframes fade-in2 {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  animation: fade-in2 .2s linear forwards;
+}

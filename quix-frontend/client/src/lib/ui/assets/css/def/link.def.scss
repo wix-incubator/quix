@@ -1,0 +1,26 @@
+@import './flex.def';
+@import './icon.def';
+
+%link {
+  @include flex-inline(row, center);
+
+  color: #428bca;
+  text-decoration: none !important;
+  cursor: pointer;
+
+
+  &:hover {
+    color: darken(#428bca, 8);
+  }
+
+  &[target="_blank"] {
+    &:after {
+      @extend %icon;
+
+      content: 'open_in_new';
+      margin-left: .3em;
+      font-size: 1em !important;
+      text-decoration: none !important;
+    }
+  }
+}

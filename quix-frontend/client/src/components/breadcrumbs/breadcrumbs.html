@@ -1,0 +1,31 @@
+<bi-breadcrumbs
+  class="bi-dont-shrink"
+  bi-options="item as item.name for item in breadcrumbs"
+>
+  <div>
+    <span ng-show="false">dummy</span>
+
+    <span ng-if="!item.id" ng-click="events.onFolderClick(null)" data-hook="file-name">
+      {{::item.name}}
+    </span>
+
+    <span
+      ng-if="item.id && $index < breadcrumbs.length - 1"
+      ng-click="events.onFolderClick(item)"
+      data-hook="file-name"
+    >{{::item.name}}</span>
+
+    <span 
+      class="bi-align bi-s-h--x05"
+      ng-if="item.id && $index === breadcrumbs.length - 1"
+    >
+      <span
+        contenteditable="{{!readonly}}"
+        ng-model="item.name"
+        on-change="events.onNameChange(item)"
+        ce-options="::{autoEdit: options.focusName}"
+        data-hook="file-name"
+      ></span>
+    </span>
+  </div>
+</bi-breadcrumbs>

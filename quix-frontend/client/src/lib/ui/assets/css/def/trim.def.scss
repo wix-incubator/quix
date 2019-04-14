@@ -1,0 +1,11 @@
+%trim-hor {
+  > *:last-child {
+    margin-right: 0;
+  }
+}
+
+%trim-ver {
+  > *:last-child {
+    margin-bottom: 0;
+  }
+}

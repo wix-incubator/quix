@@ -1,0 +1,52 @@
+@import './def/flex.def';
+
+.bi-row,
+.bi-r {
+  @include flex(row);
+
+  min-width: 0;
+  flex: 1;
+}
+
+.bi-r-h {
+  @include flex(row);
+
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+}
+
+.bi-row-inline,
+.bi-r-i {
+  @include flex-inline(row);
+}
+
+.bi-column,
+.bi-c {
+  @include flex(column);
+
+  min-width: 0;
+}
+
+.bi-c-h {
+  @include flex(column);
+
+  min-width: 0;
+  overflow: hidden;
+}
+
+.bi-grow {
+  flex-grow: 1;
+}
+
+.bi-dont-grow {
+  flex-grow: 0;
+}
+
+.bi-dont-shrink {
+  flex-shrink: 0;
+}
+
+.bi-wrap {
+  flex-wrap: wrap;
+}

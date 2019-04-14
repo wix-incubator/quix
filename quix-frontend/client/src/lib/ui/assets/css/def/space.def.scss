@@ -1,0 +1,21 @@
+@import 'defaults.def';
+
+@mixin space-h($space: $default-space) {
+  margin-right: $space;
+}
+
+@mixin space-v($space: $default-space) {
+  margin-top: $space;
+}
+
+@mixin space-h__inner($space: $default-space) {
+  > *:not(:last-child) {
+    @include space-h($space);
+  }
+}
+
+@mixin space-v__inner($space: $default-space) {
+  > *:not(:first-child) {
+    @include space-v($space);
+  }
+}

@@ -1,0 +1,8 @@
+@import '../../../ui/assets/css/def/flex.def';
+
+bi-sql-runner {
+  @include flex(column);
+
+  width: 100%;
+  flex-grow: 1;
+}

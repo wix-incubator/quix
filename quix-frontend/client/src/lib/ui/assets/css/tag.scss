@@ -1,0 +1,11 @@
+@import './def/tag.def';
+
+.bi-tag {
+  @extend %tag;
+}
+
+.bi-tag--sm {
+  @extend %tag;
+
+  line-height: 18px;
+}

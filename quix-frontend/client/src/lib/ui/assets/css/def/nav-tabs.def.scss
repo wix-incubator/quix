@@ -1,0 +1,22 @@
+@import './colors.def';
+@import './flex.def';
+@import './border.def';
+@import './label.def';
+@import './space.def';
+
+%bi-nav-tabs {
+  @include flex(row, center, center);
+  @include border(bottom);
+  @include label-dark();
+  @include space-h__inner(20px);
+}
+
+%bi-nav-tab {
+  font-size: 15px;
+  line-height: 30px;
+  cursor: pointer;
+
+  &.active {
+    color: $primary;
+  }
+}

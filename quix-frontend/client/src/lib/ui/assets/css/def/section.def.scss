@@ -1,0 +1,89 @@
+@import 'colors.def';
+@import 'defaults.def';
+@import 'header.def';
+@import 'space.def';
+@import 'content.def';
+@import 'action.def';
+@import 'icon.def';
+@import 'border.def';
+@import 'label.def';
+
+$section-header-class: '.bi-section-header';
+$section-content-class: '.bi-section-content';
+$section-title-class: '.bi-section-title';
+$section-separator-class: '.bi-section-header-spr';
+
+%section {
+  @include flex(column);
+  overflow: hidden;
+
+  > #{$section-header-class} {
+    @include header(46px, $blue-grey--800, $white);
+    @include border(right);
+    @include border(bottom);
+    @include action-color__deep(800);
+    @include label-color__deep(800);
+
+    #{$section-title-class} {
+      @include header-title(16px);
+      letter-spacing: 2px;
+    }
+
+    #{$section-separator-class} {
+      @include header-separator($blue-grey--800);
+    }
+  }
+
+  > #{$section-header-class}--white {
+    @include header(50px, $white, $default-text-color, 20px);
+
+    border-bottom: 1px solid $grey--300;
+
+    > * {
+      @include space-h__inner(20px);
+
+      height: 50px;
+    }
+
+    .bi-border--right,
+    .bi-border--left {
+      height: 50px;
+      border-color: $grey--200;
+    }
+
+    #{$section-title-class} {
+      @include header-title(16px);
+      letter-spacing: 2px;
+    }
+  }
+
+  > #{$section-content-class} {
+    @include border(right);
+
+    flex: 1;
+    overflow: auto;
+  }
+}
+
+// Full-height, full-width section with scrollable content
+@mixin section($content-bg-color, $accent: $grey--300) {
+  @extend %section;
+
+  flex: 1;
+
+  > #{$section-header-class} {
+    border-bottom: 4px solid $accent;
+  }
+
+  > #{$section-content-class} {
+    @include content($content-bg-color);
+  }
+}
+
+// Full-height, fixed-width section with scrollable content
+@mixin section-static($content-bg-color, $width, $accent: $grey--300) {
+  @include section($content-bg-color, $accent);
+
+  width: $width;
+  flex: 0 0 $width;
+}

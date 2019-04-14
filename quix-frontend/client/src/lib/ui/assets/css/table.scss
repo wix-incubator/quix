@@ -1,0 +1,5 @@
+@import './def/table.def';
+
+.bi-table {
+  @extend %table;
+}

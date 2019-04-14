@@ -1,0 +1,25 @@
+@import './def/border.def';
+
+.bi-border {
+  @include border();
+}
+
+.bi-border--top {
+  @include border(top);
+}
+
+.bi-border--right {
+  @include border(right);
+}
+
+.bi-border--bottom {
+  @include border(bottom);
+}
+
+.bi-border--left {
+  @include border(left);
+}
+
+.bi-no-border {
+  border: 0 !important;
+}

@@ -1,0 +1,36 @@
+bi-progress-line {
+  position: relative;
+  display: block;
+  height: 0;
+
+  $progress-line-fg: #4c9ef0;
+
+  div {
+    height: 3px;
+    margin: 0;
+
+    &.bpl-main {
+      transition: width .5s;
+      background-color: $progress-line-fg;
+    }
+
+    &.bpl-container {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+    }
+
+    &.bpl-container-off {
+      transition: opacity 3.5s;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background-color: $progress-line-fg;
+      opacity: 1;
+    }
+  }
+}

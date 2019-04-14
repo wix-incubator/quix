@@ -1,0 +1,5 @@
+@import './def/animations.def';
+
+.bi-fade-in {
+  @extend %animation-fade-in;
+}

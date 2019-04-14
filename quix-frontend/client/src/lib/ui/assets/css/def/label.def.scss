@@ -1,0 +1,27 @@
+@import './colors.def';
+
+%label {
+  color: $grey--600;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+@mixin label-dark() {
+  @extend %label;
+
+  color: $grey--600;
+}
+
+@mixin label-light() {
+  color: $grey--400;
+}
+
+@mixin label-color__deep($bg-intensity) {
+  .bi-label {
+    @if $bg-intensity <= 400 {
+      @include label-dark();
+    } @else {
+      @include label-light();
+    }
+  }
+}

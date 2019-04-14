@@ -1,0 +1,30 @@
+<div class="bi-fade-in" ng-if="vm.state.is('Content')">
+  <bi-file-explorer
+    ng-model="vm.state.value().files"
+    fe-options="{fileAlias: ['notebook']}"
+    on-load="events.onFileExplorerLoad(fileExplorer)"
+    on-file-click="events.onFileClick(file)"
+  ></bi-file-explorer>
+</div>
+
+<div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.before('Content')">
+  <div class="bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
+    <div class="bi-empty-state-content">Loading notebooks...</div>
+  </div>
+
+  <div
+    class="bi-empty-state bi-s-v bi-fade-in"
+    ng-if="vm.state.is('Result')"
+    data-hook="notebook-empty"
+  >
+    <div class="bi-empty-state-icon">
+      <i class="bi-icon">note_add</i>
+    </div>
+    <div class="bi-empty-state-header">
+      You don't have any notebooks yet
+    </div>
+    <div class="bi-empty-state-content">
+      <a class="bi-link" ng-click="events.onNotebookAdd()">Add notebook</a>
+    </div>
+  </div>
+</div>

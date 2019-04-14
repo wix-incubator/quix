@@ -1,0 +1,22 @@
+@import './def/flex.def';
+@import './def/align.def';
+
+.bi-spread {
+  @extend %spread;
+}
+
+.bi-center {
+  @include flex(row, null, center);
+}
+
+.bi-justify-right {
+  @include flex(row, null, flex-end);
+}
+
+.bi-align {
+  @include flex(row, center);
+}
+
+.bi-align--bottom {
+  @include flex(row, flex-end !important);
+}

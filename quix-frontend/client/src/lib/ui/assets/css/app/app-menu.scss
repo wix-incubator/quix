@@ -1,0 +1,5 @@
+@import '../def/app/app-menu.def';
+
+.bi-app-menu {
+  @extend %app-menu;
+}

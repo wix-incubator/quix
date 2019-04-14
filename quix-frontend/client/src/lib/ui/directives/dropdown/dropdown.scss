@@ -1,0 +1,40 @@
+@import '../../assets/css/def/icon.def';
+@import '../../assets/css/def/animations.def';
+
+bi-dropdown {
+  position: relative;
+  display: inline-flex;
+
+  [ng-transclude="toggle"] {
+    display: inline-flex;
+    user-select: none;
+    cursor: pointer;
+
+    &.bt-caret {
+      &:after {
+        @extend %icon;
+
+        content: 'arrow_drop_down';
+        font-size: 18px;
+        vertical-align: text-top;
+      }
+    }
+
+    &.bt-readonly {
+      cursor: default;
+    }
+
+    bi-toggle {
+      display: inline-flex;
+    }
+  }
+
+  .bd-content {
+    position: fixed;
+    z-index: 200;
+
+    // [ng-transclude] {
+    //   @include animation-scale(.08s);
+    // }
+  }
+}

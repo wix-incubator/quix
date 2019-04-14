@@ -1,0 +1,21 @@
+@mixin _flex($direction: row, $align: null, $justify: null) {
+ flex-direction: $direction;
+
+  @if $align {
+    align-items: $align;
+  }
+
+  @if $justify {
+    justify-content: $justify;
+  }
+}
+
+@mixin flex($direction: row, $align: null, $justify: null) {
+  @include _flex($direction, $align, $justify);
+  display: flex;
+}
+
+@mixin flex-inline($direction: row, $align: null, $justify: null) {
+  @include _flex($direction, $align, $justify);
+  display: inline-flex;
+}

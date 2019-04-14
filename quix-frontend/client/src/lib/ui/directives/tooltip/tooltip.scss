@@ -1,0 +1,68 @@
+@import '../../assets/css/def/defaults.def';
+@import '../../assets/css/def/colors.def';
+
+bi-tooltip {
+  display: inline-flex;
+
+  .bi-tooltip-content {
+    position: relative;
+    margin-top: 8px;
+    padding: 8px 14px;
+    color: $white;
+    font-size: 11px;
+    white-space: nowrap;
+    box-shadow: $default-box-shadow;
+
+    &:before {
+      position: absolute;
+      content: '';
+      top: -6px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      margin-left: -6px;
+      border-style: solid;
+      border-width: 0 6px 6px 6px;
+      border-color: transparent transparent #000000 transparent;
+      opacity: .8;
+    }
+
+    &.bt-pos-top {
+      margin-top: 0;
+      margin-bottom: 8px;
+
+      &:before {
+        top: initial;
+        bottom: -6px;
+        border-width: 6px 6px 0 6px;
+        border-color: #000000 transparent transparent transparent;
+      }
+    }
+
+    > .bi-tooltip-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 3px;
+      background-color: $black;
+      opacity: .8;
+    }
+
+    > * {
+      position: relative;
+      z-index: 1;
+
+      > * {
+        text-transform: initial;
+        font-weight: normal;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  [ng-transclude="toggle"] {
+    cursor: default !important;
+  }
+}

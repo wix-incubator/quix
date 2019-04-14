@@ -1,0 +1,18 @@
+@import './colors.def';
+
+%badge {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  line-height: 18px;
+  font-size: 11px;
+  text-align: center;
+  color: $white;
+  border-radius: 10px;
+}
+
+@mixin badge($color: $grey--400) {
+  @extend %badge;
+
+  background-color: $color;
+}

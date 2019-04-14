@@ -1,0 +1,17 @@
+@import '../../lib/ui/assets/css/def/colors.def';
+
+quix-header {
+  margin-left: 5%;
+
+  bi-search.bi-search--rnd {
+    position: fixed;
+    width: 400px;
+    top: 8px;
+    left: 50%;
+    margin-left: -200px;
+
+    .bi-input {
+      height: 38px !important;
+    }
+  }
+}

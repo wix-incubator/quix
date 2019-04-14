@@ -1,0 +1,5 @@
+@import './def/link.def';
+
+.bi-link {
+  @extend %link;
+}

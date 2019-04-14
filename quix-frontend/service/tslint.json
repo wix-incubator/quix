@@ -1,0 +1,36 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended",
+    "tslint-config-prettier"
+  ],
+  "jsRules": {
+    "no-unused-expression": true
+  },
+  "rules": {
+    "quotemark": [
+      true,
+      "single"
+    ],
+    "member-access": [
+      false
+    ],
+    "ordered-imports": [
+      false
+    ],
+    "member-ordering": [
+      false
+    ],
+    "interface-name": [
+      false
+    ],
+    "array-type": false,
+    "arrow-parens": false,
+    "object-literal-sort-keys": false,
+    "max-classes-per-file": false,
+    "prettier": true
+  },
+  "rulesDirectory": [
+    "tslint-plugin-prettier"
+  ]
+}

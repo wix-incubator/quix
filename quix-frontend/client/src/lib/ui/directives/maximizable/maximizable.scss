@@ -1,0 +1,47 @@
+@import '../../assets/css/def/colors.def';
+
+[bi-maximizable] {
+  position: relative;
+
+  .bm-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  &.bm--maximized {
+    position: fixed;
+    right: 10px;
+    left: 10px;
+    top: 10px;
+    bottom: 10px;
+    margin: 0 !important;
+    padding: 15px;
+    background: $white;
+    border-radius: 3px;
+    z-index: 101;
+
+    + .bm-backdrop {
+      display: block;
+    }
+
+    .bm-toggle {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      z-index: 1000;
+    }
+  }
+
+  & + .bm-backdrop {
+    content: '';
+    position: fixed;
+    display: none;
+    right: 0;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: grey;
+    z-index: 100;
+  }
+}

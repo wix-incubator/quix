@@ -1,0 +1,62 @@
+@import '../../assets/css/def/defaults.def';
+@import '../../assets/css/def/colors.def';
+
+bi-info {
+  width: 17px;
+  height: 18px;
+
+  bi-dropdown {
+    bi-toggle {
+      display: inline-block;
+      height: 18px;
+      font-size: 18px !important;
+      color: $primary;
+    }
+  }
+
+  .bi-info-content {
+    position: relative;
+    margin-top: 4px;
+    padding: 8px 10px;
+    color: $white;
+    font-size: 12px;
+    white-space: nowrap;
+    box-shadow: $default-box-shadow;
+
+    &:before {
+      position: absolute;
+      content: '';
+      top: -6px;
+      left: 50%;
+      width: 0;
+      height: 0;
+      margin-left: -6px;
+      border-style: solid;
+      border-width: 0 6px 6px 6px;
+      border-color: transparent transparent #000000 transparent;
+      opacity: .75;
+    }
+
+    > .bi-info-backdrop {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 3px;
+      background-color: $black;
+      opacity: .75;
+    }
+
+    > [ng-transclude] {
+      position: relative;
+      z-index: 1;
+
+      > * {
+        text-transform: initial;
+        font-weight: normal;
+        white-space: nowrap;
+      }
+    }
+  }
+}

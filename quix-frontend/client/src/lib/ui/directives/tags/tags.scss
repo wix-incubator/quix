@@ -1,0 +1,58 @@
+@import '../../assets/css/def/defaults.def.scss';
+@import '../../assets/css/def/colors.def.scss';
+@import '../../assets/css/def/flex.def.scss';
+
+$tags-input-height: $default-input-height - 2*$default-border-width;
+
+bi-tags {
+  @include flex(column);
+
+  .bi-tags-container {
+    display: flex;
+    min-height: 36px;
+    padding: 5px 5px 0 5px;
+    background: $white;
+    height: auto;
+  }
+
+  .bi-tags-input {
+    min-width: 50px;
+    height: 25px;
+    padding: 0 5px 0 10px;
+    border: 0;
+    background-color: transparent;
+  }
+
+  .bi-tags-tag {
+    max-width: 100%;
+    margin: 0 5px 5px 0;
+    padding: 0 10px;
+    background-color: $grey--200;
+    border-radius: 3px;
+    height: $default-input-height - 2 * 6px;
+    line-height: 24px;
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+
+    .bi-tags-content {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bi-tags-remove {
+      margin-right: -4px;
+      font-size: 10px;
+      font-weight: bold;
+    }
+  }
+
+  bi-dropdown {
+    .bi-dropdown-menu {
+      display: block;
+      margin-top: -1px;
+    }
+  }
+}

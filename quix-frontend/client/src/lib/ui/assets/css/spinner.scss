@@ -1,0 +1,5 @@
+@import './def/spinner.def';
+
+.bi-spinner {
+  @extend %spinner;
+}

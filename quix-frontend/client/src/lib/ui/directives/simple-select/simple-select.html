@@ -1,0 +1,37 @@
+<bi-dropdown
+  class="bi-grow"
+  ng-class="{'bs-custom-toggle': vm.isCustomToggle}"
+  bd-options="::{minWidth: 'toggle', width: options.width}"
+  bd-is-open="vm.dropdownOpen"
+  on-show="events.onDropdownShow()"
+  on-hide="events.onDropdownHide()"
+  readonly="::readonly"
+>
+  <bi-toggle class="bi-grow bi-align" bi-html="renderToggleHtml()"></bi-toggle>
+
+  <ul class="bi-dropdown-menu" ng-if="!options.typeahead || items || (vm.pending && vm.searching)">
+    <!-- Show null item only in list when it's not selected -->
+    <li
+      class="bi-muted"
+      ng-if="hasNullItem() && !isNullModel()"
+      ng-show="!vm.searching"
+      ng-click="events.onSelectItem(vm.nullItem)"
+      bi-html="renderItemHtml(vm.nullItem)"
+    ></li>
+
+    <li class="bi-text--sm bi-muted" ng-if="!items.length && !vm.pending">
+      No suggestions
+    </li>
+
+    <li class="bi-center" ng-if="vm.pending">
+      <span class="bi-spinner"></span>
+    </li>
+
+    <li
+      ng-class="{selected: model === item}"
+      ng-repeat="item in items | orderBy: renderItemText"
+      ng-click="events.onSelectItem(item)"
+      bi-html="renderItemHtml(item)"
+    ></li>
+  </ul>
+</div>

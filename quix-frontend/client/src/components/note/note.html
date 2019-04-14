@@ -1,0 +1,72 @@
+<bi-foldable class="bi-panel" is-folded="::options.fold" on-toggle="events.onFoldToggle(fold)">
+  <div class="bi-panel-header">
+    <div class="bi-align bi-s-h">
+      <span class="quix-checkbox" ng-if="!readonly">
+        <i
+          class="bi-action bi-icon bi-fade-in checked"
+          ng-if="marked"
+          ng-click="$event.stopPropagation(); events.onMarkToggle()"
+        >
+          check_box_outline
+        </i>
+        <i
+          class="bi-action bi-icon bi-fade-in"
+          ng-if="!marked"
+          ng-click="$event.stopPropagation(); events.onMarkToggle()"
+        >
+          check_box_outline_blank
+        </i>
+      </span>
+
+      <span class="bi-label--sm">{{::note.type}}</span>
+
+      <span
+        class="bi-panel-title bi-dont-shrink"
+        contenteditable="{{!readonly}}"
+        ng-model="note.name"
+        on-change="events.onNameChange()"
+        ce-options="::{autoEdit: options.focusName}"
+        data-hook="note-name"
+      ></span>
+    </div>
+
+    <div bf-toggle></div>
+
+    <div class="bi-dont-shrink">
+      <div class="quix-meta-text bi-align bi-s-h bi-text--sm">
+        <div>Created <span>{{::note.dateCreated | biRelativeDate}}</span></div>
+        <div>|</div>
+        <div>Updated <span>{{note.dateUpdated | biRelativeDate}}</span></div>
+      </div>
+
+      <bi-dropdown bd-options="::{align: 'right'}" ng-if="!readonly">
+        <bi-toggle>
+          <i class="bi-action bi-icon">more_vert</i>
+        </bi-toggle>
+
+        <ul class="bi-dropdown-menu">
+          <li class="bi-align bi-s-h" ng-click="events.onDelete()">
+            <i class="bi-icon bi-danger">delete</i>
+            <span>Delete note</span>
+          </li>
+        </ul>
+      </bi-dropdown>
+    </div>
+  </div>
+
+  <div class="bi-panel-content bi-c-h bi-fade-in" ng-if="!bf.fold" bi-maximizable>
+    <bi-sql-runner
+      class="bi-c-h bi-grow"
+      ng-model="note.content"
+      ng-change="events.onContentChange()"
+      bsr-options="::{fitContent: true, params: true, focus: options.focusEditor}"
+      runner="runner"
+      on-save="events.onSave()"
+      on-run="events.onRun()"
+      on-runner-load="events.onRunnerInstanceLoad(instance)"
+      on-runner-created="events.onRunnerCreated(runner)"
+      on-runner-destroyed="events.onRunnerDestroyed(runner)"
+      readonly="readonly"
+    ></bi-sql-runner>
+  </div>
+</bi-foldable>

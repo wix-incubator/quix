@@ -1,0 +1,11 @@
+@import './colors.def';
+@import './flex.def';
+
+@mixin hint($color: $warning) {
+  @include flex(row, center);
+
+  padding-left: 6px;
+  font-size: 10px;
+  border-left: 3px solid $color;
+  color: $muted;
+}

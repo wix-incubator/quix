@@ -1,0 +1,45 @@
+@import '../../assets/css/def/colors.def';
+
+bi-select,
+bi-simple-select {
+  display: inline-flex;
+
+  bi-dropdown {
+    &.bs-custom-toggle {
+      .bd-content {
+        [ng-transclude=''] {
+          .bi-dropdown-menu {
+            border-top: 1px solid $grey--300;
+          }
+        }
+      }
+    }
+
+    bi-toggle {
+      position: relative;
+
+      i {
+        position: absolute;
+        right: 5px;
+        top: 6px;
+        cursor: pointer;
+      }
+
+      .bi-input {
+        padding-right: 30px;
+        cursor: pointer;
+      }
+    }
+
+    .bd-content {
+      [ng-transclude=''] {
+        .bi-dropdown-menu {
+          width: 100%;
+          line-height: initial !important;
+          font-size: 13px !important;
+          border-top: 0;
+        }
+      }
+    }
+  }
+}

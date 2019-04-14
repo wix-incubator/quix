@@ -1,0 +1,28 @@
+@import '../../../ui/assets/css/def/colors.def';
+
+bi-app {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow: hidden;
+
+  .bi-app-header {
+    [ng-transclude="header"] {
+      header {
+        display: block;
+      }
+    }
+
+    bi-dropdown {
+      bi-toggle {
+        height: 53px;
+      }
+    }
+  }
+
+  .bi-app-sidebar {
+    .bi-section-content {
+      padding: 12px 0;
+    }
+  }
+}

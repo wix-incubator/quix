@@ -1,0 +1,21 @@
+@import './def/label.def';
+
+.bi-label {
+  @extend %label;
+}
+
+.bi-label--sm {
+  @extend %label;
+
+  font-size: 12px !important;
+  font-weight: normal !important;
+  color: $grey--700 !important;
+  letter-spacing: .5px;
+}
+
+.bi-label--large {
+  @extend %label;
+
+  font-size: 18px !important;
+  font-weight: 300 !important;
+}

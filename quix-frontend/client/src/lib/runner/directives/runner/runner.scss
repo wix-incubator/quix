@@ -1,0 +1,87 @@
+@import '../../../ui/assets/css/def/colors.def';
+@import '../../../ui/assets/css/def/flex.def';
+@import '../../../ui/assets/css/def/space.def';
+
+bi-runner {
+  @include flex(column);
+  @include space-v__inner(15px !important);
+
+  width: 100%;
+  flex-grow: 1;
+  overflow: hidden;
+
+  editor,
+  editor > * {
+    @include flex(column);
+
+    flex-grow: 1;
+  }
+
+  .br-run-toggle {
+    min-width: 52px;
+  }
+
+  .br-custom-actions-toggle {
+    margin-left: -1px;
+
+    button {
+      width: 30px;
+      padding: 0;
+    }
+  }
+
+  .br-download-action {
+    width: 30px;
+    height: 30px;
+    padding: 6px;
+  }
+
+  .br-tabs {
+    .br-tab {
+      position: relative;
+      max-width: 150px;
+      height: 40px;
+      margin-left: -1px;
+      margin-bottom: -11px;
+      padding: 5px 10px;
+      flex-shrink: 3;
+      line-height: 28px;
+      color: $muted;
+      border: 1px solid $grey--300;
+      background-color: $grey--50;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+
+      &.active {
+        color: $black;
+        background-color: $white;
+        border-bottom: $white;
+      }
+
+      &:hover {
+        color: $black;
+        background-color: $white;
+      }
+    }
+  }
+
+  .br-result {
+    flex-basis: 300px;
+
+    > *,
+    result {
+      display: flex;
+      height: 300px;
+      flex-direction: column;
+    }
+
+    &.br-result-with-tabs {
+      margin-top: 10px !important;
+      padding-top: 10px;
+      border-top: 1px solid $grey--300;
+      flex-basis: 311px;
+    }
+  }
+}

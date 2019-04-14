@@ -1,0 +1,25 @@
+<div ng-show="vm.visible">
+  <table ng-if="vm.enabled" class="bi-table bi-fade-in">
+    <thead
+      ng-if="::options.dynamicFields"
+      bi-tbl-header
+      fields="fields"
+      order="::order"
+      bi-table-header-options="::options"
+      on-order-change="events.onOrderChange()"
+    ></thead>
+    <thead
+      ng-if="::!options.dynamicFields"
+      bi-tbl-header
+      fields="::fields"
+      order="::order"
+      bi-table-header-options="::options"
+      on-order-change="events.onOrderChange()"
+    ></thead>
+    <tbody ng-class="{'bi-tbl-fade-out': vm.loading}"></tbody>
+  </table>
+
+  <div class="bi-tbl-spinner-container bi-center" ng-if="::options.infiniteScroll" ng-show="items.hasMore()">
+    <span class="bi-spinner"></span>
+  </div>
+</div>

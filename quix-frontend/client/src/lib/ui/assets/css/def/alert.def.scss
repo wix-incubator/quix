@@ -1,0 +1,50 @@
+@import './colors.def';
+@import './icon.def';
+@import './flex.def';
+@import './space.def';
+@import './border.def';
+
+%alert {
+  @include space-v__inner();
+
+  padding: 11px 12px;
+  font-size: 11px;
+  border-radius: 3px;
+
+  .bi-alert-header {
+    @include flex(row, center);
+
+    font-size: 12px;
+    font-weight: 600;
+
+    &:before {
+      @extend %icon;
+      @include space-h();
+    }
+  }
+
+  .bi-alert-content {
+    @include border(top);
+
+    padding-top: 10px;
+  }
+}
+
+@mixin alert($icon: 'wb_incandescent', $iconColor: $warning, $bgColor: $blue-grey--50) {
+  @extend %alert;
+
+  color: darken($bgColor, 50) !important;
+  background-color: $bgColor;
+  border: 1px solid darken($bgColor, 6);
+
+  .bi-alert-header {
+    &:before {
+      content: $icon;
+      color: $iconColor;
+    }
+  }
+
+  .bi-alert-content {
+    border-color: darken($bgColor, 6);
+  }
+}

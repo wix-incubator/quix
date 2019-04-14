@@ -1,0 +1,19 @@
+<div class="bi-c bi-s-v">
+  <span
+    class="bi-action"
+    ng-class="{'bi-warning': type === vm.selected}"
+    ng-repeat="type in ::vm.types"
+    ng-click="events.onSelect(type)"
+    title="{{::type}}"
+  >
+    <i class="bi-icon" >{{::{
+      table: 'table_chart',
+      chart: 'show_chart',
+      har: 'network_check',
+      path: 'bubble_chart',
+      sankey: 'sort',
+      funnel: 'view_column',
+      plan: 'info'
+    }[type]}}</i>
+  </span>
+</div>

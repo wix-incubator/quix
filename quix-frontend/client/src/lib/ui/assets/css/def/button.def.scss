@@ -1,0 +1,56 @@
+@import 'colors.def';
+@import 'defaults.def';
+@import 'flex.def';
+@import 'border.def';
+@import 'icon.def';
+@import 'space.def';
+@import 'morph.def';
+
+%button {
+  @include flex(row, center);
+  @include space-h__inner(5px);
+
+  transition: opacity .3, background-color .3s, border-color .3;
+  display: inline-flex;
+  height: 30px;
+  padding: 0 $default-space;
+  font-family: 'Open Sans';
+  font-size: 12px;
+  text-transform: uppercase;
+  outline: 0;
+  border-radius: 0;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .10);
+  cursor: pointer;
+
+  &[disabled='disabled'] {
+    opacity: .6;
+    cursor: default;
+  }
+
+  &.bi-button-loader {
+    @extend %morph-to-loader;
+  }
+}
+
+@mixin button-color($bgColor: $blue-grey--200, $color: $white) {
+  @include border(null, darken($bgColor, 10));
+
+  background-color: $bgColor;
+  color: $color !important;
+
+  &:hover:not([disabled='disabled']) {
+    background-color: darken($bgColor, 4);
+    border-color: darken($bgColor, 12)
+  }
+}
+
+@mixin button($bgColor: $blue-grey--200, $color: $white) {
+  @extend %button;
+  @include button-color($bgColor, $color);
+  @include icon__deep(16px, $color);
+
+  &:active:not([disabled='disabled']) {
+    box-shadow: inset 1px 3px 8px darken($bgColor, 15), 1px 1px 1px $white;
+  }
+}

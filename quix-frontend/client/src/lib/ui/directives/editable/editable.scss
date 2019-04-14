@@ -1,0 +1,35 @@
+@import '../../assets/css/def/colors.def.scss';
+
+bi-editable {
+  position: relative;
+  display: block;
+
+  &.be--editing {
+    > [be-controls] {
+      .bi-icon {
+        font-size: 18px;
+      }
+    }
+  }
+
+  [be-controls] {
+    .bi-action {
+      font-size: 16px;
+      color: $green--300;
+
+      &:hover {
+        color: darken($green--300, 10);
+      }
+    }
+  }
+
+  > [be-controls] {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .be-footer {
+    flex-basis: 30px;
+  }
+}

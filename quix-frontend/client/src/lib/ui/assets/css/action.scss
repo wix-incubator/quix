@@ -1,0 +1,57 @@
+@import './def/colors.def';
+@import './def/action.def';
+@import './def/button.def';
+
+.bi-action {
+  @include action-dark();
+}
+
+.bi-action--btn {
+  @extend %action;
+
+  display: inline-block;
+  padding: 0 10px;
+  border: 1px solid;
+  border-radius: 50px;
+  font-size: 11px;
+  line-height: 2em;
+
+  &.bi-primary {
+    @include button-color($primary);
+  }
+
+  &.bi-success {
+    @include button-color($success);
+  }
+
+  &.bi-warning {
+    @include button-color($warning);
+  }
+
+  &.bi-danger {
+    @include button-color($danger);
+  }
+}
+
+.bi-action--rnd {
+  @extend %action;
+
+  transition: box-shadow, .2s;
+  display: inline-block;
+  padding: .3em;
+  border: 1px solid $grey--300;
+  border-radius: 100px;
+  color: $white;
+  background-color: lighten($success, 8);
+  border-color: darken($success, 4);
+  text-shadow: 0 1px 0 $grey--500;
+  box-shadow: 0 1px 2px $grey--200;
+
+  &:hover:not([disabled='disabled']) {
+    color: $white;
+    background-color: lighten($success, 2);
+    border-color: darken($success, 10);
+    text-shadow: 0 1px 0 $grey--600;
+    box-shadow: 0 1px 2px $grey--400;
+  }
+}

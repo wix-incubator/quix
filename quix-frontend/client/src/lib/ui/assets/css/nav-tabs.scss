@@ -1,0 +1,9 @@
+@import './def/nav-tabs.def';
+
+.bi-nav-tabs {
+  @extend %bi-nav-tabs;
+
+  .bi-nav-tab {
+    @extend %bi-nav-tab;
+  }
+}

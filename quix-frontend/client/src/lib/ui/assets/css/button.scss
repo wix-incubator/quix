@@ -1,0 +1,22 @@
+@import './def/colors.def';
+@import './def/button.def';
+
+.bi-button {
+  @include button($grey--200, $grey--800);
+}
+
+.bi-button--primary {
+  @include button($light-blue--500);
+}
+
+.bi-button--success {
+  @include button($success);
+}
+
+.bi-button--warning {
+  @include button($warning);
+}
+
+.bi-button--danger {
+  @include button($danger);
+}

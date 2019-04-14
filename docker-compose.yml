@@ -1,0 +1,30 @@
+version: '3'
+services:
+  backend:
+    build: ./quix-backend/
+    ports:
+      - "8080:8080"
+    depends_on:
+      - presto
+  frontend:
+    build: ./quix-frontend/
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - db
+  db:
+    image: "mysql:5.7"
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "Quix"
+    ports:
+      - "3306:3306"
+  presto:
+    image: "prestodb/centos6-oj8"
+    ports:
+      - "8181:8080"
+
+volumes:
+  db_volume:

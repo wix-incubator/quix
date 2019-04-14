@@ -1,0 +1,56 @@
+@import './def/colors.def';
+@import './def/flex.def';
+@import './def/space.def';
+@import './def/defaults.def';
+
+.bi-form,
+.bi-form--vertical {
+  @include flex(column);
+  @include space-v__inner();
+
+  .bi-form-row {
+    .bi-form-label,
+    .bi-form-label--required {
+      flex-basis: 90px;
+      flex-shrink: 0;
+      font-size: 12px;
+      color: $muted;
+    }
+
+    .bi-form-label--required {
+      &:after {
+        content: ' *';
+        color: $primary;
+      }
+    }
+
+    .bi-form-input {
+      flex-grow: 1;
+    }
+  }
+
+  &.bi-form {
+    .bi-form-row {
+      @include flex(row);
+      @include space-h__inner();
+    }
+  }
+
+  &.bi-form--vertical {
+    @include space-v__inner(15px);
+
+    .bi-form-row {
+      @include flex(column);
+      @include space-v__inner(4px);
+    }
+
+    .bi-form-label,
+    .bi-form-label--required {
+      flex-basis: unset;
+    }
+
+    .bi-form-input {
+      flex-grow: unset;
+    }
+  }
+}

@@ -1,0 +1,63 @@
+@import './def/colors.def';
+
+.bi-dialog {
+  $padding : 30px;
+
+  // position: relative;
+  min-width: 400px;
+  min-height: 150px;
+  padding: $padding;
+  border: none;
+  border-radius: 3px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+
+  dialog-title,
+  dialog-content {
+    display: block;
+  }
+
+  dialog-title {
+    margin-bottom: 30px;
+    font-size: 26px;
+    font-weight: 300;
+    text-transform: uppercase;
+  }
+
+  dialog-content {
+    color: $grey--600;
+  }
+
+  dialog-footer {
+    position: absolute;
+    left: $padding;
+    right: $padding;
+    bottom: 20px;
+
+    button {
+      min-width: 80px;
+      justify-content: center;
+    }
+  }
+
+  .bi-dialog-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+
+  .bi-dialog-loader {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+  }
+
+  &.bi-confirm {
+    padding: $padding $padding 90px $padding;
+
+    dialog-content {
+      margin-bottom: 20px;
+    }
+  }
+}

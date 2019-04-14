@@ -1,0 +1,14 @@
+<div class="bi-align bi-s-h--x2">
+  <!-- <span class="bi-action bi-align bi-s-h--x05" ng-click="events.onFavoritesClick()">
+    <i class="bi-icon--xs">favorite_border</i>
+    <span class="bi-text--600">Favorites</span>
+  </span> -->
+</div>
+
+<bi-search 
+  class="bi-search--rnd"
+  ng-change="events.onSearch()"
+  placeholder="Search in notes"
+  ng-model="vm.searchText"
+  ng-model-options="::{debounce: 300}"
+></bi-search>

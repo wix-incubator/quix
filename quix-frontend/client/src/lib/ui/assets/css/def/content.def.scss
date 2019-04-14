@@ -1,0 +1,11 @@
+@import 'defaults.def';
+
+%content {
+  padding: 12px;
+}
+
+@mixin content($bg-color) {
+  @extend %content;
+
+  background-color: $bg-color;
+}

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html ng-app="quix">
+  <head>
+    <meta charset="utf-8">
+    <title>Quix</title>
+    <link type="image/png" href="https://www.wix.com/favicon.ico" rel="shortcut icon">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:200,300,400,600,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="${clientTopology.staticsBaseUrl}app#if(!${debug}).min#{end}.css">
+  </head>
+  <body class="bi-c" ng-controller="app">
+    <bi-app app="app">
+      <header class="bi-c-h bi-grow">
+        <quix-header class="bi-align"><quix-header>
+      </header>
+    </bi-app>
+
+    <script>
+      window.quixConfig = {
+        quixBackendUrl: '${clientTopology.quixBackendUrl}',
+        googleClientId: '${clientTopology.googleClientId}',
+      };
+    </script>
+
+    <script src="${clientTopology.staticsBaseUrl}app.bundle#if(!${debug}).min#{end}.js"></script>
+  </body>
+</html>

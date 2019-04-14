@@ -1,0 +1,17 @@
+import {inject} from '../../../core';
+
+export default () => {
+  return {
+    restrict: 'A',
+    scope: {
+      biFocusIf: '<'
+    },
+
+    link(scope, element, attr) {
+      scope.$watch('biFocusIf', value => value && inject('$timeout')(() => {
+        element = element.is('.bi-input') ? element : element.find('.bi-input');
+        inject('$timeout')(() => element.get(0).focus());
+      }));
+   }
+  };
+};

@@ -1,0 +1,24 @@
+@import '../colors.def';
+@import '../header.def';
+@import '../border.def';
+
+%app-header {
+  @include header(54px, $white);
+  @include border(bottom);
+
+  padding-left: 5px;
+
+  .bi-app-logo,
+  .bi-app-user-logo {
+    @include border(null);
+
+    width: 36px;
+    height: 36px;
+    border-radius: 100px;
+    background-color: $grey--100;
+  }
+
+  .bi-app-title {
+    @include header-title(20px, 300);
+  }
+}

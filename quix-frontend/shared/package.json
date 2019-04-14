@@ -1,0 +1,30 @@
+{
+  "name": "quix-shared",
+  "version": "1.0.0",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^24.0.11",
+    "jest": "^24.5.0",
+    "ts-jest": "^24.0.1",
+    "typescript": "^3.4.1"
+  },
+  "dependencies": {
+    "@types/lodash": "^4.14.123",
+    "lodash": "^4.17.11",
+    "uuid": "^3.3.2"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "./",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "./coverage",
+    "testEnvironment": "node"
+  }
+}

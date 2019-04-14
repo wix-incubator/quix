@@ -1,0 +1,1 @@
+export type RunnerType = 'sql' | 'python' | 'native';

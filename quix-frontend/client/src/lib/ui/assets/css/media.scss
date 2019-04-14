@@ -1,0 +1,13 @@
+@import './def/media.def.scss';
+
+@media screen and (max-height: $small-screen-size) {
+  .bi-media--normal {
+    display: none;
+  }
+}
+
+@media screen and (min-height: $small-screen-size) {
+  .bi-media--small {
+    display: none;
+  }
+}

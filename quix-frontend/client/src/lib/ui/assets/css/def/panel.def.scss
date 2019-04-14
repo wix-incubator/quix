@@ -1,0 +1,36 @@
+@import 'colors.def';
+@import 'defaults.def';
+@import 'border.def';
+@import 'header.def';
+@import 'content.def';
+
+$panel-header-class: '.bi-panel-header';
+$panel-content-class: '.bi-panel-content';
+$panel-title-class: '.bi-panel-title';
+
+%panel {
+  box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+}
+
+/// Simple panel (header + content)
+@mixin panel($header-bg-color: $white, $content-bg-color: $white, $border-color: $default-border-color) {
+  @extend %panel;
+
+  @include border(null, $border-color);
+
+  > #{$panel-header-class} {
+    @include header(38px, $header-bg-color);
+    @include border(bottom, $border-color);
+
+    padding: 0 15px !important;
+
+    #{$panel-title-class} {
+      @include header-title();
+    }
+  }
+
+  > #{$panel-content-class} {
+    @include content($content-bg-color);
+    padding: 15px !important;
+  }
+}

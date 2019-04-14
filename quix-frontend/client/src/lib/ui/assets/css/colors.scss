@@ -1,0 +1,21 @@
+@import './def/colors.def';
+
+.bi-muted {
+  color: $muted !important;
+}
+
+.bi-primary {
+  color: $primary !important;
+}
+
+.bi-success {
+  color: $success !important;
+}
+
+.bi-warning {
+  color: $warning !important;
+}
+
+.bi-danger {
+  color: $danger !important;
+}

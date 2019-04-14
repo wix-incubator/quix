@@ -1,0 +1,21 @@
+<i
+  class="bs-context bi-icon bi-muted"
+  ng-class="{'bi-primary': !!model.text}"
+  ng-if="::options.contextIcon"
+
+>{{::options.contextIcon}}</i>
+
+<input
+  class="bi-input bi-grow"
+  ng-class="{'bs-has-context-icon': !!options.contextIcon}"
+  ng-model="model.text"
+  ng-minlength="minLength"
+  ng-keypress="events.onKeypress($event)"
+  placeholder="{{placeholder || 'Search'}}"
+/>
+
+<i class="bs-search bi-icon bi-muted" ng-if="!model.text">{{::options.searchIcon}}</i>
+
+<span class="bs-close">
+  <i class="bi-action bi-icon bi-fade-in" ng-if="model.text" ng-click="events.onClear()">close</i>
+</span>

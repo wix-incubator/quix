@@ -1,0 +1,17 @@
+@import '../assets/css/def/colors.def';
+@import '../assets/css/def/defaults.def';
+@import '../assets/css/def/action.def';
+
+.bi-toast {
+  position: fixed;
+  left: 15px;
+  bottom: 15px;
+  padding: 0 20px;
+  line-height: 48px;
+  color: $white;
+  background-color: darken($grey--800, 7);
+  border-radius: 3px;
+  box-shadow: $default-box-shadow;
+
+  @include action-color__deep(900);
+}

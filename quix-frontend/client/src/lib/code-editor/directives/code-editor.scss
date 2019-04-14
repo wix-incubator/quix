@@ -1,0 +1,127 @@
+@import '../../ui/assets/css/def/defaults.def';
+@import '../../ui/assets/css/def/colors.def';
+@import '../../ui/assets/css/def/flex.def';
+@import '../../ui/assets/css/def/space.def';
+
+bi-code-editor {
+  display: flex;
+
+  .bce-params-list {
+    .bce-params-list-inner {
+      &.bi-form--vertical {
+        .bi-form-row {
+          .bi-form-input {
+            margin-top: 3px;
+          }
+
+          .bce-param-handle,
+          .bce-param-remove {
+            transition: opacity .3s;
+            opacity: 0;
+          }
+
+          .bce-param-handle {
+            margin: 19px 0px 0 -4px
+          }
+
+          .bce-param-remove {
+            margin: 20px 0 0 1px;
+          }
+
+          &:hover {
+            .bce-param-remove,
+            .bce-param-handle {
+              opacity: 1;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .bce-params {
+    position: relative;
+    min-width: 300px;
+    max-width: 300px;
+
+    .bce-params-inner {
+      margin-right: 15px;
+    }
+
+    &.bce-params--closed {
+      min-width: 0;
+    }
+  }
+
+  &.bce-narrow {
+    .bce-container {
+      @include flex(column);
+      @include space-v__inner();
+
+      .bce-params {
+        padding-bottom: $default-space;
+        border-right: 0;
+        border-bottom: 1px solid $grey--300;
+
+        .bce-params-inner {
+          @include flex(column);
+          @include space-v__inner();
+
+          max-height: 300px;
+          padding-left: 0;
+        }
+      }
+    }
+  }
+
+  .bce-container {
+    .bce-editor-wrapper {
+      transition: border-color, .3s;
+      border-left: 3px solid $grey--200;
+
+      &.bce-valid {
+        border-color: lighten($success, 12);
+      }
+
+      &.bce-invalid {
+        border-color: lighten($danger, 12);
+      }
+    }
+
+    .bce-editor-container {
+      height: 400px;
+
+      &.bce-readonly {
+        background-color: $grey--50;
+
+        .ace_cursor {
+          display: none;
+        }
+      }
+
+      .ace_gutter {
+        background-color: transparent !important;
+
+        .ace_gutter-layer {
+          width: auto;
+          min-width: 26px;
+        }
+
+        .ace_gutter-cell {
+          padding: 0 13px 0 5px;
+          color: lighten($muted, 5);
+        }
+
+        .ace_gutter-active-line {
+          background-color: transparent !important;
+        }
+      }
+
+      .ace_marker-layer {
+        .ace_active-line {
+          background-color: $grey--100 !important;
+        }
+      }
+    }
+  }
+}

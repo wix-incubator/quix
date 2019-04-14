@@ -1,0 +1,48 @@
+bi-foldable {
+  display: block
+}
+
+bi-foldable,
+[bi-foldable] {
+  [bf-toggle] {
+    cursor: pointer;
+  }
+
+  [bf-controls] {
+    display: inline-flex;
+
+    &.bf-style--folder {
+      font-size: 0;
+
+      > i {
+        font-size: 19px;
+
+        &:before {
+          content: 'arrow_drop_down';
+        }
+      }
+    }
+  }
+
+  .bf-btn {
+    transition: .3s;
+  }
+
+  .bf-folded {
+    transform: rotate(-90deg);
+
+    &:before {
+      content: 'expand_more';
+    }
+  }
+
+  .bf-unfolded {
+    &:before {
+      content: 'expand_more';
+    }
+  }
+
+  .bf-no-transition {
+    transition: none !important;
+  }
+}

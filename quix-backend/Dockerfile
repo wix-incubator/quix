@@ -1,0 +1,8 @@
+FROM maven:3.6.0
+
+COPY ./ ./
+RUN mvn -T 8 install
+EXPOSE 8080
+
+WORKDIR /quix-webapps/quix-web-spring
+ENTRYPOINT ["mvn", "spring-boot:run", "-Dspring-boot.run.arguments=--presto.api=http://presto:8181/v1"]

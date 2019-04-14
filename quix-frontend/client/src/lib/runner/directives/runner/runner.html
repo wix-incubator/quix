@@ -1,0 +1,103 @@
+<div class="bi-c-h bi-grow" ng-transclude="editor"></div>
+
+<div class="bi-spread bi-s-h--x3 bi-dont-shrink">
+  <div class="bi-r-i bi-align bi-s-h">
+    <div class="bi-r-i">
+      <button
+        class="br-run-toggle bi-button--primary bi-center"
+        type="button"
+        ng-class="{'bi-button--danger': vm.runner.enabled}"
+        ng-click="events.onToggleRun()"
+      >
+        {{vm.runner.enabled ? 'stop' : options.buttonText || 'Run'}}
+      </button>
+
+      <bi-dropdown
+        class="br-custom-actions-toggle"
+        ng-if="vm.customActions.enabled && !options.disableCustomActions && !vm.runner.enabled"
+        bd-options="::{align: 'right'}"
+      >
+        <bi-toggle>
+          <button class="bi-button--primary bi-center bi-caret"></button>
+        </bi-toggle>
+
+        <div ng-transclude="actions"></div>
+      </bi-dropdown>
+    </div>
+
+    <bi-progress-gauge class="bi-fade-in" ng-if="vm.runner.enabled" value="runner.progress"></bi-progress-gauge>
+
+    <span ng-if="!vm.runner.enabled && vm.result.enabled">
+      <i
+        class="br-download-action bi-action--rnd bi-icon--sm bi-fade-in"
+        ng-if="!vm.result.current.error"
+        ng-csv="::actions.getCsvRows()"
+        csv-header="::actions.getCsvFields()"
+        filename="{{vm.result.csvFileName}}"
+        quote-strings="true"
+        add-bom="true"
+        lazy-load="true"
+        title="Download CSV"
+      >file_download</i>
+
+      <i
+        class="br-download-action bi-action--rnd bi-icon--sm"
+        ng-if="vm.result.current.error"
+        title="Download CSV"
+        disabled="disabled"
+      >file_download</i>
+    </span>
+
+    <div class="bi-r-i bi-s-h bi-muted bi-fade-in" ng-if="vm.runner.enabled || vm.result.enabled">
+      <div class="bi-c bi-fade-in" ng-if="vm.result.current.elapsedTime">
+        <span class="bi-text--sm">Elapsed time</span>
+        <div class="bi-r-i bi-align bi-s-h--x05">
+          <i class="bi-icon--xs">access_time</i>
+          <b class="bi-text--sm">{{vm.result.current.elapsedTime}}</b>
+        </div>
+      </div>
+
+      <div class="bi-c bi-fade-in" ng-if="vm.result.current.getResults().bufferSize() > 0 || vm.result.enabled">
+        <span class="bi-text--sm">Rows</span>
+        <b class="bi-text--sm">{{vm.result.current.getResults().bufferSize()}}</b>
+      </div>
+    </div>
+
+    <div class="bi-fade-in" ng-if="!vm.runner.enabled" ng-transclude="runHint"></div>
+  </div>
+
+  <div class="br-tabs bi-r bi-fade-in" ng-if="vm.tabs.isEnabled()">
+    <div
+      class="br-tab bi-fade-in"
+      ng-class="{active: query.getId() === vm.result.current.getId()}"
+      ng-repeat="query in runner.getQueries()"
+      ng-click="events.onSelectQuery(query)"
+    >{{::query.getTitle()}}</div>
+  </div>
+
+  <div class="bi-s-h--x2 bi-fade-in" ng-if="vm.result.enabled">
+    <i class="bi-action bi-icon bi-fade-in" ng-click="events.onCloseResult()">close</i>
+  </div>
+</div>
+
+<div class="br-result bi-c-h bi-dont-shrink bi-dont-grow" ng-class="{'br-result-with-tabs': vm.tabs.isEnabled()}" ng-if="vm.result.enabled">
+  <div
+    class="bi-dont-shrink bi-fade-in"
+    ng-if="vm.result.queries.get(query).enabled"
+    ng-show="query.getId() === vm.result.current.getId()"
+    ng-repeat="query in runner.getQueries()"
+  >
+    <div class="bi-c-h bi-grow" ng-if="!query.getError() && query.getResults().bufferSize() > 0" bi-html="renderResult(scope, query)"></div>
+
+    <div class="bi-empty-state--nothing" ng-if="query.finished && !query.getError() && query.getResults().bufferSize() === 0">
+      <div class="bi-empty-state-content">No results</div>
+    </div>
+
+    <div ng-if="query.finished && query.getError()">
+      <div class="bi-danger" ng-if="::!vm.result.queries.get(query).errorType">{{::query.getError().msg}}</div>
+      <div class="bi-empty-state--error" ng-if="::vm.result.queries.get(query).errorType === 'timeout'">
+        <div class="bi-empty-state-header">Presto seems to be down at the moment</div>
+        <div class="bi-empty-state-content">Please try again in 5 minutes</div>
+    </div>
+  </div>
+</div>

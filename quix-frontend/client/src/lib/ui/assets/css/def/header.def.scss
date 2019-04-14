@@ -1,0 +1,47 @@
+@import 'defaults.def';
+@import 'flex.def';
+@import 'space.def';
+@import 'align.def';
+
+%header {
+  @extend %spread;
+
+  flex: 0 0 auto;
+  box-sizing: border-box;
+
+  > * {
+    @include flex(row, center);
+  }
+}
+
+@mixin header-title($font-size: 14px, $font-weight: initial) {
+  font-size: $font-size;
+
+  @if ($font-size <= 14) {
+    font-weight: 600;
+  } @else {
+    font-weight: $font-weight;
+  }
+}
+
+@mixin header-separator($color) {
+  width: 1px;
+  height: 24px;
+  border-left: 1px solid darken($color, 5);
+  border-right: 1px solid lighten($color, 5);
+  align-self: center;
+}
+
+@mixin header($height, $bg-color, $color: $default-text-color, $space: $default-space) {
+  @extend %header;
+
+  padding: 0 $space;
+
+  > * {
+    @include space-h__inner($space);
+  }
+
+  height: $height;
+  background-color: $bg-color;
+  color: $color;
+}

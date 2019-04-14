@@ -1,0 +1,81 @@
+<div class="bi-r-h bi-s-h--x2" ng-if="vm.enabled">
+  <bi-viz-picker
+    ng-if="::options.picker"
+    data="data"
+    selected="vm.type"
+    types="options.types"
+    on-select="events.onSelect(type)"
+  ></bi-viz-picker>
+
+  <bi-viz-path
+    ng-if="vm.isVisible('path')"
+    ng-show="vm.type === 'path'"
+    data="::data"
+    fields="::fields"
+    bv-options="::{filter: options.filter}"
+    state-prefix="{{::statePrefix}}"
+    $state="state"
+  ></bi-viz-path>
+
+  <bi-viz-sankey
+    ng-if="vm.isVisible('sankey')"
+    ng-show="vm.type === 'sankey'"
+    data="::data"
+    fields="::fields"
+    bv-options="::{filter: options.filter}"
+    state-prefix="{{::statePrefix}}"
+    $state="state"
+  ></bi-viz-sankey>
+
+  <bi-viz-chart
+    ng-if="vm.isVisible('chart')"
+    ng-show="vm.type === 'chart'"
+    data="::data"
+    fields="::fields"
+    state-prefix="{{::statePrefix}}"
+    bv-options="::{filter: options.filter}"
+    $state="state"
+  ></bi-viz-chart>
+
+  <bi-viz-har
+    ng-if="vm.isVisible('har')"
+    ng-show="vm.type === 'har'"
+    data="::data"
+    fields="::fields"
+    bv-options="::{filter: options.filter}"
+    state-prefix="{{::statePrefix}}"
+    $state="state"
+  ></bi-viz-har>
+
+  <bi-viz-table
+    ng-if="vm.isVisible('table')"
+    ng-show="vm.type === 'table'"
+    data="::tableData"
+    fields="::tableFields"
+    bv-options="::{filter: options.filter}"
+    is-partial="isPartial"
+    formatter="tableFormatter()"
+    state-prefix="{{::statePrefix}}"
+    $state="state"
+  ></bi-viz-table>
+
+  <bi-viz-funnel
+    ng-if="vm.isVisible('funnel')"
+    ng-show="vm.type === 'funnel'"
+    data="::data"
+    fields="::fields"
+    bv-options="::{filter: options.filter}"
+    state-prefix="{{::statePrefix}}"
+    $state="state"
+  ></bi-viz-funnel>
+
+  <bi-viz-plan
+    ng-if="vm.isVisible('plan')"
+    ng-show="vm.type === 'plan'"
+    data="::data"
+    fields="::fields"
+    bv-options="::{filter: options.filter}"
+    state-prefix="{{::statePrefix}}"
+    $state="state"
+  ></bi-viz-plan>
+</div>

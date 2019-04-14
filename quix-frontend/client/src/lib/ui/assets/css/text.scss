@@ -1,0 +1,41 @@
+.bi-text {
+  font-size: 13px;
+}
+
+.bi-text--ui {
+  font-family: 'bi-ui';
+}
+
+.bi-text--ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bi-text--sm {
+  font-size: 10px;
+}
+
+.bi-text--large {
+  font-size: 20px;
+}
+
+.bi-text--200 {
+  font-weight: 200;
+}
+
+.bi-text--300 {
+  font-weight: 300;
+}
+
+.bi-text--400 {
+  font-weight: 400;
+}
+
+.bi-text--600 {
+  font-weight: 600;
+}
+
+.bi-text--700 {
+  font-weight: 700;
+}

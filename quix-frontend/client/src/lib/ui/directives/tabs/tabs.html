@@ -1,0 +1,16 @@
+<div class="bi-tabs-header bi-row bi-dont-grow bi-dont-shrink" ng-class="::options.headerClass">
+  <div
+    class="bi-tab bi-align bi-center"
+    ng-repeat="tab in ::vm.tabs.all"
+    ng-class="{active: tab.name === vm.tabs.current}"
+    ng-click="events.onTabClick(tab.name)"
+    data-hook="h-bt-button2"
+  >
+    <span class="bi-action bi-label bi-align bi-space-h--x05">
+      <i class="bi-icon--sm">{{::tab.icon}}</i>
+      <span data-hook="h-bt-button">{{::tab.title || tab.name}}</span>
+    </span>
+  </div>
+</div>
+
+<div class="bi-tabs-content" ng-class="::options.contentClass"></div>

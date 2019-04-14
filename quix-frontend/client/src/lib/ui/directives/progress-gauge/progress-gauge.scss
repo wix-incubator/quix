@@ -1,0 +1,24 @@
+@import '../../assets/css/def/colors.def';
+
+bi-progress-gauge {
+  position: relative;
+  font-size: 0;
+
+  > span {
+    position: absolute;
+    display: flex;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 200;
+    color: $muted;
+    text-align: center;
+
+    > * {
+      margin: auto;
+    }
+  }
+}

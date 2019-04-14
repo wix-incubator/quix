@@ -1,0 +1,26 @@
+@import '../../../ui/assets/css/def/colors.def';
+
+bi-viz-chart {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  .bvc-container {
+    margin-left: -16px;
+  }
+
+  [bi-maximizable] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+
+  .bm--maximized {
+    .bvc-container {
+      max-height: 70%;
+    }
+  }
+}

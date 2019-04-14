@@ -1,0 +1,9 @@
+<span class="bf-style--{{::options.style}}" bf-controls>
+  <i
+    class="bi-action bi-icon bi-fade-in bf-btn bf-no-transition"
+    ng-click="events.onToggle($event)"
+    ng-class="{'bf-folded' : vm.fold.enabled, 'bf-unfolded': !vm.fold.enabled}"
+  ></i>
+</span>
+
+<div class="bf-content"></div>

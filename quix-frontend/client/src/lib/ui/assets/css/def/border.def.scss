@@ -1,0 +1,11 @@
+@import 'defaults.def';
+
+@mixin border($position: null, $color: $default-border-color) {
+  @if $position {
+    border-#{$position}-width: $default-border-width;
+    border-#{$position}-style: solid;
+    border-#{$position}-color: $color;
+  } @else {
+    border: 1px solid $color;
+  }
+}

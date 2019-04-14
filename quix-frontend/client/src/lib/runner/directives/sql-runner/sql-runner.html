@@ -1,0 +1,43 @@
+<bi-runner
+  data="model.value"
+  version="version"
+  runner="runner"
+  br-options="{
+    buttonText: vm.runnerOptions.buttonText,
+    disableCustomActions: !vm.customActions.enabled || options.disableCustomActions
+  }"
+  on-run="events.onRun(runner)"
+  on-runner-created="events.onRunnerCreated(runner)"
+  on-runner-destroyed="events.onRunnerDestroyed(runner)"
+  on-load="events.onRunnerLoad(instance)"
+  table-formatter="tableFormatter()"
+  download-file-name="downloadFileName({query: query, runner: runner})"
+  $state="$state"
+>
+  <editor>
+    <bi-code-editor
+      ng-model="model.value"
+      bce-options="::{
+        focus: options.focus,
+        params: options.params,
+        customParams: options.customParams,
+        fitContent: options.fitContent
+      }"
+      on-save="onSave()"
+      on-load="events.onEditorLoad(instance)"
+      readonly="readonly"
+    ></bi-code-editor>
+  </editor>
+
+  <actions bi-html="renderActions()"></actions>
+
+  <run-hint>
+    <div class="bi-hint bi-align bi-s-h--x05 bi-fade-in" ng-if="vm.hint.run.enabled && !readonly">
+      <span><span class="bi-text--600">{{::getCtrlKeyName()}} + Enter</span> to run</span>
+      <span>|</span>
+      <span><span class="bi-text--600">{{::getCtrlKeyName()}} + S</span> to save</span>
+      <span>|</span>
+      <span ng-if="::options.params"><span class="bi-text--600">$</span> to insert parameters</span>
+    </div>
+  </run-hint>
+</bi-runner>

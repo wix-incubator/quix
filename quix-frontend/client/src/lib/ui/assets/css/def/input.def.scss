@@ -1,0 +1,45 @@
+@import 'colors.def';
+@import 'defaults.def';
+@import 'border.def';
+
+%input {
+  @include border();
+
+  transition: border-color .2s;
+  display: inline-flex;
+  height: $default-input-height;
+  min-width: 200px;
+  padding: 6px $default-space;
+  font-family: $default-font-family;
+  font-size: $default-font-size;
+  color: $black;
+  outline: none;
+  box-sizing: border-box;
+
+  &[disabled] {
+    background-color: lighten($grey--50, 1);
+    cursor: not-allowed;
+  }
+
+  &:not([disabled]) {
+    &:hover {
+      border-color: lighten($blue--300, 20);
+    }
+
+    &:focus {
+      border-color: $blue--300;
+    }
+  }
+
+  &[required] {
+    &.ng-dirty {
+      &.ng-valid {
+        border-color: $green--300;
+      }
+
+      &.ng-invalid {
+        border-color: $red--300;
+      }
+    }
+  }
+}

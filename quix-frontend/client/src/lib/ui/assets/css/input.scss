@@ -1,0 +1,23 @@
+@import './def/defaults.def';
+@import './def/flex.def';
+@import './def/input.def';
+
+.bi-input {
+  @extend %input;
+}
+
+textarea.bi-input {
+  min-height: 50px;
+}
+
+.bi-input + .bi-input-action {
+  margin-left: -1px;
+}
+
+.bi-input-action {
+  @include flex(row, center, center);
+
+  width: $default-input-height;
+  height: $default-input-height;
+  border: 1px solid $grey--300;
+}

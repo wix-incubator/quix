@@ -1,0 +1,5 @@
+@import './flex.def';
+
+%spread {
+  @include flex(row, center, space-between);
+}

@@ -1,0 +1,15 @@
+@import 'flex.def';
+@import 'icon.def';
+
+%toggle {
+  &:after {
+    @extend %icon;
+
+    content: 'arrow_drop_down';
+    display: inline-block;
+    width: 10px;
+    height: 0;
+    margin-left: -6px;
+    font-size: 20px;
+  }
+}

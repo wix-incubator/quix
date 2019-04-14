@@ -1,0 +1,59 @@
+@import 'colors.def';
+@import 'morph.def';
+
+%action {
+  position: relative;
+  font-style: normal;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+
+  &:active:not([disabled='disabled']) {
+    top: 1px;
+    left: 1px;
+  }
+
+  &[disabled='disabled'] {
+    opacity: .6;
+    cursor: default;
+  }
+}
+
+@mixin action($color, $hover-color) {
+  @extend %action;
+
+  color: $color;
+
+  &:hover:not([disabled='disabled']) {
+    color: $hover-color;
+  }
+
+  &.bi-action-loader {
+    @extend %morph-to-loader;
+
+    > span {
+      width: 24px !important;
+      height: 24px !important;
+      line-height: 24px !important;
+    }
+  }
+}
+
+@mixin action-dark() {
+  @include action($grey--600, darken($grey--600, 15));
+}
+
+@mixin action-light() {
+  @include action($grey--400, lighten($grey--400, 15));
+}
+
+@mixin action-color__deep($bg-intensity) {
+  .bi-action,
+  .bi-action--btn {
+    @if $bg-intensity <= 400 {
+      @include action-dark();
+    } @else {
+      @include action-light();
+    }
+  }
+}

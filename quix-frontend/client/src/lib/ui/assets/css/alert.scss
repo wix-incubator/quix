@@ -1,0 +1,10 @@
+@import './def/alert.def';
+@import './def/colors.def';
+
+.bi-alert {
+  @include alert();
+}
+
+.bi-alert--error {
+  @include alert('error_outline', $danger, lighten($danger, 36));
+}

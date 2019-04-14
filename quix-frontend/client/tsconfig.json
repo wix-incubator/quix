@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "sourceMap": true,
+    "noImplicitAny": false,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es5",
+    "noUnusedLocals": true,
+    "lib": ["dom", "es2016"],
+    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "outDir": "./dist"
+  },
+  "include": [
+    "./test/**/*.ts"
+  ],
+  "files": [
+    "src/app.ts",
+    "./src/external-types.d.ts"
+  ],
+  "references": [{
+    "path": "../shared"
+  }]
+}

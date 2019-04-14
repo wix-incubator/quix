@@ -1,0 +1,28 @@
+@import '../../../assets/css/def/defaults.def';
+
+// sortable-table-header
+.bi-tbl-header {
+  .bi-table-th-content span {
+    white-space: nowrap;
+  }
+
+  a {
+    color: $default-text-color !important;
+    text-decoration: none !important;
+    white-space: nowrap;
+
+    .fa {
+      position: relative;
+      margin-right: 3px;
+      color: $default-text-color;
+
+      &.fa-sort-desc {
+        top: -2px;
+      }
+
+      &.fa-sort-asc {
+        top: 3px;
+      }
+    }
+  }
+}

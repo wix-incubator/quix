@@ -1,0 +1,14 @@
+@import './def/toggle.def';
+
+.bi-toggle {
+  @extend %toggle;
+}
+
+.bi-toggle-right {
+  @extend %toggle;
+
+  &:after {
+    transform: rotate(-90deg);
+  }
+}
+

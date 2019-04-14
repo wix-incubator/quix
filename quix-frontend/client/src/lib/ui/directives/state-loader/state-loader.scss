@@ -1,0 +1,10 @@
+@import '../../assets/css/def/animations.def';
+
+[bi-state-loader] {
+  @extend %animation-fade-in;
+  transition: opacity .3s !important;
+
+  &.loading-state {
+    opacity: .5;
+  }
+}

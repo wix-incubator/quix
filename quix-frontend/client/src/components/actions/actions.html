@@ -1,0 +1,33 @@
+<div class="bi-align bi-s-h--x2" ng-class="{'quix-actions-reverse': options.reverse}">
+  <bi-tooltip ng-if="!readonly">
+    <bi-toggle>
+      <i class="bi-action bi-icon" ng-click="events.onDelete()">delete</i>
+    </bi-toggle>
+    Delete {{::type}}
+  </bi-tooltip>
+    
+  <bi-tooltip>
+    <bi-toggle>
+      <i class="bi-action bi-icon">file_copy</i>
+    </bi-toggle>
+    Copy {{::type}}
+  </bi-tooltip>
+    
+  <bi-tooltip ng-if="::!options.list">
+    <bi-toggle>
+      <i class="bi-action bi-icon">share</i>
+    </bi-toggle>
+    Share {{::type}}
+  </bi-tooltip>
+      
+  <!-- <bi-tooltip ng-if="::!options.list">
+    <bi-toggle>
+      <i
+        class="bi-action bi-icon"
+        ng-class="{'bi-danger': context.isLiked}"
+        ng-click="events.onLikeToggle()"
+      >{{context.isLiked ? 'favorite' :'favorite_border'}}</i>
+    </bi-toggle>
+    Add {{::type}} to favorites
+  </bi-tooltip> -->
+</div>

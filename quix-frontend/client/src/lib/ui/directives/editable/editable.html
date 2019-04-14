@@ -1,0 +1,38 @@
+<div ng-form="beForm" class="bi-s-v bi-c-h bi-grow">
+  <div class="be-content bi-c-h bi-grow"></div>
+
+  <span class="bi-danger" ng-if="vm.edit.enabled && vm.error.enabled">
+    {{::vm.error.value}}
+  </span>
+
+  <div
+    class="be-footer bi-justify-right bi-s-h bi-r-h bi-dont-grow bi-fade-in"
+    ng-if="options.mode === 'toggle' && vm.edit.enabled"
+  >
+    <button
+      type="button"
+      class="bi-button"
+      ng-if="!vm.loading.enabled"
+      ng-click="events.onCancel()"
+    >cancel</button>
+
+    <button
+      type="button"
+      class="bi-button--primary"
+      ng-disabled="!vm.save.isEnabled()"
+      ng-click="events.onSubmit()"
+      ng-class="{'bi-button-loader': vm.loading.enabled}"
+    >
+      <span>{{options.saveText}}</span>
+    </button>
+  </div>
+</div>
+
+<span
+  class="bi-fade-in"
+  be-controls
+  ng-show="!vm.edit.enabled && events.onToggle && options.mode === 'toggle'"
+  ng-click="events.onToggle(true)"
+>
+  <i class="bi-action bi-icon bi-fade-in">edit</i>
+</span>

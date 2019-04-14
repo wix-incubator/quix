@@ -1,0 +1,13 @@
+@import './flex.def';
+@import './icon.def';
+
+%caret {
+  @include flex-inline(row, center);
+
+  &:after {
+    @extend %icon;
+
+    content: 'arrow_drop_down';
+    font-size: 18px !important;
+  }
+}

@@ -1,0 +1,148 @@
+@import '../../assets/css/def/defaults.def';
+@import '../../assets/css/def/colors.def';
+
+bi-tbl {
+  display: block;
+
+  table > tbody {
+    transition: opacity .3s;
+
+    &.bi-tbl-fade-out {
+      opacity: .2;
+    }
+  }
+
+  .bi-table-th-placeholder {
+    height: 0;
+    overflow: hidden;
+  }
+
+  &.bi-table-sticky-header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding-top: 36px;
+
+    > div {
+      border-top: 2px solid $default-border-color;
+      overflow: auto;
+    }
+
+    table {
+      th {
+        padding: 0 8px !important;
+        border-bottom: 0 !important;
+
+        .bi-table-th-content {
+          position: absolute;
+          top: 10px;
+        }
+      }
+
+      tr:first-child td {
+        border-top: 0;
+      }
+    }
+  }
+
+  .bi-tbl-spinner-container {
+    height: 30px;
+    overflow: hidden;
+  }
+
+  &.bi-table--nav {
+    tbody {
+      tr {
+        cursor: pointer;
+
+        &.selected {
+          background-color: $grey--100 !important;
+        }
+
+        &:hover {
+          background-color: $grey--50;
+        }
+
+        td {
+          a,
+          .bi-hint {
+            line-height: normal;
+          }
+        }
+      }
+    }
+  }
+
+  &.bi-table--data {
+    $header-height: 32px;
+
+    padding-top: $header-height !important;
+    background-color: $grey--200;
+    border: 1px solid $grey--300;
+    overflow: hidden;
+
+    > div {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      background-color: $white;
+    }
+
+    table > thead,
+    table > tbody {
+      td,
+      th {
+        max-width: 300px;
+        white-space: nowrap;
+        word-break: break-all;
+        overflow: hidden;
+      }
+    }
+
+    table > thead {
+      th {
+        &:not(:first-child) > .bi-table-th-content > span {
+          margin-left: -8px;
+          padding-left: 8px;
+          border-left: 1px solid $grey--300 !important;
+        }
+      }
+
+      .bi-table-th-content {
+        top: 0 !important;
+
+        span {
+          display: flex;
+          height: $header-height;
+          font-weight: bold;
+          align-items: center;
+        }
+      }
+    }
+
+    table > tbody {
+      > tr {
+        &:nth-child(even) {
+          background-color: $grey--100;
+        }
+
+        &:last-child {
+          border-bottom: 1px solid $grey--300;
+        }
+
+        > td {
+          padding: 5px 8px !important;
+          font-size: 12px;
+
+          &:not(:first-child) {
+            border-left: 1px solid $grey--300;
+          }
+
+          a:visited {
+            color: $muted;
+          }
+        }
+      }
+    }
+  }
+}

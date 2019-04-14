@@ -1,0 +1,46 @@
+<div class="bi-s-v--x2" ng-if="::model">
+  <div class="bi-c">
+    <span class="bi-label--sm">X Axis</span>
+    <bi-simple-select
+      ng-model="model.x"
+      bi-options="value for value in meta.x"
+      bs-options="::{dropdownMinWidth: 'toggle', typeahead: true}"
+      ng-change="events.onDataFilterSelect()"
+    ></bi-simple-select>
+  </div>
+
+  <div class="bi-c">
+    <div class="bi-spread">
+      <span class="bi-label--sm">Y Axis</span>
+
+      <div class="bi-s-h--x05">
+        <label>
+          <input type="radio" name="aggType" value="sum" ng-model="model.aggType" ng-change="events.onDataFilterSelect()">
+          <span>sum</span>
+        </label>
+        <label>
+          <input type="radio" name="aggType" value="avg" ng-model="model.aggType" ng-change="events.onDataFilterSelect()">
+          <span>avg</span>
+        </label>
+      </div>
+    </div>
+    <bi-tags
+      ng-model="model.y"
+      bi-options="value for value in meta.y"
+      bt-options="::{dropdownMinWidth: 'toggle'}"
+      ng-change="events.onDataFilterSelect()"
+      placeholder="Add field"
+    ></bi-tags>
+  </div>
+
+  <div class="bi-c" ng-if="meta.group.length">
+    <span class="bi-label--sm">Group by</span>
+    <bi-tags
+      ng-model="model.group"
+      bi-options="value for value in meta.group"
+      bt-options="::{dropdownMinWidth: 'toggle'}"
+      ng-change="events.onDataFilterSelect()"
+      placeholder="Add field"
+    ></bi-tags>
+  </div>
+</div>

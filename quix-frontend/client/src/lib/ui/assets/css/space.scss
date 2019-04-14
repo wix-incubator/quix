@@ -1,0 +1,60 @@
+@import './def/defaults.def';
+@import './def/space.def';
+
+.bi-space-h__self {
+  @include space-h();
+}
+
+.bi-space-v__self {
+  @include space-v();
+}
+
+.bi-space-h,
+.bi-s-h {
+  @include space-h__inner();
+}
+
+.bi-space-v,
+.bi-s-v {
+  @include space-v__inner();
+}
+
+.bi-space-h--x15,
+.bi-s-h--x15 {
+  @include space-h__inner($default-space * 1.5);
+}
+
+.bi-space-h--x2,
+.bi-s-h--x2 {
+  @include space-h__inner($default-space * 2);
+}
+
+.bi-space-h--x3,
+.bi-s-h--x3 {
+  @include space-h__inner($default-space * 3);
+}
+
+.bi-space-h--x05,
+.bi-s-h--x05 {
+  @include space-h__inner($default-space / 2);
+}
+
+.bi-space-v--x15,
+.bi-s-v--x15 {
+  @include space-v__inner($default-space * 1.5);
+}
+
+.bi-space-v--x2,
+.bi-s-v--x2 {
+  @include space-v__inner($default-space * 2);
+}
+
+.bi-space-v--x3,
+.bi-s-v--x3 {
+  @include space-v__inner($default-space * 3);
+}
+
+.bi-space-v--x05,
+.bi-s-v--x05 {
+  @include space-v__inner($default-space / 2);
+}

@@ -1,0 +1,3 @@
+<div class="bi-s-v">
+  <pre ng-class="::{'bi-success': row.type === 'stdout'}" ng-repeat="row in query.getResults().buffer">{{row.line}}</pre>
+</div>

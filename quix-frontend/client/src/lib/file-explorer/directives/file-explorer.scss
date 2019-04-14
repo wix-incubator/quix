@@ -1,0 +1,134 @@
+@import '../../ui/assets/css/def/colors.def';
+
+bi-file-explorer,
+bi-file-explorer-inner {
+  $folder-color: $orange--500;
+  $primary-color: $blue--500;
+  $hover-color: $grey--200;
+
+  position: relative;
+  display: block;
+
+  > ul > li {
+    user-select: none;
+    cursor: default !important;
+
+    .fe-icon {
+      margin-right: 4px;
+      font-size: 18px;
+      color: $grey--600;
+      vertical-align: text-bottom;
+    }
+
+    .fe-menu-icon {
+      line-height: 33px;
+    }
+  }
+
+  .fe-item {
+    padding-right: 5px;
+    height: 35px;
+
+    > div {
+      flex-grow: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  ul.fe-folders {
+    > li {
+      .fe-toggle {
+        transition: transform .2s;
+        transform: rotate(-90deg);
+        font-size: 19px;
+        cursor: pointer;
+
+        &.fe-toggle--hidden {
+          visibility: hidden;
+        }
+      }
+
+      &.fe-folder--open {
+        > div > div > .fe-toggle {
+          transform: rotate(0);
+        }
+      }
+
+      > .fe-item {
+        &:hover,
+        &.ui-droppable-hover {
+          background-color: $hover-color;
+        }
+
+        &.ui-draggable-dragging {
+          .fe-toggle,
+          .fe-menu-icon {
+            visibility: hidden;
+          }
+        }
+
+        @for $i from 0 through 3 {
+          &.fe-item-depth-#{$i} {
+            padding-left: $i * 12px + 4px;
+          }
+        }
+      }
+
+      .fe-icon.fe-folder-icon {
+        color: $folder-color;
+      }
+    }
+  }
+
+  ul.fe-files {
+    > li {
+      border-left: 4px solid transparent;
+
+      &.active {
+        background-color: transparent !important;
+        border-color: $primary-color !important;
+        font-weight: bold;
+
+        .fe-icon {
+          color: $primary-color;
+        }
+      }
+
+      &:hover {
+        background-color: $hover-color;
+        border-color: darken($hover-color, 30);
+      }
+
+      &.ui-draggable-dragging {
+        border: 0;
+      }
+    }
+
+    .fe-item {
+      margin-left: 11px;
+      cursor: pointer;
+
+      @for $i from 0 through 3 {
+        &.fe-item-depth-#{$i} {
+          padding-left: $i * 11px + 10px;
+        }
+      }
+
+      a {
+        color: #e1e1e1;
+        text-decoration: none;
+      }
+
+      > span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      bi-file-explorer-transclude {
+        padding: 0 7px;
+      }
+    }
+  }
+}

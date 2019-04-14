@@ -1,0 +1,25 @@
+@import 'colors.def';
+@import 'animations.def';
+
+%spinner {
+  @extend %animation-rotate;
+
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+
+  &:after {
+    content: '';
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 3px solid $blue--500;
+    border-right-color: transparent;
+    border-radius: 100px;
+  }
+}

@@ -1,0 +1,60 @@
+@import '../../assets/css/def/colors.def';
+@import '../../assets/css/def/defaults.def';
+@import '../../assets/css/def/icon.def';
+
+[contenteditable] {
+  position: relative;
+  display: inline-block;
+  padding: 6px 0 4px;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+
+  &[contenteditable=true],
+  &.ce-toggler-hover {
+    margin-right: 1.5em;
+  }
+
+  &[contenteditable=true] {
+    cursor: pointer;
+
+    &:focus {
+      transition-duration: .1s;
+      transition-property: color, padding;
+      padding: 6px 10px 4px;
+      border-color: $default-border-color;
+      background-color: $white;
+      color: $default-text-color;
+      outline: none;
+      cursor: text;
+    }
+
+    &.ce-toggler-hover:after {
+      display: none;
+    }
+
+    &:after {
+      @extend %icon;
+
+      transition: all .2s;
+      content: 'mode_edit';
+      position: absolute;
+      right: -1.2em;
+      top: 50%;
+      margin-top: -.4em;
+      padding-left: 8px;
+      font-size: 100%;
+      cursor: pointer;
+      opacity: .2;
+    }
+
+    &:hover:after {
+      display: inline;
+      opacity: .6;
+    }
+
+    &:focus:after {
+      display: inline;
+      opacity: .8;
+    }
+  }
+}

@@ -1,0 +1,71 @@
+@import 'colors.def';
+@import 'defaults.def';
+@import 'border.def';
+@import 'flex.def';
+@import 'icon.def';
+
+%dropdown-content {
+  @include border();
+
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: $white;
+  box-shadow: $default-box-shadow;
+  overflow-y: auto;
+}
+
+%dropdown-menu {
+  @extend %dropdown-content;
+
+  padding: 5px 0;
+  max-height: 300px;
+  user-select: none;
+
+  > li {
+    @include flex(row, center);
+
+    position: relative;
+    padding: 7px 20px;
+    color: $black;
+    white-space: nowrap;
+    cursor: pointer;
+
+    &:hover:not([disabled]) {
+      background-color: $grey--50;
+    }
+
+    &.selected:not([disabled='disabled']) {
+      font-weight: bold;
+
+      &:before {
+        @extend %icon;
+
+        position: absolute;
+        content: 'check';
+        left: 5px;
+        color: $primary;
+        font-size: 14px !important;
+      }
+    }
+
+    &[disabled],
+    &[disabled] > * {
+      color: $grey--500 !important;
+      cursor: default !important;
+    }
+  }
+
+  .bi-dropdown-separator {
+    @include border(bottom);
+
+    margin: 5px;
+    padding: 0;
+
+    &:first-child,
+    &:last-child {
+      height: 0;
+      margin: 0;
+      border: 0;
+    }
+  }
+}

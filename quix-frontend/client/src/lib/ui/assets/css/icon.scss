@@ -1,0 +1,17 @@
+@import './def/icon.def';
+
+.bi-icon {
+  @extend %icon;
+}
+
+.bi-icon--sm {
+  @extend %icon;
+
+  font-size: 17px !important;
+}
+
+.bi-icon--xs {
+  @extend %icon;
+
+  font-size: 14px !important;
+}

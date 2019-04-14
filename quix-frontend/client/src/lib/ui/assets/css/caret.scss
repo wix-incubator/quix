@@ -1,0 +1,5 @@
+@import './def/caret.def';
+
+.bi-caret {
+  @extend %caret;
+}

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "outDir": "./dist",
+    "baseUrl": "./",
+    "strict": true,
+    "typeRoots":  ["./node_modules/@types", "./src/types/3rd-party"]
+  },
+  "references": [{
+    "path": "../shared"
+  }],
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}

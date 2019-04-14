@@ -1,0 +1,91 @@
+@import './lib/ui/assets/css/def/colors.def';
+@import './lib/ui/assets/css/def/defaults.def';
+
+quix-breadcrumbs {
+  .bi-action {
+    color: $white !important;
+  }
+}
+
+.quix-checkbox {
+  display: block;
+  width: 23px;
+  line-height: 0;
+  overflow: hidden;
+
+  i {
+    transition: color, .1s;
+    color: $grey--300 !important;
+    font-size: 23px;
+
+    &:hover,
+    &.checked {
+      color: $muted !important;
+    }
+  }
+}
+
+.quix-round-icon {
+  border-radius: 100px;
+  background-color: $blue-grey--700;
+}
+
+.quix-meta-text {
+  color: $grey--500;
+}
+
+.quix-search-popup[bi-maximizable] {
+  top: 54px !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+.bi-section,
+.bi-section--300 {
+  .bi-section-header {
+    .quix-meta-text {
+      color: $grey--400;
+    }
+  }
+
+  .bi-section-content {
+    .bi-empty-state,
+    .bi-empty-state--error,
+    .bi-empty-state--empty {
+      margin-top: -60px;
+    }
+
+    .quix-section-controls {
+      height: 30px;
+    }
+  }
+}
+
+bi-tbl.bi-table--nav {
+  .mark-column {
+    width: 42px;
+    padding: 0;
+
+    .quix-checkbox {
+      width: 42px;
+      margin-top: 1px;
+      padding: 8px;
+    }
+  }
+
+  .name-column {
+    padding-left: 0;
+  }
+}
+
+.bi-empty-state {
+  .bi-empty-state-icon {
+    .bi-icon {
+      font-size: 80px;
+      color: $grey--500;
+    }
+  }
+}

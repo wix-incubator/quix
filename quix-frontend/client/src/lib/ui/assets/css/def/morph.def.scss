@@ -1,0 +1,53 @@
+@import 'colors.def';
+@import 'animations.def';
+@import 'spinner.def';
+
+%morph-fade-out {
+  @keyframes fade-out {
+    0% {
+      max-width: 50px;
+    }
+
+    20% {
+      padding: 0;
+      background-color: transparent;
+      color: transparent;
+      border: 0;
+    }
+
+    100% {
+      max-width: 30px;
+      padding: 0;
+      border-radius: 100px;
+      background-color: transparent;
+      color: transparent;
+      border: 0;
+    }
+  }
+
+  animation: fade-out .4s linear forwards;
+}
+
+%morph-to-loader {
+  @extend %morph-fade-out;
+
+  box-shadow: none;
+  overflow: hidden;
+  cursor: default;
+
+  &:active {
+    box-shadow: none;
+  }
+
+  > * {
+    display: none;
+  }
+
+  > span {
+    @extend %spinner;
+
+    &:after {
+      @extend %animation-fade-in2;
+    }
+  }
+}

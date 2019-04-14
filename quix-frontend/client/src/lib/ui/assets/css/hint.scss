@@ -1,0 +1,10 @@
+@import './def/colors.def';
+@import './def/hint.def';
+
+.bi-hint {
+  @include hint();
+}
+
+.bi-hint--info {
+  @include hint($primary);
+}

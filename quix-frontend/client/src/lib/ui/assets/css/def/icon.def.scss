@@ -1,0 +1,40 @@
+@import 'colors.def';
+
+%icon {
+  display: inline-block;
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+@mixin icon__deep($size: 24px, $color: $default-text-color, $margin-right: null) {
+  .bi-icon {
+    font-size: $size;
+    color: $color;
+
+    @if ($margin-right) {
+      margin-right: $margin-right;
+    }
+  }
+}
+
+@mixin icon-color__deep($bg-intensity) {
+  .bi-icon,
+  .bi-icon--sm,
+  .bi-icon--xs {
+    @if $bg-intensity <= 400 {
+      color: darken($grey--600, 15);
+    } @else {
+      color: lighten($grey--400, 15)
+    }
+  }
+}

@@ -1,0 +1,50 @@
+@import './colors.def';
+
+%empty-state {
+  display: flex;
+  flex-direction: column;
+  font-family: 'bi-ui';
+
+  > * {
+    display: flex;
+    justify-content: center;
+  }
+
+  .bi-empty-state-icon {
+    font-size: 60px;
+  }
+
+  .bi-empty-state-header {
+    margin-top: 20px;
+    margin-bottom: 0;
+    font-size: 18px;
+    font-weight: 300;
+    color: darken($muted, 10);
+  }
+
+  .bi-empty-state-header + .bi-empty-state-content {
+    margin-top: 3px;
+  }
+
+  .bi-empty-state-content {
+    margin-top: 15px;
+    margin-bottom: 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: lighten($muted, 10);
+  }
+}
+
+%empty-state-with-image {
+  @extend %empty-state;
+
+  &:before {
+    content: '';
+    display: block;
+    height: 100px;
+    margin-bottom: 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+}

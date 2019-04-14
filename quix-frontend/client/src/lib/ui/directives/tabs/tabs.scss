@@ -1,0 +1,65 @@
+@import '../../assets/css/def/colors.def';
+@import '../../assets/css/def/defaults.def';
+
+bi-tabs,
+bi-tabs-router {
+  .bi-tabs-header {
+    position: relative;
+    flex-basis: 42px;
+    border-bottom: 1px solid $default-border-color;
+
+    .bi-tab {
+      min-width: 80px;
+      margin-bottom: -1px;
+      padding: 0 15px;
+      cursor: pointer;
+
+      &.active {
+        > * {
+          color: $grey--800 !important;
+        }
+      }
+    }
+  }
+
+  &.bi-tabs--default {
+    .bi-tab {
+      height: 36px;
+      border: 1px solid transparent;
+
+      &.active {
+        border-color: $grey--300;
+        border-top: 2px solid $warning;
+        border-bottom-color: $grey--50;
+        border-radius: 3px 3px 0 0;
+        background-color: $grey--50;
+
+        > * {
+          margin-top: -1px;
+          color: $grey--800 !important;
+        }
+      }
+    }
+
+    .bi-tabs-content {
+      margin-top: -1px;
+    }
+  }
+
+  &.bi-tabs--flat {
+    .bi-tabs-header {
+      border-bottom: 1px solid $default-border-color;
+    }
+
+    .bi-tab {
+      transition: border-color .3s;
+      height: 42px;
+      border-bottom: 2px solid transparent;
+
+      &:hover,
+      &.active {
+        border-bottom: 2px solid $warning;
+      }
+    }
+  }
+}
