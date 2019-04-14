@@ -110,14 +110,4 @@ trait PrestoSql {
   def session: Map[String, String]
 }
 
-trait PrestoClient {
-  def advance(): Boolean
-
-  def results: Results
-
-  def isValid: Boolean
-
-  def close
-}
-
 class ActiveQueryNotFound(id: String) extends RuntimeException(s"query with id $id wasn't not found")
