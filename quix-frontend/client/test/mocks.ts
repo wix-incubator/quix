@@ -15,6 +15,7 @@ const mocks = {
     res.forEach(note => note.content = `select 1 as ${text}`);
     return res;
   },
+  '/api/db/explore': () => [],
   '/api/db/autocomplete': () => [],
 };
 
