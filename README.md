@@ -1,5 +1,6 @@
 # Quix
-Quix is a IDE for Presto <br />
+Quix is an IDE for Presto.
+
 It's your single point of truth and a shared space for your company's BI insights, with quick turnaround, interactive visual perspectives, and mixed data sources.<br />
 
 ## Main features
