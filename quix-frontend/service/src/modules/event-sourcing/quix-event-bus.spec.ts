@@ -3,6 +3,7 @@ import 'reflect-metadata';
 import {INote, NoteActions} from '../../../../shared/entities/note';
 import {NoteActionT} from '../../../../shared/entities/note/actions';
 import {NotebookActions} from '../../../../shared/entities/notebook';
+import {FileActions} from '../../../../shared/entities/file';
 import {QuixEventBus} from './quix-event-bus';
 import {QuixEventBusDriver} from './quix-event-bus.driver';
 jest.setTimeout(30000);
@@ -187,8 +188,26 @@ describe('event sourcing', () => {
 
       await driver.emitAsUser(eventBus, [createFolderAction], 'someUser');
 
-      // const tree = await driver.getFolderTree('someUser');
-      // expect(tree!.folder!.name).toBe('newFolder');
+      const list = await driver.getFolderDecendents('someUser');
+      expect(list[0].folder!.name).toBe('newFolder');
+    });
+
+    it('rename folder', async () => {
+      const [id, createFolderAction] = driver.createFolderAction(
+        'newFolder',
+        [],
+        'someUser',
+      );
+
+      await driver.emitAsUser(eventBus, [createFolderAction], 'someUser');
+      await driver.emitAsUser(
+        eventBus,
+        [FileActions.updateName(id, 'a changedName')],
+        'someUser',
+      );
+
+      const list = await driver.getFolderDecendents('someUser');
+      expect(list[0].folder!.name).toBe('a changedName');
     });
 
     it('a notebook inside a single folder', async () => {

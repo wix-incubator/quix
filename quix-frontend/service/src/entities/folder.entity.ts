@@ -11,10 +11,7 @@ import {DbFileTreeNode} from './filenode.entity';
 
 @Entity()
 export class DbFolder {
-  @OneToOne(type => DbFileTreeNode, node => node.folder, {
-    primary: true,
-  })
-  @JoinColumn({name: 'id'})
+  @PrimaryColumn(dbConf.idColumn)
   id!: string;
 
   @Column(dbConf.tinytext)

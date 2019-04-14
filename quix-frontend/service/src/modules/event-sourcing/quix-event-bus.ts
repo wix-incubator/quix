@@ -11,7 +11,7 @@ import {NotebookPlugin} from './plugins/notebook-plugin';
 import {
   DefaultAction,
   BaseAction,
-} from '../../../../shared/dist/entities/common/common-types';
+} from '../../../../shared/entities/common/common-types';
 import {NotePlugin} from './plugins/note-plugin';
 import {FileTreePlugin} from './plugins/file-tree-plugin';
 

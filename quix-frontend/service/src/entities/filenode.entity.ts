@@ -54,10 +54,11 @@ export class DbFileTreeNode {
   @Column({nullable: true})
   notebookId?: string;
 
-  @OneToOne(type => DbFolder, folder => folder.id, {
+  @OneToOne(type => DbFolder, {
     cascade: true,
     onDelete: 'CASCADE',
   })
+  @JoinColumn()
   folder?: DbFolder;
 
   @Column({nullable: true, type: 'varchar', length: 1024})
