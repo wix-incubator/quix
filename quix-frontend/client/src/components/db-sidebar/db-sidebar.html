@@ -1,6 +1,12 @@
-<div class="bi-c-h bi-align bi-center bi-grow" ng-if="!vm.db.enabled">
+<div class="bi-c-h bi-align bi-center bi-grow" ng-if="!vm.enabled">
   <div class="bi-empty-state--loading bi-fade-in">
     <div class="bi-empty-state-content">Loading DB...</div>
+  </div>
+</div>
+
+<div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.enabled && !vm.db.enabled">
+  <div class="bi-empty-state bi-fade-in">
+    <div class="bi-empty-state-header">Database is empty</div>
   </div>
 </div>
 

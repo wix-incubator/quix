@@ -34,7 +34,7 @@ export default (app: Instance, store: Store) => () => ({
         })
         .withEvents({
           onFileExplorerLoad() {
-            scope.vm.db.toggle(true);
+            scope.vm.db.toggle(!!scope.vm.db.items.length);
           }
         });
 
