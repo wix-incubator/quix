@@ -6,6 +6,8 @@ services:
       - "8080:8080"
     depends_on:
       - presto
+    environment:
+      - PRESTO_API
   frontend:
     build: ./quix-frontend/
     ports:
@@ -13,6 +15,18 @@ services:
     depends_on:
       - backend
       - db
+    environment:
+      - DB_NAME
+      - DB_USER
+      - DB_PASS
+      - DB_HOST
+      - DB_PORT
+      - BACKEND_INTERNAL_URL
+      - BACKEND_PUBLIC_URL
+      - GOOGLE_SSO_CLIENT_ID
+      - GOOGLE_SSO_SECRET
+      - AUTH_COOKIE
+      - AUTH_SECRET
   db:
     image: "mysql:5.7"
     restart: always
