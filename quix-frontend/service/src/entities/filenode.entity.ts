@@ -8,6 +8,7 @@ import {
   OneToOne,
   JoinColumn,
   Tree,
+  ManyToOne,
 } from 'typeorm';
 import {IFile, FileType} from '../../../shared/entities/file';
 import {DbNotebook} from './dbnotebook.entity';
@@ -38,7 +39,7 @@ export class DbFileTreeNode {
   @Column(dbConf.fileTypeEnum)
   type!: FileType;
 
-  @OneToOne(type => DbFileTreeNode)
+  @ManyToOne(type => DbFileTreeNode)
   @JoinColumn()
   parent?: DbFileTreeNode;
 

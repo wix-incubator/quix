@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import {INote, NoteActions} from '../../../../shared/entities/note';
 import {NoteActionT} from '../../../../shared/entities/note/actions';
 import {NotebookActions} from '../../../../shared/entities/notebook';
-import {FileActions} from '../../../../shared/entities/file';
+import {FileActions, FileType} from '../../../../shared/entities/file';
 import {QuixEventBus} from './quix-event-bus';
 import {QuixEventBusDriver} from './quix-event-bus.driver';
 jest.setTimeout(30000);
@@ -179,13 +179,17 @@ describe('event sourcing', () => {
   });
 
   describe('folder tree::', () => {
-    it('a single folder', async () => {
-      const [id, createFolderAction] = driver.createFolderAction(
+    let id: string;
+    let createFolderAction: any;
+    beforeEach(() => {
+      [id, createFolderAction] = driver.createFolderAction(
         'newFolder',
         [],
         'someUser',
       );
+    });
 
+    it('a single folder', async () => {
       await driver.emitAsUser(eventBus, [createFolderAction], 'someUser');
 
       const list = await driver.getFolderDecendents('someUser');
@@ -193,12 +197,6 @@ describe('event sourcing', () => {
     });
 
     it('rename folder', async () => {
-      const [id, createFolderAction] = driver.createFolderAction(
-        'newFolder',
-        [],
-        'someUser',
-      );
-
       await driver.emitAsUser(eventBus, [createFolderAction], 'someUser');
       await driver.emitAsUser(
         eventBus,
@@ -211,12 +209,6 @@ describe('event sourcing', () => {
     });
 
     it('a notebook inside a single folder', async () => {
-      const [id, createFolderAction] = driver.createFolderAction(
-        'newFolder',
-        [],
-        'someUser',
-      );
-
       const [notebookId, createNotebookAction] = driver.createNotebookAction(
         'someUser',
         [{id, name: 'doesnt matter'}],
@@ -232,6 +224,29 @@ describe('event sourcing', () => {
         item => item.id === notebookId && item.parentId === id,
       );
       expect(notebookTreeItem).toBeDefined();
+    });
+
+    it('multiple notebooks inside a single folder', async () => {
+      const [notebookId, createNotebookAction] = driver.createNotebookAction(
+        'someUser',
+        [{id, name: 'doesnt matter'}],
+      );
+      const [notebookId2, createNotebookAction2] = driver.createNotebookAction(
+        'someUser',
+        [{id, name: 'doesnt matter'}],
+      );
+      await driver.emitAsUser(
+        eventBus,
+        [createFolderAction, createNotebookAction],
+        'someUser',
+      );
+      await driver.emitAsUser(eventBus, [createNotebookAction2], 'someUser');
+
+      const list = await driver.getFolderDecendents('someUser');
+      const notebookItems = list.filter(
+        item => item.type === FileType.notebook,
+      );
+      expect(notebookItems).toHaveLength(2);
     });
   });
 });
