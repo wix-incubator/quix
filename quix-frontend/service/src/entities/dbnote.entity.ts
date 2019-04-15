@@ -39,7 +39,7 @@ export class DbNote implements BaseNote {
   @Column(dbConf.dateCreated)
   dateCreated!: number;
 
-  @ManyToOne(type => DbNotebook, n => n.notes)
+  @ManyToOne(type => DbNotebook, n => n.notes, {onDelete: 'CASCADE'})
   notebook!: DbNotebook;
 
   @Column()
