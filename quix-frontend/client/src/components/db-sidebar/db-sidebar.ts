@@ -6,19 +6,9 @@ import {Store} from '../../lib/store';
 import {Instance} from '../../lib/app';
 import {IScope} from './db-sidebar-types';
 import {cache} from '../../store';
-
-const convert = (nodes: any[], path = [], res = []) => {
-  nodes.forEach(node => {
-    if (!node.children.length) {
-      res.push({id: node.name, name: node.name, path, type: 'table'});
-    } else {
-      res.push({id: node.name, name: node.name, path, type: 'folder'});
-      convert(node.children, [...path, {id: node.name, name: node.name}], res);
-    }
-  });
-
-  return res;
-}
+import {convert} from '../../services/db';
+import * as Resources from '../../services/resources';
+import * as DbActions from '../../store/db/db-actions';
 
 export default (app: Instance, store: Store) => () => ({
   restrict: 'E',
@@ -35,6 +25,14 @@ export default (app: Instance, store: Store) => () => ({
         .withEvents({
           onFileExplorerLoad() {
             scope.vm.db.toggle(!!scope.vm.db.items.length);
+          },
+          onLazyFolderOpen(folder) {
+            const path = [...folder.path, {id: folder.id, name: folder.name}];
+            const [catalog, schema, table] = path.map(({id}) => id);
+
+            return Resources.dbColumns(catalog, schema, table)
+              .then(columns => convert(columns, [...path]))
+              .then(columns => store.dispatch(DbActions.addColumns(folder.id, columns)));
           }
         });
 
@@ -44,7 +42,7 @@ export default (app: Instance, store: Store) => () => ({
             return;
           }
 
-          scope.vm.db.items = convert(db);
+          scope.vm.db.items = db;
           scope.vm.toggle(true);
         }, scope);
     }

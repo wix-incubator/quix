@@ -25,6 +25,7 @@ const mocks = {
       }]
     }]
   }],
+  '/api/db/explore/:schema/:catalog/:table': () => [{name: 'column', dataType: 'varchar'}],
   '/api/db/autocomplete': () => [],
 };
 

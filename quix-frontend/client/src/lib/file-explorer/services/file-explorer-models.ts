@@ -64,6 +64,7 @@ export class File extends Item {
 export class Folder extends Item {
   private folders: Folder[] = [];
   private files: File[] = [];
+  private lazy: boolean = false;
   private readonly status = {
     open: false,
     hasFileLeaf: false
@@ -83,6 +84,16 @@ export class Folder extends Item {
     this.files = files;
 
     return this;
+  }
+
+  public setLazy(lazy: boolean = false): Folder {
+    this.lazy = lazy;
+
+    return this;
+  }
+
+  public isLazy(lazy: boolean = false): boolean {
+    return this.lazy;
   }
 
   public getFolderById(id: string): Folder {
@@ -150,7 +161,7 @@ export class Folder extends Item {
   }
 
   public isEmpty(): boolean {
-    return !this.hasFolders() && !this.hasFiles();
+    return !this.hasFolders() && !this.hasFiles() && !this.lazy;
   }
 
   public hasFileLeaf(): boolean {
@@ -190,6 +201,7 @@ export class Folder extends Item {
 
     return folder
       .setFolders(this.getFolders())
-      .setFiles(this.getFiles());
+      .setFiles(this.getFiles())
+      .setLazy(this.lazy);
   }
 }
