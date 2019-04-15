@@ -10,7 +10,6 @@ matrix:
         - cd ./quix-frontend/shared
         - npm install
       script:
-        - cd ./quix-frontend/shared
         - npm test
     - stage: test
       name: "Client"
@@ -56,5 +55,4 @@ matrix:
       install:
         - mvn install
       script:
-        - cd ./quix-backend
         - mvn test
