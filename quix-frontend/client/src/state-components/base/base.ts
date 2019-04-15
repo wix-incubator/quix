@@ -31,8 +31,6 @@ export default (app: App, store: Store) => ({
             searchPopup = null;
             searchPopupScope = null;
             maximizable = null;
-
-            store.dispatch(search(null, 'user'));
           }
         }
       })
@@ -46,7 +44,7 @@ export default (app: App, store: Store) => ({
         searchPopupScope = scope.$new();
         searchPopup = inject('$compile')(`
           <div 
-            class="quix-search-popup bi-c-h"
+            class="quix-search-popup bi-c-h bi-fade-in"
             bi-maximizable="false"
             on-load="events.onMaximizableLoad(instance)"
             on-toggle="events.onMaximizableToggle(maximized)"

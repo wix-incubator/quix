@@ -15,7 +15,7 @@
   </div>
   <div class="bi-section-content bi-c-h bi-s-v--x15">
     <div class="quix-section-controls bi-align bi-dont-shrink bi-fade-in" ng-if="vm.state.is('Result') || vm.state.after('Result')">
-      <div class="bi-spread bi-grow" ng-if="!vm.marked.enabled">
+      <div class="bi-spread bi-grow bi-fade-in" ng-if="!vm.marked.enabled">
         <div>
           <div class="bi-align bi-s-h" ng-if="permissions.edit">
             <button class="bi-button--success" ng-click="events.onFolderAdd()" data-hook="files-add-folder">
