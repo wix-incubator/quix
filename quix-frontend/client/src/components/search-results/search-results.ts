@@ -39,7 +39,7 @@ export default (app: Instance, store: Store) => () => ({
       });
 
       let searchId = 1;
-      const search = debounce((text, sId) => Resources.search(text).then(notes => {
+      const search = debounce((text: any, sId: number) => Resources.search(text).then(notes => {
         if (sId === searchId) {
           scope.vm.notes = notes;
         }
