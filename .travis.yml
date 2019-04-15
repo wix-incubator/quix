@@ -45,9 +45,9 @@ matrix:
       cache:
         directories:
           - $HOME/.m2
-      install:
+      before_install:
         - cd ./quix-backend
+      install:
         - mvn install
       script:
-        - cd ./quix-backend
         - mvn test
