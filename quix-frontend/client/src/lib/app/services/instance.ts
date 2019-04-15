@@ -6,6 +6,7 @@ import {User} from './user';
 export interface IMenuItem {
   icon: string;
   name?: string;
+  state?: string;
   template?: string;
   compiled?: string;
   onToggle?(app: Instance, item: IMenuItem): any;
