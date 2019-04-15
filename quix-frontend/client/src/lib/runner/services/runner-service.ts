@@ -278,7 +278,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
     this.socket.on('close', () => {
       if (!this.getState().getStatus().finished) {
         this.getScope().$apply(() => {
-          this.getEvents().apply('error', {msg: 'Connection lost'}, {});
+          this.getEvents().apply('error', {message: 'Connection lost'}, {});
           this.finish();
         });
       }
