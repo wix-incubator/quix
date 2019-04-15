@@ -1,5 +1,13 @@
 <div class="bi-app-header bi-fade-in">
-  <div class="bi-app-title bi-pointer" ng-click="events.onTitleClick()" role="button" data-hook="app-title">{{::app.getTitle()}}</div>
+  <div 
+    class="bi-app-title bi-pointer"
+    ng-click="events.onTitleClick()"
+    role="button"
+    data-hook="app-title"
+  >
+    <img ng-if="::app.getLogoUrl()" ng-src="{{::app.getLogoUrl()}}">
+    <span>{{::app.getTitle()}}</span>
+  </div>
 
   <div class="bi-grow bi-fade-in" ng-transclude="header" ng-if="::user.isLoggedIn()"></div>
 

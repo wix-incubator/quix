@@ -17,6 +17,7 @@ export default class Instance<Logger = any> {
   constructor(
     private readonly id: string,
     private readonly title: string,
+    private readonly logoUrl: string,
     private readonly plugins,
     private readonly user: User,
     private readonly navigator: Navigator,
@@ -37,6 +38,10 @@ export default class Instance<Logger = any> {
 
   getTitle() {
     return this.title;
+  }
+
+  getLogoUrl() {
+    return this.logoUrl;
   }
 
   getUser(): User {

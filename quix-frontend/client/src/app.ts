@@ -12,7 +12,7 @@ import './lib/file-explorer';
 
 (window as any).UrlPattern = UrlPattern;  // expose for e2e tests
 
-const {googleClientId, ...config} = (window as any).quixConfig;
+const {googleClientId, staticsBaseUrl, ...config} = (window as any).quixConfig;
 
 create({
   id: 'quix',
@@ -20,7 +20,8 @@ create({
 }, {
   auth: {googleClientId},
   defaultUrl: '/home',
-  homeState: 'base.home'
+  homeState: 'base.home',
+  logoUrl: `${staticsBaseUrl}assets/logo.png`
 }, ['bi.app', 'bi.runner', 'bi.fileExplorer'])
   .config(config)
   .plugin('app', plugin => {
