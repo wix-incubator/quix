@@ -1,0 +1,26 @@
+import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
+import httpProxy from 'http-proxy-middleware';
+import {ConfigService} from '../../config/config.service';
+import {ConfigModule} from '../../config/config.module';
+
+@Module({
+  imports: [ConfigModule],
+  controllers: [],
+  providers: [],
+})
+export class ProxyDbApiBackend implements NestModule {
+  constructor(private configService: ConfigService) {}
+
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(
+        httpProxy({
+          target: `http://${
+            this.configService.getEnvSettings().QuixBackendInternalUrl
+          }`,
+          changeOrigin: true,
+        }),
+      )
+      .forRoutes('/api/db');
+  }
+}

@@ -9,6 +9,7 @@ import {WebApiModule} from './modules/web-api/web-api.module';
 import {ConfigService} from './config/config.service';
 import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from './entities';
 import {MySqlAction} from './modules/event-sourcing/infrastructure/action-store/entities/mysql-action';
+import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import {MySqlAction} from './modules/event-sourcing/infrastructure/action-store/
     ConfigModule,
     EventSourcingModule,
     WebApiModule,
+    ProxyDbApiBackend,
   ],
   controllers: [AppController],
   providers: [],
