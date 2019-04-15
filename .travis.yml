@@ -11,6 +11,7 @@ matrix:
       before_install:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS Quix;'
       install:
+        - cd ./quix-frontend/service
         - npm install
       addons:
         apt:
@@ -20,4 +21,5 @@ matrix:
             - mysql-server
             - mysql-client
       script:
+        - cd ./quix-frontend/service
         - npm test:mysql
