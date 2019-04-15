@@ -3,6 +3,7 @@ Quix frontend serves the UI.
 
 
 ## Requirements
+* NodeJS
 * MySQL 5.7
 
 ## Setup

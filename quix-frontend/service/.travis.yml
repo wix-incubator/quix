@@ -1,0 +1,15 @@
+language: node_js
+node_js:
+  - "11"
+services:
+  - mysql
+cache: npm
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS Quix;'
+addons:
+  apt:
+    sources:
+      - mysql-5.7-trusty
+    packages:
+      - mysql-server
+      - mysql-client
