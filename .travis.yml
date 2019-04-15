@@ -1,7 +1,7 @@
 matrix:
   include:
     - stage: test
-      name: "Client"
+      name: "Shared"
       language: node_js
       node_js:
         - "11"
@@ -9,7 +9,17 @@ matrix:
       install:
         - cd ./quix-frontend/shared
         - npm install
-        - cd ../client
+      script:
+        - cd ./quix-frontend/shared
+        - npm test
+    - stage: test
+      name: "Client"
+      language: node_js
+      node_js:
+        - "11"
+      cache: npm
+      install:
+        - cd ./quix-frontend/client
         - npm install
       script:
         - npm test
@@ -22,11 +32,9 @@ matrix:
         - mysql
       cache: npm
       before_install:
-        - mysql -e 'CREATE DATABASE IF NOT EXISTS Quix;'
+        - mysql -e 'CREATE DATABASE IF NOT EXISTS quixtest;'
       install:
-        - cd ./quix-frontend/shared
-        - npm install
-        - cd ../service
+        - cd ./quix-frontend/service
         - npm install
       addons:
         apt:
@@ -48,4 +56,5 @@ matrix:
       install:
         - mvn install
       script:
+        - cd ./quix-backend
         - mvn test
