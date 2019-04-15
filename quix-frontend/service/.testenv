@@ -2,4 +2,4 @@ QUIX_ENV=TESTMYSQL
 DB_NAME=quixtest
 DB_USER=root
 DB_HOST=localhost
-DB_PASS=12qwaszx
+DB_PASS=
