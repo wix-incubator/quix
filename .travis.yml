@@ -18,7 +18,9 @@ matrix:
         - 11
       cache: npm
       install:
-        - cd ./quix-frontend/client
+        - cd ./quix-frontend/shared
+        - npm install
+        - cd ../client
         - npm install
       script:
         - npm test
@@ -29,12 +31,6 @@ matrix:
         - 11
       services:
         - mysql
-      cache: npm
-      before_install:
-        - mysql -e 'CREATE DATABASE IF NOT EXISTS quixtest;'
-      install:
-        - cd ./quix-frontend/service
-        - npm install
       addons:
         apt:
           sources:
@@ -42,6 +38,14 @@ matrix:
           packages:
             - mysql-server
             - mysql-client
+      cache: npm
+      before_install:
+        - mysql -e 'CREATE DATABASE IF NOT EXISTS quixtest;'
+      install:
+        - cd ./quix-frontend/shared
+        - npm install
+        - cd ../service
+        - npm install
       script:
         - npm run test:mysql
     - state: test
