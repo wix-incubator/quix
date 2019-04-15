@@ -44,7 +44,7 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
   private readonly title: string;
   private conf: Record<string, any>;
 
-  constructor(private readonly id: string | {id: string; title: string}, private readonly ngApp: angular.IModule, private options: {
+  constructor(private readonly id: string | {id: string; title: string}, private readonly ngApp: angular.IModule, private readonly options: {
     statePrefix?: string;
     defaultUrl?: string;
     auth?: {googleClientId: string};
