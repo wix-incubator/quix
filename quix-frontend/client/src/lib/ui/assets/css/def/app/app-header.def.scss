@@ -19,6 +19,8 @@
   }
 
   .bi-app-title {
-    @include header-title(20px, 300);
+    @include header-title(22px, 200);
+
+    font-family: bi-ui;
   }
 }
