@@ -9,6 +9,8 @@ matrix:
       install:
         - cd ./quix-frontend/client
         - npm install
+        - cd ../shared
+        - npm install
       script:
         - cd ./quix-frontend/client
         - npm test
@@ -24,6 +26,8 @@ matrix:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS Quix;'
       install:
         - cd ./quix-frontend/service
+        - npm install
+        - cd ../shared
         - npm install
       addons:
         apt:
