@@ -49,6 +49,7 @@
             context="vm.state.value().notebook"
             quix-actions-options="{reverse: true, forceDelete: vm.state.is('Result')}"
             on-like-toggle="events.onLikeToggle(context)"
+            on-copy="events.onCopy(context)"
             on-delete="events.onDelete(context)"
             readonly="!permissions.edit"
           ></quix-actions>
@@ -60,6 +61,7 @@
           type="notes"
           context="vm.marked.list"
           quix-actions-options="::{list: true}"
+          on-copy="events.onMarkedNotesCopy(context)"
           on-delete="events.onMarkedNotesDelete(context)"
           readonly="!permissions.edit"
         ></quix-actions>

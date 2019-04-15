@@ -10,3 +10,14 @@ export const confirm = (action: 'delete', context: 'notebook' | 'note' | 'folder
     </dialog>
   `);
 }
+
+export const prompt = ({title, yes, content}, scope?, locals?) => {
+  return confirmDialog(`
+    <dialog yes="${yes}" no="cancel">
+      <dialog-title>${title}</dialog-title>
+      <dialog-content>
+        ${content}
+      </dialog-content>
+    </dialog>
+  `, scope, locals);
+}

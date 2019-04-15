@@ -6,6 +6,7 @@ import {IScope} from './notebook-types';
 import {setNotebook, queueNote, toggleMark, unmarkAll} from '../../store/notebook/notebook-actions';
 import {saveQueuedNotes} from '../../services/notebook';
 import {removeRunner, addRunner} from '../../store/app/app-actions';
+import {prompt} from '../../services/dialog';
 
 export const onFolderClick = (scope: IScope, store: Store, app: Instance) => (folder: IFile = null) => {
   app.getNavigator().go('base.files', {id: folder && folder.id, isNew: false});
@@ -27,8 +28,22 @@ export const onDelete = (scope: IScope, store: Store, app: Instance) => (noteboo
     }));
 }
 
+export const onCopy = (scope: IScope, store: Store, app: Instance) => () => {
+  // const {id, path} = notebook;
+
+  prompt({title: 'Copy notebook', yes: 'copy', content: `
+    Coming soon...
+  `}, scope);
+}
+
 export const onMarkedNotesDelete = (scope: IScope, store: Store, app: Instance) => (notes: INote[]) => {
   store.dispatchAndLog(notes.map(note => NoteActions.deleteNote(note.id)));
+}
+
+export const onMarkedNotesCopy = (scope: IScope, store: Store, app: Instance) => () => {
+    prompt({title: 'Copy notes', yes: 'copy', content: `
+    Coming soon...
+  `}, scope);
 }
 
 export const onLikeToggle = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
