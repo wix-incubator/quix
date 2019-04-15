@@ -53,7 +53,7 @@
     "jquery": "^3.3.1",
     "jquery-datetimepicker": "^2.5.18",
     "jquery-ui": "^1.12.1",
-    "lodash": "^3.10.0",
+    "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "ng-csv": "^0.3.6",
     "redux": "^3.7.2",
