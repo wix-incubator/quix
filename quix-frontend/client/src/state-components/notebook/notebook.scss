@@ -9,5 +9,9 @@ quix-base-notebook {
     margin-right: -12px;
     padding-right: 12px;
     padding-bottom: 400px;
+
+    > * {
+      margin-bottom: 12px;
+    }
   }
 }
