@@ -26,7 +26,12 @@ matrix:
     - state: test
       name: "Backend"
       language: java
+      cache:
+        directories:
+          - $HOME/.m2
       install:
+        - cd ./quix-backend
         - mvn install
       script:
+        - cd ./quix-backend
         - mvn test
