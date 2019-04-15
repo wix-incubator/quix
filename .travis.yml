@@ -23,3 +23,10 @@ matrix:
       script:
         - cd ./quix-frontend/service
         - npm test:mysql
+    - state: test
+      name: "Backend"
+      language: java
+      install:
+        - mvn install
+      script:
+        - mvn test
