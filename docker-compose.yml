@@ -36,7 +36,7 @@ services:
     ports:
       - "3306:3306"
   presto:
-    image: "prestodb/centos6-oj8"
+    image: "starburstdata/presto"
     ports:
       - "8181:8080"
 
