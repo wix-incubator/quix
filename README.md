@@ -15,8 +15,7 @@ It's your single point of truth and a shared space for your company's BI insight
 
 ## Requirements
 * Presto
-* Docker Compose
-
+* Docker Compose 
  
 ## Installation
 
@@ -25,6 +24,11 @@ All you need to do is to run Docker Compose:
 docker-compose up
 open http://localhost:3000
 ```
+
+## Configuration
+
+By default, Quix works with demo Presto instance that runs inside Docker Compose. <br />
+To work with your real Presto DB, change `PRESTO_API` URL in [.env](./.env) configuration file.` 
 
 ## Architecture
 
