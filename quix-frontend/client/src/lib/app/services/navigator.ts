@@ -78,6 +78,12 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
     return inject('$state').go(`${this.options.statePrefix}${state}`, params, options);
   }
 
+  getUrl(state?: string, params?: Object): string {
+    state = state || inject('$state').current.name;
+
+    return inject('$state').href(state, params, {absolute: true, inherit: false});
+  }
+
   goHome() {
     return inject('$state').go(`${this.options.statePrefix}${this.options.homeState}`);
   }

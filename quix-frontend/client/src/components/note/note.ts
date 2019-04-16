@@ -19,6 +19,7 @@ export default (app: Instance, store: Store) => () => ({
     readonly: '<',
     onContentChange: '&',
     onNameChange: '&',
+    onShare: '&',
     onDelete: '&',
     onMarkToggle: '&',
     onSave: '&',

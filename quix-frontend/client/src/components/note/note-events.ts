@@ -19,6 +19,10 @@ export const onContentChange = (scope: IScope, store: Store) => () => {
   scope.onContentChange({note: scope.note});
 };
 
+export const onShare = (scope: IScope, store: Store) => () => {
+  scope.onShare({note: scope.note});
+};
+
 export const onDelete = (scope: IScope, store: Store) => () => {
   confirm('delete', 'note').then(() =>  scope.onDelete({note: scope.note}));
 };

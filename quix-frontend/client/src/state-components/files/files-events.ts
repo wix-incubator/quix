@@ -19,11 +19,11 @@ export const onDelete = (scope: IScope, store: Store, app: Instance) => (file: I
   deleteFolder(store, app, file);
 };
 
-export const onShare = (scope: IScope, store: Store, app: Instance) => () => {
-  utils.copyToClipboard(document.location.href);
+export const onShare = (scope: IScope, store: Store, app: Instance) => (file: IFile) => {
+  utils.copyToClipboard(app.getNavigator().getUrl(null, {id: file.id}));
 
   toast.showToast({
-    text: 'Copied share url to clipboard',
+    text: 'Copied folder url to clipboard',
     hideDelay: 3000
   });
 }

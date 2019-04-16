@@ -39,11 +39,11 @@ export const onCopy = (scope: IScope, store: Store, app: Instance) => () => {
   `}, scope);
 }
 
-export const onShare = (scope: IScope, store: Store, app: Instance) => () => {
-  utils.copyToClipboard(document.location.href);
+export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
+  utils.copyToClipboard(app.getNavigator().getUrl(null, {id: notebook.id}));
 
   toast.showToast({
-    text: 'Copied share url to clipboard',
+    text: 'Copied notebook url to clipboard',
     hideDelay: 3000
   });
 }
@@ -88,6 +88,18 @@ export const onNoteAdd = (scope: IScope, store: Store, app: Instance) => () => {
   const vm = scope.vm.notes.get(note);
   vm.fold = false;
   vm.focusName = true;
+  vm.scrollTo = true;
+}
+
+export const onNoteShare = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
+  const {notebook} = scope.vm.state.value();
+
+  utils.copyToClipboard(app.getNavigator().getUrl(null, {id: notebook.id, note: note.id}));
+
+  toast.showToast({
+    text: 'Copied note url to clipboard',
+    hideDelay: 3000
+  });
 }
 
 export const onNoteDelete = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
