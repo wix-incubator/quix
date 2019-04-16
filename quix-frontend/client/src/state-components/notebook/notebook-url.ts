@@ -1,5 +1,5 @@
 import {find} from 'lodash';
-import {INote} from '../../../../shared/dist';
+import {INotebook} from '../../../../shared';
 import {setNote} from '../../store/notebook/notebook-actions';
 
-export const noteId = (id: string, notes: INote[]) => setNote(id && find(notes, {id}));
+export const note = (id: string, notebook: INotebook) => setNote(id && find(notebook.notes, {id}));

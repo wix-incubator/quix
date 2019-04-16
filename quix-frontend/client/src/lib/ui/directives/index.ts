@@ -26,3 +26,4 @@ export {default as droppable} from './droppable/droppable';
 export {filter, filterTerm, filterItems} from './filter';
 export {default as html} from './html/html';
 export {default as breadcrumbs} from './breadcrumbs/breadcrumbs';
+export {scrollTo} from './scroll';

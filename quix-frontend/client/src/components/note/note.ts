@@ -33,12 +33,12 @@ export default (app: Instance, store: Store) => () => ({
           fold: false,
           focusName: false,
           focusEditor: true
+        }, () => {
+          if (scope.options.focusName) {
+            scope.options.focusEditor = false;
+          }
         })
         .withVM({});
-
-      if (scope.options.focusName) {
-        scope.options.focusEditor = false;
-      }  
 
       initEvents(scope, conf, app, store, Events);
     }

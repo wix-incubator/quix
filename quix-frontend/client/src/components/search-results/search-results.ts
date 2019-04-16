@@ -25,7 +25,7 @@ export default (app: Instance, store: Store) => () => ({
         })
         .withEvents({
           onNoteClick(note: INote) {
-            app.getNavigator().go('base.notebook', {id: note.notebookId, noteId: note.id});
+            app.getNavigator().go('base.notebook', {id: note.notebookId, note: note.id});
           },
           onClose() {
             store.dispatch(AppActions.search(null, 'user'));

@@ -20,8 +20,9 @@ export default () => ({
   $init() {
     this.notes = this.createItemsVm({
       fold: true,
+      scrollTo: false,
       focusName: false
-    }).identifyBy(({id, noteId}) => id || noteId);
+    });
 
     this.state = new StateManager(States);
     this.marked.map = {};

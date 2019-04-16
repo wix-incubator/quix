@@ -113,7 +113,7 @@
         ng-repeat="note in vm.state.value().notes track by note.id"
         note="::note"
         quix-note-options="::{
-          fold: vm.notes.get(note).fold && vm.state.value().notes.length > 1,
+          fold: vm.notes.get(note).fold,
           focusName: vm.notes.get(note).focusName
         }"
         marked="!!vm.marked.map[note.id]"
@@ -127,6 +127,7 @@
         on-runner-created="events.onRunnerCreated(note, runner)"
         on-runner-destroyed="events.onRunnerDestroyed(note, runner)"
         data-hook="notebook-note"
+        bi-scroll-to="{{vm.notes.get(note).scrollTo}}"
         readonly="!permissions.edit"
       ></quix-note>
     </div>
