@@ -8,6 +8,8 @@ services:
       - presto
     environment:
       - PRESTO_API
+      - AUTH_COOKIE
+      - AUTH_SECRET
   frontend:
     build: ./quix-frontend/
     ports:
