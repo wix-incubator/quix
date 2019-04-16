@@ -1,4 +1,6 @@
 import {Store} from '../../lib/store';
+import {utils} from '../../lib/core';
+import {toast} from '../../lib/ui';
 import {Instance} from '../../lib/app';
 import {IScope} from './files-types';
 import {IFile, FileActions, NotebookActions} from '../../../../shared';
@@ -16,6 +18,15 @@ export const onNameChange = (scope: IScope, store: Store, app: Instance) => (fil
 export const onDelete = (scope: IScope, store: Store, app: Instance) => (file: IFile) => {
   deleteFolder(store, app, file);
 };
+
+export const onShare = (scope: IScope, store: Store, app: Instance) => () => {
+  utils.copyToClipboard(document.location.href);
+
+  toast.showToast({
+    text: 'Copied share url to clipboard',
+    hideDelay: 3000
+  });
+}
 
 export const onMarkedDelete = (scope: IScope, store: Store, app: Instance) => (files: IFile[]) => {
   store.dispatchAndLog(files.map(file => file.type === 'folder' ? 

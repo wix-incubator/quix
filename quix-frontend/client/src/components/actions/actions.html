@@ -15,7 +15,7 @@
     
   <bi-tooltip ng-if="::!options.list">
     <bi-toggle>
-      <i class="bi-action bi-icon">share</i>
+      <i class="bi-action bi-icon" ng-click="events.onShare()">share</i>
     </bi-toggle>
     Share {{::type}}
   </bi-tooltip>

@@ -37,6 +37,7 @@
             context="vm.state.value().file"
             quix-actions-options="{reverse: true, forceDelete: vm.state.is('Result')}"
             on-like-toggle="events.onLikeToggle(context)"
+            on-share="events.onShare(context)"
             on-delete="events.onDelete(context)"
             readonly="!permissions.edit"
           ></quix-actions>

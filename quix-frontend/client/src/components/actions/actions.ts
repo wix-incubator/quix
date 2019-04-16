@@ -15,6 +15,7 @@ export default (app: Instance, store: Store) => () => ({
     context: '<',
     quixActionsOptions: '<',
     onLikeToggle: '&',
+    onShare: '&',
     onCopy: '&',
     onDelete: '&',
     readonly: '<'
@@ -27,6 +28,9 @@ export default (app: Instance, store: Store) => () => ({
         .withEvents({
           onLikeToggle() {
             scope.onLikeToggle({context: scope.context});
+          },
+          onShare() {
+            scope.onShare({context: scope.context});
           },
           onCopy() {
             scope.onCopy({context: scope.context});

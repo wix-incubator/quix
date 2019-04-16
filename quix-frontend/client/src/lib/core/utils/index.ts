@@ -1,6 +1,7 @@
 'use strict';
 
 import * as _ from 'lodash';
+import jquery from 'jquery';
 import * as Uuid from 'uuid';
 import * as escapeHtml from 'escape-html';
 
@@ -114,6 +115,16 @@ export function stripDollars<T>(data: T): T {
   }
 
   return data;
+}
+
+export function copyToClipboard(text: string) {
+  const input = jquery('<input>').val(text);
+
+  input.appendTo(window.document.body);
+  input.get(0).focus();
+  (input.get(0) as any).select();
+  document.execCommand('Copy');
+  input.remove();
 }
 
 export const lodash: any = _;

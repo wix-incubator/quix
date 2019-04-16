@@ -1,5 +1,7 @@
 import {last} from 'lodash';
+import {utils} from '../../lib/core';
 import {Store} from '../../lib/store';
+import {toast} from '../../lib/ui';
 import {Instance} from '../../lib/app';
 import {INote, NotebookActions, IFile, NoteActions, INotebook} from '../../../../shared';
 import {IScope} from './notebook-types';
@@ -7,6 +9,7 @@ import {setNotebook, queueNote, toggleMark, unmarkAll} from '../../store/noteboo
 import {saveQueuedNotes} from '../../services/notebook';
 import {removeRunner, addRunner} from '../../store/app/app-actions';
 import {prompt} from '../../services/dialog';
+
 
 export const onFileClick = (scope: IScope, store: Store, app: Instance) => (file: IFile = null) => {
   app.getNavigator().go('base.files', {id: file && file.id, isNew: false});
@@ -34,6 +37,15 @@ export const onCopy = (scope: IScope, store: Store, app: Instance) => () => {
   prompt({title: 'Copy notebook', yes: 'copy', content: `
     Coming soon...
   `}, scope);
+}
+
+export const onShare = (scope: IScope, store: Store, app: Instance) => () => {
+  utils.copyToClipboard(document.location.href);
+
+  toast.showToast({
+    text: 'Copied share url to clipboard',
+    hideDelay: 3000
+  });
 }
 
 export const onMarkedNotesDelete = (scope: IScope, store: Store, app: Instance) => (notes: INote[]) => {
