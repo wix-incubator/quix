@@ -34,7 +34,7 @@ describe('AppController (e2e)', () => {
   });
 
   it('should proxy requests to the backend', () => {
-    nock('http://backend:8080')
+    nock('http://backend:8081')
       .get('/api/db/explore')
       .reply(200, []);
 

@@ -25,15 +25,15 @@ This option requires Maven to be installed locally, but is faster, since it util
 ### Running
 Provide a mandatory config values to docker
 ```
-docker run -p 8080:8080 --name quix-backend -t quix-backend 
+docker run -p 8081:8081 --name quix-backend -t quix-backend 
 ```
 
 In case you have local `application.properties` file, we can map it into Docker container and execute it
-```docker run -v /path-to-local/application.properties:/application.properties -p 8080:8080 -t quix-backend``` 
+```docker run -v /path-to-local/application.properties:/application.properties -p 8081:8081 -t quix-backend``` 
 
 ## Sample application.properties 
 ```
-server.port=8080
+server.port=8081
 
 # logging levels of different classes
 logging.level.org.springframework.web=DEBUG
