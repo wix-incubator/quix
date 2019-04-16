@@ -28,6 +28,21 @@ docker-compose up
 open http://localhost:3000
 ```
 
+## Configuration
+
+Most of the configuration you'll need is done in [.env](./.env) configuration file. <br />
+By default, Quix works with demo Presto instance that runs inside Docker Compose. <br />
+To work with your real Presto DB, change `PRESTO_API` URL.`<br />
+Note that you need to specify full URL, including protocol, port and API version. For example: `http://presto.my.domain:8181/v1`
+
+Quix also uses MySQL to store notebooks and other application data. Location of this data is specified by `DB_VOLUME_PATH`. <br />
+As an alternative, you may use external MySQL database, by specifying some of the following variables:
+* DB_NAME - defaults to `Quix`, must exist
+* DB_USER - defaults to `root`
+* DB_PASS - defaults to empty password
+* DB_HOST - defaults to `db`
+* DB_PORT - defaults to `3306`
+
 ## Architecture
 
 ![](docs/architecture.png)

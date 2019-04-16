@@ -6,6 +6,10 @@ services:
       - "8080:8080"
     depends_on:
       - presto
+    environment:
+      - PRESTO_API
+      - AUTH_COOKIE
+      - AUTH_SECRET
   frontend:
     build: ./quix-frontend/
     ports:
@@ -13,16 +17,28 @@ services:
     depends_on:
       - backend
       - db
+    environment:
+      - DB_NAME
+      - DB_USER
+      - DB_PASS
+      - DB_HOST
+      - DB_PORT
+      - BACKEND_INTERNAL_URL
+      - BACKEND_PUBLIC_URL
+      - GOOGLE_SSO_CLIENT_ID
+      - GOOGLE_SSO_SECRET
+      - AUTH_COOKIE
+      - AUTH_SECRET
   db:
     image: "mysql:5.7"
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "Quix"
-    ports:
-      - "3306:3306"
+    volumes:
+      - "db_volume:$DB_VOLUME_PATH"
   presto:
-    image: "prestodb/centos6-oj8"
+    image: "starburstdata/presto"
     ports:
       - "8181:8080"
 
