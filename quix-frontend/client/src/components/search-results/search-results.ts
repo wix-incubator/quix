@@ -2,6 +2,7 @@ import template from './search-results.html';
 import './search-results.scss';
 import 'highlight.js/styles/tomorrow.css';
 
+import {assign, debounce} from 'lodash';
 import hljs from 'highlight.js';
 import {initNgScope, inject} from '../../lib/core';
 import {Store} from '../../lib/store';
@@ -10,7 +11,6 @@ import {INote} from '../../../../shared';
 import {IScope} from './search-results-types';
 import * as Resources from '../../services/resources';
 import * as AppActions from '../../store/app/app-actions';
-import {assign} from 'lodash';
 
 export default (app: Instance, store: Store) => () => ({
   restrict: 'E',
@@ -28,7 +28,7 @@ export default (app: Instance, store: Store) => () => ({
             app.getNavigator().go('base.notebook', {id: note.notebookId, noteId: note.id});
           },
           onClose() {
-            store.dispatch(AppActions.search(null));
+            store.dispatch(AppActions.search(null, 'user'));
           }
         });
 
@@ -38,10 +38,19 @@ export default (app: Instance, store: Store) => () => ({
         }))
       });
 
-      store.subscribe('app.searchText', text => text && Resources.search(text).then(notes => {
+      let searchId = 1;
+      const search = debounce((text: any, sId: number) => Resources.search(text).then(notes => {
+        if (sId === searchId) {
+          scope.vm.notes = notes;
+        }
+      }), 300);
+
+      store.subscribe('app.searchText', text => {
+        scope.vm.notes = null;
         scope.vm.text = text;
-        scope.vm.notes = notes;
-      }), scope);
+
+        return text && search(text, ++searchId);
+      }, scope);
     }
   }
 });

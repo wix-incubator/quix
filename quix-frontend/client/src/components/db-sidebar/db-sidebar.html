@@ -16,6 +16,7 @@
     ng-model="vm.db.items"
     on-load="events.onFileExplorerLoad()"
     on-file-click="events.onFileClick(file)"
+    on-lazy-folder-open="events.onLazyFolderOpen(folder)"
     readonly="true"
   ></bi-file-explorer>
 </div>

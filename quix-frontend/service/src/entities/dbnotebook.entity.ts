@@ -36,10 +36,12 @@ export class DbNotebook implements INotebook {
 
   isLiked!: boolean;
 
-  @OneToMany(type => DbNote, n => n.notebook)
+  @OneToMany(type => DbNote, n => n.notebook, {onDelete: 'CASCADE'})
   notes!: INote[];
 
-  @OneToOne(type => DbFileTreeNode, node => node.notebook)
+  @OneToOne(type => DbFileTreeNode, node => node.notebook, {
+    onDelete: 'CASCADE',
+  })
   fileNode!: DbFileTreeNode;
 
   path: IFilePathItem[] = [];

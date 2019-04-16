@@ -91,6 +91,11 @@
   jqyoui-options="{accept: '.fe-item', greedy: true}"
   ng-model="vm.dropped.item"
 >
+  <div
+    ng-if="model.isLazy()"
+    class="fe-item {{::'fe-item-depth-' + depth}} bi-muted bi-fade-in"
+  >Loading...</div>
+
   <li
     ng-repeat="file in model.getFiles() | orderBy:vm.order.field track by file.getId()"
     ng-class="{active: vm.file.isActive(file)}"
@@ -112,9 +117,3 @@
     </div>
   </li>
 </ul>
-
-<div
-  ng-if="vm.folder.isEmpty()"
-  class="fe-empty-text">
-  <span class="bi-muted">{{emptyText}}</span>
-</div>

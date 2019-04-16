@@ -1,15 +1,18 @@
 import {IBranch} from '../../lib/store';
 import {Instance} from '../../lib/app';
 
-interface IDb {
-  db: any;
-}
-
 export default (app: Instance): IBranch => register => {
-  function db(state: IDb = null, action) {
+  function db(state: any[] = null, action) {
     switch (action.type) {
       case 'db.set':
         return action.db;
+      case 'db.addColumns':
+        return state.map(item => {
+          if (item.id === action.id) {
+            item.lazy = false;
+          }
+          return item;
+        }).concat(action.columns);
       default:
     }
 

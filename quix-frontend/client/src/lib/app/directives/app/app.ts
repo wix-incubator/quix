@@ -73,15 +73,15 @@ export default () => {
           return {html: item.compiled || inject('$compile')(item.template)((item as any).scope)};
         };
 
-        scope.app.getNavigator().listen(scope.app.getMenuItems().map(item => item.name), 'start', (params, stateName) => {
+        scope.app.getNavigator().listen(scope.app.getMenuItems().map(item => item.state).filter(state => state), 'start', (params, stateName) => {
           scope.app.getMenuItems().some(item => {
-            if (!item.name) {
-              return;
+            if (!item.state) {
+              return false;
             }
 
-            return stateName.indexOf(item.name) >= 0 && !!(setCurrentMenuItem(scope, item) || true);
+            return stateName.indexOf(item.state) >= 0 && !!(setCurrentMenuItem(scope, item) || true);
           });
-        }, scope).otherwise(() => scope.vm.menu.current && scope.vm.menu.current.name && setCurrentMenuItem(scope, null));
+        }, scope).otherwise(() => scope.vm.menu.current && scope.vm.menu.current.state && setCurrentMenuItem(scope, null));
       }
     }
   };

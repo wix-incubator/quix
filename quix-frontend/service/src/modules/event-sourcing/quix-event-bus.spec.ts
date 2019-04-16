@@ -181,11 +181,18 @@ describe('event sourcing', () => {
   describe('folder tree::', () => {
     let id: string;
     let createFolderAction: any;
+    let notebookId: string;
+    let createNotebookAction: any;
+
     beforeEach(() => {
       [id, createFolderAction] = driver.createFolderAction(
         'newFolder',
         [],
         'someUser',
+      );
+      [notebookId, createNotebookAction] = driver.createNotebookAction(
+        'someUser',
+        [{id, name: 'doesnt matter'}],
       );
     });
 
@@ -209,10 +216,6 @@ describe('event sourcing', () => {
     });
 
     it('a notebook inside a single folder', async () => {
-      const [notebookId, createNotebookAction] = driver.createNotebookAction(
-        'someUser',
-        [{id, name: 'doesnt matter'}],
-      );
       await driver.emitAsUser(
         eventBus,
         [createFolderAction, createNotebookAction],
@@ -227,10 +230,6 @@ describe('event sourcing', () => {
     });
 
     it('multiple notebooks inside a single folder', async () => {
-      const [notebookId, createNotebookAction] = driver.createNotebookAction(
-        'someUser',
-        [{id, name: 'doesnt matter'}],
-      );
       const [notebookId2, createNotebookAction2] = driver.createNotebookAction(
         'someUser',
         [{id, name: 'doesnt matter'}],

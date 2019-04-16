@@ -44,11 +44,12 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
   private readonly title: string;
   private conf: Record<string, any>;
 
-  constructor(private readonly id: string | {id: string; title: string}, private readonly ngApp: angular.IModule, options: {
+  constructor(private readonly id: string | {id: string; title: string}, private readonly ngApp: angular.IModule, private readonly options: {
     statePrefix?: string;
     defaultUrl?: string;
     auth?: {googleClientId: string};
     homeState?: string;
+    logoUrl?: string;
   }, private ngmodules = []) {
     super();
 
@@ -238,13 +239,14 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
     const app = new Instance<Logger>(
       this.id as string,
       this.title, 
+      this.options.logoUrl,
       this.plugins,
       this.user,
       this.navigator,
       this.biLogger,
       this.menuItems,
       this.appstore,
-      this.conf
+      this.conf,
     )
       .init(this.ngmodules);
 

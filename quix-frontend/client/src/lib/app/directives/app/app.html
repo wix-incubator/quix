@@ -1,5 +1,13 @@
 <div class="bi-app-header bi-fade-in">
-  <div class="bi-app-title bi-pointer" ng-click="events.onTitleClick()" role="button" data-hook="app-title">{{::app.getTitle()}}</div>
+  <div 
+    class="bi-app-title bi-pointer"
+    ng-click="events.onTitleClick()"
+    role="button"
+    data-hook="app-title"
+  >
+    <img ng-if="::app.getLogoUrl()" ng-src="{{::app.getLogoUrl()}}">
+    <span>{{::app.getTitle()}}</span>
+  </div>
 
   <div class="bi-grow bi-fade-in" ng-transclude="header" ng-if="::user.isLoggedIn()"></div>
 
@@ -33,6 +41,7 @@
           class="bi-action bi-icon"
           ng-class="{'bi-warning': item === vm.menu.current}"
           ng-click="events.onMenuItemToggle(item)"
+          title="{{::item.name}}"
           role="button"
           data-hook="app-menu-{{::item.name}}"
         >{{::item.icon}}</i>
@@ -45,7 +54,7 @@
     ng-if="vm.menu.current && (vm.menu.current.template || vm.menu.current.compiled)"
   >
     <div class="bi-section-header">
-      <div></div>
+      <div class="bi-section-title">{{vm.menu.current.name}}</div>
       <div>
         <i 
           class="quix-round-icon bi-action bi-icon"

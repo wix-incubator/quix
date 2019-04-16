@@ -17,6 +17,7 @@ export default function app<Logger = any>(id: string | {id: string; title: strin
   defaultUrl?: string;
   auth?: {googleClientId: string};
   homeState?: string;
+  logoUrl?: string;
 } = {}, modules = []): Builder<Logger> {
   return new Builder<Logger>(id, ngApp, options, modules);
 }

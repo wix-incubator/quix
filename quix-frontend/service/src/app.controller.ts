@@ -14,7 +14,7 @@ export class AppController {
     return {
       clientTopology: {
         staticsBaseUrl: '',
-        quixBackendUrl: this.settings.QuixBackendUrl,
+        quixBackendUrl: this.settings.QuixBackendPublicUrl,
         googleClientId: this.settings.GoogleClientId,
       },
     };

@@ -58,6 +58,10 @@ export default class Controller {
     return this;
   }
 
+  openLazyFolder(folder: Folder) {
+    return this.$scope.onLazyFolderOpen({folder: itemToDef(folder)});
+  }
+
   transclude(element, file) {
     this.$transclude((clone, scope) => {
       scope.bfe = {file};

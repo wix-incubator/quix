@@ -75,6 +75,14 @@ function initScope(scope, controller: Controller, depth: number) {
         if (!scope.vm.folders.get(folder).edit.enabled) {
           scope.vm.folder.toggleOpen(folder);
           scope.vm.folder.setCurrent(folder);
+
+          if (folder.isLazy() && scope.vm.folder.isOpen(folder)) {
+            const promise = controller.openLazyFolder(folder);
+
+            if (promise && promise.then) {
+              promise.then(() => folder.setLazy(false));
+            }
+          }
         }
       },
       onFileClick(file: File) {
@@ -134,6 +142,7 @@ export function fileExplorer() {
     controller: ['$scope', '$element', '$transclude', Controller],
     scope: {
       feOptions: '<',
+      onLazyFolderOpen: '&',
       onFileClick: '&',
       onLoad: '&',
       emptyText: '@',

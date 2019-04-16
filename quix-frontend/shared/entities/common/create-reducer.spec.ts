@@ -40,7 +40,7 @@ describe('createBaseReducer', () => {
       id: '1'
     }
     const newState = reducer(entity, action);
-    expect(newState).toEqual(undefined);
+    expect(newState).toBe(entity);
   });
 
   it('should handle update actions', () => {

@@ -25,6 +25,7 @@ const mocks = {
       }]
     }]
   }],
+  '/api/db/explore/:schema/:catalog/:table': () => [{name: 'column', dataType: 'varchar'}],
   '/api/db/autocomplete': () => [],
 };
 
@@ -59,12 +60,18 @@ export const mock = (patternOrUrl: string, patternPayload?: any) => {
         const match = new UrlPattern(key).match(patternOrUrl);
     
         if (match) {
-          return (mockOverrides[key] || mocks[key])(match);
+          let payload = (mockOverrides[key] || mocks[key])(match);
+
+          if (payload && typeof payload[0] !== 'number') {
+            payload = [200, payload];
+          }
+
+          return payload;
         }
       }
     
       return res;
-    }, null)
+    }, null) || [404, {message: 'Mock not found'}]
   }
 };
 

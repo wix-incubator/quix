@@ -30,7 +30,7 @@
 
   <div class="bi-section-content bi-c-h bi-s-v--x15">
     <div class="quix-section-controls bi-align bi-dont-shrink bi-fade-in" ng-if="vm.state.is('Result') || vm.state.after('Result')">
-      <div class="bi-spread bi-grow" ng-if="!vm.marked.enabled">
+      <div class="bi-spread bi-grow bi-fade-in" ng-if="!vm.marked.enabled">
         <div class="bi-align bi-s-h">
           <button 
             class="bi-button--success"
@@ -49,6 +49,7 @@
             context="vm.state.value().notebook"
             quix-actions-options="{reverse: true, forceDelete: vm.state.is('Result')}"
             on-like-toggle="events.onLikeToggle(context)"
+            on-copy="events.onCopy(context)"
             on-delete="events.onDelete(context)"
             readonly="!permissions.edit"
           ></quix-actions>
@@ -60,6 +61,7 @@
           type="notes"
           context="vm.marked.list"
           quix-actions-options="::{list: true}"
+          on-copy="events.onMarkedNotesCopy(context)"
           on-delete="events.onMarkedNotesDelete(context)"
           readonly="!permissions.edit"
         ></quix-actions>
@@ -91,7 +93,11 @@
       </div>
     </div>
 
-    <div class="quix-notebook-content bi-c-h bi-s-v bi-grow bi-scroll" ng-if="vm.state.is('Content')" data-hook="notebook-content">
+    <div 
+      class="quix-notebook-content bi-c-h bi-grow bi-scroll"
+      ng-if="vm.state.is('Content')"
+      data-hook="notebook-content"
+    >
       <quix-note
         class="bi-fade-in"
         ng-repeat="note in vm.state.value().notes track by note.id"

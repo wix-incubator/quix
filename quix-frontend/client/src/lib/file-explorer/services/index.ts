@@ -8,6 +8,7 @@ export interface IItemDef {
   name: string;
   type: string;
   path: IPathItemDef[];
+  lazy?: boolean;
   dateCreated?: number;
   dateUpdated?: number;
 }

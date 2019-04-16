@@ -43,7 +43,7 @@ export function defToTree(items: IItemDef[]): Folder {
 
     if (item.type === 'folder') {
       if (!folder.getFolderById(item.id)) {
-        folder.addFolder(item.id, folderNameMap[item.id]);
+        folder.addFolder(item.id, folderNameMap[item.id]).setLazy(item.lazy);
       }
     } else {
       folder.addFile(item.id, item.name, item.type, item.dateCreated, item.dateUpdated);

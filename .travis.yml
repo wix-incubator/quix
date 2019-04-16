@@ -1,17 +1,36 @@
 matrix:
   include:
     - stage: test
+      name: "Shared"
+      language: node_js
+      node_js:
+        - 11
+      cache: npm
+      install:
+        - cd ./quix-frontend/shared
+        - npm install
+      script:
+        - npm test
+    - stage: test
+      name: "Client"
+      language: node_js
+      node_js:
+        - 11
+      cache: npm
+      install:
+        - cd ./quix-frontend/shared
+        - npm install
+        - cd ../client
+        - npm install
+      script:
+        - npm test
+    - stage: test
       name: "Frontend"
       language: node_js
       node_js:
-        - "11"
+        - 11
       services:
         - mysql
-      cache: npm
-      before_install:
-        - mysql -e 'CREATE DATABASE IF NOT EXISTS Quix;'
-      install:
-        - npm install
       addons:
         apt:
           sources:
@@ -19,5 +38,25 @@ matrix:
           packages:
             - mysql-server
             - mysql-client
+      cache: npm
+      before_install:
+        - mysql -e 'CREATE DATABASE IF NOT EXISTS quixtest;'
+      install:
+        - cd ./quix-frontend/shared
+        - npm install
+        - cd ../service
+        - npm install
       script:
-        - npm test:mysql
+        - npm run test:mysql
+    - state: test
+      name: "Backend"
+      language: java
+      cache:
+        directories:
+          - $HOME/.m2
+      before_install:
+        - cd ./quix-backend
+      install:
+        - mvn install
+      script:
+        - mvn test
