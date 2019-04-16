@@ -25,17 +25,14 @@ export function start(port = process.env.PORT || 3000) {
 
   app.get('/mock/reset', (req, res) => {
     reset();
+
     res.status(200).send('OK');
   });
 
   app.all('*/api/*', (req, res) => {
-    const payload = mock(req.path);
+    const [status, payload] = mock(req.path);
 
-    if (payload) {
-      res.json(payload);
-    } else {
-      res.status(404).send('Mock not found');
-    }
+    res.status(status).json(payload);
   });
 
   app.use('/', (req, res) => {
