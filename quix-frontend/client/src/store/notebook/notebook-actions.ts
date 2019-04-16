@@ -5,6 +5,11 @@ export const setNotebook = (notebook: INotebook) => ({
   notebook
 });
 
+export const setError = (error: any) => ({
+  type: 'notebook.view.setError',
+  error
+});
+
 export const queueNote = (note: INote) => ({
   type: 'notebook.queue.note',
   note

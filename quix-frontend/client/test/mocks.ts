@@ -3,12 +3,14 @@ import {IFile, INotebook, createUser, createNotebook, createNotebookWithNote, cr
 
 const mocks = {
   '/api/user': () => createUser(),
-  '/api/events': () => ({status: 200}),
+  '/api/events': () =>[200],
   '/api/files': () => [
     createMockFolder(),
     createMockFile(),
     createMockFile(),
   ],
+  '/api/files/404': () => [404, {message: 'Folder not found'}],
+  '/api/notebook/404': () => [404, {message: 'Notebook not found'}],
   '/api/notebook/:id': ({id}) => createMockNotebookWithNote({id}),
   '/api/search/:text': ({text}) => {
     const res = [createNote('1'), createNote('2'), createNote('3')];

@@ -65,15 +65,19 @@ export default (app: Instance, store: Store) => () => ({
           },
         });
 
-        cache.files.get();
-        store.subscribe('files.files', (files: IFile[]) => {
-          scope.vm.state
-            .force('Result', !!files, {files})
-            .set('Content', () => !!files.length, () => ({files: [
-              ...files.map(file => ({...file, path: [{id: null}, ...file.path]})),
-              {id: null, name: 'My notebooks', type: 'folder'}
-            ]}));
-        }, scope);
+      cache.files.get();
+      store.subscribe('files.files', (files: IFile[]) => {
+        scope.vm.state
+          .force('Result', !!files, {files})
+          .set('Content', () => !!files.length, () => ({files: [
+            ...files.map(file => ({...file, path: [{id: null}, ...file.path]})),
+            {id: null, name: 'My notebooks', type: 'folder'}
+          ]}));
+      }, scope);
+
+      store.subscribe('files.view.error', (error: any) => {
+        scope.vm.state.force('Error', !!error, {error});
+      }, scope);
     }
   }
 });

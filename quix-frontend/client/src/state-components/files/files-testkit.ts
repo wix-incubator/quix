@@ -12,6 +12,10 @@ export class FilesTestkit {
     return (await this.page.query.hook('files-empty')) !== null;
   }
 
+  async hasErrorState() {
+    return (await this.page.query.hook('files-error')) !== null;
+  }
+
   async hasContent() {
     return (await this.page.query.hook('files-content')) !== null;
   }

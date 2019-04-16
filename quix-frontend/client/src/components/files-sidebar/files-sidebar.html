@@ -1,4 +1,4 @@
-<div class="bi-fade-in" ng-if="vm.state.is('Content')">
+<div class="bi-fade-in" ng-if="vm.state.is('Content')" data-hook="files-sidebar-content">
   <bi-file-explorer
     ng-model="vm.state.value().files"
     fe-options="{fileAlias: ['notebook']}"
@@ -12,10 +12,17 @@
     <div class="bi-empty-state-content">Loading notebooks...</div>
   </div>
 
+  <div class="bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="files-sidebar-error">
+    <div class="bi-empty-state-icon bi-danger">
+      <i class="bi-icon bi-danger">error_outline</i>
+    </div>
+    <div class="bi-empty-state-header bi-danger">{{::vm.state.value().error.message}}</div>
+  </div>
+
   <div
     class="bi-empty-state bi-s-v bi-fade-in"
     ng-if="vm.state.is('Result')"
-    data-hook="notebook-empty"
+    data-hook="files-sidebar-empty"
   >
     <div class="bi-empty-state-icon">
       <i class="bi-icon">note_add</i>

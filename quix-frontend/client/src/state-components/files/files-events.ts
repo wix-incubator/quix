@@ -5,7 +5,7 @@ import {IFile, FileActions, NotebookActions} from '../../../../shared';
 import {addNotebook} from '../../services/notebook';
 import {addFolder, deleteFolder} from '../../services/files';
 import {FileType} from '../../../../shared/entities/file';
-import {toggleMark, unmarkAll} from '../../store/files/files-actions';
+import {toggleMark, unmarkAll, setFile} from '../../store/files/files-actions';
 
 export const onNameChange = (scope: IScope, store: Store, app: Instance) => (file: IFile) => {
   const {id, name} = file;
@@ -57,3 +57,7 @@ export const onMarkToggle = (scope: IScope, store: Store, app: Instance) => (fil
 export const onUnmarkAll = (scope: IScope, store: Store, app: Instance) => () => {
   store.dispatch(unmarkAll());
 };
+
+export const $onDestroy = (scope: IScope, store: Store, app: Instance) => () => {
+  store.dispatch(setFile(null));
+}

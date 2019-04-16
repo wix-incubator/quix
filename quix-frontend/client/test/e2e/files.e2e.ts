@@ -13,6 +13,13 @@ describe('Files ::', () => {
     testkit = new FilesTestkit(driver.getTestkitPage());
   });
 
+  it('should display error state when folder is not found', async () => {
+    await driver.mock.http('/api/files/:id', [404, {message: 'Folder not found'}]);
+    await driver.goto(`/files/:id`);
+
+    expect(await testkit.hasErrorState()).to.be.true;
+  });
+
   it('should have one breadcrumb when user has no notebooks', async () => {
     await driver.mock.http('/api/files', []);
     await driver.goto('/files/');

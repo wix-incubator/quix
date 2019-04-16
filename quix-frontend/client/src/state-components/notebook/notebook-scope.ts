@@ -12,6 +12,7 @@ export const queue = {
 };
 
 export const view = {
+  error: (scope, value) => Reactions.setError(scope, value),
   markedMap: (scope, value) => Reactions.setMarkedMap(scope, value),
   markedList: (scope, value) => Reactions.setMarkedList(scope, value),
   note: (scope, value) => Reactions.setNote(scope, value),

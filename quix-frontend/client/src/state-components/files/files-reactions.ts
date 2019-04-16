@@ -22,6 +22,10 @@ export function setFiles(scope: IScope, files: IFile[]) {
     .then(() => scope.vm.fields = initTableFields(scope));
 }
 
+export function setError(scope: IScope, error: any) {
+  scope.vm.state.force('Error', !!error, {error});
+}
+
 export function setMarkedMap(scope: IScope, markedMap: Record<string, IFile>) {
   scope.vm.marked.map = markedMap;
 }

@@ -36,15 +36,15 @@ export default (app: Instance, store: Store) => () => ({
           }
         });
 
-        cache.db.get();
-        store.subscribe('db', (db) => {
-          if (!db) {
-            return;
-          }
+      cache.db.get();
+      store.subscribe('db', (db) => {
+        if (!db) {
+          return;
+        }
 
-          scope.vm.db.items = db;
-          scope.vm.toggle(true);
-        }, scope);
+        scope.vm.db.items = db;
+        scope.vm.toggle(true);
+      }, scope);
     }
   }
 });

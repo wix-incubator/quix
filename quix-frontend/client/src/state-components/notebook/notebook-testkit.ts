@@ -17,6 +17,11 @@ export class NotebookTestkit {
     return (await this.page.query.hook('notebook-empty')) !== null;
   }
 
+  async hasErrorState() {
+    return (await this.page.query.hook('notebook-error')) !== null;
+  }
+
+
   async hasNotes() {
     return (await this.page.query.hook('notebook-content')) !== null;
   }

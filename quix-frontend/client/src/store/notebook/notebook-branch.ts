@@ -10,6 +10,7 @@ export interface IQueue {
 }
 
 export interface IView {
+  error: any;
   markedMap: Record<string, INote>;
   markedList: INote[];
   note: INote;
@@ -63,15 +64,23 @@ export default (app: Instance): IBranch => register => {
     return state;
   }
 
-  const view = (state: IView = null, action: any): IView => {
+  const view = (state: IView = {
+    error: null,
+    markedMap: {},
+    markedList: [],
+    note: null
+  }, action: any): IView => {
     switch (action.type) {
       case NotebookActionTypes.createNotebook:
       case 'notebook.set':
         return {
+          error: null,
           markedMap: {},
           markedList: [],
           note: null
         };
+      case 'notebook.view.setError':
+        return {...state, error: action.error};
       case 'notebook.view.unmarkAll':
         return {
           ...state, 

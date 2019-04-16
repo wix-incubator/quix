@@ -5,6 +5,7 @@ import {Instance} from '../../lib/app';
 import {IFile, NotebookActionTypes, FileActionTypes, fileReducer, filesReducer, composeReducers} from '../../../../shared';
 
 export interface IView {
+  error: any;
   markedMap: Record<string, IFile>;
   markedList: IFile[];
 }
@@ -41,6 +42,7 @@ export default (app: Instance): IBranch => register => {
   );
 
   const view = (state: IView = {
+    error: null,
     markedMap: {},
     markedList: []
   }, action: any): IView => {
@@ -49,8 +51,14 @@ export default (app: Instance): IBranch => register => {
       case 'file.set':
       case 'files.view.unmarkAll':
         return {
+          error: null,
           markedMap: {},
           markedList: []
+        };
+      case 'files.view.setError':
+        return {
+          ...state,
+          error: action.error
         };
       case FileActionTypes.deleteFile:
       case NotebookActionTypes.deleteNotebook:
@@ -72,7 +80,7 @@ export default (app: Instance): IBranch => register => {
     switch (action.type) {
       case FileActionTypes.createFile:
       case 'file.set':
-        return action.file.id ? {
+        return action.file && action.file.id ? {
           edit: app.getUser().getEmail() === action.file.owner
         } : {
           edit: true

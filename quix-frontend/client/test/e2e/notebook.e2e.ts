@@ -14,6 +14,13 @@ describe('Notebook ::', () => {
     testkit = new NotebookTestkit(driver.getTestkitPage());
   });
 
+  it('should display error state when notebook is not found', async () => {
+    await driver.mock.http('/api/notebook/:id', [404, {message: 'Notebook not found'}]);
+    await driver.goto(`/notebook/1`);
+
+    expect(await testkit.hasErrorState()).to.be.true;
+  });
+
   it('should display empty state when notebook is empty', async () => {
     const notebook = createMockNotebook();
 

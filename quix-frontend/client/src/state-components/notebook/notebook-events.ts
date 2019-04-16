@@ -8,8 +8,8 @@ import {saveQueuedNotes} from '../../services/notebook';
 import {removeRunner, addRunner} from '../../store/app/app-actions';
 import {prompt} from '../../services/dialog';
 
-export const onFolderClick = (scope: IScope, store: Store, app: Instance) => (folder: IFile = null) => {
-  app.getNavigator().go('base.files', {id: folder && folder.id, isNew: false});
+export const onFileClick = (scope: IScope, store: Store, app: Instance) => (file: IFile = null) => {
+  app.getNavigator().go('base.files', {id: file && file.id, isNew: false});
 }
 
 export const onNameChange = (scope: IScope, store: Store, app: Instance) => (file: IFile) => {

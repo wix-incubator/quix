@@ -10,12 +10,6 @@ export function start(port = process.env.PORT || 3000) {
 
   app.use(bodyParser.json());
 
-  // proxy to quix-backend API
-  // app.all('/api/db/*', (req, res) => {
-  //   const url = 'http://localhost:8080' + req.url;
-  //   req.pipe(request[req.method.toLowerCase()](url)).pipe(res);
-  // });
-
   app.post('/mock/pattern', (req, res) => {
     const {pattern, payload} = req.body;
     mock(pattern, payload);

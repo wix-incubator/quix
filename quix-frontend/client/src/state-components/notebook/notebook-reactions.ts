@@ -16,6 +16,10 @@ export function setNotebook(scope: IScope, app: Instance, notebook: INotebook) {
     .else(() => scope.vm.state.value({notebook}));
 }
 
+export function setError(scope: IScope, error: any) {
+  scope.vm.state.force('Error', !!error, {error});
+}
+
 export function setNotes(scope: IScope, notes: INote[]) {
   scope.vm.state
     .force('Result', !!notes, {notes})
