@@ -8,7 +8,7 @@
   "basename": "/",
   "clientTopology": {
     "staticsBaseUrl": "//localhost:3200/",
-    "quixBackendUrl": "//localhost:8080/",
+    "quixBackendUrl": "//localhost:8081/",
     "googleClientId": ""
   }
 }

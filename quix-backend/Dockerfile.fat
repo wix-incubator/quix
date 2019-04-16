@@ -6,6 +6,6 @@ ARG JAR_FILE=/quix-webapps/quix-web-spring/target/quix-web-spring-2.1.0.RELEASE.
 
 COPY ${JAR_FILE} app.jar
 
-EXPOSE 8080
+EXPOSE 8081
 
 ENTRYPOINT ["java","-jar","/app.jar"]
