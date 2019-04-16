@@ -35,6 +35,8 @@ services:
       MYSQL_DATABASE: "Quix"
     ports:
       - "3306:3306"
+    volumes:
+      - db_volume: /var/lib/mysql/quix
   presto:
     image: "starburstdata/presto"
     ports:
