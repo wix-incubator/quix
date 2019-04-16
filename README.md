@@ -1,5 +1,7 @@
 # Quix
-Quix is an IDE for Presto.
+[![Build Status](https://travis-ci.com/wix-incubator/quix.svg?branch=master)](https://travis-ci.com/wix-incubator/quix)
+<br />
+Quix is a Web IDE for Presto.
 
 It's your single point of truth and a shared space for your company's BI insights, with quick turnaround, interactive visual perspectives, and mixed data sources.<br />
 
@@ -15,7 +17,7 @@ It's your single point of truth and a shared space for your company's BI insight
 
 ## Requirements
 * Presto
-* Docker Compose
+* [Docker Compose](https://docs.docker.com/compose/install/)
 
  
 ## Installation
