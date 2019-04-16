@@ -113,7 +113,7 @@
         class="bi-fade-in"
         ng-repeat="note in vm.state.value().notes track by note.id"
         note="::note"
-        quix-note-options="::{
+        quix-note-options="{
           fold: vm.notes.get(note).fold,
           focusName: vm.notes.get(note).focusName
         }"
@@ -129,7 +129,7 @@
         on-runner-created="events.onRunnerCreated(note, runner)"
         on-runner-destroyed="events.onRunnerDestroyed(note, runner)"
         data-hook="notebook-note"
-        bi-scroll-to="{{vm.notes.get(note).scrollTo}}"
+        bi-scroll-to="{{vm.state.value().note.id === note.id}}"
         readonly="!permissions.edit"
       ></quix-note>
     </div>

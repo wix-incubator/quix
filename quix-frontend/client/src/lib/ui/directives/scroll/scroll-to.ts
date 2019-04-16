@@ -1,3 +1,5 @@
+import {inject} from '../../../core';
+
 export default () => {
   return {
     restrict: 'A',
@@ -5,10 +7,10 @@ export default () => {
     link(scope, element, attr) {
       attr.$observe('biScrollTo', scroll => {
         if (scroll === 'true') {
-          element.get(0).scrollIntoView({
+          inject('$timeout')(() => element.get(0).scrollIntoView({
             behavior: 'smooth',
-            block: 'nearest'
-          });
+            block: 'start'
+          }));
         }
       });
    }

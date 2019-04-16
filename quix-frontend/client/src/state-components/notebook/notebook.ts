@@ -23,7 +23,7 @@ export default (app: App, store: Store) => ({
   controller: async (scope: IScope, params, {syncUrl}) => {
     await cache.notebook.fetch(params.id);
     
-    syncUrl(() => store.getState('notebook.notebook') || []);
+    syncUrl(() => [store.getState('notebook.notes') || []]);
 
     store.subscribe('notebook', ({notebook, notes, queue, view, permissions}) => {
       scope.notebook = notebook;

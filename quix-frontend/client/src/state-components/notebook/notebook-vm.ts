@@ -19,7 +19,7 @@ export default () => ({
   marked: {},
   $init() {
     this.notes = this.createItemsVm({
-      fold: true,
+      fold: null,
       scrollTo: false,
       focusName: false
     });

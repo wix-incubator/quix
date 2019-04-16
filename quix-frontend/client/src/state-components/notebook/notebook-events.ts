@@ -5,7 +5,7 @@ import {toast} from '../../lib/ui';
 import {Instance} from '../../lib/app';
 import {INote, NotebookActions, IFile, NoteActions, INotebook} from '../../../../shared';
 import {IScope} from './notebook-types';
-import {setNotebook, queueNote, toggleMark, unmarkAll} from '../../store/notebook/notebook-actions';
+import {setNotebook, setNote, queueNote, toggleMark, unmarkAll} from '../../store/notebook/notebook-actions';
 import {saveQueuedNotes} from '../../services/notebook';
 import {removeRunner, addRunner} from '../../store/app/app-actions';
 import {prompt} from '../../services/dialog';
@@ -84,11 +84,11 @@ export const onNoteAdd = (scope: IScope, store: Store, app: Instance) => () => {
   const {notebook} = scope.vm.state.value();
   const {id} = notebook;
   const {note} = store.dispatchAndLog(NoteActions.addNote(id)) as any;
+
+  store.dispatch(setNote(note));
   
   const vm = scope.vm.notes.get(note);
-  vm.fold = false;
   vm.focusName = true;
-  vm.scrollTo = true;
 }
 
 export const onNoteShare = (scope: IScope, store: Store, app: Instance) => (note: INote) => {

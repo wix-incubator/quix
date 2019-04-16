@@ -24,7 +24,10 @@ export function setNotes(scope: IScope, notes: INote[]) {
   scope.vm.state
     .force('Result', !!notes, {notes})
     .set('Content', () => !!notes.length, {notes})
-    .then(() => scope.vm.notes.get(notes[0]).fold = notes.length > 1);
+    .then(() => {
+      const vm = scope.vm.notes.get(notes[0]);
+      vm.fold = vm.fold === null ? notes.length > 1 : vm.fold;
+    });
 }
 
 export function setHasChanges(scope: IScope, hasChanges: boolean) {
@@ -41,12 +44,9 @@ export function setMarkedList(scope: IScope, markedList: INote[]) {
 }
 
 export function setNote(scope: IScope, note: INote) {
-  scope.vm.note = note;
+  scope.vm.state.value({note});
 
   if (note) {
-    const vm = scope.vm.notes.get(note);
-
-    vm.fold = false;
-    vm.scrollTo = true;
+    scope.vm.notes.get(note).fold = false;
   }
 }
