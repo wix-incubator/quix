@@ -13,7 +13,7 @@ import VM from './files-vm';
 import * as Scope from './files-scope';
 import * as Events from './files-events';
 import {findFileById, findFilesByParent} from '../../services/files';
-import {setFile, setError} from '../../store/files/files-actions';
+import {setFile, setFileError} from '../../store/files/files-actions';
 
 export default (app: App, store: Store) => ({
   name: 'base.files:id',
@@ -22,7 +22,8 @@ export default (app: App, store: Store) => ({
   scope: Scope,
   options: {isNew: false},
   controller: async (scope: IScope, params, {syncUrl}) => {
-    const f = findFileById(await cache.files.get(), params.id);
+    const fs = await cache.files.get();
+    const f = params.id && findFileById(fs, params.id);
   
     syncUrl();
 
@@ -32,8 +33,12 @@ export default (app: App, store: Store) => ({
       scope.permissions = permissions;
     }, scope);
 
-    if (params.id && !f) {
-      await store.dispatch(setError({message: 'Folder not found'}));
+    if (!fs) {
+      return;
+    }
+
+    if (!f && params.id) {
+      await store.dispatch(setFileError({id: params.id, message: 'Folder not found'}));
       return;
     }
 

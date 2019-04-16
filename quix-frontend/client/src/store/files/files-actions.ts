@@ -15,6 +15,11 @@ export const setError = (error: any) => ({
   error
 });
 
+export const setFileError = (error: any) => ({
+  type: 'files.view.setFileError',
+  error
+});
+
 export const toggleMark = (file: IFile) => ({
   type: 'files.view.toggleMark',
   file

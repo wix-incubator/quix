@@ -6,6 +6,7 @@ import {IFile, NotebookActionTypes, FileActionTypes, fileReducer, filesReducer, 
 
 export interface IView {
   error: any;
+  fileError: any;
   markedMap: Record<string, IFile>;
   markedList: IFile[];
 }
@@ -43,6 +44,7 @@ export default (app: Instance): IBranch => register => {
 
   const view = (state: IView = {
     error: null,
+    fileError: null,
     markedMap: {},
     markedList: []
   }, action: any): IView => {
@@ -52,6 +54,7 @@ export default (app: Instance): IBranch => register => {
       case 'files.view.unmarkAll':
         return {
           error: null,
+          fileError: null,
           markedMap: {},
           markedList: []
         };
@@ -59,6 +62,11 @@ export default (app: Instance): IBranch => register => {
         return {
           ...state,
           error: action.error
+        };
+      case 'files.view.setFileError':
+        return {
+          ...state,
+          fileError: action.error
         };
       case FileActionTypes.deleteFile:
       case NotebookActionTypes.deleteNotebook:

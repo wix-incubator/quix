@@ -31,7 +31,10 @@ export class Request {
 
         return onSuccess(res, ...args);
       })
-      .catch(e => onError(e.data, ...args))
+      .catch(e => {
+        onError(e.data, ...args);
+        return null;
+      })
       .finally(() => this.shouldHandleResponse(id) && this.clear());
   }
 

@@ -6,6 +6,7 @@ export const permissions = x => x;
 
 export const view = {
   error: (scope, value) => Reactions.setError(scope, value),
+  fileError: (scope, value) => Reactions.setError(scope, value),
   markedMap: (scope, value) => Reactions.setMarkedMap(scope, value),
   markedList: (scope, value) => Reactions.setMarkedList(scope, value),
 };

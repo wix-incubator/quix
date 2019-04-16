@@ -4,11 +4,8 @@ import {IFile, INotebook, createUser, createNotebook, createNotebookWithNote, cr
 const mocks = {
   '/api/user': () => createUser(),
   '/api/events': () =>[200],
-  '/api/files': () => [
-    createMockFolder(),
-    createMockFile(),
-    createMockFile(),
-  ],
+  // '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],
+  '/api/files': () => [createMockFolder(), createMockFile(), createMockFile()],
   '/api/files/404': () => [404, {message: 'Folder not found'}],
   '/api/notebook/404': () => [404, {message: 'Notebook not found'}],
   '/api/notebook/:id': ({id}) => createMockNotebookWithNote({id}),
