@@ -35,8 +35,6 @@ services:
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "Quix"
-    ports:
-      - "3306:3306"
     volumes:
       - "db_volume:/var/lib/mysql/quix"
   presto:
