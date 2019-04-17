@@ -40,7 +40,7 @@ export interface IStateComponentConfig {
     setTitle(getTitle?: (args: {
       appTitle?: string;
       stateName?: string;
-    }) => string): any;
+    }) => string[]): any;
   }): any;
   link: IDirectiveLinkFn;
   onExit?(): any;

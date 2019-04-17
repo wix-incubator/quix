@@ -164,11 +164,11 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
               scope.$on('$destroy', () => cleaner());
             });
           },
-          setTitle(getTitle = () => `${app.getTitle()} - ${headerCase(stateName)}`) {
+          setTitle(getTitle = () => [app.getTitle(), headerCase(stateName)]) {
             document.title = getTitle({
               appTitle: app.getTitle(),
               stateName: headerCase(stateName)
-            });
+            }).join(' · ');
           }
         });
 

@@ -45,7 +45,7 @@ export default (app: App, store: Store) => ({
     await store.dispatch(setFile(f || {} as any));
 
     store.subscribe('files.file.name', name => {
-      setTitle(({stateName}) => `${stateName} - ${name || 'Root'}`);
+      setTitle(({stateName}) => [stateName, name].filter(x => x));
     }, scope);
 
     store.subscribe('files.files', (files) => {
