@@ -14,6 +14,6 @@ export const noteReducer = composeReducers(
   }
 );
 
-export const noteListReducer = composeReducers(
+export const notesReducer = composeReducers(
   createListReducer('note', createReducer('note')) as any
 );
