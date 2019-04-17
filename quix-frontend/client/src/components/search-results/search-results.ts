@@ -26,9 +26,6 @@ export default (app: Instance, store: Store) => () => ({
         .withEvents({
           onNoteClick(note: INote) {
             app.getNavigator().go('base.notebook', {id: note.notebookId, note: note.id});
-          },
-          onClose() {
-            store.dispatch(AppActions.search(null, 'user'));
           }
         });
 
@@ -51,6 +48,8 @@ export default (app: Instance, store: Store) => () => ({
 
         return text && search(text, ++searchId);
       }, scope);
+
+      scope.$on('$destroy', () => store.dispatch(AppActions.search(null, 'user')));
     }
   }
 });

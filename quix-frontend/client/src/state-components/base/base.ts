@@ -1,13 +1,16 @@
-import {inject, initNgScope} from '../../lib/core';
+import template from './base.html';
+
+import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {Instance as App} from '../../lib/app';
 import {IStateComponentConfig} from '../../lib/app/services/plugin-instance';
 import {search} from '../../store/app/app-actions'
+import {openPopup, closePopup} from '../../services/popup';
 
 export default (app: App, store: Store) => ({
   name: 'base',
   abstract: true,
-  template: '<div ui-view class="bi-c-h bi-grow" bi-state-loader></div>',
+  template,
   url: {
     searchText: text => search(text)
   },
@@ -16,43 +19,22 @@ export default (app: App, store: Store) => ({
     syncUrl();
   },
   link: (scope) => {
-    let searchPopup, searchPopupScope, maximizable;
-
     initNgScope(scope)
       .withEvents({
-        onMaximizableLoad(instance) {
-          maximizable = instance;
-          maximizable.toggle();
-        },
-        onMaximizableToggle(maximized: boolean) {
-          if (!maximized && searchPopup) {
-            searchPopup.remove();
-            searchPopupScope.$destroy();
-            searchPopup = null;
-            searchPopupScope = null;
-            maximizable = null;
-          }
+        onTempNoteClick() {
+          openPopup(`<quix-temp-query class="bi-c-h bi-grow"></quix-temp-query>`, scope);
         }
-      })
+      });
 
     store.subscribe('app.searchText', text => {
       if (!text) {
-        return maximizable && maximizable.toggle();
+        closePopup();
+        return;
       }
 
-      if (!searchPopup) {
-        searchPopupScope = scope.$new();
-        searchPopup = inject('$compile')(`
-          <div 
-            class="quix-search-popup bi-c-h bi-fade-in"
-            bi-maximizable="false"
-            on-load="events.onMaximizableLoad(instance)"
-            on-toggle="events.onMaximizableToggle(maximized)"
-          >
-            <quix-search-results class="bi-c-h bi-grow"></quix-search-results>
-          </div>
-        `)(searchPopupScope).appendTo(document.body);
-      }
+      openPopup(`
+        <quix-search-results class="bi-c-h bi-grow"></quix-search-results>
+      `, scope)((_, element) => element.addClass('quix-search-popup'));
     }, scope);
   }
 }) as IStateComponentConfig;

@@ -1,0 +1,16 @@
+<div class="bi-c-h bi-grow bi-s-v--x3">
+  <div class="bi-text--large">Temp query</div>
+
+  <bi-sql-runner
+    class="bi-c-h bi-grow"
+    ng-model="content"
+    ng-change="events.onContentChange()"
+    bsr-options="::{fitContent: true, params: true, focus: true}"
+    runner="runner"
+    on-save="events.onSave()"
+    on-run="events.onRun()"
+    on-runner-load="events.onRunnerInstanceLoad(instance)"
+    on-runner-created="events.onRunnerCreated(runner)"
+    on-runner-destroyed="events.onRunnerDestroyed(runner)"
+  ></bi-sql-runner>
+</div>

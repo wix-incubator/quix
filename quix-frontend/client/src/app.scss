@@ -1,5 +1,6 @@
 @import './lib/ui/assets/css/def/colors.def';
 @import './lib/ui/assets/css/def/defaults.def';
+@import './lib/ui/assets/css/def/icon.def';
 
 quix-breadcrumbs {
   .bi-action {
@@ -36,13 +37,53 @@ quix-breadcrumbs {
   color: $grey--500;
 }
 
-.quix-search-popup[bi-maximizable] {
-  top: 54px !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 0 !important;
-  padding: 0 !important;
-  border-radius: 0 !important;
+.quix-popup {
+  display: none !important;
+
+  &.bm--maximized {
+    display: flex !important;
+  }
+
+  &.quix-search-popup {
+    top: 54px !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+
+    & + .bm-backdrop {
+      display: none !important;
+    }
+
+    .bm-toggle {
+      display: none !important;
+    }
+  }
+}
+
+.quix-temp-note-button {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  display: flex;
+  width: 60px;
+  height: 60px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: $red--300;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 1px 1px 10px $grey--500;
+
+  &:before {
+    @extend %icon;
+
+    content: 'code';
+    font-size: 28px;
+    color: white;
+  }
 }
 
 .bi-section,
