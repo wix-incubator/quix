@@ -16,13 +16,20 @@ const mocks = {
   },
   '/api/db/explore': () => [{
     name: 'catalog',
+    type: 'catalog',
     children: [{
       name: 'schema',
+      type: 'schema',
       children: [{
         name: 'table',
+        type: 'table',
         children: []
       }]
     }]
+  }, {
+    name: 'catalog2',
+    type: 'catalog',
+    children: []
   }],
   '/api/db/explore/:schema/:catalog/:table': () => ({
     children: [{name: 'column', dataType: 'varchar'}]
