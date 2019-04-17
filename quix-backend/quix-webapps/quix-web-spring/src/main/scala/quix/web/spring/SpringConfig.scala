@@ -35,6 +35,9 @@ class AuthConfig extends LazyLogging {
       val cookie = env.getRequiredProperty("auth.cookie")
       val secret = env.getRequiredProperty("auth.secret")
 
+      assert(cookie.nonEmpty, "auth.cookie can't be an empty string")
+      assert(secret.nonEmpty, "auth.secret can't be an empty string")
+
       new JwtUsers(cookie, secret)
     }.onErrorRecoverWith { case NonFatal(e: Exception) =>
       logger.warn("failed to construct secureAuth, falling back to dummy user auth", e)
