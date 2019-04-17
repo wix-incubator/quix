@@ -29,6 +29,7 @@ matrix:
       language: node_js
       node_js:
         - 11
+      cache: npm
       services:
         - mysql
       addons:
@@ -38,7 +39,6 @@ matrix:
           packages:
             - mysql-server
             - mysql-client
-      cache: npm
       before_install:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS quixtest;'
       install:
