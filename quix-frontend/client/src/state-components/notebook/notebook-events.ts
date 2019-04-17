@@ -44,8 +44,8 @@ export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook
 
   toast.showToast({
     text: 'Copied notebook url to clipboard',
-    hideDelay: 3000
-  });
+    type: 'success'
+  }, 3000);
 }
 
 export const onMarkedNotesDelete = (scope: IScope, store: Store, app: Instance) => (notes: INote[]) => {
@@ -98,8 +98,8 @@ export const onNoteShare = (scope: IScope, store: Store, app: Instance) => (note
 
   toast.showToast({
     text: 'Copied note url to clipboard',
-    hideDelay: 3000
-  });
+    type: 'success'
+  }, 3000);
 }
 
 export const onNoteDelete = (scope: IScope, store: Store, app: Instance) => (note: INote) => {

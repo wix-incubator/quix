@@ -3,6 +3,16 @@ import {inject, utils} from '../../core';
 
 import './toast.scss';
 
+enum Icons {
+  success = 'check_circle_outline',
+  error = 'error_outline',
+}
+
+enum IconClass {
+  success = 'bi-success',
+  error = 'bi-danger',
+}
+
 let instances = [];
 let hideTimeout = null;
 
@@ -20,14 +30,19 @@ function createScope(deferred) {
   return scope;
 }
 
-function show(scope, text, okText, cancelText) {
+function show(scope, text, type, okText, cancelText) {
   scope.text = text;
+  scope.type = Icons[type];
   scope.okText = okText;
   scope.cancelText = cancelText;
+  scope.iconClass = IconClass[type];
 
   const toast = angular.element(`
     <div class="bi-toast bi-space-h--x3 bi-fade-in">
-      <span class="bi-toast-text">{{text}}</span>
+      <span class="bi-align bi-s-h">
+        <span class="bi-icon {{::iconClass}}" ng-if="type">{{::type}}</span>
+        <span class="bi-toast-text">{{text}}</span>
+      </span>
 
       <span class="bi-space-h">
         <span class="bi-action bi-label" ng-if="okText" ng-click="ok()">{{::okText}}</span>
@@ -56,15 +71,27 @@ function destroy() {
   instances = [];
 }
 
-export function showToast({text, ok = '', cancel = '', hideDelay = 0}) {
+export function showToast({
+  text,
+  type = null,
+  ok = '',
+  cancel = '',
+  hideDelay = 0
+}: {
+  text: string;
+  type?: 'success' | 'error' | null;
+  ok?: string;
+  cancel?: string;
+  hideDelay?: number;
+}, hideDelayArg = hideDelay) {
   const deferred = ((inject('$q') as ng.IQService)).defer();
   const scope = createScope(deferred);
 
   destroy();
-  show(scope, text, ok, cancel);
+  show(scope, text, type, ok, cancel);
 
-  if (hideDelay) {
-    hideTimeout = inject('$timeout')(destroy, hideDelay);
+  if (hideDelayArg) {
+    hideTimeout = inject('$timeout')(destroy, hideDelayArg);
   }
 
   return deferred.promise.finally(destroy);

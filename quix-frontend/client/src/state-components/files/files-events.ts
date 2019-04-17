@@ -24,8 +24,8 @@ export const onShare = (scope: IScope, store: Store, app: Instance) => (file: IF
 
   toast.showToast({
     text: 'Copied folder url to clipboard',
-    hideDelay: 3000
-  });
+    type: 'success'
+  }, 3000);
 }
 
 export const onMarkedDelete = (scope: IScope, store: Store, app: Instance) => (files: IFile[]) => {
