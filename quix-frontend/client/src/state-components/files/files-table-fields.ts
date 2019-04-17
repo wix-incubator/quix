@@ -18,7 +18,8 @@ export const initTableFields = scope => {
           <i
             class="bi-action bi-icon bi-fade-in"
             ng-if="!vm.marked.map[file.id]"
-            ng-click="$event.stopPropagation(); events.onMarkToggle(file)"
+            ng-click="$event.stopPropagation(); (file.type !== 'folder' && events.onMarkToggle(file))"
+            ng-disabled="::file.type === 'folder'"
           >
             check_box_outline_blank
           </i>

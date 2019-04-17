@@ -18,9 +18,11 @@ quix-breadcrumbs {
     color: $grey--300 !important;
     font-size: 23px;
 
-    &:hover,
-    &.checked {
-      color: $muted !important;
+    &:not([disabled]) {
+      &:hover,
+      &.checked {
+        color: $muted !important;
+      }
     }
   }
 }
