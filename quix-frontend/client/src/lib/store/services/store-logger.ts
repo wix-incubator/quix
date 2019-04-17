@@ -4,7 +4,7 @@ import {toast} from '../../ui';
 const {injector} = srv;
 
 function onError(error) {
-  toast.showToast({text: 'Action failed', cancel: 'close', type: 'success'}, 3000);
+  toast.showToast({text: 'Action failed', cancel: 'close', type: 'error'}, 3000);
   return inject('$q').reject(error);
 }
 

@@ -38,13 +38,13 @@ function show(scope, text, type, okText, cancelText) {
   scope.iconClass = IconClass[type];
 
   const toast = angular.element(`
-    <div class="bi-toast bi-space-h--x3 bi-fade-in">
+    <div class="bi-toast bi-align bi-s-h--x3 bi-fade-in">
       <span class="bi-align bi-s-h">
         <span class="bi-icon {{::iconClass}}" ng-if="type">{{::type}}</span>
         <span class="bi-toast-text">{{text}}</span>
       </span>
 
-      <span class="bi-space-h">
+      <span class="bi-s-h">
         <span class="bi-action bi-label" ng-if="okText" ng-click="ok()">{{::okText}}</span>
         <span class="bi-action bi-label" ng-if="cancelText" ng-click="cancel()">{{::cancelText}}</span>
       </span>
