@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events';
-import {defer} from '../../../../utils/deferred-promise';
+import {defer} from 'utils/deferred-promise';
 // import {IAction} from '../types';
 import {
   EventBusMiddlewareDescriptor,
@@ -7,10 +7,7 @@ import {
   EventBusNextFn,
 } from './types';
 import {MiddlewareApi} from './api';
-import {
-  BaseAction,
-  DefaultAction,
-} from '../../../../../../shared/entities/common/common-types';
+import {BaseAction, DefaultAction} from 'shared/entities/common/common-types';
 
 /**
  * @name EventBus

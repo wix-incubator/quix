@@ -12,6 +12,8 @@ export const createInMemConf = (
     entities,
     logger: 'advanced-console',
     // logging: true,
+    // autoSave: true,
+    // location: './sqlite.db',
   };
 };
 

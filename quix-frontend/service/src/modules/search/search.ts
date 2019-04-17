@@ -3,6 +3,7 @@ import {ISearch, SearchQuery} from './types';
 import {isEmpty} from 'lodash';
 import {DbNote} from '../../entities';
 import {parse, isValidQuery} from './parser';
+import {dbConf} from 'config/db-conf';
 
 export class Search implements ISearch {
   constructor(private repo: Repository<DbNote>) {}
@@ -36,9 +37,7 @@ export class Search implements ISearch {
 
       if (searchQuery.content.length) {
         where.push(
-          `MATCH(note.textContent) AGAINST ('${searchQuery.content
-            .map(searchText => `"${searchText}"`)
-            .join(' ')}' IN BOOLEAN MODE)`,
+          dbConf.fullTextSearch('note.textContent', searchQuery.content),
         );
       }
 

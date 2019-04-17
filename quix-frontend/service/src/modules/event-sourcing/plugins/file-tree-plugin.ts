@@ -2,20 +2,14 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DbNotebook, DbFolder, DbFileTreeNode} from '../../../entities';
 import {Repository} from 'typeorm';
-import {
-  FileActions,
-  FileActionTypes,
-} from '../../../../../shared/entities/file';
-import {
-  NotebookActions,
-  NotebookActionTypes,
-} from '../../../../../shared/entities/notebook';
+import {FileActions, FileActionTypes} from 'shared/entities/file';
+import {NotebookActions, NotebookActionTypes} from 'shared/entities/notebook';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {QuixHookNames} from '../types';
 import {last} from 'lodash';
-import {FileType} from '../../../../../shared/entities/file';
+import {FileType} from 'shared/entities/file';
 import uuid from 'uuid/v4';
-import {FileTreeRepository} from '../../../entities/filenode.repository';
+import {FileTreeRepository} from 'entities/filenode.repository';
 
 @Injectable()
 export class FileTreePlugin implements EventBusPlugin {

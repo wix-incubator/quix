@@ -8,10 +8,7 @@ import {Injectable, Inject} from '@nestjs/common';
 import {QuixHookNames} from './types';
 import {IActionStore, DbActionStore} from './infrastructure/action-store';
 import {NotebookPlugin} from './plugins/notebook-plugin';
-import {
-  DefaultAction,
-  BaseAction,
-} from '../../../../shared/entities/common/common-types';
+import {DefaultAction, BaseAction} from 'shared/entities/common/common-types';
 import {NotePlugin} from './plugins/note-plugin';
 import {FileTreePlugin} from './plugins/file-tree-plugin';
 

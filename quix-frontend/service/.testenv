@@ -1,4 +1,4 @@
-QUIX_ENV=TESTMYSQL
+#QUIX_ENV=TEST
 DB_NAME=quixtest
 DB_USER=root
 DB_HOST=localhost

@@ -2,8 +2,8 @@ import {ColumnType, ColumnOptions} from 'typeorm';
 import {getEnv} from './utils';
 import {QuixEnviorments} from './utils';
 import {FileType} from '../../../shared/entities/file';
-import {text} from 'body-parser';
 
+/* A comptability layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
 interface DbColumnConf {
   json: ColumnOptions;
   tinytext: ColumnOptions;
@@ -15,6 +15,7 @@ interface DbColumnConf {
   fileTypeEnum: ColumnOptions;
   owner: ColumnOptions;
   concat: (s1: string, s2: string) => string;
+  fullTextSearch: (columnName: string, textToLookFor: string[]) => string;
 }
 
 const MySqlConf: DbColumnConf = {
@@ -47,6 +48,11 @@ const MySqlConf: DbColumnConf = {
   },
   owner: {nullable: false, type: 'varchar', width: 255},
   concat: (s1, s2) => `CONCAT(${s1}, ${s2})`,
+  fullTextSearch(columnName, textToLookFor) {
+    return `MATCH(${columnName}) AGAINST ('${textToLookFor
+      .map(searchText => `"${searchText}"`)
+      .join(' ')}' IN BOOLEAN MODE)`;
+  },
 };
 
 const SqliteConf: DbColumnConf = {
@@ -54,19 +60,26 @@ const SqliteConf: DbColumnConf = {
   tinytext: {type: 'varchar', width: 255},
   noteContent: {type: 'text', nullable: true},
   dateUpdated: {
-    type: 'numeric',
-    default: () => 'CURRENT_TIMESTAMP',
-    onUpdate: 'CURRENT_TIMESTAMP',
+    type: 'integer',
+    default: () => `strftime('%s', 'now')`,
+    transformer: {
+      from: (d: number) => d,
+      to: () => Date.now() /* on update not supported by sqlite */,
+    },
   },
   dateCreated: {
-    type: 'numeric',
-    default: () => 'CURRENT_TIMESTAMP',
+    type: 'integer',
+    default: () => `strftime('%s', 'now')`,
+    transformer: {
+      from: (d: number) => d,
+      to: () => undefined,
+    },
   },
   eventsTimestamp: {
-    type: 'numeric',
-    default: () => 'CURRENT_TIMESTAMP',
+    type: 'integer',
+    default: () => `strftime('%s', 'now')`,
     transformer: {
-      from: (d: number) => new Date(d),
+      from: (d: number) => d,
       to: (d?: Date) => d && d.valueOf(),
     },
   },
@@ -74,6 +87,11 @@ const SqliteConf: DbColumnConf = {
   fileTypeEnum: {type: 'varchar', width: 32, default: FileType.folder},
   owner: {nullable: false, type: 'varchar', width: 255},
   concat: (s1, s2) => `(${s1} || ${s2})`,
+  fullTextSearch(columnName, textToLookFor) {
+    return textToLookFor
+      .map(term => `${columnName} LIKE '%${term}%'`)
+      .join(' AND ');
+  },
 };
 
 export const dbConf = [

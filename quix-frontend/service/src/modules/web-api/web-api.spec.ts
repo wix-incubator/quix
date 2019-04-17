@@ -7,22 +7,23 @@ import {
 import {Connection, Repository} from 'typeorm';
 import uuid from 'uuid/v4';
 import {FileType} from '../../../../shared/entities/file';
-import {ConfigModule} from '../../config/config.module';
-import {ConfigService} from '../../config/config.service';
+import {ConfigService, ConfigModule} from 'config';
+
 import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from '../../entities';
 import {FileTreeRepository} from '../../entities/filenode.repository';
-import {MySqlAction} from '../event-sourcing/infrastructure/action-store/entities/mysql-action';
+import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action';
 import {FoldersService} from './folders/folders.service';
 import {NotebookController} from './notebooks/notebooks.controller';
 import {NotebookService} from './notebooks/notebooks.service';
 jest.setTimeout(60000);
 
+// TODO: write a driver for this test
 describe('web-api module', () => {
   let module: TestingModule;
   let noteRepo: Repository<DbNote>;
   let notebookRepo: Repository<DbNotebook>;
   let folderRepo: Repository<DbFolder>;
-  let eventsRepo: Repository<MySqlAction>;
+  let eventsRepo: Repository<DbAction>;
   let fileTreeRepo: FileTreeRepository;
   let folderService: FoldersService;
   let notebookService: NotebookService;
@@ -60,7 +61,7 @@ describe('web-api module', () => {
               DbFolder,
               DbNote,
               DbNotebook,
-              MySqlAction,
+              DbAction,
             ]),
           inject: [ConfigService],
         }),
@@ -69,7 +70,7 @@ describe('web-api module', () => {
           DbFolder,
           DbNote,
           DbNotebook,
-          MySqlAction,
+          DbAction,
           FileTreeRepository,
         ]),
       ],
@@ -81,9 +82,7 @@ describe('web-api module', () => {
       getRepositoryToken(DbNotebook),
     );
     noteRepo = module.get<Repository<DbNote>>(getRepositoryToken(DbNote));
-    eventsRepo = module.get<Repository<MySqlAction>>(
-      getRepositoryToken(MySqlAction),
-    );
+    eventsRepo = module.get<Repository<DbAction>>(getRepositoryToken(DbAction));
     fileTreeRepo = module.get<FileTreeRepository>(FileTreeRepository);
     folderRepo = module.get<Repository<DbFolder>>(getRepositoryToken(DbFolder));
     folderService = module.get(FoldersService);

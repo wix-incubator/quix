@@ -1,11 +1,10 @@
 import {EventBusBuilder} from './event-bus-builder';
-import {EventBus} from './event-bus';
 import {
   EventBusPluginFn,
   EventBusMiddleware as Middleware,
   HookFn,
 } from './types';
-import {Dictionary} from '../../../../types';
+import {Dictionary} from 'global-types';
 import {Context} from './context';
 
 describe('event bus', () => {

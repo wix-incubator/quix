@@ -3,12 +3,11 @@ import {AppController} from './app.controller';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {SearchModule} from './modules/search/search.module';
 import {AuthModule} from './modules/auth/auth.module';
-import {ConfigModule} from './config/config.module';
 import {EventSourcingModule} from './modules/event-sourcing/event-sourcing.module';
 import {WebApiModule} from './modules/web-api/web-api.module';
-import {ConfigService} from './config/config.service';
+import {ConfigService, ConfigModule} from './config';
 import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from './entities';
-import {MySqlAction} from './modules/event-sourcing/infrastructure/action-store/entities/mysql-action';
+import {DbAction} from './modules/event-sourcing/infrastructure/action-store/entities/db-action';
 import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
 
 @Module({
@@ -21,7 +20,7 @@ import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
           DbFolder,
           DbNote,
           DbNotebook,
-          MySqlAction,
+          DbAction,
         ]),
       inject: [ConfigService],
     }),

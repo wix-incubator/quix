@@ -78,6 +78,17 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^shared/(.*)": "<rootDir>/../../shared/$1",
+      "^shared": "<rootDir>/../../shared",
+      "^entities/(.*)": "<rootDir>/entities/$1",
+      "^entities": "<rootDir>/entities",
+      "^modules/(.*)$": "<rootDir>/modules/$1",
+      "^config/(.*)": "<rootDir>/config/$1",
+      "^config": "<rootDir>/config",
+      "^global-types": "<rootDir>/types",
+      "^utils/(.*)": "<rootDir>/utils/$1"
+    }
   }
 }
