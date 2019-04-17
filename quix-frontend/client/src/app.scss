@@ -65,6 +65,19 @@ quix-breadcrumbs {
 }
 
 bi-tbl.bi-table--nav {
+  td {
+    [contenteditable="false"] {
+      padding: 0 !important;
+      border: 0 !important;
+    }
+
+    [contenteditable="true"] {
+      position: relative;
+      top: 3px;
+      padding-top: 0 !important;
+    }
+  }
+
   .mark-column {
     width: 42px;
     padding: 0;

@@ -51,7 +51,8 @@ export const onFolderAdd = (scope: IScope, store: Store, app: Instance) => () =>
   const {file} = scope.vm.state.value();
   const {id, name, path} = file || {id: null, name: null, path: null};
 
-  addFolder(store, app, id ? [...path, {id, name}] : []);
+  const {file: folder} = addFolder(store, app, id ? [...path, {id, name}] : []) as any;
+  scope.vm.files.get(folder).isNew = true;
 };
 
 export const onNotebookAdd = (scope: IScope, store: Store, app: Instance) => () => {

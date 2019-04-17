@@ -14,7 +14,7 @@ export const createReducer = <T extends {id: string; dateUpdated?: number}, A ex
 
   switch (action.type) {
     case `${entityName}.create`: {
-      if (action[entityName]) {
+      if (!state && action[entityName]) {
         const owner = action.user ? {owner: action.user} : {};
         return {...entityTransformer(action[entityName]), ...owner};
       }

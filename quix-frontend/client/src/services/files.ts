@@ -6,17 +6,13 @@ import {find, last} from 'lodash';
 export const addFolder = (store: Store, app: Instance, path: IFilePathItem[] = [], props: Partial<IFile> = {}) => {
   const folder = createFolder(path, {...props, owner: app.getUser().getEmail()});
 
-  store.dispatchAndLog(FileActions.createFile(folder.id, folder))
-    .then(() => app.getNavigator().go('base.files', {
-      id: folder.id,
-      isNew: true
-  }));
+  return store.dispatchAndLog(FileActions.createFile(folder.id, folder));
 }
 
 export const deleteFolder = (store: Store, app: Instance, file: IFile) => {
   const {id, path} = file;
 
-  store.dispatchAndLog(FileActions.deleteFile(id))
+  return store.dispatchAndLog(FileActions.deleteFile(id))
     .then(() => app.getNavigator().go('base.files', {
       id: path.length ? last<any>(path).id : null,
       isNew: false
