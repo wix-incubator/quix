@@ -2,7 +2,7 @@ import {values} from 'lodash';
 import {combineReducers} from 'redux';
 import {IBranch} from '../../lib/store';
 import {Instance} from '../../lib/app';
-import {INotebook, INote, composeReducers, notebookReducer, noteListReducer, NoteActionTypes, NotebookActionTypes} from '../../../../shared';
+import {INotebook, INote, composeReducers, clientNotebookReducer, noteListReducer, NoteActionTypes, NotebookActionTypes} from '../../../../shared';
 
 export interface IQueue {
   notes: Record<string, INote>;
@@ -22,7 +22,7 @@ export interface IPermissions {
 
 export default (app: Instance): IBranch => register => {
   const notebook = composeReducers(
-    notebookReducer,
+    clientNotebookReducer,
     (state: INotebook = null, action: any) => {
       switch (action.type) {
         case 'notebook.set':
@@ -38,7 +38,6 @@ export default (app: Instance): IBranch => register => {
     noteListReducer,
     (state: INote[] = [], action: any) => {
       switch (action.type) {
-        case NotebookActionTypes.createNotebook:
         case 'notebook.set':
           return action.notebook ? action.notebook.notes : [];
         default:
@@ -71,7 +70,6 @@ export default (app: Instance): IBranch => register => {
     note: null
   }, action: any): IView => {
     switch (action.type) {
-      case NotebookActionTypes.createNotebook:
       case 'notebook.set':
         return {
           error: null,
