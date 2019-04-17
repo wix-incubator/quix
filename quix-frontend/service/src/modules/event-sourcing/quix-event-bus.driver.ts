@@ -39,9 +39,10 @@ export class QuixEventBusDriver {
     public fileTreeRepo: Repository<DbFileTreeNode>,
     private conn: Connection,
     private configService: ConfigService,
+    private defaultUser: string,
   ) {}
 
-  static async create() {
+  static async create(defaultUser: string) {
     let eventBus: QuixEventBus;
     let module: TestingModule;
     let notebookRepo: Repository<DbNotebook>;
@@ -99,6 +100,7 @@ export class QuixEventBusDriver {
       fileTreeRepo,
       conn,
       configService,
+      defaultUser,
     );
   }
 
@@ -120,7 +122,7 @@ export class QuixEventBusDriver {
     );
   }
 
-  createNotebookAction(user = 'default', path: IFilePathItem[] = []) {
+  createNotebookAction(path: IFilePathItem[] = [], user = this.defaultUser) {
     const id = uuid.v4();
     const action = {
       ...NotebookActions.createNotebook(id, createNotebook(path, {id})),
@@ -129,7 +131,11 @@ export class QuixEventBusDriver {
     return [id, action] as const;
   }
 
-  createFolderAction(name: string, path: IFilePathItem[], user = 'default') {
+  createFolderAction(
+    name: string,
+    path: IFilePathItem[],
+    user = this.defaultUser,
+  ) {
     const id = uuid.v4();
     const action = {
       ...FileActions.createFile(id, {
@@ -213,7 +219,7 @@ export class QuixEventBusDriver {
     return this.notebookRepo.delete({});
   }
 
-  emitAsUser(eventBus: QuixEventBus, actions: any[], user = 'default') {
+  emitAsUser(eventBus: QuixEventBus, actions: any[], user = this.defaultUser) {
     return eventBus.emit(actions.map(a => Object.assign(a, {user})));
   }
 
