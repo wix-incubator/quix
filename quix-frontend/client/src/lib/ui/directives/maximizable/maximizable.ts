@@ -1,4 +1,4 @@
-import {initNgScope, inject} from '../../../core';
+import {initNgScope, inject, utils} from '../../../core';
 
 import './maximizable.scss';
 
@@ -36,6 +36,8 @@ export default () => {
           <i class="bi-action bi-icon" ng-if="vm.enabled">fullscreen_exit</i>
         </span>
       `)(scope));
+
+      utils.dom.onKey('escape', () => scope.actions.toggle(), scope);
 
       scope.onLoad({
         instance: {
