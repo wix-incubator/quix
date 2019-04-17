@@ -39,7 +39,7 @@ export class DbFileTreeNode {
   @Column(dbConf.fileTypeEnum)
   type!: FileType;
 
-  @ManyToOne(type => DbFileTreeNode)
+  @ManyToOne(type => DbFileTreeNode, {onDelete: 'CASCADE'})
   @JoinColumn()
   parent?: DbFileTreeNode;
 

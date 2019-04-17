@@ -15,6 +15,7 @@ import {MySqlAction} from '../event-sourcing/infrastructure/action-store/entitie
 import {FoldersService} from './folders/folders.service';
 import {NotebookController} from './notebooks/notebooks.controller';
 import {NotebookService} from './notebooks/notebooks.service';
+jest.setTimeout(60000);
 
 describe('web-api module', () => {
   let module: TestingModule;
@@ -28,13 +29,12 @@ describe('web-api module', () => {
   let configService: ConfigService;
   let conn: Connection;
   const defaultUser = 'foo@wix.com';
-  // let eventBus: QuixEventBus;
 
   async function clearDb() {
     const dbType = configService.getDbType();
     await conn.query(
       dbType === 'mysql'
-        ? 'SET FOREIGN_KEY_CHECKS = 0'
+        ? 'SET FOREIGN_KEY_CHECKS=0'
         : 'PRAGMA foreign_keys = OFF',
     );
     await eventsRepo.delete({});
@@ -44,7 +44,7 @@ describe('web-api module', () => {
     await fileTreeRepo.clear();
     await conn.query(
       dbType === 'mysql'
-        ? 'SET FOREIGN_KEY_CHECKS = 1'
+        ? 'SET FOREIGN_KEY_CHECKS=1'
         : 'PRAGMA foreign_keys = ON',
     );
   }
@@ -77,7 +77,6 @@ describe('web-api module', () => {
       exports: [],
     }).compile();
 
-    // eventBus = module.get(QuixEventBus);
     notebookRepo = module.get<Repository<DbNotebook>>(
       getRepositoryToken(DbNotebook),
     );
@@ -93,22 +92,12 @@ describe('web-api module', () => {
     configService = module.get(ConfigService);
   });
 
-  beforeEach(() => clearDb());
+  beforeEach(async () => await clearDb());
   afterAll(() => module.close());
 
   describe('foldersService', () => {
-    describe('getRawList', () => {
-      it('get a list with only one folder', async () => {
-        const folderNode = createFolderNode(defaultUser, 'folderName');
-        await fileTreeRepo.save(folderNode);
-
-        const list = await folderService.getRawList(defaultUser);
-        expect(list![0].folder).toMatchObject(
-          expect.objectContaining({name: 'folderName', owner: defaultUser}),
-        );
-      });
-
-      it('get a list with notebooks inside a folder', async () => {
+    describe('getPathList', () => {
+      it('get a path list with notebooks inside a folder', async () => {
         const notebookName = 'some new notebook';
         const [notebookNode, notebook] = createNotebookNode(
           defaultUser,
@@ -120,52 +109,89 @@ describe('web-api module', () => {
 
         await notebookRepo.save(notebook);
         await fileTreeRepo.save(notebookNode);
+        const list = await folderService.getFilesForUser(defaultUser);
 
-        const list = await folderService.getRawList(defaultUser);
-
-        expect(
-          list!.find(n => n.parentId === folderNode.id)!.notebook!.name,
-        ).toBe(notebookName);
+        expect(list!.find(i => i.id === notebook.id)!).toMatchObject({
+          id: notebook.id,
+          name: notebookName,
+          path: [{name: 'folderName'}],
+        });
       });
 
-      describe('getPathList', () => {
-        it('get a path list with notebooks inside a folder', async () => {
-          const notebookName = 'some new notebook';
-          const [notebookNode, notebook] = createNotebookNode(
-            defaultUser,
-            notebookName,
-          );
-          const folderNode = createFolderNode(defaultUser, 'folderName');
-          await fileTreeRepo.save(folderNode);
-          notebookNode.parent = folderNode;
+      it('get a path list, multiple items in root', async () => {
+        const notebookName = 'some new notebook';
+        const [notebookNode, notebook] = createNotebookNode(
+          defaultUser,
+          notebookName,
+        );
+        const folderNode = createFolderNode(defaultUser, 'folderName');
 
-          await notebookRepo.save(notebook);
-          await fileTreeRepo.save(notebookNode);
+        await fileTreeRepo.save(folderNode);
+        await notebookRepo.save(notebook);
+        await fileTreeRepo.save(notebookNode);
 
-          const list = await folderService.getPathList(defaultUser);
+        const list = await folderService.getFilesForUser(defaultUser);
+        expect(list).toHaveLength(2);
+      });
 
-          expect(list!.find(i => i.id === notebook.id)!).toMatchObject({
-            id: notebook.id,
-            name: notebookName,
-            path: [{name: 'folderName'}],
-          });
-        });
+      it('get a path list, starting from a specific folder', async () => {
+        const notebookName = 'some new notebook';
+        const [notebookNode, notebook] = createNotebookNode(
+          defaultUser,
+          notebookName,
+        );
+        const parentFolderNode = createFolderNode(defaultUser, 'folderName');
+        const subFolderNode = createFolderNode(defaultUser, 'folderName2');
+        const subsubFolderNode = createFolderNode(defaultUser, 'folderName3');
 
-        it('get a path list, multiple items in root', async () => {
-          const notebookName = 'some new notebook';
-          const [notebookNode, notebook] = createNotebookNode(
-            defaultUser,
-            notebookName,
-          );
-          const folderNode = createFolderNode(defaultUser, 'folderName');
+        subFolderNode.parent = parentFolderNode;
+        subsubFolderNode.parent = subFolderNode;
 
-          await fileTreeRepo.save(folderNode);
-          await notebookRepo.save(notebook);
-          await fileTreeRepo.save(notebookNode);
+        await fileTreeRepo.save(parentFolderNode);
+        await fileTreeRepo.save(subFolderNode);
+        await fileTreeRepo.save(subsubFolderNode);
 
-          const list = await folderService.getPathList(defaultUser);
-          expect(list).toHaveLength(2);
-        });
+        await notebookRepo.save(notebook);
+        notebookNode.parent = subsubFolderNode;
+        await fileTreeRepo.save(notebookNode);
+
+        const folder = await folderService.getFolder(subFolderNode.id);
+        const expected = {
+          id: subFolderNode.id,
+          name: 'folderName2',
+          path: [
+            {
+              name: 'folderName',
+              id: parentFolderNode.id,
+            },
+          ],
+          dateCreated: expect.any(Number),
+          dateUpdated: expect.any(Number),
+          owner: defaultUser,
+          type: FileType.folder,
+          files: [
+            {
+              id: subsubFolderNode.id,
+              dateCreated: expect.any(Number),
+              dateUpdated: expect.any(Number),
+              type: FileType.folder,
+              name: 'folderName3',
+              owner: defaultUser,
+              path: [
+                {
+                  name: 'folderName',
+                  id: parentFolderNode.id,
+                },
+                {
+                  id: subFolderNode.id,
+                  name: 'folderName2',
+                },
+              ],
+            },
+          ],
+        };
+
+        expect(folder).toMatchObject(expected);
       });
     });
   });

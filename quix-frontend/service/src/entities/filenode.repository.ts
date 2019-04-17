@@ -11,24 +11,15 @@ import {DbFileTreeNode} from './filenode.entity';
 export class FileTreeRepository extends Repository<DbFileTreeNode> {
   save(
     entities: DeepPartial<DbFileTreeNode>[],
-    options: SaveOptions & {
+    options?: SaveOptions & {
       reload: false;
     },
   ): Promise<DbFileTreeNode[]>;
   save(
-    entities: DeepPartial<DbFileTreeNode>[],
-    options?: SaveOptions,
-  ): Promise<DbFileTreeNode[]>;
-
-  save(
     entity: DeepPartial<DbFileTreeNode>,
-    options: SaveOptions & {
+    options?: SaveOptions & {
       reload: false;
     },
-  ): Promise<DbFileTreeNode>;
-  save(
-    entity: DeepPartial<DbFileTreeNode>,
-    options?: SaveOptions,
   ): Promise<DbFileTreeNode>;
   async save(
     itemOrItems: DeepPartial<DbFileTreeNode> | DeepPartial<DbFileTreeNode>[],
@@ -78,6 +69,37 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
       .leftJoin('node.notebook', 'notebook')
       .leftJoin('node.folder', 'folder')
       .where('node.id IN (:...ids)', {ids})
+      .getMany();
+  }
+
+  /**
+   * Get a list of tree items for a specific user, not orderd in any order, not nested, just a plain list.
+   * @returns {Promise<DbFileTreeNode[]>}
+   */
+  getNamesByUser(user: string) {
+    return this.createQueryBuilder('node')
+      .select([
+        'node.id',
+        'node.type',
+        'node.parentId',
+        'notebook.name',
+        'folder.name',
+      ])
+      .leftJoin('node.notebook', 'notebook')
+      .leftJoin('node.folder', 'folder')
+      .where('node.owner = :user', {user})
+      .getMany();
+  }
+
+  /**
+   * Get a list of first level children
+   * @returns {Promise<DbFileTreeNode[]>}
+   */
+  async getChildren(rootId: string) {
+    return this.createQueryBuilder('node')
+      .leftJoinAndSelect('node.notebook', 'notebook')
+      .leftJoinAndSelect('node.folder', 'folder')
+      .where('node.parentId = :rootId', {rootId})
       .getMany();
   }
 }
