@@ -1,5 +1,5 @@
 import {mapValues, last} from 'lodash';
-import {paramCase, camelCase} from 'change-case';
+import {paramCase, camelCase, headerCase} from 'change-case';
 import {srv, inject} from '../../core';
 import {IBranches} from '../../../lib/store/services/store';
 import {createStore, Store} from '../../../lib/store';
@@ -121,13 +121,14 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
       store.dispatch(actions);
     }
 
-    const [stateName, paramName] = config.name.split(':');
+    const [fullStateName, paramName] = config.name.split(':');
+    const stateName = last(fullStateName.split('.'));
     const componentName = `${app.getId()}-${paramCase(stateName)}`;
 
     this.state({
-      name: stateName,
+      name: fullStateName,
       abstract: config.abstract || false,
-      url: config.abstract ? '' : `/${last(stateName.split('.'))}${paramName ? `/:${paramName}` : ''}?${Object.keys(config.url)}`,
+      url: config.abstract ? '' : `/${stateName}${paramName ? `/:${paramName}` : ''}?${Object.keys(config.url)}`,
       reloadOnSearch: false,
       template: `
         <${componentName}
@@ -140,7 +141,7 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
       onExit: config.onExit,
       controller: ['$scope', '$stateParams', 'user', (scope, params) => {
         config.controller(scope, params, {
-          syncUrl: (getArgs = () => []) => {
+          syncUrl(getArgs = () => []) {
             let {url} = config;
 
             url = mapValues(url, (listener: IUrlParamListener, param) => {
@@ -161,6 +162,12 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
             inject('$timeout')(() => {
               const cleaner = scope.$on('$locationChangeSuccess', () => fromUrl(url, inject('$location').search()));
               scope.$on('$destroy', () => cleaner());
+            });
+          },
+          setTitle(getTitle = () => `${app.getTitle()} - ${headerCase(stateName)}`) {
+            document.title = getTitle({
+              appTitle: app.getTitle(),
+              stateName: headerCase(stateName)
             });
           }
         });

@@ -21,7 +21,7 @@ export default (app: App, store: Store) => ({
   url: {},
   scope: Scope,
   options: {isNew: false},
-  controller: async (scope: IScope, params, {syncUrl}) => {
+  controller: async (scope: IScope, params, {syncUrl, setTitle}) => {
     const fs = await cache.files.get();
     const f = params.id && findFileById(fs, params.id);
   
@@ -31,6 +31,10 @@ export default (app: App, store: Store) => ({
       scope.file = file;
       scope.view = view;
       scope.permissions = permissions;
+
+      if (file) {
+        setTitle(({stateName}) => `${stateName} - ${file.name || 'Root'}`);
+      }
     }, scope);
 
     if (!fs) {
@@ -43,6 +47,10 @@ export default (app: App, store: Store) => ({
     }
 
     await store.dispatch(setFile(f || {} as any));
+
+    store.subscribe('files.file.name', name => {
+      setTitle(({stateName}) => `${stateName} - ${name}`);
+    }, scope);
 
     store.subscribe('files.files', (files) => {
       if (!files) {

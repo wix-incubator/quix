@@ -35,7 +35,13 @@ export interface IStateComponentConfig {
   template: string;
   scope: IScopeListeners;
   options?: Record<string, any>,
-  controller(scope: any, params: {[key: string]: any}, api: {syncUrl(getArgs?: () => any): any}): any;
+  controller(scope: any, params: {[key: string]: any}, api: {
+    syncUrl(getArgs?: () => any): any;
+    setTitle(getTitle?: (args: {
+      appTitle?: string;
+      stateName?: string;
+    }) => string): any;
+  }): any;
   link: IDirectiveLinkFn;
   onExit?(): any;
 }
