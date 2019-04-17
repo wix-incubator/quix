@@ -53,21 +53,12 @@ describe('Files ::', () => {
     expect(await driver.url.matches(`/notebook/${notebook.id}`)).to.be.true;
   });
 
-  it('should create a folder and navigate to it', async () => {
+  it('should create a folder and add it to the list', async () => {
+    await driver.mock.http('/api/files', []);
     await driver.goto('/files/');
     await testkit.clickAddFolder();
 
-    expect(await driver.url.matches('/files/:id')).to.be.true;
-  });
-
-  it('should focus the newly created folder name', async () => {
-    await driver.goto('/files/');
-    await testkit.clickAddFolder();
-
-    const breadcrumbsTestkit = await testkit.getBreadcrumbsTestkit();
-
-    expect(await breadcrumbsTestkit.numOfFiles()).to.equal(2);
-    expect(await breadcrumbsTestkit.isFileNameFocused()).to.be.true;
+    expect(await testkit.numOfFiles()).to.equal(1);
   });
 
   it('should create a notebook and navigate to it', async () => {
@@ -87,9 +78,9 @@ describe('Files ::', () => {
     expect(await breadcrumbsTestkit.isFileNameFocused()).to.be.true;
   });
 
-  it('should navigate to the root after creating a folder and clicking the root folder', async () => {
+  it('should navigate to the root after navigating to a folder and clicking the root folder', async () => {
     await driver.goto('/files/');
-    await testkit.clickAddFolder();
+    await testkit.clickFile(1);
 
     expect(await driver.url.matches('/files/:id')).to.be.true;
 
