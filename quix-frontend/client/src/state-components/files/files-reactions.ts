@@ -6,7 +6,7 @@ export function setFolder(scope: IScope, folder: IFolder) {
   scope.vm.state
     .set('Result', !!folder, {folder})
     .then(() => {
-      if (folder.id && scope.vm.breadcrumbs.length === 1) {
+      if (scope.vm.breadcrumbs.length === 1) {
         scope.vm.breadcrumbs = [...folder.path, {id: folder.id, name: folder.name}];
       }
     })
