@@ -1,4 +1,4 @@
-import {Controller, Get, Query} from '@nestjs/common';
+import {Controller, Get, Param} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Search} from './search';
 import {Repository} from 'typeorm';
@@ -15,8 +15,8 @@ export class SearchController {
     this.searchService = new Search(this.noteRepository);
   }
 
-  @Get()
-  doSearch(@Query('query') query: string) {
+  @Get('/:term')
+  doSearch(@Param('term') query: string) {
     return this.searchService.search(query);
   }
 }

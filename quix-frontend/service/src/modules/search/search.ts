@@ -10,7 +10,7 @@ enum SearchTypes {
 }
 
 interface SearchQuery {
-  content?: FindOperator<string>;
+  content?: string;
   owner?: string;
   type?: string;
   name?: string;
@@ -59,10 +59,7 @@ export class Search implements ISearch {
     }
 
     if (freeText) {
-      // this solution prevent from searching % key by itself
-      // but '%pref' for example, indeed works.
-      const queryString = Like(`\%${freeText}\%`);
-      returnedObj.content = queryString;
+      returnedObj.content = freeText;
     }
 
     return returnedObj;
@@ -115,15 +112,15 @@ export class Search implements ISearch {
       const whereArgs: any = {};
       if (searchObject.owner) {
         where.push('note.owner = :owner');
-        whereArgs.owner = {owner: searchObject.owner};
+        whereArgs.owner = searchObject.owner;
       }
       if (searchObject.type) {
         where.push('note.type = :type');
-        whereArgs.type = {type: searchObject.type};
+        whereArgs.type = searchObject.type;
       }
       if (searchObject.name) {
         where.push('note.name = :name');
-        whereArgs.name = {name: searchObject.name};
+        whereArgs.name = searchObject.name;
       }
       if (searchObject.content) {
         where.push(

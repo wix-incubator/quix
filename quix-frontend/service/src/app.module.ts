@@ -30,6 +30,7 @@ import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
     EventSourcingModule,
     WebApiModule,
     ProxyDbApiBackend,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [],
