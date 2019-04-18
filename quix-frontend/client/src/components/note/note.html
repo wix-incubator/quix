@@ -59,7 +59,7 @@
     </div>
   </div>
 
-  <div class="bi-panel-content bi-c-h bi-fade-in" ng-if="!bf.fold" bi-maximizable>
+  <div class="bi-panel-content bi-c-h bi-fade-in" ng-if="!bf.fold" bi-maximizable on-toggle="events.onMaximizeToggle()">
     <bi-sql-runner
       class="bi-c-h bi-grow"
       ng-model="note.content"
@@ -68,6 +68,7 @@
       runner="runner"
       on-save="events.onSave()"
       on-run="events.onRun()"
+      on-editor-load="events.onEditorInstanceLoad(instance)"
       on-runner-load="events.onRunnerInstanceLoad(instance)"
       on-runner-created="events.onRunnerCreated(runner)"
       on-runner-destroyed="events.onRunnerDestroyed(runner)"

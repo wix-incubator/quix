@@ -61,6 +61,12 @@ export default class CodeEditorInstance extends srv.eventEmitter.EventEmitter {
     return this;
   }
 
+  focus(): CodeEditorInstance {
+    this.editor.focus();
+
+    return this;
+  }
+
   getValue() {
     return this.editor.getValue();
   }

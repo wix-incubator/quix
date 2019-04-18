@@ -5,3 +5,4 @@ export {default as quixFilesSidebar} from './files-sidebar/files-sidebar';
 export {default as quixDbSidebar} from './db-sidebar/db-sidebar';
 export {default as quixSearchResults} from './search-results/search-results';
 export {default as quixActions} from './actions/actions';
+export {default as quixTempQuery} from './temp-query/temp-query';

@@ -2,7 +2,7 @@ import {values} from 'lodash';
 import {combineReducers} from 'redux';
 import {IBranch} from '../../lib/store';
 import {Instance} from '../../lib/app';
-import {IFile, NotebookActionTypes, FileActionTypes, fileReducer, filesReducer, composeReducers} from '../../../../shared';
+import {IFile, NotebookActionTypes, FileActionTypes, clientFileReducer, clientFileListReducer, composeReducers} from '../../../../shared';
 
 export interface IView {
   error: any;
@@ -17,7 +17,7 @@ export interface IPermissions {
 
 export default (app: Instance): IBranch => register => {
   const files = composeReducers(
-    filesReducer,
+    clientFileListReducer,
     (state: IFile[] = null, action: any) => {
       switch (action.type) {
         case 'files.set':
@@ -30,7 +30,7 @@ export default (app: Instance): IBranch => register => {
   );
 
   const file = composeReducers(
-    fileReducer,
+    clientFileReducer,
     (state: IFile = null, action: any) => {
       switch (action.type) {
         case 'file.set':
@@ -49,7 +49,6 @@ export default (app: Instance): IBranch => register => {
     markedList: []
   }, action: any): IView => {
     switch (action.type) {
-      case FileActionTypes.createFile:
       case 'file.set':
       case 'files.view.unmarkAll':
         return {
@@ -86,7 +85,6 @@ export default (app: Instance): IBranch => register => {
     edit: false
   }, action: any) => {
     switch (action.type) {
-      case FileActionTypes.createFile:
       case 'file.set':
         return action.file && action.file.id ? {
           edit: app.getUser().getEmail() === action.file.owner

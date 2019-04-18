@@ -27,7 +27,7 @@ export const NotebookActions = {
   }),
 
   toggleIsLiked: (id: string, isLiked: boolean) => ({
-    type: 'notebook.update.isLiked' as const,
+    type: 'notebook.toggleIsLiked' as const,
     id,
     isLiked
   }),

@@ -4,6 +4,7 @@ import RunnerEvents from './runner-events';
 import RunnerState from './runner-state';
 import RunnerQuery from './runner-query';
 import {RunnerType} from '../typings/runner-types';
+import { config } from '../config';
 
 function initSocket(socket: RunnerSocket, events: RunnerEvents, transformers, scope, log: boolean = false) {
   events.getRegisteredEvents().forEach(event => {
@@ -300,6 +301,18 @@ export class Runner extends srv.eventEmitter.EventEmitter {
   }
 }
 
-export default function create(type: RunnerType, scope, {mode = 'stream', version = null, baseUrl} = {mode: 'stream', version: null, baseUrl: undefined}) {
+export default function create(type: RunnerType, scope, {
+  mode = 'stream',
+  version = null,
+  baseUrl = config.get().prestoUrl
+} = {
+    mode: 'stream',
+    version: null,
+    baseUrl: config.get().prestoUrl
+}) {
+  if (!baseUrl) {
+    throw new Error('Missing base url definition');
+  }
+
   return new Runner(type, scope, {mode, version, baseUrl});
 }

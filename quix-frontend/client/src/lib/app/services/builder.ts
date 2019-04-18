@@ -1,5 +1,5 @@
 import {mapValues, last} from 'lodash';
-import {paramCase, camelCase} from 'change-case';
+import {paramCase, camelCase, headerCase} from 'change-case';
 import {srv, inject} from '../../core';
 import {IBranches} from '../../../lib/store/services/store';
 import {createStore, Store} from '../../../lib/store';
@@ -9,7 +9,7 @@ import PluginInstance, {IPluginComponent, IStateFactory, IPluginBranches, IState
 import {initScopeListeners} from '../utils/scope-utils';
 import {User} from './user';
 
-export type PluginFactory = (app: PluginInstance) => any;
+export type PluginFactory<Config> = (app: PluginInstance<Config>) => any;
 
 const userActionToUrlParam = {};
 const urlMiddleware = str => next => action => {
@@ -32,17 +32,15 @@ const urlMiddleware = str => next => action => {
  *  - register application plugins
  *  - register application states
  *  - register menu items
- *  - register a BI logger
  */
-export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter {
-  private readonly plugins: {[key: string]: PluginInstance} = {};
+export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
+  private readonly plugins: {[key: string]: PluginInstance<Config>} = {};
   private appstore: Store = null;
   private readonly navigator: Navigator;
   private readonly user: User;
-  private biLogger: any;
   private readonly menuItems: IMenuItem[] = [];
   private readonly title: string;
-  private conf: Record<string, any>;
+  private conf: Config;
 
   constructor(private readonly id: string | {id: string; title: string}, private readonly ngApp: angular.IModule, private readonly options: {
     statePrefix?: string;
@@ -76,7 +74,7 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
    * @param id        plugin id
    * @param factory   plugin factory
    */
-  plugin(id: string, factory: (pluginInstance: PluginInstance) => any): Builder<Logger> {
+  plugin(id: string, factory: (pluginInstance: PluginInstance<Config>) => any): Builder<Config> {
     this.plugins[id] = new PluginInstance(id, this);
 
     factory(this.plugins[id]);
@@ -89,7 +87,7 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
    *
    * @param options   ui-router state options
    */
-  state(options: any): Builder<Logger> {
+  state(options: any): Builder<Config> {
     const {name} = options;
     delete options.name;
 
@@ -104,7 +102,7 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
    * @param name      component name
    * @param factory   component factory
    */
-  component(name: string, factory: angular.IDirectiveFactory): Builder<Logger> {
+  component(name: string, factory: angular.IDirectiveFactory): Builder<Config> {
     this.ngApp.directive(name, factory);
     return this;
   }
@@ -115,19 +113,20 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
    * @param name      state component name
    * @param config    state component config
    */
-  stateComponent(config: IStateComponentConfig, app: Instance, store: Store): Builder<Logger> {
+  stateComponent(config: IStateComponentConfig, app: Instance, store: Store): Builder<Config> {
     function fromUrl(url: {[key: string]: IUrlParamListener}, params: object) {
       const actions = Object.keys(url).map(param => (url as any)[param].from(params[param]));
       store.dispatch(actions);
     }
 
-    const [stateName, paramName] = config.name.split(':');
+    const [fullStateName, paramName] = config.name.split(':');
+    const stateName = last(fullStateName.split('.'));
     const componentName = `${app.getId()}-${paramCase(stateName)}`;
 
     this.state({
-      name: stateName,
+      name: fullStateName,
       abstract: config.abstract || false,
-      url: config.abstract ? '' : `/${last(stateName.split('.'))}${paramName ? `/:${paramName}` : ''}?${Object.keys(config.url)}`,
+      url: config.abstract ? '' : `/${stateName}${paramName ? `/:${paramName}` : ''}?${Object.keys(config.url)}`,
       reloadOnSearch: false,
       template: `
         <${componentName}
@@ -140,7 +139,7 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
       onExit: config.onExit,
       controller: ['$scope', '$stateParams', 'user', (scope, params) => {
         config.controller(scope, params, {
-          syncUrl: (getArgs = () => []) => {
+          syncUrl(getArgs = () => []) {
             let {url} = config;
 
             url = mapValues(url, (listener: IUrlParamListener, param) => {
@@ -162,6 +161,12 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
               const cleaner = scope.$on('$locationChangeSuccess', () => fromUrl(url, inject('$location').search()));
               scope.$on('$destroy', () => cleaner());
             });
+          },
+          setTitle(getTitle = () => [app.getTitle(), headerCase(stateName)]) {
+            document.title = getTitle({
+              appTitle: app.getTitle(),
+              stateName: headerCase(stateName)
+            }).join(' · ');
           }
         });
 
@@ -184,17 +189,6 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
         }
       }
     }));
-
-    return this;
-  }
-
-  /**
-   * Registers a BI logger
-   *
-   * @param logger schema logger (https://github.com/wix-private/bi-schema-loggers)
-   */
-  logger(logger: Logger): Builder<Logger> {
-    this.biLogger = logger;
 
     return this;
   }
@@ -223,7 +217,7 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
     return this;
   }
 
-  config(config: Record<string, any> = {}) {
+  config(config: Config) {
     this.conf = config;
     return this;
   }
@@ -235,15 +229,14 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
   /**
    * Creates an application instance
    */
-  build(): Instance<Logger> {
-    const app = new Instance<Logger>(
+  build(): Instance<Config> {
+    const app = new Instance<Config>(
       this.id as string,
       this.title, 
       this.options.logoUrl,
       this.plugins,
       this.user,
       this.navigator,
-      this.biLogger,
       this.menuItems,
       this.appstore,
       this.conf,
@@ -252,7 +245,7 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
 
     Object.keys(this.plugins).forEach(name => {
       const plugin = this.plugins[name];
-      const {branches, logUrl, server} = plugin.store() as IPluginBranches<Logger>;
+      const {branches, logUrl, server} = plugin.store() as IPluginBranches<Config>;
 
       const intializedBranches = mapValues({
         ...branches,
@@ -261,8 +254,8 @@ export default class Builder<Logger = any> extends srv.eventEmitter.EventEmitter
 
       const store = createStore(intializedBranches, {logUrl, server});
 
-      (plugin.states() as IStateFactory<Logger>[]).forEach(factory => this.state(factory(app, store)));
-      (plugin.components() as IPluginComponent<Logger>[]).forEach(({name: componentName, factory}) => this.component(componentName, factory(app, store)));
+      (plugin.states() as IStateFactory<Config>[]).forEach(factory => this.state(factory(app, store)));
+      (plugin.components() as IPluginComponent<Config>[]).forEach(({name: componentName, factory}) => this.component(componentName, factory(app, store)));
       (plugin.stateComponents() as IStateComponentFactory[]).forEach(factory => this.stateComponent(factory(app, store), app, store));
 
       this.fire(`ready|${plugin.getId()}`, app, store);

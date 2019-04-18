@@ -12,7 +12,7 @@ export default (app: App, store: Store) => ({
   template,
   url: {},
   scope: {},
-  controller: x => x,
+  controller: (scope, params, {setTitle}) => setTitle(),
   link: scope => {
     initNgScope(scope)
       .withEvents({

@@ -39,7 +39,10 @@ export default (app: Instance, store: Store) => () => ({
             scope.options.focusEditor = false;
           }
         })
-        .withVM({});
+        .withVM({
+          editor: null,
+          runner: null,
+        });
 
       initEvents(scope, conf, app, store, Events);
     }

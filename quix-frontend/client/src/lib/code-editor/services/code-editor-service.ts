@@ -198,6 +198,12 @@ export default class CodeEditor extends srv.eventEmitter.EventEmitter {
     return this;
   }
 
+  focus(): CodeEditor {
+    this.ace.focus();
+
+    return this;
+  }
+
   destroy(): CodeEditor {
     this.ace.session.setUseWorker(false);
     this.ace.destroy();

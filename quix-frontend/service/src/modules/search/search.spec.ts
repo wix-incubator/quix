@@ -10,7 +10,7 @@ import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from '../../entities';
 import {SearchController} from './search.controller';
 import {SearchModule} from './search.module';
 
-xdescribe('Search', () => {
+describe('Search', () => {
   const numOfTypeSql = 1;
   const numOfUserFoo = 2;
   const numOfNameEmpty = 1;
@@ -64,15 +64,16 @@ xdescribe('Search', () => {
   //   expect(result).toHaveLength(0);
   // });
 
-  xit('should get note by owner', async () => {
+  it('should get note by owner', async () => {
     const notebook = new DbNotebook({
       id: uuid(),
       owner: defaultUser,
       name: 'new name',
     } as any);
     await notebookRepo.save(notebook);
+    const id = uuid();
     const note = new DbNote({
-      id: uuid(),
+      id,
       owner: defaultUser,
       type: NoteType.PRESTO,
       content: '',
@@ -85,8 +86,47 @@ xdescribe('Search', () => {
     const result = await searchCtrl.doSearch(`user:${defaultUser}`);
     const badResult = await searchCtrl.doSearch('user: foo@wix.com');
 
-    console.log(result);
-    console.log(badResult);
+    expect(result[0].id).toBe(id);
+    expect(badResult).toHaveLength(0);
+  });
+
+  it('should get note by content', async () => {
+    const notebook = new DbNotebook({
+      id: uuid(),
+      owner: defaultUser,
+      name: 'new name',
+    } as any);
+    await notebookRepo.save(notebook);
+    const note = new DbNote({
+      id: uuid(),
+      owner: defaultUser,
+      type: NoteType.PRESTO,
+      content: 'select someColumn from someCatalog.someTable',
+      name: 'new Note',
+      dateCreated: 1,
+      dateUpdated: 1,
+      notebookId: notebook.id,
+    });
+    await noteRepo.save(note);
+    const note2 = new DbNote({
+      id: uuid(),
+      owner: defaultUser,
+      type: NoteType.PRESTO,
+      content: 'select someColumn from someCatalog.someOtherTable',
+      name: 'new Note',
+      dateCreated: 1,
+      dateUpdated: 1,
+      notebookId: notebook.id,
+    });
+    await noteRepo.save(note2);
+    debugger;
+    const result = await searchCtrl.doSearch(`someTable`);
+    const result2 = await searchCtrl.doSearch(`someOtherTable`);
+    const badResult = await searchCtrl.doSearch('randomKeyword');
+
+    expect(result[0].id).toBe(note.id);
+    expect(result2[0].id).toBe(note2.id);
+    expect(badResult).toHaveLength(0);
   });
 
   // it('should get note by type', async () => {
