@@ -13,7 +13,9 @@ import './lib/file-explorer';
 
 const {googleClientId, staticsBaseUrl, ...config} = (window as any).quixConfig;
 
-create({
+create<{
+  quixBackendUrl?: string;
+}>({
   id: 'quix',
   title: 'Quix'
 }, {
