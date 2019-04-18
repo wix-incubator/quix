@@ -1,11 +1,37 @@
 import UrlPattern from 'url-pattern';
-import {IFile, INotebook, createUser, createNotebook, createNotebookWithNote, createFolder, createFile, createNote, INote} from '../../shared';
+import {
+  IFile,
+  INotebook,
+  INote,
+  IFolder,
+  createUser,
+  createNotebook,
+  createNotebookWithNote,
+  createFolder,
+  createFile,
+  createNote,
+  createFolderPayload
+} from '../../shared';
 
 const mocks = {
   '/api/user': () => createUser(),
   '/api/events': () =>[200],
   // '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],
-  '/api/files': () => [createMockFolder(), createMockFile(), createMockFile()],
+  '/api/files': ({id = '1'}) => [
+    createMockFolder({id, name: 'My notebooks'}),
+    createMockFolder({id: '2', path: [{id, name: 'My notebooks'}]}),
+    createMockFile({id: '3', path: [{id, name: 'My notebooks'}]}),
+    createMockFile({id: '4', path: [{id, name: 'My notebooks'}]}),
+  ],
+  '/api/files/:id': ({id}) => createMockFolderPayload({
+    id,
+    name: 'My notebooks',
+    files: [
+      createMockFolder({id: '2', path: [{id, name: 'My notebooks'}]}),
+      createMockFile({id: '3', path: [{id, name: 'My notebooks'}]}),
+      createMockFile({id: '4', path: [{id, name: 'My notebooks'}]}),
+    ]
+  }),
   '/api/files/404': () => [404, {message: 'Folder not found'}],
   '/api/notebook/404': () => [404, {message: 'Notebook not found'}],
   '/api/notebook/:id': ({id}) => createMockNotebookWithNote({id}),
@@ -45,6 +71,10 @@ export const createMockFile = (props: Partial<IFile> = {}) => {
 
 export const createMockFolder = (props: Partial<IFile> = {}) => {
   return createFolder([], {owner: 'local@quix.com', ...props});
+}
+
+export const createMockFolderPayload = (props: Partial<IFolder> = {}) => {
+  return createFolderPayload([], {owner: 'local@quix.com', ...props});
 }
 
 export const createMockNotebook = (props: Partial<INotebook> = {}) => {

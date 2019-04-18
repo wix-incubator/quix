@@ -2,7 +2,14 @@ import {values} from 'lodash';
 import {combineReducers} from 'redux';
 import {IBranch} from '../../lib/store';
 import {Instance} from '../../lib/app';
-import {INotebook, INote, composeReducers, clientNotebookReducer, noteListReducer, NoteActionTypes, NotebookActionTypes} from '../../../../shared';
+import {
+  INotebook,
+  INote,
+  composeReducers,
+  clientNotebookReducer,
+  noteListReducer,
+  NoteActionTypes
+} from '../../../../shared';
 
 export interface IQueue {
   notes: Record<string, INote>;
@@ -104,7 +111,6 @@ export default (app: Instance): IBranch => register => {
     edit: false
   }, action: any): IPermissions => {
     switch (action.type) {
-      case NotebookActionTypes.createNotebook:
       case 'notebook.set':
         return action.notebook ? {
           edit: app.getUser().getEmail() === action.notebook.owner

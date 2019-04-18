@@ -20,12 +20,12 @@ enum States {
 
 const listenToEvents = (scope, app: Instance, store: Store, fileExplorer) => {
   fileExplorer
-    .on('fileCreated', ({id, path}) => addNotebook(store, app, path.slice(1), {id}), false, scope)
-    .on('fileMoved', ({id, path}) => store.dispatch(NotebookActions.moveNotebook(id, path.slice(1))), false, scope)
+    .on('fileCreated', ({id, path}) => addNotebook(store, app, path, {id}), false, scope)
+    .on('fileMoved', ({id, path}) => store.dispatch(NotebookActions.moveNotebook(id, path)), false, scope)
     .on('folderDeleted', ({id}) => store.dispatchAndLog(FileActions.deleteFile(id)), false, scope)
-    .on('folderCreated', ({id, path}) => addFolder(store, app, path.slice(1), {id}), false, scope)
+    .on('folderCreated', ({id, path}) => addFolder(store, app, path, {id}), false, scope)
     .on('folderRenamed', ({id, name}) => store.dispatchAndLog(FileActions.updateName(id, name)), false, scope)
-    .on('folderMoved', ({id, path}) => store.dispatchAndLog(FileActions.moveFile(id, path.slice(1))), false, scope);
+    .on('folderMoved', ({id, path}) => store.dispatchAndLog(FileActions.moveFile(id, path)), false, scope);
 }
 
 const listenToNavChange = (scope: IScope, app: Instance, fileExplorer) => {
@@ -69,10 +69,7 @@ export default (app: Instance, store: Store) => () => ({
       store.subscribe('files.files', (files: IFile[]) => {
         scope.vm.state
           .force('Result', !!files, {files})
-          .set('Content', () => !!files.length, () => ({files: [
-            ...files.map(file => ({...file, path: [{id: null}, ...file.path]})),
-            {id: null, name: 'My notebooks', type: 'folder'}
-          ]}));
+          .set('Content', () => !!files.length, () => ({files}));
       }, scope);
 
       store.subscribe('files.view.error', (error: any) => {

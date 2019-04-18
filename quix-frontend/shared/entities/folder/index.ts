@@ -1,2 +1,2 @@
 export {IFolder} from './types';
-export {createFolder} from './folder';
+export {createFolderPayload} from './folder';

@@ -2,9 +2,9 @@ import uuid from 'uuid/v4';
 import {IFolder} from './types';
 import {IFilePathItem} from '../file';
 
-export const createFolder = (type: IFolder, path: IFilePathItem[] = [], props: Partial<IFolder> = {}): IFolder => ({
+export const createFolderPayload = (path: IFilePathItem[] = [], props: Partial<IFolder> = {}): IFolder => ({
   id: uuid(),
-  name: `New ${type}`,
+  name: `New folder`,
   path,
   files: [],
   isLiked: false,
