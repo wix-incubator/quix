@@ -148,16 +148,32 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     }
   }
 
+  object Autocomplete {
+
+    def get: Task[Map[String, List[String]]] = {
+      for {
+        catalogs <- executeForSingleColumn("select distinct table_cat from system.jdbc.catalogs")
+        schemas <- executeForSingleColumn("select distinct table_schem from system.jdbc.schemas")
+        tables <- executeForSingleColumn("select distinct table_name from system.jdbc.tables")
+        columns <- executeForSingleColumn("select distinct column_name from system.jdbc.columns")
+      } yield Map("catalogs" -> catalogs, "schemas" -> schemas, "tables" -> tables, "columns" -> columns)
+    }
+  }
 
   override def chore(): Unit = {
     val startMillis = System.currentTimeMillis()
 
     val task = for {
       _ <- Task.eval(logger.info(s"event=db-refresh-chore-start"))
+
       newCatalogs <- Catalogs.get
       _ <- Task.eval {
         state.catalogs = RefreshableDb.mergeNewAndOldCatalogs(newCatalogs, state.catalogs)
       }
+
+      autocomplete <- Autocomplete.get
+      _ <- Task(state.autocomplete = autocomplete)
+
       _ <- Task.eval(logger.info(s"event=db-refresh-chore-finish millis=${System.currentTimeMillis() - startMillis}"))
     } yield ()
 
@@ -165,7 +181,7 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
   }
 }
 
-class DbState(var catalogs: List[Catalog] = Nil)
+class DbState(var catalogs: List[Catalog] = Nil, var autocomplete: Map[String, List[String]] = Map.empty)
 
 object RefreshableDb extends LazyLogging {
 
