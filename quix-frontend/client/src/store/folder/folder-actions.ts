@@ -1,30 +1,25 @@
-import {IFile} from '../../../../shared';
+import {IFile, IFolder} from '../../../../shared';
 
-export const setFolder = (file: IFile) => ({
+export const setFolder = (folder: IFolder) => ({
   type: 'folder.set',
-  file
-});
-
-export const setFiles = (files: IFile[]) => ({
-  type: 'files.set',
-  files
+  folder
 });
 
 export const setError = (error: any) => ({
-  type: 'files.view.setError',
+  type: 'folder.setError',
   error
 });
 
 export const setFileError = (error: any) => ({
-  type: 'files.view.setFileError',
+  type: 'folder.view.setFileError',
   error
 });
 
 export const toggleMark = (file: IFile) => ({
-  type: 'files.view.toggleMark',
+  type: 'folder.view.toggleMark',
   file
 });
 
 export const unmarkAll = () => ({
-  type: 'files.view.unmarkAll'
+  type: 'folder.view.unmarkAll'
 });

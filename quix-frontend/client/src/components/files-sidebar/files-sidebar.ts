@@ -61,7 +61,7 @@ export default (app: Instance, store: Store) => () => ({
 
           },
           onNotebookAdd() {
-            addNotebook(store, app);
+            addNotebook(store, app, []);
           },
         });
 
@@ -72,7 +72,7 @@ export default (app: Instance, store: Store) => () => ({
           .set('Content', () => !!files.length, () => ({files}));
       }, scope);
 
-      store.subscribe('files.view.error', (error: any) => {
+      store.subscribe('files.error', (error: any) => {
         scope.vm.state.force('Error', !!error, {error});
       }, scope);
     }

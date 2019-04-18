@@ -7,7 +7,7 @@
           ng-if="vm.breadcrumbs.enabled"
           breadcrumbs="vm.breadcrumbs.folders"
           quix-breadcrumbs-options="::{focusName: options.isNew}"
-          on-folder-click="events.onFileClick(file)"
+          on-folder-click="events.onFileClick(file, isRoot)"
           on-name-change="events.onNameChange(file)"
           readonly="!permissions.edit"
         ></bi-breadcrumbs>

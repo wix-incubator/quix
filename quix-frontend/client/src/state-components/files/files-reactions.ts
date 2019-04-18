@@ -1,18 +1,16 @@
 import {IScope} from './files-types';
 import {initTableFields} from './files-table-fields';
-import {IFile} from '../../../../shared';
+import {IFolder, IFile} from '../../../../shared';
 
-export function setFile(scope: IScope, file: IFile) {
+export function setFolder(scope: IScope, folder: IFolder) {
   scope.vm.state
-    .set('Result', !!file, {file})
+    .set('Result', !!folder, {folder})
     .then(() => {
-      if (file.id && scope.vm.breadcrumbs.length === 1) {
-        scope.vm.breadcrumbs = [{
-          name: scope.permissions.edit ? 'My notebooks' : `${file.owner}'s notebooks`
-        }, ...file.path, {id: file.id, name: file.name}];
+      if (folder.id && scope.vm.breadcrumbs.length === 1) {
+        scope.vm.breadcrumbs = [...folder.path, {id: folder.id, name: folder.name}];
       }
     })
-    .else(() => scope.vm.state.value({file}));
+    .else(() => scope.vm.state.value({folder}));
 }
 
 export function setFiles(scope: IScope, files: IFile[]) {

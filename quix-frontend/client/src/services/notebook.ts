@@ -1,8 +1,14 @@
+import {isArray} from 'lodash';
 import {Store} from '../lib/store';
 import {Instance} from '../lib/app';
-import {NotebookActions, createNotebook, IFilePathItem, INotebook, INote, NoteActions} from '../../../shared';
+import {IFolder, INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem} from '../../../shared';
 
-export const addNotebook = (store: Store, app: Instance, path: IFilePathItem[] = [], props: Partial<INotebook> = {}) => {
+export const addNotebook = (store: Store, app: Instance, parentOrPath: IFolder | IFilePathItem[], props: Partial<INotebook> = {}) => {
+  const path = isArray(parentOrPath) ? parentOrPath : [...parentOrPath.path, {
+    id: parentOrPath.id,
+    name: parentOrPath.name
+  }];
+
   const notebook = createNotebook(path, {...props, owner: app.getUser().getEmail()});
 
   store.dispatchAndLog([

@@ -26,15 +26,14 @@ const mocks = {
   '/api/files/:id': ({id}) => createMockFolderPayload({
     id,
     name: 'My notebooks',
+    path: [{id: '1', name: 'My notebooks'}],
     files: [
-      createMockFolder({id: '2', path: [{id, name: 'My notebooks'}]}),
-      createMockFile({id: '3', path: [{id, name: 'My notebooks'}]}),
-      createMockFile({id: '4', path: [{id, name: 'My notebooks'}]}),
+      createMockFile({id: '100', path: [{id, name: 'My notebooks'}, {id: '200', name: 'New folder'}]}),
     ]
   }),
   '/api/files/404': () => [404, {message: 'Folder not found'}],
   '/api/notebook/404': () => [404, {message: 'Notebook not found'}],
-  '/api/notebook/:id': ({id}) => createMockNotebookWithNote({id}),
+  '/api/notebook/:id': ({id}) => createMockNotebookWithNote({id, path: [{id, name: 'My notebooks'}]}),
   '/api/search/:text': ({text}) => {
     const res = [createNote('1'), createNote('2'), createNote('3')];
     res.forEach(note => note.content = `select 1 as ${text}`);

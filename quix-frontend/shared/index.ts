@@ -1,3 +1,4 @@
+export {IEntity} from './entities/common/common-types';
 export {composeReducers} from './entities/common/create-reducer';
 export {IUser, createUser} from './entities/user';
 

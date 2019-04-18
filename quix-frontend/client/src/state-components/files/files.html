@@ -6,7 +6,7 @@
           class="bi-dont-shrink bi-fade-in"
           breadcrumbs="vm.breadcrumbs"
           quix-breadcrumbs-options="::{focusName: options.isNew}"
-          on-folder-click="events.onFileClick(file)"
+          on-folder-click="events.onFileClick(file, isRoot)"
           on-name-change="events.onNameChange(file)"
           readonly="!permissions.edit"
         ></bi-breadcrumbs>
@@ -32,9 +32,8 @@
 
         <div class="bi-align bi-s-h--x2">
           <quix-actions 
-            ng-if="!!vm.state.value().file.id"
             type="folder"
-            context="vm.state.value().file"
+            context="vm.state.value().folder"
             quix-actions-options="{reverse: true, forceDelete: vm.state.is('Result')}"
             on-like-toggle="events.onLikeToggle(context)"
             on-share="events.onShare(context)"

@@ -1,16 +1,23 @@
+import {find, last, isArray} from 'lodash';
 import {Store} from '../lib/store';
 import {Instance} from '../lib/app';
-import {FileActions, createFolder, IFile, IFilePathItem} from '../../../shared';
-import {find, last} from 'lodash';
+import {IFile, FileActions, createFolder, IFolder} from '../../../shared';
+import {FileType, IFilePathItem} from '../../../shared/entities/file';
+import {isOwner} from './permission';
 
-export const addFolder = (store: Store, app: Instance, path: IFilePathItem[] = [], props: Partial<IFile> = {}) => {
+export const addFolder = (store: Store, app: Instance, parentOrPath: IFolder | IFilePathItem[], props: Partial<IFile> = {}) => {
+  const path = isArray(parentOrPath) ? parentOrPath : [...parentOrPath.path, {
+    id: parentOrPath.id,
+    name: parentOrPath.name
+  }];
+
   const folder = createFolder(path, {...props, owner: app.getUser().getEmail()});
 
   return store.dispatchAndLog(FileActions.createFile(folder.id, folder));
 }
 
-export const deleteFolder = (store: Store, app: Instance, file: IFile) => {
-  const {id, path} = file;
+export const deleteFolder = (store: Store, app: Instance, folder: IFile) => {
+  const {id, path} = folder;
 
   return store.dispatchAndLog(FileActions.deleteFile(id))
     .then(() => app.getNavigator().go('base.files', {
@@ -19,17 +26,15 @@ export const deleteFolder = (store: Store, app: Instance, file: IFile) => {
     }));
 }
 
-export const findFileById = (files: IFile[], id: string) => {
-  return find(files, {id});
+export const goToFile = (app: Instance, file: IFile, isRoot = false) => {
+  const id = isRoot && isOwner(app, file) ? null : file.id;
+
+  app.getNavigator().go(`base.${file && file.type === FileType.notebook ? 'notebook' : 'files'}`, {
+    id,
+    isNew: false
+  });
 }
 
-export const findFilesByParent = (files: IFile[], parentId: string) => {
-  return (files as IFile[]).filter(file => {
-    if (parentId) {
-      const parent = last(file.path);
-      return parent && parent.id === parentId;
-    }
-
-    return !file.path.length;
-  });
+export const findFileById = (files: IFile[], id: string) => {
+  return find(files, {id});
 }

@@ -12,9 +12,9 @@ import {
   composeReducers,
 } from '../../../../shared';
 
+import {isOwner} from '../../services/permission';
+
 export interface IView {
-  error: any;
-  fileError: any;
   markedMap: Record<string, IFile>;
   markedList: IFile[];
 }
@@ -24,12 +24,25 @@ export interface IPermissions {
 }
 
 export default (app: Instance): IBranch => register => {
+  const folder = composeReducers(
+    clientFileReducer,
+    (state: IFile = null, action: any) => {
+      switch (action.type) {
+        case 'folder.set':
+          return action.folder;
+        default:
+      }
+  
+      return state;
+    },
+  );
+
   const files = composeReducers(
     clientFileListReducer,
     (state: IFolder = null, action: any) => {
       switch (action.type) {
-        case 'files.set':
-          return action.files;
+        case 'folder.set':
+          return action.folder && action.folder.files;
         default:
       }
   
@@ -37,50 +50,35 @@ export default (app: Instance): IBranch => register => {
     },
   );
 
-  const file = composeReducers(
-    clientFileReducer,
-    (state: IFile = null, action: any) => {
-      switch (action.type) {
-        case 'file.set':
-          return action.file;
-        default:
-      }
-  
-      return state;
-    },
-  );
+  const error = (state: any = null, action: any) => {
+    switch (action.type) {
+      case 'folder.set':
+        return null;
+      case 'folder.setError':
+        return action.error;
+      default:
+    }
+
+    return state;
+  }
 
   const view = (state: IView = {
-    error: null,
-    fileError: null,
     markedMap: {},
     markedList: []
   }, action: any): IView => {
     switch (action.type) {
-      case 'file.set':
-      case 'files.view.unmarkAll':
+      case 'folder.set':
+      case 'folder.view.unmarkAll':
         return {
-          error: null,
-          fileError: null,
           markedMap: {},
           markedList: []
-        };
-      case 'files.view.setError':
-        return {
-          ...state,
-          error: action.error
-        };
-      case 'files.view.setFileError':
-        return {
-          ...state,
-          fileError: action.error
         };
       case FileActionTypes.deleteFile:
       case NotebookActionTypes.deleteNotebook:
         // tslint:disable-next-line: no-dynamic-delete
         delete state.markedMap[action.id];
         return {...state, markedList: values<IFile>(state.markedMap).filter(n => !!n)};  
-      case 'files.view.toggleMark':
+      case 'folder.view.toggleMark':
         state.markedMap[action.file.id] = state.markedMap[action.file.id] ? undefined : action.file;
         return {...state, markedList: values<IFile>(state.markedMap).filter(f => !!f)};
       default:
@@ -93,11 +91,11 @@ export default (app: Instance): IBranch => register => {
     edit: false
   }, action: any) => {
     switch (action.type) {
-      case 'file.set':
-        return action.file && action.file.id ? {
-          edit: app.getUser().getEmail() === action.file.owner
+      case 'folder.set':
+        return action.folder ? {
+          edit: isOwner(app, action.folder)
         } : {
-          edit: true
+          edit: false
         };
       default:
     }
@@ -105,5 +103,5 @@ export default (app: Instance): IBranch => register => {
     return state;
   }
 
-  register(combineReducers({files, file, view, permissions}));
+  register(combineReducers({folder, files, error, view, permissions}));
 };

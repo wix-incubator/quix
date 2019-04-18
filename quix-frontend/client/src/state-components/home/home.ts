@@ -20,7 +20,7 @@ export default (app: App, store: Store) => ({
           app.getNavigator().go('base.files');
         },
         onNotebookAdd() {
-          addNotebook(store, app);
+          addNotebook(store, app, []);
         }
       });
   }

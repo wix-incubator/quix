@@ -6,7 +6,7 @@ export const setNotebook = (notebook: INotebook) => ({
 });
 
 export const setError = (error: any) => ({
-  type: 'notebook.view.setError',
+  type: 'notebook.setError',
   error
 });
 
