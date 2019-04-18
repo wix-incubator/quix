@@ -18,13 +18,15 @@ quix-note {
       z-index: 100;
     }
   }
+  
+  .bi-panel-header {
+    bi-dropdown {
+      bi-toggle {
+        height: 37px;
 
-  bi-dropdown {
-    bi-toggle {
-      height: 37px;
-
-      i {
-        line-height: 38px !important;
+        i {
+          line-height: 38px !important;
+        }
       }
     }
   }
