@@ -9,7 +9,6 @@ describe('Notebook ::', () => {
   beforeEach(async () => {
     driver = new Driver();
     await driver.init();
-    
 
     testkit = new NotebookTestkit(driver.getTestkitPage());
   });
