@@ -23,6 +23,7 @@ const mocks = {
     createMockFile({id: '3', path: [{id, name: 'My notebooks'}]}),
     createMockFile({id: '4', path: [{id, name: 'My notebooks'}]}),
   ],
+  '/api/files/404': () => [404, {message: 'Folder not found'}],
   '/api/files/:id': ({id}) => createMockFolderPayload({
     id,
     name: 'My notebooks',
@@ -31,7 +32,6 @@ const mocks = {
       createMockFile({id: '100', path: [{id, name: 'My notebooks'}, {id: '200', name: 'New folder'}]}),
     ]
   }),
-  '/api/files/404': () => [404, {message: 'Folder not found'}],
   '/api/notebook/404': () => [404, {message: 'Notebook not found'}],
   '/api/notebook/:id': ({id}) => createMockNotebookWithNote({id, path: [{id, name: 'My notebooks'}]}),
   '/api/search/:text': ({text}) => {

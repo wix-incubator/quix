@@ -27,9 +27,9 @@ export default (app: Instance): IBranch => register => {
 
   const error = (state: any = null, action: any) => {
     switch (action.type) {
-      case 'file.set':
+      case 'files.set':
         return null;
-      case 'file.setError':
+      case 'files.setError':
         return action.error;
       default:
     }

@@ -66,8 +66,8 @@
           <i class="bi-icon bi-danger">error_outline</i>
         </div>
         <div class="bi-empty-state-header bi-danger">{{::vm.state.value().error.message}}</div>
-        <div class="bi-empty-state-content" ng-if="::vm.state.value().error.id">
-          <a class="bi-link" ng-click="events.onFileClick()">Go to my notebooks</a>
+        <div class="bi-empty-state-content">
+          <a class="bi-link" ng-click="events.onGoToRootClick()">Go to my notebooks</a>
         </div>
       </div>
 

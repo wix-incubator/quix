@@ -25,9 +25,10 @@ export default (app: App, store: Store) => ({
     
     syncUrl(() => [store.getState('notebook.notes') || []]);
 
-    store.subscribe('notebook', ({notebook, notes, queue, view, permissions}) => {
+    store.subscribe('notebook', ({notebook, notes, error, queue, view, permissions}) => {
       scope.notebook = notebook;
       scope.notes = notes;
+      scope.error = error;
       scope.queue = queue;
       scope.view = view;
       scope.permissions = permissions;
@@ -35,6 +36,12 @@ export default (app: App, store: Store) => ({
 
     store.subscribe('notebook.notebook.name', name => {
       setTitle(({stateName}) => [stateName, name]);
+    }, scope);
+
+    store.subscribe('notebook.error', error => {
+      if (error) {
+        setTitle(() => ['Error']);
+      }
     }, scope);
 
     store.subscribe('app.runners', () => {

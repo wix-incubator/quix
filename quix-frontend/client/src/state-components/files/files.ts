@@ -24,15 +24,22 @@ export default (app: App, store: Store) => ({
   
     syncUrl();
 
-    store.subscribe('folder', ({folder, files, view, permissions}) => {
+    store.subscribe('folder', ({folder, files, error, view, permissions}) => {
       scope.folder = folder;
       scope.files = files;
+      scope.error = error;
       scope.view = view;
       scope.permissions = permissions;
     }, scope);
 
     store.subscribe('folder.folder.name', name => {
       setTitle(({stateName}) => [stateName, name].filter(x => x));
+    }, scope);
+
+    store.subscribe('folder.error', error => {
+      if (error) {
+        setTitle(() => ['Error']);
+      }
     }, scope);
   },
   link: scope => {

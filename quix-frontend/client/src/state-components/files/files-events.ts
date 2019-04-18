@@ -6,7 +6,7 @@ import {IScope} from './files-types';
 import {IFile, FileActions, NotebookActions} from '../../../../shared';
 import {FileType} from '../../../../shared/entities/file';
 import {addNotebook} from '../../services/notebook';
-import {addFolder, deleteFolder, goToFile} from '../../services/files';
+import {addFolder, deleteFolder, goToFile, goToRoot} from '../../services/files';
 import {setFolder, toggleMark, unmarkAll} from '../../store/folder/folder-actions';
 
 export const onNameChange = (scope: IScope, store: Store, app: Instance) => (folder: IFile) => {
@@ -40,6 +40,10 @@ export const onFileClick = (scope: IScope, store: Store, app: Instance) => (file
   const {folder: {owner}} = scope.vm.state.value();
 
   goToFile(app, {...file, owner}, isRoot);
+};
+
+export const onGoToRootClick = (scope: IScope, store: Store, app: Instance) => () => {
+  goToRoot(app);
 };
 
 export const onFolderAdd = (scope: IScope, store: Store, app: Instance) => () => {

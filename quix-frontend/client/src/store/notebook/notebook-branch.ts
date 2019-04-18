@@ -59,7 +59,7 @@ export default (app: Instance): IBranch => register => {
     switch (action.type) {
       case 'notebook.set':
         return null;
-      case 'folder.setError':
+      case 'notebook.setError':
         return action.error;
       default:
     }

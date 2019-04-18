@@ -35,6 +35,13 @@ export const goToFile = (app: Instance, file: IFile, isRoot = false) => {
   });
 }
 
+export const goToRoot = (app: Instance) => {
+  app.getNavigator().go(`base.files`, {
+    id: null,
+    isNew: false
+  });
+}
+
 export const findFileById = (files: IFile[], id: string) => {
   return find(files, {id});
 }

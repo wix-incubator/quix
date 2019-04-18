@@ -9,7 +9,7 @@ import {setNotebook, setNote, queueNote, toggleMark, unmarkAll} from '../../stor
 import {saveQueuedNotes} from '../../services/notebook';
 import {removeRunner, addRunner} from '../../store/app/app-actions';
 import {prompt} from '../../services/dialog';
-import {goToFile} from '../../services/files';
+import {goToFile, goToRoot} from '../../services/files';
 
 
 export const onFileClick = (scope: IScope, store: Store, app: Instance) => (file: IFile = null, isRoot = false) => {
@@ -17,6 +17,10 @@ export const onFileClick = (scope: IScope, store: Store, app: Instance) => (file
 
   goToFile(app, {...file, owner}, isRoot);
 }
+
+export const onGoToRootClick = (scope: IScope, store: Store, app: Instance) => () => {
+  goToRoot(app);
+};
 
 export const onNameChange = (scope: IScope, store: Store, app: Instance) => (file: IFile) => {
   const {id, name} = file;
