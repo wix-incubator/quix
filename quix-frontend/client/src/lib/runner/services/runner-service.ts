@@ -304,7 +304,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
 export default function create(type: RunnerType, scope, {
   mode = 'stream',
   version = null,
-  baseUrl
+  baseUrl = config.get().prestoUrl
 } = {
     mode: 'stream',
     version: null,
