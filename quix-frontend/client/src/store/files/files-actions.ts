@@ -5,7 +5,7 @@ export const setFiles = (files: IFile[]) => ({
   files
 });
 
-export const setError = (files: IFile[]) => ({
+export const setError = (error: any) => ({
   type: 'files.setError',
-  files
+  error
 });

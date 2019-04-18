@@ -16,13 +16,13 @@ import {
 const mocks = {
   '/api/user': () => createUser(),
   '/api/events': () =>[200],
-  // '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],
-  '/api/files': ({id = '1'}) => [
-    createMockFolder({id, name: 'My notebooks'}),
-    createMockFolder({id: '2', path: [{id, name: 'My notebooks'}]}),
-    createMockFile({id: '3', path: [{id, name: 'My notebooks'}]}),
-    createMockFile({id: '4', path: [{id, name: 'My notebooks'}]}),
-  ],
+  '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],
+  // '/api/files': ({id = '1'}) => [
+  //   createMockFolder({id, name: 'My notebooks'}),
+  //   createMockFolder({id: '2', path: [{id, name: 'My notebooks'}]}),
+  //   createMockFile({id: '3', path: [{id, name: 'My notebooks'}]}),
+  //   createMockFile({id: '4', path: [{id, name: 'My notebooks'}]}),
+  // ],
   '/api/files/404': () => [404, {message: 'Folder not found'}],
   '/api/files/:id': ({id}) => createMockFolderPayload({
     id,
