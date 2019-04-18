@@ -40,7 +40,8 @@ export default (app: Instance, store: Store) => () => ({
           }
         })
         .withVM({
-          editor: null
+          editor: null,
+          runner: null,
         });
 
       initEvents(scope, conf, app, store, Events);

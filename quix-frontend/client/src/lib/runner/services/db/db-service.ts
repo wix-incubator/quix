@@ -1,7 +1,6 @@
 'use strict';
 import {inject} from '../../../core';
 import angular from 'angular';
-import {config} from '../../config';
 
 export interface IAutocomplete {
   value: string;
@@ -16,18 +15,17 @@ export interface IDbNode {
 
 export class DbInfo {
   private readonly $http: angular.IHttpService = inject('$http');
-  private readonly baseUrl = config.get().quixUrl;
 
   fetchAllKeywords(): Promise<IAutocomplete[]> {
     return this.$http<any>({
-      url: `${this.baseUrl}db/autocomplete`,
+      url: `/api/db/autocomplete`,
       method: 'GET'
     }).then(data => data.data.payload || data.data).catch(e => []) as any;
   }
 
   fetchSchema(): Promise<IDbNode[]> {
     return this.$http<any>({
-      url: `${this.baseUrl}db/explore`,
+      url: `/api/db/explore`,
       method: 'GET'
     }).then(data => data.data.payload || data.data).catch(e => []) as any;
   }

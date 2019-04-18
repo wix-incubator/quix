@@ -44,7 +44,7 @@ export const onEditorInstanceLoad = (scope: IScope, store: Store, app: Instance)
 };
 
 export const onRunnerInstanceLoad = (scope: IScope, store: Store, app: Instance) => (runner) => {
-  runner.setBaseUrl(app.getConfig().quixBackendUrl);
+  scope.vm.runner = runner;
 };
 
 export const onRunnerCreated = (scope: IScope, store: Store) => (runner) => {
