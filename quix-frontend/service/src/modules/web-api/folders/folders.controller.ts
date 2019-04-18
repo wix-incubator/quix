@@ -49,7 +49,7 @@ export class FoldersController {
     return this.quixEventBus.emit({
       ...FileActions.createFile(
         id,
-        createFolder([], {id, name: 'My Notebooks'}),
+        createFolder([], {id, name: 'My notebooks'}),
       ),
       user,
     });
