@@ -53,6 +53,8 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
 
   override def catalogs: List[Catalog] = state.catalogs
 
+  override def autocomplete: Map[String, List[String]] = state.autocomplete
+
   def executeForSingleColumn(sql: String, delim: String = "") = {
     executeFor[String](sql, x => x.mkString(delim))
   }
