@@ -2,6 +2,7 @@ package quix.web
 
 import org.asynchttpclient.Dsl.asyncHttpClient
 import org.asynchttpclient.ws.{WebSocket, WebSocketListener, WebSocketUpgradeHandler}
+import quix.api.execute.StartCommand
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import scalaj.http.Http
@@ -31,7 +32,7 @@ trait E2EContext extends StringJsonHelpersSupport {
   }
 }
 
-class MyListener(sql: String) extends WebSocketListener {
+class MyListener(sql: String) extends WebSocketListener with StringJsonHelpersSupport {
 
   import scala.collection.JavaConverters._
 
@@ -43,7 +44,7 @@ class MyListener(sql: String) extends WebSocketListener {
 
   override def onOpen(websocket: WebSocket): Unit = {
     opened = true
-    websocket.sendTextFrame(s"""{"code" : "$sql"}""")
+    websocket.sendTextFrame(StartCommand[String](sql, Map.empty).asJsonStr)
   }
 
   override def onClose(websocket: WebSocket, code: Int, reason: String): Unit = {
