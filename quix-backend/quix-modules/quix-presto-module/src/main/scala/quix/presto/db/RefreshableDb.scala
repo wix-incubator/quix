@@ -61,7 +61,7 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
   override def autocomplete: Map[String, List[String]] = {
     if (state.autocomplete.isEmpty) {
       val autocompleteTask = for {
-        newAutocomplete <- Autocomplete.get
+        newAutocomplete <- Autocomplete.get(catalogs)
         _ <- Task(state.autocomplete = newAutocomplete)
       } yield newAutocomplete
 
@@ -180,14 +180,29 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
 
   object Autocomplete {
 
-    def get: Task[Map[String, List[String]]] = {
-      for {
-        catalogs <- executeForSingleColumn("select distinct table_cat from system.jdbc.catalogs")
-        schemas <- executeForSingleColumn("select distinct table_schem from system.jdbc.schemas")
-        tables <- executeForSingleColumn("select distinct table_name from system.jdbc.tables")
-        columns <- executeForSingleColumn("select distinct column_name from system.jdbc.columns")
-      } yield Map("catalogs" -> catalogs, "schemas" -> schemas, "tables" -> tables, "columns" -> columns)
+    def get(catalogList: List[Catalog]): Task[Map[String, List[String]]] = {
+      if (catalogList.nonEmpty) singleQueryAutocomplete(catalogList) else get
     }
+
+    def get: Task[Map[String, List[String]]] = manyQueriesAutocomplete
+  }
+
+  def singleQueryAutocomplete(catalogList: List[Catalog]) = {
+    for {
+      catalogs <- Task.now(catalogList.map(_.name))
+      schemas <- Task.now(catalogList.flatMap(_.children.map(_.name)))
+      tables <- Task.now(catalogList.flatMap(_.children.flatMap(_.children.map(_.name))))
+      columns <- executeForSingleColumn("select distinct column_name from system.jdbc.columns")
+    } yield Map("catalogs" -> catalogs, "schemas" -> schemas, "tables" -> tables, "columns" -> columns)
+  }
+
+  def manyQueriesAutocomplete = {
+    for {
+      catalogs <- executeForSingleColumn("select distinct table_cat from system.jdbc.catalogs")
+      schemas <- executeForSingleColumn("select distinct table_schem from system.jdbc.schemas")
+      tables <- executeForSingleColumn("select distinct table_name from system.jdbc.tables")
+      columns <- executeForSingleColumn("select distinct column_name from system.jdbc.columns")
+    } yield Map("catalogs" -> catalogs, "schemas" -> schemas, "tables" -> tables, "columns" -> columns)
   }
 
   override def chore(): Unit = {
@@ -201,7 +216,7 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
         state.catalogs = RefreshableDb.mergeNewAndOldCatalogs(newCatalogs, state.catalogs)
       }
 
-      autocomplete <- Autocomplete.get
+      autocomplete <- Autocomplete.get(newCatalogs)
       _ <- Task(state.autocomplete = autocomplete)
 
       _ <- Task.eval(logger.info(s"event=db-refresh-chore-finish millis=${System.currentTimeMillis() - startMillis}"))

@@ -80,9 +80,8 @@ class DbControllerTest extends E2EContext {
   @Test
   def handleAutoCompleteRequestWhenPrestoIsOnline(): Unit = {
     executor
-      .withResults(List(List("catalog")))
-      .withResults(List(List("schema")))
-      .withResults(List(List("table")))
+      // will help building DbState.catalogs
+      .withResults(List(List("catalog", "schema", "table")))
       .withResults(List(List("column1"), List("column2")))
 
     val actual = get[Map[String, List[String]]]("api/db/autocomplete")
@@ -96,9 +95,8 @@ class DbControllerTest extends E2EContext {
   @Test
   def handleAutoCompleteRequestWhenPrestoIsOnlineAndThenOffline(): Unit = {
     executor
-      .withResults(List(List("catalog")))
-      .withResults(List(List("schema")))
-      .withResults(List(List("table")))
+      // will help building DbState.catalogs
+      .withResults(List(List("catalog", "schema", "table")))
       .withResults(List(List("column1"), List("column2")))
       .withExceptions(new Exception("presto is down!"), 100)
 
