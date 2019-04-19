@@ -58,7 +58,16 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     } else state.catalogs
   }
 
-  override def autocomplete: Map[String, List[String]] = state.autocomplete
+  override def autocomplete: Map[String, List[String]] = {
+    if (state.autocomplete.isEmpty) {
+      val autocompleteTask = for {
+        newAutocomplete <- Autocomplete.get
+        _ <- Task(state.autocomplete = newAutocomplete)
+      } yield newAutocomplete
+
+      Await.result(autocompleteTask.timeout(4.seconds).onErrorFallbackTo(Task(Map.empty[String, List[String]])).runToFuture(io), 5.seconds)
+    } else state.autocomplete
+  }
 
   def executeForSingleColumn(sql: String, delim: String = "") = {
     executeFor[String](sql, x => x.mkString(delim))
@@ -199,6 +208,11 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     } yield ()
 
     task.runToFuture(io)
+  }
+
+  def reset = {
+    state.catalogs = Nil
+    state.autocomplete = Map.empty
   }
 }
 
