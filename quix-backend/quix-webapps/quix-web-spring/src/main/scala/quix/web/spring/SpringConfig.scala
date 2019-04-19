@@ -105,7 +105,7 @@ class Controllers extends LazyLogging {
 @Configuration
 class DbConfig extends LazyLogging {
 
-  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[Results]) = {
+  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[Results]):Db = {
     val initialDelay = env.getProperty("db.refresh.initialDelayInMinutes", classOf[Long], 1L)
     val delay = env.getProperty("db.refresh.delayInMinutes", classOf[Long], 15L)
 
