@@ -1,10 +1,7 @@
 package quix.presto
 
-import java.util.UUID
-
 import monix.eval.Task
 import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, ResultBuilder}
-import quix.api.users.User
 import quix.presto.rest._
 
 import scala.collection.mutable
@@ -21,7 +18,7 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
     } else None
   }
 
-  def act(builder: ResultBuilder[Results]): Task[Unit] = {
+  def act(query: ActiveQuery, builder: ResultBuilder[Results]): Task[Unit] = {
     val client = new PrestoStateClient {
       var index = 0
 
@@ -65,7 +62,6 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
         PrestoHealth(0, 0, 0, 0, 0, 0, 0, 0, 0)
       }
     }
-    val query = ActiveQuery(UUID.randomUUID().toString, "select 1", 1, User("user@quix"), false, Map.empty)
     new QueryExecutor(client).runTask(query, builder)
   }
 }
@@ -100,7 +96,7 @@ class TestQueryExecutor extends AsyncQueryExecutor[Results] {
     for {
       _ <- Task.eval(resultBuilder = builder)
       execution <- Task.eval(executions.dequeue())
-      _ <- execution.act(builder)
+      _ <- execution.act(query, builder)
     } yield ()
   }
 
