@@ -78,7 +78,9 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
 
     def getCatalogs = materialize(db.Catalogs.get)
 
-    def getAutocomplete = materialize(db.Autocomplete.get)
+    def getNonEfficientAutocomplete = materialize(db.Autocomplete.get)
+
+    def getEfficientAutocomplete = materialize(db.Autocomplete.get(getCatalogs))
   }
 
   "RefreshableDbV2" should {
@@ -142,7 +144,20 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
         .withResults(List(List("table")))
         .withResults(List(List("column")))
 
-      val autocomplete = getAutocomplete
+      val autocomplete = getNonEfficientAutocomplete
+
+      autocomplete must havePair("catalogs" -> List("catalog"))
+      autocomplete must havePair("schemas" -> List("schema"))
+      autocomplete must havePair("tables" -> List("table"))
+      autocomplete must havePair("columns" -> List("column"))
+    }
+
+    "calculate autocomplete items via efficient query" in new ctx {
+      executor
+        .withResults(List(List("catalog", "schema", "table")))
+        .withResults(List(List("column")))
+
+      val autocomplete = getEfficientAutocomplete
 
       autocomplete must havePair("catalogs" -> List("catalog"))
       autocomplete must havePair("schemas" -> List("schema"))
