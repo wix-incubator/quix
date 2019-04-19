@@ -26,11 +26,11 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     val startMillis = System.currentTimeMillis()
 
     logger.info(s"event=get-table-start $catalog.$schema.$table")
-    val sql = s"select column_name, data_type " +
-      s"from $catalog.information_schema.columns " +
-      s"where table_catalog = '$catalog' " +
-      s"and table_schema = '$schema' " +
-      s"and table_name = '$table'"
+    val sql = s"""select column_name, type_name
+         |from system.jdbc.columns
+         |where table_cat = '$catalog'
+         |and table_schem = '$schema'
+         |and table_name = '$table'""".stripMargin
 
     val mapper: List[String] => Kolumn = {
       case List(name, kind) => Kolumn(name, kind)
@@ -98,9 +98,10 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
 
     def inferSchemaInOneQuery(catalogName: String): Task[Catalog] = {
       val sql =
-        s"""select distinct table_catalog, table_schema, table_name
-           |from $catalogName.information_schema.tables
-           |where table_schema not in ('information_schema')""".stripMargin
+        s"""select distinct table_cat, table_schem, table_name
+           |from system.jdbc.tables
+           |where table_cat = '$catalogName'
+           |and table_schem != 'information_schema'""".stripMargin
 
       val mapper: List[String] => RichTable = {
         case List(catalog, schema, name) => RichTable(catalog, schema, name)
@@ -120,25 +121,18 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     }
 
     def inferSchemaOneByOne(catalogName: String): Task[Catalog] = {
-      val sql =
-        """
-          |select distinct table_schema from mysql.information_schema.tables
-          |where table_schema != 'information_schema'
-        """.stripMargin
+      val sql = s"select distinct table_schem from system.jdbc.schemas " +
+        s"where table_catalog = '$catalogName' and table_schem not in ('information_schema');"
 
       for {
         schemaNames <- executeForSingleColumn(sql)
-        schemas <- Task.traverse(schemaNames)(schema => inferTablesOfSchema(schema).map(tables => Schema(schema, tables)))
+        schemas <- Task.traverse(schemaNames)(schema => inferTablesOfSchema(catalogName, schema).map(tables => Schema(schema, tables)))
       } yield Catalog(catalogName, schemas)
     }
 
-    def inferTablesOfSchema(schemaName: String): Task[List[Table]] = {
-      val sql =
-        s"""
-           |select distinct table_name
-           |from mysql.information_schema.columns
-           |where table_schema in ('$schemaName')
-        """.stripMargin
+    def inferTablesOfSchema(catalogName : String, schemaName: String): Task[List[Table]] = {
+      val sql = s"select distinct table_name from system.jdbc.tables " +
+        s"where table_cat = '$catalogName' and table_schem = '$schemaName';"
 
       val task = for {
         tables <- executeForSingleColumn(sql)
