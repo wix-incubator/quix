@@ -135,6 +135,15 @@
             <version>2.9.6</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.asynchttpclient/async-http-client -->
+        <dependency>
+            <groupId>org.asynchttpclient</groupId>
+            <artifactId>async-http-client</artifactId>
+            <version>LATEST</version>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 
     <build>
