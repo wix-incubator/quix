@@ -80,10 +80,30 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     case class RichTable(catalog: String, schema: String, name: String)
 
     def get: Task[List[Catalog]] = {
+      inferCatalogsInSingleQuery
+        .onErrorFallbackTo(inferCatalogsOneByOne)
+    }
+
+    private def inferCatalogsOneByOne = {
       for {
         catalogNames <- executeForSingleColumn("show catalogs")
         catalogs <- Task.traverse(catalogNames)(inferSchemaOfCatalog)
       } yield catalogs
+    }
+
+    def inferCatalogsInSingleQuery: Task[List[Catalog]] = {
+      val sql = """select distinct table_cat, table_schem, table_name from system.jdbc.tables"""
+      val mapper = (row: List[String]) => RichTable(row(0), row(1), row(2))
+
+      for (tables <- executeFor(sql, mapper)) yield {
+        for ((catalogName, catalogTables) <- tables.groupBy(_.catalog).toList)
+          yield {
+            val schemas = for ((schemaName, schemaTables) <- catalogTables.groupBy(_.schema).toList)
+              yield Schema(schemaName, schemaTables.map(tbl => Table(tbl.name, Nil)))
+
+            Catalog(catalogName, schemas)
+          }
+      }
     }
 
     private def inferSchemaOfCatalog(catalogName: String) = {

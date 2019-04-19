@@ -91,8 +91,16 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
       table.children must contain(Kolumn("uuid", "varchar"))
     }
 
-    "calculate catalogs via efficient queries" in new ctx {
+    "calculate catalogs via single efficient query" in new ctx {
       executor
+        .withResults(List(List("test-catalog", "test-schema", "test-table")), "first-query-id")
+
+      getCatalogs must contain(Catalog("test-catalog", List(Schema("test-schema", List(Table("test-table", List.empty))))))
+    }
+
+    "calculate catalogs via single efficient query, but fallback to less efficient in case of error" in new ctx {
+      executor
+        .withException(new Exception("failure"))
         .withResults(List(List("test-catalog")), "first-query-id")
         .withResults(List(List("test-catalog", "test-schema", "test-table")), "second-query-id")
 
@@ -101,6 +109,7 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
 
     "calculate catalogs via efficient queries, but fallback to non-efficient in case of error" in new ctx {
       executor
+        .withException(new Exception("failure"))
         .withResults(List(List("test-catalog")), "first-query-id")
         .withException(new Exception("failure"))
         .withResults(List(List("test-schema")), "second-query-id")
@@ -111,6 +120,7 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
 
     "fallback to empty catalog in case of failures" in new ctx {
       executor
+        .withException(new Exception("failure"))
         .withResults(List(List("test-catalog")), "first-query-id")
         .withException(new Exception("failure"))
         .withException(new Exception("failure"))
