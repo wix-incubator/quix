@@ -9,11 +9,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration}
 import org.springframework.core.env.Environment
 import quix.api.db.Db
+import quix.api.execute.AsyncQueryExecutor
 import quix.api.users.DummyUsers
 import quix.core.utils.JsonOps
 import quix.presto._
 import quix.presto.db.RefreshableDb
-import quix.presto.rest.ScalaJPrestoStateClient
+import quix.presto.rest.{Results, ScalaJPrestoStateClient}
 import quix.web.auth.JwtUsers
 import quix.web.controllers.DbController
 
@@ -71,14 +72,14 @@ class PrestoConfiguration extends LazyLogging {
     config
   }
 
-  @Bean def initQueryExecutor(config: PrestoConfig): QueryExecutor = {
+  @Bean def initQueryExecutor(config: PrestoConfig): AsyncQueryExecutor[Results] = {
     logger.info("event=[spring-config] bean=[QueryExecutor]")
 
     val prestoClient = new ScalaJPrestoStateClient(config)
     new QueryExecutor(prestoClient)
   }
 
-  @Bean def initPrestoExecutions(executor: QueryExecutor): PrestoExecutions = {
+  @Bean def initPrestoExecutions(executor: AsyncQueryExecutor[Results]): PrestoExecutions = {
     logger.info("event=[spring-config] bean=[PrestoExecutions]")
 
     val execution: PrestoExecutions = new PrestoExecutions(executor)
@@ -104,7 +105,7 @@ class Controllers extends LazyLogging {
 @Configuration
 class DbConfig extends LazyLogging {
 
-  @Bean def initDb(env: Environment, executor: QueryExecutor) = {
+  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[Results]) = {
     val initialDelay = env.getProperty("db.refresh.initialDelayInMinutes", classOf[Long], 1L)
     val delay = env.getProperty("db.refresh.delayInMinutes", classOf[Long], 15L)
 
