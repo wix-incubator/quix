@@ -91,6 +91,13 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
       table.children must contain(Kolumn("uuid", "varchar"))
     }
 
+    "if state.catalogs is empty, try inferring catalogs in single efficient query and store them" in new ctx {
+      executor
+        .withResults(List(List("test-catalog", "test-schema", "test-table")), "first-query-id")
+
+      db.catalogs must contain(Catalog("test-catalog", List(Schema("test-schema", List(Table("test-table", List.empty))))))
+    }
+
     "calculate catalogs via single efficient query" in new ctx {
       executor
         .withResults(List(List("test-catalog", "test-schema", "test-table")), "first-query-id")
