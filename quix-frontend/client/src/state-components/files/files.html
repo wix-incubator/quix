@@ -6,7 +6,7 @@
           class="bi-dont-shrink bi-fade-in"
           breadcrumbs="vm.breadcrumbs"
           quix-breadcrumbs-options="::{focusName: options.isNew}"
-          on-folder-click="events.onFileClick(file, isRoot)"
+          on-folder-click="events.onBreadcrumbClick(file)"
           on-name-change="events.onNameChange(file)"
           readonly="!permissions.edit"
         ></bi-breadcrumbs>
@@ -34,7 +34,12 @@
           <quix-actions 
             type="folder"
             context="vm.state.value().folder"
-            quix-actions-options="{reverse: true, forceDelete: vm.state.is('Result')}"
+            quix-actions-options="{
+              reverse: true,
+              confirmOnDelete: vm.state.is('Content'),
+              disableDelete: !permissions.delete,
+              disableCopy: !permissions.copy
+            }"
             on-like-toggle="events.onLikeToggle(context)"
             on-share="events.onShare(context)"
             on-delete="events.onDelete(context)"

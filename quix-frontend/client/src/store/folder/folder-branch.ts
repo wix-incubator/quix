@@ -13,6 +13,7 @@ import {
 } from '../../../../shared';
 
 import {isOwner} from '../../services/permission';
+import {isRoot} from '../../services/files';
 
 export interface IView {
   markedMap: Record<string, IFile>;
@@ -21,6 +22,8 @@ export interface IView {
 
 export interface IPermissions {
   edit: boolean;
+  delete: boolean;
+  copy: boolean;
 }
 
 export default (app: Instance): IBranch => register => {
@@ -88,14 +91,20 @@ export default (app: Instance): IBranch => register => {
   }
 
   const permissions = (state: IPermissions = {
-    edit: false
-  }, action: any) => {
+    edit: false,
+    delete: false,
+    copy: false,
+  }, action: any): IPermissions => {
     switch (action.type) {
       case 'folder.set':
         return action.folder ? {
-          edit: isOwner(app, action.folder)
+          edit: isOwner(app, action.folder),
+          delete: isOwner(app, action.folder) && !isRoot(action.folder),
+          copy: !isOwner(app, action.folder) || !isRoot(action.folder)
         } : {
-          edit: false
+          edit: false,
+          delete: false,
+          copy: false
         };
       default:
     }

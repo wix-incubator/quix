@@ -1,10 +1,11 @@
+import {takeWhile} from 'lodash';
 import {Store} from '../../lib/store';
 import {utils} from '../../lib/core';
 import {toast} from '../../lib/ui';
 import {Instance} from '../../lib/app';
 import {IScope} from './files-types';
 import {IFile, FileActions, NotebookActions} from '../../../../shared';
-import {FileType} from '../../../../shared/entities/file';
+import {FileType, IFilePathItem} from '../../../../shared/entities/file';
 import {addNotebook} from '../../services/notebook';
 import {addFolder, deleteFolder, goToFile, goToRoot} from '../../services/files';
 import {setFolder, toggleMark, unmarkAll} from '../../store/folder/folder-actions';
@@ -13,6 +14,10 @@ export const onNameChange = (scope: IScope, store: Store, app: Instance) => (fol
   const {id, name} = folder;
 
   store.dispatchAndLog(FileActions.updateName(id, name));
+};
+
+export const onChildNameChange = (scope: IScope, store: Store, app: Instance) => (file: IFile) => {
+  onNameChange(scope, store, app)(file);
 };
 
 export const onDelete = (scope: IScope, store: Store, app: Instance) => (folder: IFile) => {
@@ -36,19 +41,24 @@ export const onLikeToggle = (scope: IScope, store: Store, app: Instance) => (fil
   store.dispatchAndLog(file.type === FileType.folder ? FileActions.toggleIsLiked(id, !isLiked) : NotebookActions.toggleIsLiked(id, !isLiked));
 }
 
-export const onFileClick = (scope: IScope, store: Store, app: Instance) => (file: IFile, isRoot = false) => {
-  const {folder: {owner}} = scope.vm.state.value();
+export const onBreadcrumbClick = (scope: IScope, store: Store, app: Instance) => (file: IFilePathItem) => {
+  const {folder: {owner, path}} = scope.vm.state.value();
 
-  goToFile(app, {...file, owner}, isRoot);
+  goToFile(app, {...file, owner, type: FileType.folder, path: takeWhile(path, item => item.id !== file.id)});
+};
+
+export const onFileClick = (scope: IScope, store: Store, app: Instance) => (file: IFile) => {
+  goToFile(app, file);
 };
 
 export const onGoToRootClick = (scope: IScope, store: Store, app: Instance) => () => {
   goToRoot(app);
 };
 
-export const onFolderAdd = (scope: IScope, store: Store, app: Instance) => () => {
+export const onFolderAdd = (scope: IScope, store: Store, app: Instance) => async () => {
   const {folder} = scope.vm.state.value();
-  const {file} = addFolder(store, app, folder) as any;
+  const file = await addFolder(store, app, folder);
+
   scope.vm.files.get(file).isNew = true;
 };
 

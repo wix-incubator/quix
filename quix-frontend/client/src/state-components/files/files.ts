@@ -32,8 +32,8 @@ export default (app: App, store: Store) => ({
       scope.permissions = permissions;
     }, scope);
 
-    store.subscribe('folder.folder.name', name => {
-      setTitle(({stateName}) => [stateName, name].filter(x => x));
+    store.subscribe('folder.folder.name', (name: string) => {
+      setTitle(() => [name]);
     }, scope);
 
     store.subscribe('folder.error', error => {

@@ -24,7 +24,13 @@ export default (app: Instance, store: Store) => () => ({
     async pre(scope: IScope) {
       initNgScope(scope)
         .withVM({})
-        .withOptions('quixActionsOptions', {reverse: false, list: false, forceDelete: false}, true)
+        .withOptions('quixActionsOptions', {
+          reverse: false,
+          list: false,
+          confirmOnDelete: true,
+          disableDelete: false,
+          disableCopy: false,
+        }, true)
         .withEvents({
           onLikeToggle() {
             scope.onLikeToggle({context: scope.context});
@@ -38,7 +44,7 @@ export default (app: Instance, store: Store) => () => ({
           onDelete() {
             const fn = () => scope.onDelete({context: scope.context});
 
-            if (scope.options.forceDelete) {
+            if (!scope.options.confirmOnDelete) {
               fn();
             } else {
               confirm('delete', scope.type, scope.options.list).then(fn);

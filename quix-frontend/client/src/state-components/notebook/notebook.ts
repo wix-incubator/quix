@@ -35,7 +35,7 @@ export default (app: App, store: Store) => ({
     }, scope);
 
     store.subscribe('notebook.notebook.name', name => {
-      setTitle(({stateName}) => [stateName, name]);
+      setTitle(({stateName}) => [name]);
     }, scope);
 
     store.subscribe('notebook.error', error => {
