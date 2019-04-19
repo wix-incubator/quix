@@ -2,14 +2,14 @@ package quix.web.controllers
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
-import org.junit.Test
+import org.junit.{Before, Test}
 import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.context.{TestContextManager, TestPropertySource}
 import quix.api.db.{Catalog, Kolumn, Schema, Table}
-import quix.web.{E2EContext, SpringConfigWithTestExecutor, TestQueryExecutorInstance}
+import quix.web.{E2EContext, MockBeans, SpringConfigWithTestExecutor}
 
 @RunWith(classOf[SpringRunner])
 @SpringBootTest(webEnvironment = DEFINED_PORT, classes = Array(classOf[SpringConfigWithTestExecutor]))
@@ -17,11 +17,18 @@ import quix.web.{E2EContext, SpringConfigWithTestExecutor, TestQueryExecutorInst
 class DbControllerTest extends E2EContext {
 
   new TestContextManager(this.getClass).prepareTestInstance(this)
-  val executor = TestQueryExecutorInstance.instance
+  val executor = MockBeans.queryExecutor
+  val db = MockBeans.db
+
+  @Before
+  def executeBeforeEachTest = {
+    executor.clear
+    db.reset
+  }
 
   @Test
   def returnEmptyCatalogsWhenPrestoIsDown(): Unit = {
-    executor.clear.withExceptions(new Exception("presto is down!"), 100)
+    executor.withExceptions(new Exception("presto is down!"), 100)
 
     val catalogs = get[List[Catalog]]("api/db/explore")
 
@@ -30,7 +37,7 @@ class DbControllerTest extends E2EContext {
 
   @Test
   def sendSinglePrestoQueryWhenDBTreeIsEmpty(): Unit = {
-    executor.clear.withResults(List(List("catalog", "schema", "table")))
+    executor.withResults(List(List("catalog", "schema", "table")))
 
     val catalogs = get[List[Catalog]]("api/db/explore")
 
@@ -41,7 +48,7 @@ class DbControllerTest extends E2EContext {
 
   @Test
   def handleGetTableRequestWhenPrestoIsOnline(): Unit = {
-    executor.clear.withResults(List(List("column1", "varchar"), List("column2", "int")))
+    executor.withResults(List(List("column1", "varchar"), List("column2", "int")))
 
     val actual = get[Table]("api/db/explore/catalog/schema/table")
 
@@ -52,13 +59,68 @@ class DbControllerTest extends E2EContext {
 
   @Test
   def handleGetTableRequestWhenPrestoIsDown(): Unit = {
-    executor.clear.withException(new Exception("presto is down!"))
+    executor.withException(new Exception("presto is down!"))
 
     val actual = get[Table]("api/db/explore/catalog/schema/table")
 
     val expected = Table("table", children = Nil)
 
     assertThat(actual, Matchers.is(expected))
+  }
+
+  @Test
+  def handleAutoCompleteRequestWhenPrestoIsOffline(): Unit = {
+    executor.withException(new Exception("presto is down"))
+
+    val actual = get[Map[String, List[String]]]("api/db/autocomplete")
+
+    assertThat(actual.isEmpty, Matchers.is(true))
+  }
+
+  @Test
+  def handleAutoCompleteRequestWhenPrestoIsOnline(): Unit = {
+    executor
+      .withResults(List(List("catalog")))
+      .withResults(List(List("schema")))
+      .withResults(List(List("table")))
+      .withResults(List(List("column1"), List("column2")))
+
+    val actual = get[Map[String, List[String]]]("api/db/autocomplete")
+
+    assertThat(actual("catalogs"), Matchers.is(List("catalog")))
+    assertThat(actual("schemas"), Matchers.is(List("schema")))
+    assertThat(actual("tables"), Matchers.is(List("table")))
+    assertThat(actual("columns"), Matchers.is(List("column1", "column2")))
+  }
+
+  @Test
+  def handleAutoCompleteRequestWhenPrestoIsOnlineAndThenOffline(): Unit = {
+    executor
+      .withResults(List(List("catalog")))
+      .withResults(List(List("schema")))
+      .withResults(List(List("table")))
+      .withResults(List(List("column1"), List("column2")))
+      .withExceptions(new Exception("presto is down!"), 100)
+
+    // first request goes to presto
+    {
+      val actual = get[Map[String, List[String]]]("api/db/autocomplete")
+
+      assertThat(actual("catalogs"), Matchers.is(List("catalog")))
+      assertThat(actual("schemas"), Matchers.is(List("schema")))
+      assertThat(actual("tables"), Matchers.is(List("table")))
+      assertThat(actual("columns"), Matchers.is(List("column1", "column2")))
+    }
+
+    // second request from cache
+    {
+      val actual = get[Map[String, List[String]]]("api/db/autocomplete")
+
+      assertThat(actual("catalogs"), Matchers.is(List("catalog")))
+      assertThat(actual("schemas"), Matchers.is(List("schema")))
+      assertThat(actual("tables"), Matchers.is(List("table")))
+      assertThat(actual("columns"), Matchers.is(List("column1", "column2")))
+    }
   }
 }
 
