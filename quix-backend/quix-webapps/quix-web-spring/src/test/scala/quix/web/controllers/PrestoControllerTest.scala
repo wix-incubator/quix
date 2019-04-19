@@ -25,10 +25,16 @@ class PrestoControllerTest extends E2EContext with LazyLogging {
 
   @Test
   def passSanity(): Unit = {
-    executor.withResults(List(List("1")))
+    executor.withResults(List(List("1")), columns = List("_col0"))
     val listener = execute("select 1")
 
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-start","data":{"id":"query-id"}}"""))
+    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-id","code":"select 1"}}"""))
+    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-id","percentage":0}}"""))
+    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"fields","data":{"id":"query-id","fields":["_col0"]}}"""))
+    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-id","row":{"_col0":"1"}}}"""))
+    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-id","percentage":100}}"""))
+    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-id"}}"""))
   }
 
 }
