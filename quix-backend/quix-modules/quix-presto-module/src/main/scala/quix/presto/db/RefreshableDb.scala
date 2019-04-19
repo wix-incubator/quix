@@ -26,7 +26,8 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     val startMillis = System.currentTimeMillis()
 
     logger.info(s"event=get-table-start $catalog.$schema.$table")
-    val sql = s"""select column_name, type_name
+    val sql =
+      s"""select column_name, type_name
          |from system.jdbc.columns
          |where table_cat = '$catalog'
          |and table_schem = '$schema'
@@ -51,7 +52,16 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     result
   }
 
-  override def catalogs: List[Catalog] = state.catalogs
+  override def catalogs: List[Catalog] = {
+    if (state.catalogs.isEmpty) {
+      val catalogsTask = for {
+        newCatalogs <- Catalogs.inferCatalogsInSingleQuery
+        _ <- Task(state.catalogs = newCatalogs)
+      } yield newCatalogs
+
+      Await.result(catalogsTask.timeoutTo(4.seconds, Task(Nil)).runToFuture(io), 5.seconds)
+    } else state.catalogs
+  }
 
   override def autocomplete: Map[String, List[String]] = state.autocomplete
 
@@ -150,7 +160,7 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
       } yield Catalog(catalogName, schemas)
     }
 
-    def inferTablesOfSchema(catalogName : String, schemaName: String): Task[List[Table]] = {
+    def inferTablesOfSchema(catalogName: String, schemaName: String): Task[List[Table]] = {
       val sql = s"select distinct table_name from system.jdbc.tables " +
         s"where table_cat = '$catalogName' and table_schem = '$schemaName';"
 
