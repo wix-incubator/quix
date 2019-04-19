@@ -80,6 +80,12 @@ class TestQueryExecutor extends AsyncQueryExecutor[Results] {
     this
   }
 
+  def withExceptions(e: Exception, n: Int) = {
+    for (e <- List.fill(n)(e))
+      executions.enqueue(new SingleExecution(exception = Some(e)))
+    this
+  }
+
   def withPrestoError(e: PrestoError): TestQueryExecutor = {
     executions.enqueue(new SingleExecution(error = Some(e)))
     this
@@ -96,5 +102,10 @@ class TestQueryExecutor extends AsyncQueryExecutor[Results] {
       execution <- Task.eval(executions.dequeue())
       _ <- execution.act(builder)
     } yield ()
+  }
+
+  def clear = {
+    executions.clear()
+    this
   }
 }
