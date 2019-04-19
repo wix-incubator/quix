@@ -23,9 +23,6 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
   val user = User("quix-db-tree")
 
   override def table(catalog: String, schema: String, table: String): Table = {
-    val startMillis = System.currentTimeMillis()
-
-    logger.info(s"event=get-table-start $catalog.$schema.$table")
     val sql =
       s"""select column_name, type_name
          |from system.jdbc.columns
@@ -38,18 +35,16 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     }
 
     val tableTask = for {
-      columns <- executeFor(sql, mapper)
+      _ <- Task(logger.info(s"event=get-table-start $catalog.$schema.$table"))
+      startMillis <- Task(System.currentTimeMillis())
+      columns <- executeFor(sql, mapper).timeout(5.seconds).onErrorFallbackTo(Task(Nil))
+      endMillis <- Task(System.currentTimeMillis())
+      _ <- Task(logger.info(s"event=get-table-finish $catalog.$schema.$table millis=${endMillis - startMillis} seconds=${(endMillis - startMillis) / 1000.0}"))
     } yield Table(table, columns)
 
     val tableFuture = tableTask.executeOn(io).runToFuture(io)
 
-    val result = Await.result(tableFuture, 10.seconds)
-
-    val endMillis = System.currentTimeMillis()
-
-    logger.info(s"event=get-table-finish $catalog.$schema.$table millis=${endMillis - startMillis} seconds=${(endMillis - startMillis) / 1000.0}")
-
-    result
+    Await.result(tableFuture, 6.seconds)
   }
 
   override def catalogs: List[Catalog] = {
