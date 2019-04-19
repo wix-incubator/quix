@@ -59,7 +59,7 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
         _ <- Task(state.catalogs = newCatalogs)
       } yield newCatalogs
 
-      Await.result(catalogsTask.timeoutTo(4.seconds, Task(Nil)).runToFuture(io), 5.seconds)
+      Await.result(catalogsTask.timeout(4.seconds).onErrorFallbackTo(Task(Nil)).runToFuture(io), 5.seconds)
     } else state.catalogs
   }
 
