@@ -37,4 +37,36 @@ class PrestoControllerTest extends E2EContext with LazyLogging {
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-id"}}"""))
   }
 
+  @Test
+  def handleMultipleStatements(): Unit = {
+    executor
+      .withResults(List(List("1")), queryId = "query-1", columns = List("foo"))
+      .withResults(List(List("2")), queryId = "query-2", columns = List("boo"))
+
+    val listener = execute("select 1 as foo;\nselect 2 as boo")
+
+    // first query
+    {
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-start","data":{"id":"query-1"}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-1","code":"select 1 as foo"}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"fields","data":{"id":"query-1","fields":["foo"]}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-1","percentage":0}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-1","row":{"foo":"1"}}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-1","percentage":100}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-1"}}"""))
+    }
+
+    // second query
+    {
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-start","data":{"id":"query-2"}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-2","code":"select 2 as boo"}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"fields","data":{"id":"query-2","fields":["boo"]}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-2","percentage":0}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-2","row":{"boo":"2"}}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-2","percentage":100}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-2"}}"""))
+    }
+
+  }
+
 }
