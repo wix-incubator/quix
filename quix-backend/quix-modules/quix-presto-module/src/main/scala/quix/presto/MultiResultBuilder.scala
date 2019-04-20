@@ -5,6 +5,8 @@ import monix.eval.Task
 import quix.api.execute.{ActiveQuery, Consumer, ResultBuilder}
 import quix.presto.rest.{PrestoColumn, PrestoError, Results, ResultsStats}
 
+import scala.collection.immutable.ListMap
+
 class MultiResultBuilder(val consumer: Consumer[PrestoEvent])
   extends ResultBuilder[Results] with LazyLogging {
 
@@ -42,7 +44,7 @@ class MultiResultBuilder(val consumer: Consumer[PrestoEvent])
     rows += results.data.size
 
     val rowTask = Task.traverse(results.data) { row =>
-      consumer.write(Row(queryId, columns.zip(row).toMap))
+      consumer.write(Row(queryId, ListMap(columns.zip(row): _*)))
     }
 
     Task.sequence(Seq(columnTask, progressTask, errorTask, rowTask)).map(_ => ())

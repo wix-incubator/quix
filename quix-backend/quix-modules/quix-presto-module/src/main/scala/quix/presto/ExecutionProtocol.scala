@@ -1,5 +1,7 @@
 package quix.presto
 
+import scala.collection.immutable.ListMap
+
 sealed trait PrestoEventData
 
 sealed case class PrestoEvent(event: String, data: PrestoEventData)
@@ -22,8 +24,7 @@ sealed case class SubQueryError(id: String, message: String) extends PrestoEvent
 
 sealed case class Progress(id: String, percentage: Int) extends PrestoEventData
 
-sealed case class Row(id: String, row: Map[String, AnyRef]) extends PrestoEventData
-
+sealed case class Row(id: String, row: ListMap[String, AnyRef]) extends PrestoEventData
 
 object Start {
   def apply(id: String, numOfQueries: Int): PrestoEvent = PrestoEvent("start", new Start(id, numOfQueries))
@@ -63,5 +64,5 @@ object Error {
 }
 
 object Row {
-  def apply(id: String, data: Map[String, AnyRef]): PrestoEvent = PrestoEvent("row", new Row(id, data))
+  def apply(id: String, data: ListMap[String, AnyRef]): PrestoEvent = PrestoEvent("row", new Row(id, data))
 }
