@@ -5,25 +5,26 @@ import io.prestosql.sql.parser.StatementSplitter
 import monix.eval.Task
 import quix.api.execute._
 import quix.api.module.ExecutionModule
-import quix.presto.rest.PrestoSql
+import quix.api.users.User
+import quix.presto.rest.{PrestoSql, Results}
 
 import scala.collection.JavaConverters._
 
 case class PrestoConfig(statementsApi: String, healthApi: String, queryInfoApi: String, schema: String, catalog: String, source: String)
 
-class PrestoQuixModule(val prestoExecutions: PrestoExecutions) extends ExecutionModule[String, PrestoEvent] with LazyLogging {
+class PrestoQuixModule(val prestoExecutions: PrestoExecutions) extends ExecutionModule[String, Results] with LazyLogging {
   override def name: String = "presto"
 
-  override def start(command: StartCommand[String], consumer: Consumer[PrestoEvent]): Task[Unit] = {
-    logger.info(s"event=start-command consumer-id=${consumer.id} user=${consumer.user.email}")
+  override def start(command: StartCommand[String], id: String, user: User, resultBuilder: ResultBuilder[Results]): Task[Unit] = {
+    logger.info(s"event=start-command consumer-id=$id user=${user.email}")
 
     val sqls = for {
       statement <- PlainPrestoSqlSupport.splitToStatements(command.code)
     } yield PlainPrestoSqlSupport.getSessionProperties(statement)
 
     prestoExecutions
-      .execute(sqls, consumer.user, new MultiResultBuilder(consumer))
-      .doOnCancel(prestoExecutions.kill(consumer.id, consumer.user))
+      .execute(sqls, user, resultBuilder)
+      .doOnCancel(prestoExecutions.kill(id, user))
   }
 
 }

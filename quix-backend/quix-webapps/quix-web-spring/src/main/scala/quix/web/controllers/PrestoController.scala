@@ -11,7 +11,7 @@ import quix.api.execute.{Consumer, StartCommand}
 import quix.api.users.{User, Users}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
-import quix.presto.{PrestoEvent, PrestoQuixModule}
+import quix.presto.{MultiResultBuilder, PrestoEvent, PrestoQuixModule}
 
 class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
@@ -25,13 +25,20 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
     val payload = message.getPayload.as[StartCommand[String]]
 
     val initConsumer = Task.eval(new WebsocketConsumer[PrestoEvent](socket.getId, user, socket))
-    val useConsumer = (consumer: WebsocketConsumer[PrestoEvent]) => prestoModule.start(payload, consumer)
+
+    val useConsumer = (consumer: WebsocketConsumer[PrestoEvent]) =>
+      prestoModule.start(payload, consumer.id, consumer.user, makeResultBuilder(consumer, payload.session))
+
     val closeConsumer = (consumer: WebsocketConsumer[PrestoEvent]) => consumer.close()
 
     val task = initConsumer.bracket(useConsumer)(closeConsumer)
 
     val future = task.executeOn(io).runToFuture(io)
     executions.put(socket.getId, future)
+  }
+
+  def makeResultBuilder(consumer: WebsocketConsumer[PrestoEvent], session: Map[String, String]) = {
+    new MultiResultBuilder(consumer)
   }
 
   override def afterConnectionClosed(socket: WebSocketSession, status: CloseStatus): Unit = users.auth(getHeaders(socket)) { user =>
