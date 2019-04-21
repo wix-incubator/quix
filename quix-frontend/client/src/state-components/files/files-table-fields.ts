@@ -47,7 +47,7 @@ export const initTableFields = scope => {
             ce-options="::{autoEdit: true}"
             ng-model="file.name"
             ng-blur="vm.isNew = false"
-            on-change="events.onFileNameChange(file)"
+            on-change="events.onChildNameChange(file)"
           ></span>
         </div>
       `, {file, vm: scope.vm.files.get(file)}, scope);

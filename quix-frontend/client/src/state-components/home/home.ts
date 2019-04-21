@@ -6,6 +6,7 @@ import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {Instance as App} from '../../lib/app';
 import {addNotebook} from '../../services/notebook';
+import {goToRoot} from '../../services/files';
 
 export default (app: App, store: Store) => ({
   name: 'base.home',
@@ -17,10 +18,10 @@ export default (app: App, store: Store) => ({
     initNgScope(scope)
       .withEvents({
         onNotebooksClick() {
-          app.getNavigator().go('base.files');
+          goToRoot(app);
         },
         onNotebookAdd() {
-          addNotebook(store, app);
+          addNotebook(store, app, []);
         }
       });
   }

@@ -2,7 +2,16 @@ import {values} from 'lodash';
 import {combineReducers} from 'redux';
 import {IBranch} from '../../lib/store';
 import {Instance} from '../../lib/app';
-import {INotebook, INote, composeReducers, clientNotebookReducer, noteListReducer, NoteActionTypes, NotebookActionTypes} from '../../../../shared';
+import {
+  INotebook,
+  INote,
+  composeReducers,
+  clientNotebookReducer,
+  noteListReducer,
+  NoteActionTypes
+} from '../../../../shared';
+
+import {isOwner} from '../../services/permission';
 
 export interface IQueue {
   notes: Record<string, INote>;
@@ -10,7 +19,6 @@ export interface IQueue {
 }
 
 export interface IView {
-  error: any;
   markedMap: Record<string, INote>;
   markedList: INote[];
   note: INote;
@@ -47,6 +55,18 @@ export default (app: Instance): IBranch => register => {
     },
   );
 
+  const error = (state: any = null, action: any) => {
+    switch (action.type) {
+      case 'notebook.set':
+        return null;
+      case 'notebook.setError':
+        return action.error;
+      default:
+    }
+
+    return state;
+  }
+
   const queue = (state: IQueue = {notes: {}, size: 0}, action: any): IQueue => {
     switch (action.type) {
       case 'notebook.queue.note':
@@ -64,7 +84,6 @@ export default (app: Instance): IBranch => register => {
   }
 
   const view = (state: IView = {
-    error: null,
     markedMap: {},
     markedList: [],
     note: null
@@ -72,13 +91,10 @@ export default (app: Instance): IBranch => register => {
     switch (action.type) {
       case 'notebook.set':
         return {
-          error: null,
           markedMap: {},
           markedList: [],
           note: null
         };
-      case 'notebook.view.setError':
-        return {...state, error: action.error};
       case 'notebook.view.unmarkAll':
         return {
           ...state, 
@@ -104,10 +120,9 @@ export default (app: Instance): IBranch => register => {
     edit: false
   }, action: any): IPermissions => {
     switch (action.type) {
-      case NotebookActionTypes.createNotebook:
       case 'notebook.set':
         return action.notebook ? {
-          edit: app.getUser().getEmail() === action.notebook.owner
+          edit: isOwner(app, action.notebook)
         } : {
           edit: false
         };
@@ -117,5 +132,5 @@ export default (app: Instance): IBranch => register => {
     return state;
   }
 
-  register(combineReducers({notebook, notes, queue, view, permissions}));
+  register(combineReducers({notebook, notes, error, queue, view, permissions}));
 };

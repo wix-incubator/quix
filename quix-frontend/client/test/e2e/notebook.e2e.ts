@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {Driver} from './driver';
-import {createMockNotebook, createMockNotebookWithNote} from '../mocks';
+import {createMockNotebook, createMockNote} from '../mocks';
 import {NotebookTestkit} from '../../src/state-components/notebook/notebook-testkit';
 
 describe('Notebook ::', () => {
@@ -9,7 +9,6 @@ describe('Notebook ::', () => {
   beforeEach(async () => {
     driver = new Driver();
     await driver.init();
-    
 
     testkit = new NotebookTestkit(driver.getTestkitPage());
   });
@@ -31,7 +30,7 @@ describe('Notebook ::', () => {
   });
 
   it('should display notes if notebook has at least one note', async () => {
-    const notebook = createMockNotebookWithNote();
+    const notebook = createMockNotebook([createMockNote()]);
 
     await driver.mock.http('/api/notebook/:id', notebook);
     await driver.goto(`/notebook/${notebook.id}`);
@@ -52,7 +51,7 @@ describe('Notebook ::', () => {
   });
 
   it('should not focus the name input of existing note', async () => {
-    const notebook = createMockNotebookWithNote();
+    const notebook = createMockNotebook([createMockNote()]);
 
     await driver.mock.http('/api/notebook/:id', notebook);
     await driver.goto(`/notebook/${notebook.id}`);
@@ -64,7 +63,7 @@ describe('Notebook ::', () => {
   });
 
   it('should add a note and focus the name input', async () => {
-    const notebook = createMockNotebookWithNote();
+    const notebook = createMockNotebook([createMockNote()]);
 
     await driver.mock.http('/api/notebook/:id', notebook);
     await driver.goto(`/notebook/${notebook.id}`);

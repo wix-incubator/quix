@@ -7,7 +7,7 @@
           ng-if="vm.breadcrumbs.enabled"
           breadcrumbs="vm.breadcrumbs.folders"
           quix-breadcrumbs-options="::{focusName: options.isNew}"
-          on-folder-click="events.onFileClick(file)"
+          on-folder-click="events.onBreadcrumbClick(file)"
           on-name-change="events.onNameChange(file)"
           readonly="!permissions.edit"
         ></bi-breadcrumbs>
@@ -47,7 +47,10 @@
           <quix-actions
             type="notebook"
             context="vm.state.value().notebook"
-            quix-actions-options="{reverse: true, forceDelete: vm.state.is('Result')}"
+            quix-actions-options="{
+              reverse: true,
+              confirmOnDelete: vm.state.is('Content')
+            }"
             on-like-toggle="events.onLikeToggle(context)"
             on-share="events.onShare(context)"
             on-copy="events.onCopy(context)"
@@ -82,7 +85,7 @@
         </div>
         <div class="bi-empty-state-header bi-danger">{{::vm.state.value().error.message}}</div>
         <div class="bi-empty-state-content">
-          <a class="bi-link" ng-click="events.onFileClick()">Go to my notebooks</a>
+          <a class="bi-link" ng-click="events.onGoToRootClick()">Go to my notebooks</a>
         </div>
       </div>
 

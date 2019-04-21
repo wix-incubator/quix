@@ -1,16 +1,33 @@
 import UrlPattern from 'url-pattern';
-import {IFile, INotebook, createUser, createNotebook, createNotebookWithNote, createFolder, createFile, createNote, INote} from '../../shared';
+import {
+  IFile,
+  INotebook,
+  INote,
+  IFolder,
+  createUser,
+  createNotebook,
+  createFolder,
+  createFile,
+  createNote,
+  createFolderPayload
+} from '../../shared';
 
 const mocks = {
   '/api/user': () => createUser(),
   '/api/events': () =>[200],
   // '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],
-  '/api/files': () => [createMockFolder(), createMockFile(), createMockFile()],
   '/api/files/404': () => [404, {message: 'Folder not found'}],
   '/api/notebook/404': () => [404, {message: 'Notebook not found'}],
-  '/api/notebook/:id': ({id}) => createMockNotebookWithNote({id}),
+  '/api/files': () => createMockFiles([
+    createMockFolder(),
+    createMockFile(),
+  ]),
+  '/api/files/:id': ({id}) => createMockFolderPayload([
+    createMockFile()
+  ], {id}),
+  '/api/notebook/:id': ({id}) => createMockNotebook([createMockNote(id)], {id}),
   '/api/search/:text': ({text}) => {
-    const res = [createNote('1'), createNote('2'), createNote('3')];
+    const res = [createMockNote('1'), createMockNote('2'), createMockNote('3')];
     res.forEach(note => note.content = `select 1 as ${text}`);
     return res;
   },
@@ -39,24 +56,51 @@ const mocks = {
 
 let mockOverrides = {};
 
+export const createMockRootFolder = (props: Partial<IFile> = {}) => {
+  return createFolder([], {id: '1', name: 'My notebooks', owner: 'local@quix.com', ...props});
+}
+
 export const createMockFile = (props: Partial<IFile> = {}) => {
-  return createFile([], {owner: 'local@quix.com', ...props});
+  return createFile([{id: '1', name: 'My notebooks'}], {owner: 'local@quix.com', ...props});
 }
 
 export const createMockFolder = (props: Partial<IFile> = {}) => {
-  return createFolder([], {owner: 'local@quix.com', ...props});
+  return createFolder([{id: '1', name: 'My notebooks'}], {owner: 'local@quix.com', ...props});
 }
 
-export const createMockNotebook = (props: Partial<INotebook> = {}) => {
-  return createNotebook([], {owner: 'local@quix.com', ...props});
+export const createMockFiles = (children = []) => {
+  return [
+    createMockRootFolder(),
+    ...children.map((child, index) => ({
+      ...child,
+      // tslint:disable-next-line: restrict-plus-operands
+      id: `${index + 100}`,
+    }))
+  ];
 }
 
-export const createMockNote = (notebookId: string, props: Partial<INote> = {}) => {
+export const createMockFolderPayload = (children = [], props: Partial<IFolder> = {}) => {
+  return createFolderPayload([{id: '1', name: 'My notebooks'}], {
+    owner: 'local@quix.com',
+    files: children.map((child, index) => ({
+      ...child,
+      // tslint:disable-next-line: restrict-plus-operands
+      id: `${index + 100}`
+    })),
+    ...props
+  });
+}
+
+export const createMockNotebook = (notes = [], props: Partial<INotebook> = {}) => {
+  return createNotebook([{id: '1', name: 'My notebooks'}], {
+    owner: 'local@quix.com',
+    notes,
+    ...props
+  });
+}
+
+export const createMockNote = (notebookId: string = '1', props: Partial<INote> = {}) => {
   return createNote(notebookId, {owner: 'local@quix.com', ...props});
-}
-
-export const createMockNotebookWithNote = (props: Partial<INotebook> = {}) => {
-  return createNotebookWithNote([], {owner: 'local@quix.com', ...props});
 }
 
 export const mock = (patternOrUrl: string, patternPayload?: any) => {

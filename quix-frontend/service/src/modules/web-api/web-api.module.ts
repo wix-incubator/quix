@@ -9,6 +9,7 @@ import {FoldersService} from './folders/folders.service';
 import {NotebookController} from './notebooks/notebooks.controller';
 import {NotebookService} from './notebooks/notebooks.service';
 import {AuthModule} from '../auth/auth.module';
+import {EventSourcingModule} from '../event-sourcing/event-sourcing.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import {AuthModule} from '../auth/auth.module';
     ]),
     ConfigModule,
     AuthModule,
+    EventSourcingModule,
   ],
   controllers: [NotebookController, FoldersController],
   providers: [NotebookService, FoldersService],

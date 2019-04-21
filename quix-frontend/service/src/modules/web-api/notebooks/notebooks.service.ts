@@ -8,12 +8,13 @@ import {
   DbNotebook,
   FileTreeRepository,
 } from '../../../entities';
+import {FoldersService} from '../folders/folders.service';
 
 @Injectable()
 export class NotebookService {
   constructor(
     @InjectRepository(DbNotebook) private notebookRepo: Repository<DbNotebook>,
-    private fileTreeRepo: FileTreeRepository,
+    private folderService: FoldersService,
   ) {}
 
   async getId(getId: string): Promise<INotebook | undefined> {
@@ -24,7 +25,8 @@ export class NotebookService {
     if (!notebook) {
       return undefined;
     }
-    const path = (await this.computePath(notebook)) || [];
+    const path =
+      (await this.folderService.computePath(notebook.fileNode)) || [];
     const {
       id,
       notes,
@@ -35,30 +37,5 @@ export class NotebookService {
       owner,
     } = notebook;
     return {id, notes, dateCreated, dateUpdated, isLiked, name, owner, path};
-  }
-
-  private async computePath(notebook: DbNotebook) {
-    const mpath = notebook.fileNode.mpath;
-    const parentsIds = mpath.split('.').slice(0, -1); // remove own Id
-    if (parentsIds.length > 0) {
-      const parents = await this.fileTreeRepo.getNamesByIds(parentsIds);
-      return extractPath(parentsIds, parents);
-    }
-  }
-}
-
-function extractPath(
-  parentsIds: string[],
-  parents: DbFileTreeNode[],
-): IFilePathItem[] {
-  try {
-    return parentsIds.map(id => {
-      const item = parents.find(p => p.id === id)!;
-      const name =
-        item.type === FileType.folder ? item.folder!.name : item.notebook!.name;
-      return {name, id};
-    });
-  } catch (e) {
-    throw new Error('Error in calculation path for notebook');
   }
 }

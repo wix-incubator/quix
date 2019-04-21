@@ -1,19 +1,26 @@
-import {last} from 'lodash';
+import {takeWhile} from 'lodash';
 import {utils} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {toast} from '../../lib/ui';
 import {Instance} from '../../lib/app';
-import {INote, NotebookActions, IFile, NoteActions, INotebook} from '../../../../shared';
+import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem} from '../../../../shared';
+import {FileType} from '../../../../shared/entities/file';
 import {IScope} from './notebook-types';
 import {setNotebook, setNote, queueNote, toggleMark, unmarkAll} from '../../store/notebook/notebook-actions';
-import {saveQueuedNotes} from '../../services/notebook';
+import {saveQueuedNotes, deleteNotebook} from '../../services/notebook';
 import {removeRunner, addRunner} from '../../store/app/app-actions';
 import {prompt} from '../../services/dialog';
+import {goToFile, goToRoot} from '../../services/files';
 
+export const onBreadcrumbClick = (scope: IScope, store: Store, app: Instance) => (file: IFilePathItem) => {
+  const {notebook: {owner, path}} = scope.vm.state.value();
 
-export const onFileClick = (scope: IScope, store: Store, app: Instance) => (file: IFile = null) => {
-  app.getNavigator().go('base.files', {id: file && file.id, isNew: false});
-}
+  goToFile(app, {...file, owner, type: FileType.folder, path: takeWhile(path, item => item.id !== file.id)});
+};
+
+export const onGoToRootClick = (scope: IScope, store: Store, app: Instance) => () => {
+  goToRoot(app);
+};
 
 export const onNameChange = (scope: IScope, store: Store, app: Instance) => (file: IFile) => {
   const {id, name} = file;
@@ -22,13 +29,7 @@ export const onNameChange = (scope: IScope, store: Store, app: Instance) => (fil
 }
 
 export const onDelete = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
-  const {id, path} = notebook;
-
-  store.dispatchAndLog(NotebookActions.deleteNotebook(id))
-    .then(() => app.getNavigator().go('base.files', {
-      id: path.length ? last<any>(path).id : undefined,
-      isNew: false
-    }));
+  deleteNotebook(store, app, notebook);
 }
 
 export const onCopy = (scope: IScope, store: Store, app: Instance) => () => {
