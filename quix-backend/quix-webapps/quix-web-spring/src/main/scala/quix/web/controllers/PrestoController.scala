@@ -7,13 +7,14 @@ import monix.eval.Task
 import monix.execution.{CancelableFuture, Scheduler}
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSession}
-import quix.api.execute.{Consumer, StartCommand}
+import quix.api.execute.{Consumer, DownloadableQueries, StartCommand}
 import quix.api.users.{User, Users}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
-import quix.presto.{PrestoEvent, PrestoQuixModule}
+import quix.presto.rest.Results
+import quix.presto.{MultiResultBuilder, PrestoEvent, PrestoQuixModule}
 
-class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
+class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val downloadableQueries: DownloadableQueries[Results])
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
 
   val io = Scheduler.io("presto-executor")
@@ -34,7 +35,11 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
     val payload = message.getPayload.as[StartCommand[String]]
 
     val initConsumer = Task.eval(new WebsocketConsumer[PrestoEvent](socket.getId, user, socket))
-    val useConsumer = (consumer: WebsocketConsumer[PrestoEvent]) => prestoModule.start(payload, consumer)
+    val useConsumer = (consumer: WebsocketConsumer[PrestoEvent]) => {
+
+      prestoModule.start(payload, consumer.id, consumer.user, makeResultBuilder(consumer, payload.session))
+    }
+
     val closeConsumer = (consumer: WebsocketConsumer[PrestoEvent]) => consumer.close()
 
     val task = initConsumer.bracket(useConsumer)(closeConsumer)
@@ -44,7 +49,10 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
   }
 
   private def handlePingMessage(socket: WebSocketSession) = {
-    val task = Task(socket.sendMessage(new TextMessage("pong")))
+    val task = Task {
+      logger.info(s"event=ping socket-id=${socket.getId}")
+      socket.sendMessage(new TextMessage("pong"))
+    }
 
     task.runAsyncAndForget(io)
   }
@@ -59,6 +67,14 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
   def getHeaders(socket: WebSocketSession): Map[String, String] = {
     import scala.collection.JavaConverters._
     socket.getAttributes.asScala.mapValues(String.valueOf).toMap
+  }
+
+  def makeResultBuilder(consumer: WebsocketConsumer[PrestoEvent], session: Map[String, String]) = {
+    if (session.get("mode").contains("download")) {
+      downloadableQueries.adapt(new MultiResultBuilder(consumer))
+    } else {
+      new MultiResultBuilder(consumer)
+    }
   }
 }
 

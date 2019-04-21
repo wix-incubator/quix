@@ -18,19 +18,25 @@ trait E2EContext extends StringJsonHelpersSupport {
     Http("http://localhost:8888/" + url).asString
   }
 
-  def execute(sql: String) = startSocket(StartCommand[String](sql, Map.empty).asJsonStr)
+  def execute(sql: String, session: Map[String, String] = Map.empty) = startSocket(true, StartCommand[String](sql, session).asJsonStr)
 
-  def execute(sql: String, text: String) = startSocket(StartCommand[String](sql, Map.empty).asJsonStr, text)
+  def execute(sql: String, text: String) = startSocket(true, StartCommand[String](sql, Map.empty).asJsonStr, text)
 
-  def startSocket(texts: String*) = {
+  def runAndDownload(sql: String) =
+    startSocket(false, StartCommand[String](sql, Map("mode" -> "download")).asJsonStr)
+
+  def startSocket(awaitFinish: Boolean, texts: String*) = {
     val listener = new MyListener(texts: _*)
 
     val handler = new WebSocketUpgradeHandler.Builder().addWebSocketListener(listener).build()
 
-    c.prepareGet("ws://localhost:8888/api/v1/execute/sql").execute(handler).get()
+    c.prepareGet("ws://localhost:8888/api/v1/execute/sql").execute(handler)
+    Thread.sleep(500)
 
-    while (!listener.closed)
-      Thread.sleep(10)
+    if (awaitFinish) {
+      while (!listener.closed)
+        Thread.sleep(10)
+    }
 
     listener
   }
