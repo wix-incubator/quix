@@ -34,9 +34,14 @@ export const onDelete = (scope: IScope, store: Store, app: Instance) => (noteboo
 }
 
 export const onCopy = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
-  prompt({title: 'Copy notebook', yes: 'copy', content: `
-    <quix-destination ng-model="model.folder" required></quix-destination>
-  `}, scope, {model: {folder: null}})
+  prompt({
+    title: 'Copy notebook',
+    yes: 'copy',
+    content: `<quix-destination ng-model="model.folder" required></quix-destination>`
+  },
+    scope,
+    {model: {folder: null}}
+  )
   .then(({model: {folder}}) => copyNotebook(store, app, folder, {
     ...notebook,
     notes: scope.vm.state.value().notes
