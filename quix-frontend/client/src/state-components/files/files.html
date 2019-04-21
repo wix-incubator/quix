@@ -37,9 +37,7 @@
             permissions="::permissions"
             quix-actions-options="{
               reverse: true,
-              confirmOnDelete: vm.state.is('Content'),
-              disableDelete: !permissions.delete,
-              disableCopy: !permissions.copy
+              confirmOnDelete: vm.state.is('Content')
             }"
             on-like-toggle="events.onLikeToggle(context)"
             on-share="events.onShare(context)"

@@ -29,7 +29,7 @@ export const getFolderPermissions = (app: Instance, folder: IFile): IPermissions
     edit: isFolderOwner,
     delete: isFolderOwner && !isRoot(folder),
     rename: isFolderOwner && !isRoot(folder),
-    copy: !isRoot(folder)
+    copy: false
   };
 }
 
