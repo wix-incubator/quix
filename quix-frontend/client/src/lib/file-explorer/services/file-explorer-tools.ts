@@ -13,7 +13,7 @@ export function goToFile(fileDef: IItemDef, folder: Folder): File {
     folder = folder.getFolderById(getId(parent)).toggleOpen(true);
   });
 
-  return folder.getFileById(fileDef.id);
+  return folder.getFileById(fileDef.id) || folder.getFolderById(fileDef.id);
 }
 
 /**

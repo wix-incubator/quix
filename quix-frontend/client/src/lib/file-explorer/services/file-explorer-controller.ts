@@ -70,6 +70,11 @@ export default class Controller {
     return this;
   }
 
+  clickFolder(folder: Folder): Controller {
+    this.$scope.onFolderClick({folder: itemToDef(folder)});
+    return this;
+  }
+
   openLazyFolder(folder: Folder) {
     return this.$scope.onLazyFolderOpen({folder: itemToDef(folder)});
   }

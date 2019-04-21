@@ -7,7 +7,14 @@ import {Instance} from '../../lib/app';
 import {FileActions, NotebookActions, IFile} from '../../../../shared';
 import {IScope} from './files-sidebar-types';
 import {cache} from '../../store';
-import {addNotebook, addFolder, isRoot, getFolderPermissions, StateManager} from '../../services';
+import {
+  addNotebook,
+  addFolder,
+  isRoot,
+  getFolderPermissions,
+  StateManager,
+  goToFile
+} from '../../services';
 
 enum States {
   Initial,
@@ -28,7 +35,7 @@ const listenToEvents = (scope, app: Instance, store: Store, fileExplorer) => {
 
 const listenToNavChange = (scope: IScope, app: Instance, fileExplorer) => {
   app.getNavigator()
-  .listen(['base.notebook'], 'success', ({id}: {id: string}) => {
+  .listen(['base.files', 'base.notebook'], 'success', ({id}: {id: string}) => {
     const file = scope.vm.state.value().files.find(f => f.id === id);
     return file && fileExplorer.setActive(file);
   }, scope)
@@ -52,8 +59,11 @@ export default (app: Instance, store: Store) => () => ({
             listenToEvents(scope, app, store, fileExplorer);
             listenToNavChange(scope, app, fileExplorer);
           },
-          onFileClick({id}) {
-            app.getNavigator().go('base.notebook', {id, isNew: false});
+          onFileClick(file) {
+            goToFile(app, file);
+          }, 
+          onFolderClick(folder) {
+            goToFile(app, folder);
           }, 
           onNotebookAdd() {
             addNotebook(store, app, []);

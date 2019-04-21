@@ -1,5 +1,5 @@
 export {addNotebook} from './notebook';
-export {addFolder, isRoot} from './files';
+export {addFolder, isRoot, goToFile} from './files';
 export {confirm} from './dialog';
 export {StateManager} from './state';
 

@@ -71,7 +71,7 @@ function initScope(scope, controller: Controller, depth: number) {
       onFolderBlur(folder: Folder) {
         scope.vm.folder.toggleEdit(folder, false);
       },
-      onFolderClick(folder: Folder) {
+      onFolderToggle(folder: Folder) {
         if (!scope.vm.folders.get(folder).edit.enabled) {
           scope.vm.folder.toggleOpen(folder);
           scope.vm.folder.setCurrent(folder);
@@ -84,6 +84,10 @@ function initScope(scope, controller: Controller, depth: number) {
             }
           }
         }
+      },
+      onFolderClick(folder: Folder) {
+        scope.vm.folder.setCurrent(folder);
+        controller.clickFolder(folder);
       },
       onFileClick(file: File) {
         scope.vm.file.setCurrent(file);
@@ -148,6 +152,7 @@ export function fileExplorer() {
       feOptions: '<',
       onLazyFolderOpen: '&',
       onFileClick: '&',
+      onFolderClick: '&',
       onLoad: '&',
       getFolderPermissions: '&',
       emptyText: '@',

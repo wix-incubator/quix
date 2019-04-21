@@ -6,7 +6,7 @@
   >
     <div
       class="bi-spread fe-item {{::'fe-item-depth-' + depth}}"
-
+      ng-class="{active: vm.folder.isActive(folder)}"
       drop="::!readonly"
       jqyoui-droppable="{onDrop: 'events.onItemDrop(folder)'}"
       jqyoui-droppable="{onDrop: 'events.onItemDrop(folder)'}"
@@ -15,11 +15,12 @@
     >
       <div class="bi-align" ng-click="events.onFolderClick(folder)">
         <i
-          class="fe-toggle bi-icon"
+          class="fe-toggle bi-action bi-icon bi-pointer"
           ng-class="{'fe-toggle--hidden': folder.isEmpty() || options.expandAllFolders}"
+          ng-click="events.onFolderToggle(folder)"
         >arrow_drop_down</i>
 
-        <span class="bi-align">
+        <span class="bi-align bi-grow bi-pointer">
           <i class="fe-icon fe-folder-icon bi-icon">folder</i>
 
           <span>
@@ -125,7 +126,7 @@
     ng-click="events.onFileClick(file)"
   >
     <div
-      class="fe-item {{::'fe-item-depth-' + depth}} bi-spread bi-align"
+      class="fe-item {{::'fe-item-depth-' + depth}} bi-spread bi-align bi-pointer"
       drag="!readonly"
       jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
       jqyoui-options="{helper: 'clone', distance: 5, scroll: true, containment: container}"
