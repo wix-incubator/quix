@@ -11,7 +11,7 @@ import {
   NoteActionTypes
 } from '../../../../shared';
 
-import {isOwner} from '../../services/permission';
+import {getNotebookPermissions, getDefaultPermissions, IPermissions} from '../../services';
 
 export interface IQueue {
   notes: Record<string, INote>;
@@ -22,10 +22,6 @@ export interface IView {
   markedMap: Record<string, INote>;
   markedList: INote[];
   note: INote;
-}
-
-export interface IPermissions {
-  edit: boolean;
 }
 
 export default (app: Instance): IBranch => register => {
@@ -121,11 +117,7 @@ export default (app: Instance): IBranch => register => {
   }, action: any): IPermissions => {
     switch (action.type) {
       case 'notebook.set':
-        return action.notebook ? {
-          edit: isOwner(app, action.notebook)
-        } : {
-          edit: false
-        };
+        return action.notebook ? getNotebookPermissions(app, action.notebook) : getDefaultPermissions();
       default:
     }
 

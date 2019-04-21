@@ -11,8 +11,15 @@ export default {
     item: null as Item
   },
   folder: {
+    getPermissions(folder) {
+      const vm = this.$root.folders.get(folder);
+      return (vm.permissions = vm.permissions || this.$params.controller.getPermissions(folder));
+    },
     canDelete(folder) {
-      return folder.isEmpty();
+      return folder.isEmpty() && this.getPermissions(folder).delete;
+    },
+    canRename(folder) {
+      return this.getPermissions(folder).rename;
     },
     toggleOpen(folder, value) {
       this.$root.folders.get(folder).open.toggle(value);
@@ -58,7 +65,8 @@ export default {
     this.folders = this.folders || this.createItemsVm({
       menu: {},
       edit: {},
-      open: {}
+      open: {},
+      permissions: null
     });
   }
 };

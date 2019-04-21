@@ -47,6 +47,7 @@
           <quix-actions
             type="notebook"
             context="vm.state.value().notebook"
+            permissions="::permissions"
             quix-actions-options="{
               reverse: true,
               confirmOnDelete: vm.state.is('Content')
@@ -55,7 +56,6 @@
             on-share="events.onShare(context)"
             on-copy="events.onCopy(context)"
             on-delete="events.onDelete(context)"
-            readonly="!permissions.edit"
           ></quix-actions>
         </div>
       </div>
@@ -64,10 +64,10 @@
         <quix-actions 
           type="notes"
           context="vm.marked.list"
+          permissions="::permissions"
           quix-actions-options="::{list: true}"
           on-copy="events.onMarkedNotesCopy(context)"
           on-delete="events.onMarkedNotesDelete(context)"
-          readonly="!permissions.edit"
         ></quix-actions>
 
         <span class="bi-text--600 bi-muted">{{vm.marked.list.length}} notes selected</span>

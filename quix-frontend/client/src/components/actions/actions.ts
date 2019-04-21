@@ -13,12 +13,12 @@ export default (app: Instance, store: Store) => () => ({
   scope: {
     type: '@',
     context: '<',
+    permissions: '<',
     quixActionsOptions: '<',
     onLikeToggle: '&',
     onShare: '&',
     onCopy: '&',
-    onDelete: '&',
-    readonly: '<'
+    onDelete: '&'
   },
   link: {
     async pre(scope: IScope) {
@@ -27,9 +27,7 @@ export default (app: Instance, store: Store) => () => ({
         .withOptions('quixActionsOptions', {
           reverse: false,
           list: false,
-          confirmOnDelete: true,
-          disableDelete: false,
-          disableCopy: false,
+          confirmOnDelete: true
         }, true)
         .withEvents({
           onLikeToggle() {

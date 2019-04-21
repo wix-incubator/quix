@@ -7,8 +7,7 @@ import {Instance} from '../../lib/app';
 import {FileActions, NotebookActions, IFile} from '../../../../shared';
 import {IScope} from './files-sidebar-types';
 import {cache} from '../../store';
-import {addNotebook, addFolder} from '../../services';
-import {StateManager} from '../../services/state';
+import {addNotebook, addFolder, isRoot, getFolderPermissions, StateManager} from '../../services';
 
 enum States {
   Initial,
@@ -56,12 +55,20 @@ export default (app: Instance, store: Store) => () => ({
           onFileClick({id}) {
             app.getNavigator().go('base.notebook', {id, isNew: false});
           }, 
-          onSidebarClose() {
-
-          },
           onNotebookAdd() {
             addNotebook(store, app, []);
           },
+          getFolderPermissions(folder: IFile) {
+            const isRootFolder = isRoot(folder);
+            const owner = scope.vm.state.value().files[0].owner;
+            const permission = getFolderPermissions(app, {...folder, owner});
+
+            return {
+              ...getFolderPermissions(app, folder),
+              delete: permission.delete && !isRootFolder,
+              rename: permission.rename && !isRootFolder
+            };
+          }
         });
 
       cache.files.get();

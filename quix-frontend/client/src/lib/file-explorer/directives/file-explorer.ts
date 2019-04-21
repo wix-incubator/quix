@@ -145,6 +145,7 @@ export function fileExplorer() {
       onLazyFolderOpen: '&',
       onFileClick: '&',
       onLoad: '&',
+      getFolderPermissions: '&',
       emptyText: '@',
       readonly: '='
     },

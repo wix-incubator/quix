@@ -1,3 +1,12 @@
 export {addNotebook} from './notebook';
-export {addFolder} from './files';
+export {addFolder, isRoot} from './files';
 export {confirm} from './dialog';
+export {StateManager} from './state';
+
+export {
+  IPermissions,
+  isOwner,
+  getDefaultPermissions,
+  getFolderPermissions,
+  getNotebookPermissions
+} from './permissions';

@@ -34,6 +34,7 @@
           <quix-actions 
             type="folder"
             context="vm.state.value().folder"
+            permissions="::permissions"
             quix-actions-options="{
               reverse: true,
               confirmOnDelete: vm.state.is('Content'),
@@ -43,7 +44,6 @@
             on-like-toggle="events.onLikeToggle(context)"
             on-share="events.onShare(context)"
             on-delete="events.onDelete(context)"
-            readonly="!permissions.edit"
           ></quix-actions>
         </div>
       </div>
@@ -52,9 +52,9 @@
         <quix-actions 
           type="items"
           context="vm.marked.list"
+          permissions="::permissions"
           quix-actions-options="::{list: true}"
           on-delete="events.onMarkedDelete(context)"
-          readonly="!permissions.edit"
         ></quix-actions>
 
         <span class="bi-text--600 bi-muted">{{vm.marked.list.length}} items selected</span>

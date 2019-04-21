@@ -2,6 +2,11 @@ import {Item, File, Folder} from './file-explorer-models';
 import {itemToDef} from './file-explorer-tools';
 import Instance from './file-explorer-instance';
 
+interface Permissions {
+  rename: boolean;
+  delete: boolean;
+}
+
 /**
  * Will be required by <file-explorer-inner>
  */
@@ -20,6 +25,13 @@ export default class Controller {
 
   getInstance(): Instance {
     return this.instance;
+  }
+
+  getPermissions(folder): Permissions {
+    return this.$scope.getFolderPermissions({folder: itemToDef(folder)}) || {
+      rename: true,
+      delete: true
+    };
   }
 
   setCurrentFolder(folder: Folder): Controller {
