@@ -18,8 +18,12 @@ trait E2EContext extends StringJsonHelpersSupport {
     Http("http://localhost:8888/" + url).asString
   }
 
-  def execute(sql: String) = {
-    val listener = new MyListener(sql)
+  def execute(sql: String) = startSocket(StartCommand[String](sql, Map.empty).asJsonStr)
+
+  def execute(sql: String, text: String) = startSocket(StartCommand[String](sql, Map.empty).asJsonStr, text)
+
+  def startSocket(texts: String*) = {
+    val listener = new MyListener(texts: _*)
 
     val handler = new WebSocketUpgradeHandler.Builder().addWebSocketListener(listener).build()
 
@@ -32,7 +36,7 @@ trait E2EContext extends StringJsonHelpersSupport {
   }
 }
 
-class MyListener(sql: String) extends WebSocketListener with StringJsonHelpersSupport {
+class MyListener(payloads: String*) extends WebSocketListener with StringJsonHelpersSupport {
 
   import scala.collection.JavaConverters._
 
@@ -44,7 +48,8 @@ class MyListener(sql: String) extends WebSocketListener with StringJsonHelpersSu
 
   override def onOpen(websocket: WebSocket): Unit = {
     opened = true
-    websocket.sendTextFrame(StartCommand[String](sql, Map.empty).asJsonStr)
+
+    payloads.foreach(websocket.sendTextFrame)
   }
 
   override def onClose(websocket: WebSocket, code: Int, reason: String): Unit = {
