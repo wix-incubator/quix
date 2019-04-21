@@ -11,8 +11,11 @@ import quix.api.execute.{Consumer, DownloadableQueries, StartCommand}
 import quix.api.users.{User, Users}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
+import quix.core.utils.TaskOps._
 import quix.presto.rest.Results
-import quix.presto.{MultiResultBuilder, PrestoEvent, PrestoQuixModule}
+import quix.presto.{Error, MultiResultBuilder, PrestoEvent, PrestoQuixModule}
+
+import scala.util.Try
 
 class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val downloadableQueries: DownloadableQueries[Results])
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
@@ -21,22 +24,34 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
 
   val executions = new ConcurrentHashMap[String, CancelableFuture[Unit]]
 
+  def handleUnknownMessage(socket: WebSocketSession, payload: String, user: User) = {
+    val task = Task {
+      logger.info(s"event=unknown-message socket-id=${socket.getId} payload=$payload")
+      socket.sendMessage(new TextMessage(Error(socket.getId, s"Failed to handle unknown message : [$payload]").asJsonStr))
+    }
+
+    task.executeOn(io).runAsyncAndForget(io)
+  }
+
   override def handleTextMessage(socket: WebSocketSession, message: TextMessage): Unit = users.auth(getHeaders(socket)) { user =>
     logger.info(s"event=handle-text-message socket-id=${socket.getId} message=${message.getPayload} user=${user.email}")
 
-    if (message.getPayload == "ping") {
-      handlePingMessage(socket)
-    } else {
-      handleExecutionMessage(socket, message, user)
+    message.getPayload match {
+      case "ping" =>
+        handlePingMessage(socket)
+
+      case Start(command) =>
+        handleExecutionMessage(socket, command, user)
+
+      case _ =>
+        handleUnknownMessage(socket, message.getPayload, user)
     }
   }
 
-  private def handleExecutionMessage(socket: WebSocketSession, message: TextMessage, user: User) = {
-    val payload = message.getPayload.as[StartCommand[String]]
-
+  private def handleExecutionMessage(socket: WebSocketSession, payload: StartCommand[String], user: User) = {
     val initConsumer = Task.eval(new WebsocketConsumer[PrestoEvent](socket.getId, user, socket))
     val useConsumer = (consumer: WebsocketConsumer[PrestoEvent]) => {
-
+      logger.info(s"event=start-execution socket-id=${socket.getId} sql=${payload.code}")
       prestoModule.start(payload, consumer.id, consumer.user, makeResultBuilder(consumer, payload.session))
     }
 
@@ -44,7 +59,9 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
 
     val task = initConsumer.bracket(useConsumer)(closeConsumer)
 
-    val future = task.executeOn(io).runToFuture(io)
+    val future = task
+      .logOnError(s"event=execution-failure socket-id=${socket.getId} sql=${payload.code}")
+      .executeOn(io).runToFuture(io)
     executions.put(socket.getId, future)
   }
 
@@ -91,5 +108,15 @@ class WebsocketConsumer[Results](val id: String, val user: User, socket: WebSock
 
     if (socket.isOpen)
       socket.close()
+  }
+}
+
+object Start extends StringJsonHelpersSupport {
+  def unapply(payload: String): Option[StartCommand[String]] = {
+    Try {
+      val command = payload.as[StartCommand[String]]
+
+      command.copy(session = Option(command.session).getOrElse(Map.empty))
+    }.toOption
   }
 }
