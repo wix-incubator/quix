@@ -26,6 +26,7 @@ const mocks = {
     createMockFile()
   ], {id}),
   '/api/notebook/:id': ({id}) => createMockNotebook([createMockNote(id)], {id}),
+  '/api/search/none': () => [],
   '/api/search/:text': ({text}) => {
     const res = [createMockNote('1'), createMockNote('2'), createMockNote('3')];
     res.forEach(note => note.content = `select 1 as ${text}`);
