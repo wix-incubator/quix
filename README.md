@@ -5,6 +5,9 @@ Quix is a Web IDE for Presto.
 
 It's your single point of truth and a shared space for your company's BI insights, with quick turnaround, interactive visual perspectives, and mixed data sources.<br />
 
+## Disclaimer
+Please note that this is a beta version of Quix which is still undergoing final testing before its official release.
+
 ## Main features
 
 * Presto notes
