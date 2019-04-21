@@ -1,4 +1,4 @@
-export {addNotebook} from './notebook';
+export {addNotebook, deleteNotebook, saveQueuedNotes} from './notebook';
 export {addFolder, isRoot, goToFile} from './files';
 export {confirm} from './dialog';
 export {StateManager} from './state';

@@ -3,14 +3,15 @@ import {utils} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {toast} from '../../lib/ui';
 import {Instance} from '../../lib/app';
-import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem} from '../../../../shared';
+import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem, createNote} from '../../../../shared';
 import {FileType} from '../../../../shared/entities/file';
 import {IScope} from './notebook-types';
 import {setNotebook, setNote, queueNote, toggleMark, unmarkAll} from '../../store/notebook/notebook-actions';
-import {saveQueuedNotes, deleteNotebook} from '../../services/notebook';
+import {saveQueuedNotes, deleteNotebook} from '../../services';
 import {removeRunner, addRunner} from '../../store/app/app-actions';
 import {prompt} from '../../services/dialog';
 import {goToFile, goToRoot} from '../../services/files';
+import { copyNotebook } from '../../services/notebook';
 
 export const onBreadcrumbClick = (scope: IScope, store: Store, app: Instance) => (file: IFilePathItem) => {
   const {notebook: {owner, path}} = scope.vm.state.value();
@@ -32,12 +33,14 @@ export const onDelete = (scope: IScope, store: Store, app: Instance) => (noteboo
   deleteNotebook(store, app, notebook);
 }
 
-export const onCopy = (scope: IScope, store: Store, app: Instance) => () => {
-  // const {id, path} = notebook;
-
+export const onCopy = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
   prompt({title: 'Copy notebook', yes: 'copy', content: `
-    Coming soon...
-  `}, scope);
+    <quix-destination ng-model="model.folder" required></quix-destination>
+  `}, scope, {model: {folder: null}})
+  .then(({model: {folder}}) => copyNotebook(store, app, folder, {
+    ...notebook,
+    notes: scope.vm.state.value().notes
+  }));
 }
 
 export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
@@ -84,8 +87,9 @@ export const onNoteRun = (scope: IScope, store: Store, app: Instance) => () => {
 export const onNoteAdd = (scope: IScope, store: Store, app: Instance) => () => {
   const {notebook} = scope.vm.state.value();
   const {id} = notebook;
-  const {note} = store.dispatchAndLog(NoteActions.addNote(id)) as any;
-
+  const note = createNote(id);
+  
+  store.dispatchAndLog(NoteActions.addNote(note.id, note));
   store.dispatch(setNote(note));
   
   const vm = scope.vm.notes.get(note);

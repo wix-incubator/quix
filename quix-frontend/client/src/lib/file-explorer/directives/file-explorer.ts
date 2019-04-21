@@ -87,10 +87,12 @@ function initScope(scope, controller: Controller, depth: number) {
       },
       onFolderClick(folder: Folder) {
         scope.vm.folder.setCurrent(folder);
+        scope.vm.file.setCurrent(null);
         controller.clickFolder(folder);
       },
       onFileClick(file: File) {
         scope.vm.file.setCurrent(file);
+        scope.vm.folder.setCurrent(null);
         controller.clickFile(file);
       },
       onSettingsClick(folder: Folder) {
