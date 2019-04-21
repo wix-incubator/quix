@@ -20,7 +20,7 @@ interface DbColumnConf {
 const MySqlConf: DbColumnConf = {
   json: {type: 'json'},
   tinytext: {type: 'tinytext'},
-  noteContent: {type: 'mediumtext'},
+  noteContent: {type: 'mediumtext', nullable: true},
   dateUpdated: {
     type: 'timestamp',
     precision: 3,
@@ -52,7 +52,7 @@ const MySqlConf: DbColumnConf = {
 const SqliteConf: DbColumnConf = {
   json: {type: 'simple-json'},
   tinytext: {type: 'varchar', width: 255},
-  noteContent: {type: 'text'},
+  noteContent: {type: 'text', nullable: true},
   dateUpdated: {
     type: 'numeric',
     default: () => 'CURRENT_TIMESTAMP',
