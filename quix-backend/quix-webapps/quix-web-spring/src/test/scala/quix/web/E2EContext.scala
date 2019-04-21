@@ -30,9 +30,19 @@ trait E2EContext extends StringJsonHelpersSupport {
 
     listener
   }
+
+  def runAndDownload(sql: String) = {
+    val listener = new MyListener(sql, true)
+
+    val handler = new WebSocketUpgradeHandler.Builder().addWebSocketListener(listener).build()
+
+    c.prepareGet("ws://localhost:8888/api/v1/execute/sql").execute(handler).get()
+
+    Thread.sleep(500)
+  }
 }
 
-class MyListener(sql: String) extends WebSocketListener with StringJsonHelpersSupport {
+class MyListener(sql: String, markAsDownloadable: Boolean = false) extends WebSocketListener with StringJsonHelpersSupport {
 
   import scala.collection.JavaConverters._
 
@@ -44,7 +54,9 @@ class MyListener(sql: String) extends WebSocketListener with StringJsonHelpersSu
 
   override def onOpen(websocket: WebSocket): Unit = {
     opened = true
-    websocket.sendTextFrame(StartCommand[String](sql, Map.empty).asJsonStr)
+    val session = if (markAsDownloadable) Map("mode" -> "download") else Map.empty[String, String]
+    val command = StartCommand[String](sql, session)
+    websocket.sendTextFrame(command.asJsonStr)
   }
 
   override def onClose(websocket: WebSocket, code: Int, reason: String): Unit = {

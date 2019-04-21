@@ -10,19 +10,19 @@ import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.server.HandshakeInterceptor
 import org.springframework.web.socket.server.jetty.JettyRequestUpgradeStrategy
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
+import quix.api.execute.DownloadableQueries
 import quix.api.users.Users
 import quix.presto.PrestoQuixModule
+import quix.presto.rest.Results
 import quix.web.controllers.PrestoController
 
 @Configuration
 @ImportResource(Array("classpath:websockets.xml"))
 class WebsocketsConfig extends LazyLogging {
 
-  @Bean def initPrestoController(users: Users, prestoModule: PrestoQuixModule) = {
+  @Bean def initPrestoController(users: Users, prestoModule: PrestoQuixModule, downloadableQueries: DownloadableQueries[Results]) = {
     logger.info("event=[spring-config] bean=[PrestoController]")
-    val controller = new PrestoController(prestoModule, users)
-
-    controller
+    new PrestoController(prestoModule, users, downloadableQueries)
   }
 
   @Bean def initWebSocketPolicy(): WebSocketPolicy = {

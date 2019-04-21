@@ -32,7 +32,7 @@ class PrestoControllerTest extends E2EContext with LazyLogging {
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-id","code":"select 1"}}"""))
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-id","percentage":0}}"""))
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"fields","data":{"id":"query-id","fields":["_col0"]}}"""))
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-id","row":{"_col0":"1"}}}"""))
+    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-id","fields":["_col0"],"values":["1"],"row":{"_col0":"1"}}}"""))
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-id","percentage":100}}"""))
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-id"}}"""))
   }
@@ -51,7 +51,7 @@ class PrestoControllerTest extends E2EContext with LazyLogging {
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-1","code":"select 1 as foo"}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"fields","data":{"id":"query-1","fields":["foo"]}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-1","percentage":0}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-1","row":{"foo":"1"}}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-1","fields":["foo"],"values":["1"],"row":{"foo":"1"}}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-1","percentage":100}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-1"}}"""))
     }
@@ -62,7 +62,7 @@ class PrestoControllerTest extends E2EContext with LazyLogging {
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-2","code":"select 2 as boo"}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"fields","data":{"id":"query-2","fields":["boo"]}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-2","percentage":0}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-2","row":{"boo":"2"}}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-2","fields":["boo"],"values":["2"],"row":{"boo":"2"}}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-2","percentage":100}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-2"}}"""))
     }

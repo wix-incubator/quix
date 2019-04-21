@@ -7,13 +7,14 @@ import monix.eval.Task
 import monix.execution.{CancelableFuture, Scheduler}
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSession}
-import quix.api.execute.{Consumer, StartCommand}
+import quix.api.execute.{Consumer, DownloadableQueries, StartCommand}
 import quix.api.users.{User, Users}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
+import quix.presto.rest.Results
 import quix.presto.{MultiResultBuilder, PrestoEvent, PrestoQuixModule}
 
-class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
+class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val downloadableQueries: DownloadableQueries[Results])
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
 
   val io = Scheduler.io("presto-executor")
@@ -38,7 +39,11 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
   }
 
   def makeResultBuilder(consumer: WebsocketConsumer[PrestoEvent], session: Map[String, String]) = {
-    new MultiResultBuilder(consumer)
+    if (session.get("mode").contains("download")) {
+      downloadableQueries.adapt(new MultiResultBuilder(consumer))
+    } else {
+      new MultiResultBuilder(consumer)
+    }
   }
 
   override def afterConnectionClosed(socket: WebSocketSession, status: CloseStatus): Unit = users.auth(getHeaders(socket)) { user =>
