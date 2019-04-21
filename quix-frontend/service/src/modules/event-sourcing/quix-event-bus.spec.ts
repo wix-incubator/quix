@@ -1,6 +1,6 @@
 import {TestingModule} from '@nestjs/testing';
 import 'reflect-metadata';
-import {INote, NoteActions} from 'shared/entities/note';
+import {INote, NoteActions, createNote} from 'shared/entities/note';
 import {NoteActionT} from 'shared/entities/note/actions';
 import {NotebookActions} from 'shared/entities/notebook';
 import {FileActions, FileType} from 'shared/entities/file';
@@ -91,7 +91,8 @@ describe('event sourcing', () => {
 
     beforeEach(() => {
       [notebookId, createNotebookAction] = driver.createNotebookAction();
-      addNoteAction = NoteActions.addNote(notebookId);
+      note = createNote(notebookId);
+      addNoteAction = NoteActions.addNote(note.id, note);
       note = addNoteAction.note;
     });
 
