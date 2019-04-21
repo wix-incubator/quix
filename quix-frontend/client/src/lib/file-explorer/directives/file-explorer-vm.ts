@@ -47,6 +47,10 @@ export default {
         this.$params.item.on('openToggled', (model, folder, isOpen) => {
           this.$root.folder.toggleOpen(folder, isOpen);
         }, true);
+
+        this.$params.item.on('editToggled', (model, folder, edit) => {
+          this.$root.folder.toggleEdit(folder, edit);
+        }, true);
       }
     }
   },

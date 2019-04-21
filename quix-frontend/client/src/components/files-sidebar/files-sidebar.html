@@ -1,6 +1,6 @@
 <div class="bi-fade-in" ng-if="vm.state.is('Content')" data-hook="files-sidebar-content">
   <bi-file-explorer
-    ng-model="vm.state.value().files"
+    ng-model="vm.state.value().tree"
     fe-options="{fileAlias: ['notebook']}"
     on-load="events.onFileExplorerLoad(fileExplorer)"
     on-file-click="events.onFileClick(file)"

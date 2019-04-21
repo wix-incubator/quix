@@ -61,12 +61,12 @@ export default (app: Instance, store: Store) => () => ({
           getFolderPermissions(folder: IFile) {
             const isRootFolder = isRoot(folder);
             const owner = scope.vm.state.value().files[0].owner;
-            const permission = getFolderPermissions(app, {...folder, owner});
+            const permissions = getFolderPermissions(app, {...folder, owner});
 
             return {
               ...getFolderPermissions(app, folder),
-              delete: permission.delete && !isRootFolder,
-              rename: permission.rename && !isRootFolder
+              delete: permissions.delete && !isRootFolder,
+              rename: permissions.rename && !isRootFolder
             };
           }
         });
@@ -75,7 +75,7 @@ export default (app: Instance, store: Store) => () => ({
       store.subscribe('files.files', (files: IFile[]) => {
         scope.vm.state
           .force('Result', !!files, {files})
-          .set('Content', () => files.length > 1, () => ({files}));
+          .set('Content', () => files.length > 1, () => ({files, tree: files}));
       }, scope);
 
       store.subscribe('files.error', (error: any) => {

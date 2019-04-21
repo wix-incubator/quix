@@ -17,14 +17,6 @@ export default (app: App, store: Store) => ({
   scope: {},
   controller: (scope, params, {syncUrl}) => {
     syncUrl();
-  },
-  link: (scope) => {
-    initNgScope(scope)
-      .withEvents({
-        onTempNoteClick() {
-          openPopup(`<quix-temp-query class="bi-c-h bi-grow"></quix-temp-query>`, scope);
-        }
-      });
 
     store.subscribe('app.searchText', text => {
       if (!text) {
@@ -36,5 +28,13 @@ export default (app: App, store: Store) => ({
         <quix-search-results class="bi-c-h bi-grow"></quix-search-results>
       `, scope)((_, element) => element.addClass('quix-search-popup'));
     }, scope);
+  },
+  link: (scope) => {
+    initNgScope(scope)
+      .withEvents({
+        onTempNoteClick() {
+          openPopup(`<quix-temp-query class="bi-c-h bi-grow"></quix-temp-query>`, scope);
+        }
+      });
   }
 }) as IStateComponentConfig;

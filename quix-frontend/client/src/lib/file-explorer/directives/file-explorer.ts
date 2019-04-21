@@ -1,5 +1,5 @@
 import {assign, isArray} from 'lodash';
-import {createNgModel, initNgScope} from '../../core';
+import {createNgModel, initNgScope, inject} from '../../core';
 import {IItemDef} from '../services';
 import {File, Folder} from '../services/file-explorer-models';
 import {treeToDef, defToTree} from '../services/file-explorer-tools';
@@ -106,11 +106,15 @@ function initScope(scope, controller: Controller, depth: number) {
     if (depth < 2) {
       helper.withEditableEvents({
         onFolderCreate(folder?: Folder) {
-          folder = (folder || scope.model).toggleOpen(true).createFolder('New folder');
+          folder = (folder || scope.model).toggleOpen(true);
 
-          scope.vm.folder.toggleEdit(folder, true);
+          inject('$timeout')(() => {
+            folder = folder
+              .createFolder('New folder')
+              .toggleEdit(true);
 
-          controller.syncItem(folder, 'folderCreated');
+            controller.syncItem(folder, 'folderCreated');
+          });
         }
       });
     }
