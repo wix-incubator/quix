@@ -42,7 +42,7 @@ class MultiResultBuilder(val consumer: Consumer[PrestoEvent])
     rows += results.data.size
 
     val rowTask = Task.traverse(results.data) { row =>
-      consumer.write(Row(queryId, columns.zip(row).toMap))
+      consumer.write(Row(queryId, row))
     }
 
     Task.sequence(Seq(columnTask, progressTask, errorTask, rowTask)).map(_ => ())
