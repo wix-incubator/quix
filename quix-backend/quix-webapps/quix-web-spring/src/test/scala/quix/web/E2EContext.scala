@@ -20,7 +20,7 @@ trait E2EContext extends StringJsonHelpersSupport {
 
   def execute(sql: String, session: Map[String, String] = Map.empty) = startSocket(true, StartCommand[String](sql, session).asJsonStr)
 
-  def execute(sql: String, text: String) = startSocket(true, StartCommand[String](sql, Map.empty).asJsonStr, text)
+  def send(text: String) = startSocket(false, text)
 
   def runAndDownload(sql: String) =
     startSocket(false, StartCommand[String](sql, Map("mode" -> "download")).asJsonStr)
@@ -59,7 +59,6 @@ class MyListener(payloads: String*) extends WebSocketListener with StringJsonHel
 
     for (payload <- payloads) {
       websocket.sendTextFrame(payload)
-      Thread.sleep(500)
     }
   }
 

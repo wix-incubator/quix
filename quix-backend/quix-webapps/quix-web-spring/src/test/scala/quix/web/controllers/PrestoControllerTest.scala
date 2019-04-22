@@ -40,7 +40,7 @@ class PrestoControllerTest extends E2EContext with LazyLogging {
   @Test
   def handlePingCommand(): Unit = {
     executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = execute("select 1", "ping")
+    val listener = send("ping")
 
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"pong","data":{}}"""))
   }
@@ -48,7 +48,7 @@ class PrestoControllerTest extends E2EContext with LazyLogging {
   @Test
   def handlePingCommandWithQuotes(): Unit = {
     executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = execute("select 1", "\"ping\"")
+    val listener = send("\"ping\"")
 
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"pong","data":{}}"""))
   }
@@ -56,7 +56,7 @@ class PrestoControllerTest extends E2EContext with LazyLogging {
   @Test
   def handlePingEvent(): Unit = {
     executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = execute("select 1", """{"event":"ping"}""")
+    val listener = send("""{"event":"ping"}""")
 
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"pong","data":{}}"""))
   }
