@@ -179,7 +179,9 @@ export class Runner extends srv.eventEmitter.EventEmitter {
       .setRunningStatus(true)
       .startDurationCount();
     
-    this.keepAliveInterval = inject('$interval')(() => this.getSocket().send('ping'), 30 * 1000);
+    this.keepAliveInterval = inject('$interval')(() => this.getSocket().send({
+      event: 'ping'
+    }), 30 * 1000);
   }
 
   protected finish() {
