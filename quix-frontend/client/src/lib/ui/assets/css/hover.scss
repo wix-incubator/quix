@@ -1,0 +1,15 @@
+@import './def/animations.def';
+
+.bi-hover-parent {
+  .bi-hover-target {
+    @extend %animation-fade-in;
+
+    display: none;
+  }
+
+  &:hover {
+    .bi-hover-target {
+      display: flex;
+    }
+  }
+}
