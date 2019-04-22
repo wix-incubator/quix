@@ -80,7 +80,7 @@ const listReducer = <T extends {id: string}, A extends BaseAction = DefaultActio
       case 'delete':
       return state && state.filter(item => item.id !== action.id);
       case 'update':
-        return state && [...replaceWith(state, {id: action.id}, item => entityReducer(item, action))];
+        return state && replaceWith(state, {id: action.id}, item => entityReducer(item, action));
       default:
     }
 

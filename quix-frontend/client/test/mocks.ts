@@ -19,11 +19,12 @@ const mocks = {
   '/api/files/404': () => [404, {message: 'Folder not found'}],
   '/api/notebook/404': () => [404, {message: 'Notebook not found'}],
   '/api/files': () => createMockFiles([
-    createMockFolder(),
-    createMockFile(),
+    createMockFolder({id: '10'}),
+    createMockFile({id: '11'}),
   ]),
   '/api/files/:id': ({id}) => createMockFolderPayload([
-    createMockFile()
+    createMockFolder({id: '100'}),
+    createMockFile({id: '101'})
   ], {id}),
   '/api/notebook/:id': ({id}) => createMockNotebook([
     createMockNote(id, {id: '1001'}),
@@ -78,10 +79,8 @@ export const createMockFolder = (props: Partial<IFile> = {}) => {
 export const createMockFiles = (children = []) => {
   return [
     createMockRootFolder(),
-    ...children.map((child, index) => ({
-      ...child,
-      // tslint:disable-next-line: restrict-plus-operands
-      id: `${index + 100}`,
+    ...children.map((child) => ({
+      ...child
     }))
   ];
 }
