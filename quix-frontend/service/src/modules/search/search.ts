@@ -1,9 +1,8 @@
-import {Repository, Like, FindOperator} from 'typeorm';
-import {ISearch, SearchQuery} from './types';
-import {isEmpty} from 'lodash';
-import {DbNote} from '../../entities';
-import {parse, isValidQuery} from './parser';
 import {dbConf} from 'config/db-conf';
+import {Repository} from 'typeorm';
+import {DbNote} from '../../entities';
+import {isValidQuery, parse} from './parser';
+import {ISearch} from './types';
 
 export class Search implements ISearch {
   constructor(private repo: Repository<DbNote>) {}
