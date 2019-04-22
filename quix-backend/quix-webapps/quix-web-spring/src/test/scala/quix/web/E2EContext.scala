@@ -31,7 +31,9 @@ trait E2EContext extends StringJsonHelpersSupport {
     val handler = new WebSocketUpgradeHandler.Builder().addWebSocketListener(listener).build()
 
     c.prepareGet("ws://localhost:8888/api/v1/execute/sql").execute(handler)
-    Thread.sleep(1000)
+
+    while(listener.messages.isEmpty)
+      Thread.sleep(10)
 
     if (awaitFinish) {
       while (!listener.closed)
