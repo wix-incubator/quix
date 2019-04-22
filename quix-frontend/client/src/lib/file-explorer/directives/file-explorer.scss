@@ -62,7 +62,9 @@ bi-file-explorer-inner {
         }
 
         &.active {
-          font-weight: bold;
+          .fe-item-name {
+            font-weight: bold;
+          }
         }
 
         &.ui-draggable-dragging {
