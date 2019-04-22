@@ -13,14 +13,14 @@
       jqyoui-options="{accept: '.fe-item', greedy: true}"
       ng-model="vm.dropped.item"
     >
-      <div class="bi-align" ng-click="events.onFolderClick(folder)">
+      <div class="bi-align">
         <i
           class="fe-toggle bi-action bi-icon bi-pointer"
           ng-class="{'fe-toggle--hidden': folder.isEmpty() || options.expandAllFolders}"
-          ng-click="events.onFolderToggle(folder)"
+          ng-click="events.onFolderToggle(folder);"
         >arrow_drop_down</i>
 
-        <span class="fe-item-name bi-align bi-grow bi-pointer">
+        <span class="fe-item-name bi-align bi-grow bi-pointer" ng-click="events.onFolderClick(folder)">
           <span bi-html="renderFolderIcon(folder)"></span>
 
           <span>

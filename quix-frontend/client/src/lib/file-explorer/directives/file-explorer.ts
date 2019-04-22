@@ -76,7 +76,6 @@ function initScope(scope, controller: Controller, depth: number) {
       onFolderToggle(folder: Folder) {
         if (!scope.vm.folders.get(folder).edit.enabled) {
           scope.vm.folder.toggleOpen(folder);
-          scope.vm.folder.setCurrent(folder);
 
           if (folder.isLazy() && scope.vm.folder.isOpen(folder)) {
             const promise = controller.openLazyFolder(folder);
