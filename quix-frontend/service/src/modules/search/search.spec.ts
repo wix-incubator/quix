@@ -4,23 +4,18 @@ import 'reflect-metadata';
 import {Repository} from 'typeorm';
 import uuid from 'uuid/v4';
 import {NoteType} from '../../../../shared/entities/note';
-import {ConfigModule} from '../../config/config.module';
-import {ConfigService} from '../../config/config.service';
+import {ConfigService, ConfigModule} from 'config';
 import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from '../../entities';
 import {SearchController} from './search.controller';
 import {SearchModule} from './search.module';
 
 describe('Search', () => {
-  const numOfTypeSql = 1;
-  const numOfUserFoo = 2;
-  const numOfNameEmpty = 1;
-  const numOfContentSomeContent = 1;
-  const numOfSpecialContent = 1;
   let module: TestingModule;
   let searchCtrl: SearchController;
   let noteRepo: Repository<DbNote>;
   let notebookRepo: Repository<DbNotebook>;
   const defaultUser = 'foo@wix.com';
+  const secondUser = 'bar@wix.com';
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
@@ -52,74 +47,68 @@ describe('Search', () => {
     await notebookRepo.delete({});
   });
 
-  // it('should return empty array for empty content', async () => {
-  //   const result = await searchCtrl.doSearch('');
-
-  //   expect(result).toHaveLength(0);
-  // });
-
-  // it('should return empty array if order is wrong', async () => {
-  //   const result = await searchCtrl.doSearch('free text user:foo@wix.com');
-
-  //   expect(result).toHaveLength(0);
-  // });
-
-  it('should get note by owner', async () => {
+  const createNotebook = async (user = defaultUser) => {
     const notebook = new DbNotebook({
       id: uuid(),
-      owner: defaultUser,
+      owner: user,
       name: 'new name',
     } as any);
-    await notebookRepo.save(notebook);
-    const id = uuid();
+    return notebookRepo.save(notebook);
+  };
+
+  const createNote = async (
+    notebookId: string,
+    template: Partial<DbNote> = {},
+  ) => {
+    const base = Object.assign(
+      {
+        id: uuid(),
+        name: 'New Note',
+        owner: defaultUser,
+        content: '',
+        type: NoteType.PRESTO as NoteType.PRESTO,
+      },
+      template,
+    );
     const note = new DbNote({
-      id,
-      owner: defaultUser,
-      type: NoteType.PRESTO,
-      content: '',
-      name: 'new Note',
+      id: base.id,
+      owner: base.owner,
+      type: base.type,
+      content: base.content,
+      name: base.name,
       dateCreated: 1,
       dateUpdated: 1,
-      notebookId: notebook.id,
+      notebookId,
     });
-    await noteRepo.save(note);
+    return noteRepo.save(note);
+  };
+
+  it('should return empty array for empty content', async () => {
+    const result = await searchCtrl.doSearch('');
+    expect(result).toHaveLength(0);
+  });
+
+  it('should get note by owner', async () => {
+    const notebook = await createNotebook();
+    const note = await createNote(notebook.id);
+
     const result = await searchCtrl.doSearch(`user:${defaultUser}`);
     const badResult = await searchCtrl.doSearch('user: foo@wix.com');
 
-    expect(result[0].id).toBe(id);
+    expect(result[0].id).toBe(note.id);
     expect(badResult).toHaveLength(0);
   });
 
   it('should get note by content', async () => {
-    const notebook = new DbNotebook({
-      id: uuid(),
-      owner: defaultUser,
-      name: 'new name',
-    } as any);
-    await notebookRepo.save(notebook);
-    const note = new DbNote({
-      id: uuid(),
-      owner: defaultUser,
-      type: NoteType.PRESTO,
+    const notebook = await createNotebook();
+    const note = await createNote(notebook.id, {
       content: 'select someColumn from someCatalog.someTable',
-      name: 'new Note',
-      dateCreated: 1,
-      dateUpdated: 1,
-      notebookId: notebook.id,
     });
-    await noteRepo.save(note);
-    const note2 = new DbNote({
-      id: uuid(),
-      owner: defaultUser,
-      type: NoteType.PRESTO,
+    const note2 = await createNote(notebook.id, {
       content: 'select someColumn from someCatalog.someOtherTable',
-      name: 'new Note',
-      dateCreated: 1,
-      dateUpdated: 1,
-      notebookId: notebook.id,
     });
+
     await noteRepo.save(note2);
-    debugger;
     const result = await searchCtrl.doSearch(`someTable`);
     const result2 = await searchCtrl.doSearch(`someOtherTable`);
     const badResult = await searchCtrl.doSearch('randomKeyword');
@@ -129,52 +118,54 @@ describe('Search', () => {
     expect(badResult).toHaveLength(0);
   });
 
-  // it('should get note by type', async () => {
-  //   const result = await searchCtrl.doSearch('type:sql');
-  //   const upperCaseResult = await searchCtrl.doSearch('type:SQL');
-  //   const badResult = await searchCtrl.doSearch('type: sql');
+  it('should get note by type', async () => {
+    const notebook = await createNotebook();
+    const note = await createNote(notebook.id, {
+      type: 'python' as any,
+    });
+    const note2 = await createNote(notebook.id, {
+      type: NoteType.PRESTO,
+    });
 
-  //   expect(result).toHaveLength(numOfTypeSql);
-  //   expect(upperCaseResult).toHaveLength(numOfTypeSql);
-  //   expect(badResult).toHaveLength(0);
-  // });
+    const result = await searchCtrl.doSearch('type:presto');
 
-  // it('should get note by user and type', async () => {
-  //   const result = await searchCtrl.doSearch('user:foo@wix.com type:sql');
-  //   const badResult = await searchCtrl.doSearch('user:foo@wix.comtype:sql');
+    expect(result).toMatchObject([expect.objectContaining({id: note2.id})]);
+  });
 
-  //   expect(result).toHaveLength(numOfTypeSql);
-  //   expect(badResult).toHaveLength(0);
-  // });
+  it('should get note by user and type', async () => {
+    const notebook = await createNotebook(defaultUser);
+    const notebook2 = await createNotebook(secondUser);
+    const note = await createNote(notebook.id, {
+      owner: defaultUser,
+    });
+    const note2 = await createNote(notebook2.id, {
+      owner: secondUser,
+      type: NoteType.PRESTO,
+    });
+    const note3 = await createNote(notebook2.id, {
+      owner: secondUser,
+      type: 'python' as any,
+    });
+    const result = await searchCtrl.doSearch(`user:${secondUser} type:python`);
 
-  // it('should get note by content', async () => {
-  //   const result = await searchCtrl.doSearch('some content');
-  //   const badResult = await searchCtrl.doSearch('somea');
+    expect(result).toMatchObject([expect.objectContaining({id: note3.id})]);
+  });
 
-  //   expect(result).toHaveLength(numOfContentSomeContent);
-  //   expect(badResult).toHaveLength(0);
-  // });
+  it('full phrase search', async () => {
+    const notebook = await createNotebook();
+    const note = await createNote(notebook.id, {
+      content: 'select col1, col2, col3 from foo where col1 = 1',
+    });
+    const note2 = await createNote(notebook.id, {
+      content: 'select col1, col2, col3 from foo where col2 = 1',
+    });
 
-  // it('should get note with special content', async () => {
-  //   const result1 = await searchCtrl.doSearch('%perf');
-  //   const result2 = await searchCtrl.doSearch('$');
-  //   const result3 = await searchCtrl.doSearch(`\'`);
-  //   const result4 = await searchCtrl.doSearch('@');
+    const result = await searchCtrl.doSearch(`col1 = 1`);
+    const fullResult = await searchCtrl.doSearch(`"col1 = 1"`);
 
-  //   expect(result1).toHaveLength(numOfSpecialContent);
-  //   expect(result2).toHaveLength(numOfSpecialContent);
-  //   expect(result3).toHaveLength(numOfSpecialContent);
-  //   expect(result4).toHaveLength(numOfSpecialContent);
-  // });
-
-  // it('should get note by notebook name', async () => {
-  //   const result = await searchCtrl.doSearch('name:emptyNote');
-  //   const badResult = await searchCtrl.doSearch('name:empty Note');
-
-  //   expect(result).toHaveLength(numOfNameEmpty);
-  //   // assuming spaces is only for free text, can't search for name with spaces
-  //   expect(badResult).toHaveLength(0);
-  // });
+    expect(result).toHaveLength(2);
+    expect(fullResult).toMatchObject([expect.objectContaining({id: note.id})]);
+  });
 
   afterAll(() => {
     module.close();

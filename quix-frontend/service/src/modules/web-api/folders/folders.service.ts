@@ -43,7 +43,6 @@ export class FoldersService {
       this.fileTreeRepo.findOne(rootId, {relations: ['folder', 'notebook']}),
       this.fileTreeRepo.getChildren(rootId),
     ]);
-
     if (node) {
       const path = await this.computePath(node);
       const nodeAsFile = convertSignleNodeToIFile(node, path);

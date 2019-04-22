@@ -6,7 +6,7 @@
   >
     <div
       class="bi-spread fe-item {{::'fe-item-depth-' + depth}}"
-
+      ng-class="{active: vm.folder.isActive(folder)}"
       drop="::!readonly"
       jqyoui-droppable="{onDrop: 'events.onItemDrop(folder)'}"
       jqyoui-droppable="{onDrop: 'events.onItemDrop(folder)'}"
@@ -15,11 +15,12 @@
     >
       <div class="bi-align" ng-click="events.onFolderClick(folder)">
         <i
-          class="fe-toggle bi-icon"
+          class="fe-toggle bi-action bi-icon bi-pointer"
           ng-class="{'fe-toggle--hidden': folder.isEmpty() || options.expandAllFolders}"
+          ng-click="events.onFolderToggle(folder)"
         >arrow_drop_down</i>
 
-        <span class="bi-align">
+        <span class="bi-align bi-grow bi-pointer">
           <i class="fe-icon fe-folder-icon bi-icon">folder</i>
 
           <span>
@@ -34,37 +35,60 @@
         </span>
       </div>
 
-      <bi-dropdown bd-options="::{align: 'right'}" ng-if="::events.onFileCreate || events.onFolderCreate || events.onFolderRename || events.onFolderDelete">
+      <bi-dropdown bd-options="::{align: 'right'}" ng-if="::!readonly">
         <bi-toggle>
           <i class="bi-action bi-icon">more_vert</i>
         </bi-toggle>
 
         <ul class="bi-dropdown-menu">
-          <li class="bi-align bi-space-h" ng-repeat="type in ::options.fileAlias" ng-disabled="::!events.onFileCreate" ng-click="events.onFileCreate && events.onFileCreate(type, folder)">
+          <li 
+            class="bi-align bi-space-h"
+            ng-repeat="type in ::options.fileAlias"
+            ng-disabled="::!events.onFileCreate"
+            ng-click="events.onFileCreate && events.onFileCreate(type, folder)"
+          >
             <i class="bi-icon bi-success">note_add</i>
             <span>New {{::type}}</span>
           </li>
 
           <li class="bi-dropdown-separator"></li>
 
-          <li class="bi-align bi-space-h" ng-disabled="::!events.onFolderCreate" ng-click="events.onFolderCreate && events.onFolderCreate(folder)">
+          <li 
+            class="bi-align bi-space-h"
+            ng-disabled="::!events.onFolderCreate"
+            ng-click="events.onFolderCreate && events.onFolderCreate(folder)"
+          >
             <i class="bi-icon bi-warning">create_new_folder</i>
             <span>New folder</span>
           </li>
 
           <li class="bi-dropdown-separator" ng-if="::options.settings"></li>
-          <li class="bi-align bi-space-h" ng-if="::options.settings" ng-click="events.onSettingsClick && events.onSettingsClick(folder)">
+
+          <li 
+            class="bi-align bi-space-h"
+            ng-if="::options.settings"
+            ng-click="events.onSettingsClick && events.onSettingsClick(folder)"
+          >
             <i class="bi-icon">settings</i>
             <span>Settings</span>
           </li>
 
           <li class="bi-dropdown-separator"></li>
 
-          <li class="bi-align bi-space-h" ng-disabled="::!events.onFolderRename" ng-click="events.onFolderRename(folder)">
+          <li 
+            class="bi-align bi-space-h"
+            ng-disabled="::!events.onFolderRename || !vm.folder.canRename(folder)"
+            ng-click="events.onFolderRename && vm.folder.canRename(folder) && events.onFolderRename(folder)"
+          >
             <i class="bi-icon">edit</i>
             <span>Rename</span>
           </li>
-          <li class="bi-align bi-space-h" ng-disabled="!events.onFolderDelete || !vm.folder.canDelete(folder)" ng-click="events.onFolderDelete && vm.folder.canDelete(folder) && events.onFolderDelete(folder)">
+
+          <li 
+            class="bi-align bi-space-h"
+            ng-disabled="::!events.onFolderDelete || !vm.folder.canDelete(folder)"
+            ng-click="events.onFolderDelete && vm.folder.canDelete(folder) && events.onFolderDelete(folder)"
+          >
             <i class="bi-icon bi-danger">delete</i>
             <span>Delete</span>
           </li>
@@ -102,7 +126,7 @@
     ng-click="events.onFileClick(file)"
   >
     <div
-      class="fe-item {{::'fe-item-depth-' + depth}} bi-spread bi-align"
+      class="fe-item {{::'fe-item-depth-' + depth}} bi-spread bi-align bi-pointer"
       drag="!readonly"
       jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
       jqyoui-options="{helper: 'clone', distance: 5, scroll: true, containment: container}"

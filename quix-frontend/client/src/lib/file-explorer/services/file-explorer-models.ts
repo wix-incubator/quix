@@ -67,6 +67,7 @@ export class Folder extends Item {
   private lazy: boolean = false;
   private readonly status = {
     open: false,
+    edit: false,
     hasFileLeaf: false
   };
 
@@ -177,6 +178,16 @@ export class Folder extends Item {
 
     if (this.getParent()) {
       this.getParent().trigger('openToggled', this.getParent(), this, this.isOpen());
+    }
+
+    return this;
+  }
+
+  public toggleEdit(edit?: boolean): Folder {
+    this.status.edit = typeof edit === 'undefined' ? !this.status.edit : edit;
+
+    if (this.getParent()) {
+      this.getParent().trigger('editToggled', this.getParent(), this, this.status.edit);
     }
 
     return this;

@@ -13,10 +13,10 @@ export default (app: Instance, store: Store) => () => ({
   template,
   scope: {
     note: '<',
+    permissions: '<',
     quixNoteOptions: '<',
     marked: '<',
     runner: '<',
-    readonly: '<',
     onContentChange: '&',
     onNameChange: '&',
     onShare: '&',

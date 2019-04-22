@@ -15,6 +15,7 @@ export {
 export {
   IFile,
   IFilePathItem,
+  FileType,
   FileActions,
   FileActionTypes,
   createFile,

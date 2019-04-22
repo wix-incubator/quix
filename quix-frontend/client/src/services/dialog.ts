@@ -16,7 +16,9 @@ export const prompt = ({title, yes, content}, scope?, locals?) => {
     <dialog yes="${yes}" no="cancel">
       <dialog-title>${title}</dialog-title>
       <dialog-content>
-        ${content}
+        <form name="form">
+          ${content}
+        </form>
       </dialog-content>
     </dialog>
   `, scope, locals);

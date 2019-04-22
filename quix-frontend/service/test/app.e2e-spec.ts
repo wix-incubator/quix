@@ -2,7 +2,7 @@ import {Test, TestingModule} from '@nestjs/testing';
 import request from 'supertest';
 import {AppModule} from './../src/app.module';
 import {INestApplication} from '@nestjs/common';
-import {ConfigService} from '../src/config/config.service';
+import {ConfigService} from '../src/config';
 import nock from 'nock';
 
 class E2EConfigService extends ConfigService {}

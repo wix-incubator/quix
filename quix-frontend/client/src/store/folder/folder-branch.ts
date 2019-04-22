@@ -12,18 +12,11 @@ import {
   composeReducers,
 } from '../../../../shared';
 
-import {isOwner} from '../../services/permission';
-import {isRoot} from '../../services/files';
+import {getFolderPermissions, getDefaultPermissions, IPermissions} from '../../services';
 
 export interface IView {
   markedMap: Record<string, IFile>;
   markedList: IFile[];
-}
-
-export interface IPermissions {
-  edit: boolean;
-  delete: boolean;
-  copy: boolean;
 }
 
 export default (app: Instance): IBranch => register => {
@@ -90,22 +83,10 @@ export default (app: Instance): IBranch => register => {
     return state;
   }
 
-  const permissions = (state: IPermissions = {
-    edit: false,
-    delete: false,
-    copy: false,
-  }, action: any): IPermissions => {
+  const permissions = (state: IPermissions = getDefaultPermissions(), action: any): IPermissions => {
     switch (action.type) {
       case 'folder.set':
-        return action.folder ? {
-          edit: isOwner(app, action.folder),
-          delete: isOwner(app, action.folder) && !isRoot(action.folder),
-          copy: !isOwner(app, action.folder) || !isRoot(action.folder)
-        } : {
-          edit: false,
-          delete: false,
-          copy: false
-        };
+        return action.folder ? getFolderPermissions(app, action.folder) : getDefaultPermissions();
       default:
     }
 

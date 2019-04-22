@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -b && npm run update-statics",
-    "start": "ts-node --files build-scripts/start.ts",
+    "start": "ts-node --files -r tsconfig-paths/register build-scripts/start.ts",
     "update-statics": "ts-node build-scripts/update-statics.ts",
     "start:dev": "nodemon",
     "start:debug": "nodemon --config nodemon-debug.json",
@@ -78,6 +78,17 @@
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "^shared/(.*)": "<rootDir>/../../shared/$1",
+      "^shared": "<rootDir>/../../shared",
+      "^entities/(.*)": "<rootDir>/entities/$1",
+      "^entities": "<rootDir>/entities",
+      "^modules/(.*)$": "<rootDir>/modules/$1",
+      "^config/(.*)": "<rootDir>/config/$1",
+      "^config": "<rootDir>/config",
+      "^global-types": "<rootDir>/types",
+      "^utils/(.*)": "<rootDir>/utils/$1"
+    }
   }
 }

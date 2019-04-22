@@ -1,7 +1,6 @@
-import {Injectable, Inject} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
+import {Injectable} from '@nestjs/common';
 import {Request} from 'express';
-import {ConfigService} from '../../config/config.service';
+import {ConfigService} from 'config';
 
 @Injectable()
 export class AuthService {

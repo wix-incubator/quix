@@ -42,7 +42,6 @@ bi-file-explorer-inner {
         transition: transform .2s;
         transform: rotate(-90deg);
         font-size: 19px;
-        cursor: pointer;
 
         &.fe-toggle--hidden {
           visibility: hidden;
@@ -57,6 +56,7 @@ bi-file-explorer-inner {
 
       > .fe-item {
         &:hover,
+        &.active,
         &.ui-droppable-hover {
           background-color: $hover-color;
         }
@@ -107,7 +107,6 @@ bi-file-explorer-inner {
 
     .fe-item {
       margin-left: 11px;
-      cursor: pointer;
 
       @for $i from 0 through 3 {
         &.fe-item-depth-#{$i} {

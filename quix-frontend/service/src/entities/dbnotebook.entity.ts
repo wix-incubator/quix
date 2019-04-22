@@ -9,9 +9,8 @@ import {
   BeforeUpdate,
 } from 'typeorm';
 import {DbNote} from './dbnote.entity';
-import {INotebook} from '../../../shared/entities/notebook';
 import {DbFileTreeNode} from './filenode.entity';
-import {INote, IFilePathItem} from '../../../shared';
+import {INote, IFilePathItem, INotebook} from 'shared';
 import {dbConf} from '../config/db-conf';
 
 @Entity()

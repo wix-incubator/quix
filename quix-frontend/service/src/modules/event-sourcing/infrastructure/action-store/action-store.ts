@@ -1,6 +1,6 @@
 import {Repository} from 'typeorm';
 import {IAction} from '../types';
-import {MySqlAction} from './entities/mysql-action';
+import {DbAction} from './entities/db-action';
 import {IActionStore, IDBAction} from './types';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Injectable} from '@nestjs/common';
@@ -18,9 +18,7 @@ const convertActionToDbAction = (input: IAction): IDBAction => {
 
 @Injectable()
 export class DbActionStore implements IActionStore {
-  constructor(
-    @InjectRepository(MySqlAction) private repo: Repository<MySqlAction>,
-  ) {}
+  constructor(@InjectRepository(DbAction) private repo: Repository<DbAction>) {}
 
   async pushAction(action: IAction | IAction[]) {
     const actions: IAction[] = Array.isArray(action) ? action : [action];

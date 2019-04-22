@@ -1,5 +1,5 @@
 import {ExtractActionTypes, ExtractActions} from '../common/actions';
-import {createNote} from './note';
+import {INote} from './types';
 
 export const NoteActions = {
   updateName: (id: string, name: string) => ({
@@ -20,13 +20,11 @@ export const NoteActions = {
     newNotebookId
   }),
   
-  addNote: (notebookId: string) => {
-    const note = createNote(notebookId);
-
+  addNote: (id: string, note: INote) => {
     return {
       type: 'note.create' as const,
-      note,
-      id: note.id
+      id,
+      note
     };
   },
 

@@ -1,6 +1,6 @@
 /* Helper driver for event-bus tests */
-import {ConfigService} from '../../config/config.service';
-import {ConfigModule} from '../../config/config.module';
+import {ConfigService, ConfigModule} from 'config';
+
 import {EventSourcingModule} from './event-sourcing.module';
 import {Test, TestingModule} from '@nestjs/testing';
 import {
@@ -10,23 +10,17 @@ import {
   getConnectionToken,
   getCustomRepositoryToken,
 } from '@nestjs/typeorm';
-import {DbNotebook, DbNote, DbFileTreeNode, DbFolder} from '../../entities';
-import {MySqlAction} from './infrastructure/action-store/entities/mysql-action';
+import {DbNotebook, DbNote, DbFileTreeNode, DbFolder} from 'entities';
+import {DbAction} from './infrastructure/action-store/entities/db-action';
 import {Repository, EntityManager, IsNull, Connection} from 'typeorm';
 import {QuixEventBus} from './quix-event-bus';
 import * as uuid from 'uuid';
-import {
-  NotebookActions,
-  createNotebook,
-} from '../../../../shared/entities/notebook';
-import {
-  FileActions,
-  FileType,
-  IFilePathItem,
-} from '../../../../shared/entities/file';
-import {AuthModule} from '../auth/auth.module';
-import {FileTreeRepository} from '../../entities/filenode.repository';
-import {dbConf} from '../../config/db-conf';
+import {NotebookActions, createNotebook} from 'shared/entities/notebook';
+import {FileActions, FileType, IFilePathItem} from 'shared/entities/file';
+import {AuthModule} from 'modules/auth/auth.module';
+import {FileTreeRepository} from 'entities/filenode.repository';
+import {dbConf} from 'config/db-conf';
+import {} from 'shared/entities/file';
 
 export class QuixEventBusDriver {
   constructor(
@@ -34,7 +28,7 @@ export class QuixEventBusDriver {
     public module: TestingModule,
     public noteRepo: Repository<DbNote>,
     public notebookRepo: Repository<DbNotebook>,
-    public eventsRepo: Repository<MySqlAction>,
+    public eventsRepo: Repository<DbAction>,
     public folderRepo: Repository<DbFolder>,
     public fileTreeRepo: Repository<DbFileTreeNode>,
     private conn: Connection,
@@ -47,7 +41,7 @@ export class QuixEventBusDriver {
     let module: TestingModule;
     let notebookRepo: Repository<DbNotebook>;
     let noteRepo: Repository<DbNote>;
-    let eventsRepo: Repository<MySqlAction>;
+    let eventsRepo: Repository<DbAction>;
     let folderRepo: Repository<DbFolder>;
     let fileTreeRepo: FileTreeRepository;
     let conn: Connection;
@@ -65,7 +59,7 @@ export class QuixEventBusDriver {
               DbFolder,
               DbNote,
               DbNotebook,
-              MySqlAction,
+              DbAction,
             ]),
           inject: [ConfigService],
         }),
@@ -80,9 +74,7 @@ export class QuixEventBusDriver {
       getRepositoryToken(DbNotebook),
     );
     noteRepo = module.get<Repository<DbNote>>(getRepositoryToken(DbNote));
-    eventsRepo = module.get<Repository<MySqlAction>>(
-      getRepositoryToken(MySqlAction),
-    );
+    eventsRepo = module.get<Repository<DbAction>>(getRepositoryToken(DbAction));
     fileTreeRepo = module.get<FileTreeRepository>(
       getCustomRepositoryToken(FileTreeRepository),
     );

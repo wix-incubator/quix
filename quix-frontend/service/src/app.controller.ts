@@ -1,5 +1,5 @@
 import {Controller, Get, Render} from '@nestjs/common';
-import {ConfigService, EnvSettings} from './config/config.service';
+import {ConfigService, EnvSettings} from './config';
 
 @Controller()
 export class AppController {

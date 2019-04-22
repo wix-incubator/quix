@@ -34,27 +34,25 @@
           <quix-actions 
             type="folder"
             context="vm.state.value().folder"
+            permissions="::permissions"
             quix-actions-options="{
               reverse: true,
-              confirmOnDelete: vm.state.is('Content'),
-              disableDelete: !permissions.delete,
-              disableCopy: !permissions.copy
+              confirmOnDelete: vm.state.is('Content')
             }"
             on-like-toggle="events.onLikeToggle(context)"
             on-share="events.onShare(context)"
             on-delete="events.onDelete(context)"
-            readonly="!permissions.edit"
           ></quix-actions>
         </div>
       </div>
 
-      <div class="bi-align bi-s-h--x2 bi-grow bi-fade-in" ng-if="vm.marked.enabled">
+      <div class="bi-align bi-s-h bi-grow bi-fade-in" ng-if="vm.marked.enabled">
         <quix-actions 
           type="items"
           context="vm.marked.list"
-          quix-actions-options="::{list: true}"
+          permissions="::permissions.bulk"
+          quix-actions-options="::{bulk: true}"
           on-delete="events.onMarkedDelete(context)"
-          readonly="!permissions.edit"
         ></quix-actions>
 
         <span class="bi-text--600 bi-muted">{{vm.marked.list.length}} items selected</span>

@@ -11,6 +11,14 @@ import {INote} from '../../../../shared';
 import {IScope} from './search-results-types';
 import * as Resources from '../../services/resources';
 import * as AppActions from '../../store/app/app-actions';
+import {StateManager} from '../../services';
+
+enum States {
+  Initial,
+  Error,
+  Result,
+  Content,
+}
 
 export default (app: Instance, store: Store) => () => ({
   restrict: 'E',
@@ -21,7 +29,9 @@ export default (app: Instance, store: Store) => () => ({
       initNgScope(scope)
         .withVM({
           text: null,
-          notes: null
+          $init() {
+            this.state = new StateManager(States);
+          }
         })
         .withEvents({
           onNoteClick(note: INote) {
@@ -30,22 +40,24 @@ export default (app: Instance, store: Store) => () => ({
         });
 
       scope.renderNoteContent = (note: INote) => ({
-        html: inject('$compile')(`<div ng-bind-html="html | biHighlight:vm.text"></div>`)(assign(scope.$new(), {
+        html: inject('$compile')(`<div ng-bind-html="html | biHighlight:vm.state.value().text"></div>`)(assign(scope.$new(), {
           html: hljs.highlight('sql', note.content).value
         }))
       });
 
       let searchId = 1;
-      const search = debounce((text: any, sId: number) => Resources.search(text).then(notes => {
-        if (sId === searchId) {
-          scope.vm.notes = notes;
-        }
-      }), 300);
+      const search = debounce((text: any, sId: number) => {
+        Resources.search(text).then(notes => {
+          if (sId === searchId) {
+            scope.vm.state
+              .force('Result', true, {notes})
+              .set('Content', !!notes.length);
+          }
+        });
+      }, 300);
 
       store.subscribe('app.searchText', text => {
-        scope.vm.notes = null;
-        scope.vm.text = text;
-
+        scope.vm.state.force('Initial', true, {notes: null, text});
         return text && search(text, ++searchId);
       }, scope);
 

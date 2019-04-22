@@ -4,7 +4,7 @@ import {IDBAction} from '../types';
 import {dbConf} from '../../../../../config/db-conf';
 
 @Entity()
-export class MySqlAction<T = IEventData, N extends string = string>
+export class DbAction<T = IEventData, N extends string = string>
   implements IDBAction {
   @PrimaryColumn(dbConf.idColumn)
   id!: string;

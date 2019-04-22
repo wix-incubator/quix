@@ -3,7 +3,7 @@ import {Store} from '../lib/store';
 import {Instance} from '../lib/app';
 import {IFile, FileActions, createFolder, IFolder, IFilePathItem} from '../../../shared';
 import {FileType} from '../../../shared/entities/file';
-import {isOwner} from './permission';
+import {isOwner} from './permissions';
 import {cache} from '../store';
 
 export const addFolder = async (store: Store, app: Instance, parentOrPath: IFolder | IFilePathItem[], props: Partial<IFile> = {}) => {
