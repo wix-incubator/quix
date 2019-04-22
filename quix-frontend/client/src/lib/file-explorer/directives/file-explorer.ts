@@ -1,5 +1,5 @@
 import {assign, isArray} from 'lodash';
-import {createNgModel, initNgScope} from '../../core';
+import {createNgModel, initNgScope, inject} from '../../core';
 import {IItemDef} from '../services';
 import {File, Folder} from '../services/file-explorer-models';
 import {treeToDef, defToTree} from '../services/file-explorer-tools';
@@ -71,7 +71,7 @@ function initScope(scope, controller: Controller, depth: number) {
       onFolderBlur(folder: Folder) {
         scope.vm.folder.toggleEdit(folder, false);
       },
-      onFolderClick(folder: Folder) {
+      onFolderToggle(folder: Folder) {
         if (!scope.vm.folders.get(folder).edit.enabled) {
           scope.vm.folder.toggleOpen(folder);
           scope.vm.folder.setCurrent(folder);
@@ -85,8 +85,14 @@ function initScope(scope, controller: Controller, depth: number) {
           }
         }
       },
+      onFolderClick(folder: Folder) {
+        scope.vm.folder.setCurrent(folder);
+        scope.vm.file.setCurrent(null);
+        controller.clickFolder(folder);
+      },
       onFileClick(file: File) {
         scope.vm.file.setCurrent(file);
+        scope.vm.folder.setCurrent(null);
         controller.clickFile(file);
       },
       onSettingsClick(folder: Folder) {
@@ -106,11 +112,15 @@ function initScope(scope, controller: Controller, depth: number) {
     if (depth < 2) {
       helper.withEditableEvents({
         onFolderCreate(folder?: Folder) {
-          folder = (folder || scope.model).toggleOpen(true).createFolder('New folder');
+          folder = (folder || scope.model).toggleOpen(true);
 
-          scope.vm.folder.toggleEdit(folder, true);
+          inject('$timeout')(() => {
+            folder = folder
+              .createFolder('New folder')
+              .toggleEdit(true);
 
-          controller.syncItem(folder, 'folderCreated');
+            controller.syncItem(folder, 'folderCreated');
+          });
         }
       });
     }
@@ -144,7 +154,9 @@ export function fileExplorer() {
       feOptions: '<',
       onLazyFolderOpen: '&',
       onFileClick: '&',
+      onFolderClick: '&',
       onLoad: '&',
+      getFolderPermissions: '&',
       emptyText: '@',
       readonly: '='
     },

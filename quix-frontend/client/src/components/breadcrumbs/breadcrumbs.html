@@ -5,19 +5,15 @@
   <div>
     <span ng-show="false">dummy</span>
 
-    <span ng-if="!item.id" ng-click="events.onFolderClick(null)" data-hook="file-name">
-      {{::item.name}}
-    </span>
-
     <span
-      ng-if="item.id && $index < breadcrumbs.length - 1"
-      ng-click="events.onFolderClick(item)"
+      ng-if="breadcrumbs.length === 1 || $index < breadcrumbs.length - 1"
+      ng-click="events.onFolderClick(item, $index)"
       data-hook="file-name"
     >{{::item.name}}</span>
 
     <span 
       class="bi-align bi-s-h--x05"
-      ng-if="item.id && $index === breadcrumbs.length - 1"
+      ng-if="breadcrumbs.length > 1 && $index === breadcrumbs.length - 1"
     >
       <span
         contenteditable="{{!readonly}}"

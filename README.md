@@ -3,7 +3,9 @@
 
 Quix is a robust easy-to-use business intelligence & data analytics tool built to handle both quick insights and massive resource-demanding queries. It features data visualization and export, user management, and organizes queries in notebooks for easy access and sharing across teams.
 
+Please note that this is a beta version of Quix which is still undergoing final testing before its official release.
 A web-based IDE for [Presto](https://github.com/prestodb/presto), Quix is your single point of truth and a shared space for your company's BI insights, with quick turnaround, interactive visual perspectives, and mixed data sources.
+## Disclaimer
 
 ![](docs/flow.gif)
 

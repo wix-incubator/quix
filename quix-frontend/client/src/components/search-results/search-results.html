@@ -4,39 +4,45 @@
       <i class="bi-icon">search</i>
       <span>
         <span>
-          Search results <span class="bi-fade-in" ng-if="vm.notes">({{vm.notes.length}})</span>
+          Search results <span class="bi-fade-in" ng-if="vm.state.after('Initial')">({{vm.state.value().notes.length}})</span>
         </span>
       </span>
     </div>
-
-    <i class="quix-round-icon bi-action bi-icon" ng-click="events.onClose()">close</i>
   </div>
 
-  <div class="bi-section-content bi-c-h bi-s-v--x2">
-    <div class="bi-c-h bi-align bi-center bi-grow" ng-if="!vm.notes">
+  <div class="bi-section-content bi-c-h">
+    <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.is('Initial')">
       <div class="bi-empty-state--loading bi-fade-in">
         <div class="bi-empty-state-content">Searching...</div>
       </div>
     </div>
 
-    <div class="bi-c-h bi-s-v--x05" ng-repeat="note in vm.notes track by note.id">
-      <div class="bi-spread bi-align">
-        <div class="bi-align bi-muted">
-          <span class="bi-link" ng-click="events.onNoteClick(note)">{{::note.name}}</span>
-          <span class="bi-text--sm">{{::note.owner}}</span>
-        </div>
-
-        <div class="quix-meta-text bi-align bi-s-h bi-text--sm">
-          <div>Created <span>{{::note.dateCreated | biRelativeDate}}</span></div>
-          <div>|</div>
-          <div>Updated <span>{{note.dateUpdated | biRelativeDate}}</span></div>
-        </div>
-      </div>
-
-      <div class="bi-panel--grey bi-dont-shrink">
-        <div class="hljs" bi-html="::renderNoteContent(note)"></div>
+    <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.is('Result')">
+      <div class="bi-empty-state bi-fade-in">
+        <div class="bi-empty-state-header">No notes that match "{{::vm.state.value().text}}"</div>
       </div>
     </div>
+
+    <div class="bi-c-h bi-s-v--x2 bi-fade-in" ng-if="vm.state.is('Content')">
+      <div class="bi-c-h bi-s-v--x05" ng-repeat="note in vm.state.value().notes track by note.id">
+        <div class="bi-spread bi-align">
+          <div class="bi-align bi-s-h--x05 bi-muted">
+            <span class="bi-link" ng-click="events.onNoteClick(note)">{{::note.name}}</span>
+            <span class="bi-text--sm">{{::note.owner}}</span>
+          </div>
+
+          <div class="quix-meta-text bi-align bi-s-h bi-text--sm">
+            <div>Created <span>{{::note.dateCreated | biRelativeDate}}</span></div>
+            <div>|</div>
+            <div>Updated <span>{{note.dateUpdated | biRelativeDate}}</span></div>
+          </div>
+        </div>
+
+        <div class="bi-panel--grey bi-dont-shrink">
+          <pre class="hljs" bi-html="::renderNoteContent(note)"></pre>
+        </div>
+      </div>
+    </div>  
   </div>  
 </div>
 

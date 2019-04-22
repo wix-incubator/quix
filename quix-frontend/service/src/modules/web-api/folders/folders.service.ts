@@ -1,108 +1,66 @@
-import {Injectable, HttpException, HttpStatus} from '@nestjs/common';
-import {InjectRepository, InjectEntityManager} from '@nestjs/typeorm';
-import {DbNotebook, DbFileTreeNode, DbFolder} from '../../../entities';
-import {Repository, EntityManager} from 'typeorm';
-import {
-  IFile,
-  FileType,
-  IFilePathItem,
-} from '../../../../../shared/entities/file';
+import {Injectable} from '@nestjs/common';
+import {InjectEntityManager, InjectRepository} from '@nestjs/typeorm';
+import {EntityManager, Repository} from 'typeorm';
 import {dbConf} from '../../../config/db-conf';
+import {DbFileTreeNode, DbFolder, FileTreeRepository} from '../../../entities';
+import {
+  extractPath,
+  dbNodeToFileItem,
+  computeName,
+  convertSignleNodeToIFile,
+  convertListDbNodeToIFileList,
+} from './utils';
+import {IFile} from '../../../../../shared/entities/file';
+import {IFolder} from '../../../../../shared/entities/folder';
 
 @Injectable()
 export class FoldersService {
-  private fileTreeRepo: Repository<DbFileTreeNode>;
+  private fileTreeRepo: FileTreeRepository;
   constructor(
     @InjectEntityManager()
     private entityManager: EntityManager,
-    @InjectRepository(DbFolder) private folderRepo: Repository<DbFolder>,
   ) {
-    this.fileTreeRepo = this.entityManager.getRepository(DbFileTreeNode);
-  }
-
-  async getRawList(user: string, rootId?: string) {
-    // if (!rootId) {
-    //   const root = await this.fileTreeRepo
-    //     .createQueryBuilder('node')
-    //     .where('node.owner = :user', {user})
-    //     .andWhere('node.parentId is NULL')
-    //     .getOne();
-
-    //   rootId = root ? root.id : undefined;
-    // }
-
-    let q = this.fileTreeRepo
-      .createQueryBuilder('node')
-      .where('node.owner = :user', {user});
-
-    if (rootId) {
-      const sub = this.fileTreeRepo
-        .createQueryBuilder('root')
-        .select('root.mpath')
-        .where(`root.id = :id`)
-        .getQuery();
-      q = q
-        .andWhere(`node.mpath LIKE ${dbConf.concat(`(${sub})`, `'%'`)}`)
-        .setParameter('id', rootId);
-    }
-
-    q = q
-      .leftJoinAndSelect('node.folder', 'folder')
-      .leftJoinAndSelect('node.notebook', 'notebook');
-
-    return q.getMany();
-  }
-
-  async getPathList(user: string, rootId?: string) {
-    const list = await this.getRawList(user, rootId);
-    if (!list) {
-      return [];
-    }
-    const itemMap = new Map(list.map(n => [n.id, n]));
-    const resultMap: Map<string, IFile> = new Map();
-
-    const resultList = list.map(item =>
-      computePath(item.id, resultMap, itemMap),
+    this.fileTreeRepo = this.entityManager.getCustomRepository(
+      FileTreeRepository,
     );
-    return resultList;
-  }
-}
-
-function computePath(
-  id: string,
-  resultMap: Map<string, IFile>,
-  itemMap: Map<string, DbFileTreeNode>,
-) {
-  const item = itemMap.get(id)!;
-  const {dateCreated, dateUpdated, type, owner} = item;
-
-  const maybeResult = resultMap.get(id);
-  if (maybeResult) {
-    return maybeResult;
   }
 
-  let path: IFilePathItem[];
-  if (!item.parentId) {
-    path = [];
-  } else {
-    const parentFile = computePath(item.parentId, resultMap, itemMap);
-    path = parentFile.path.concat([{id: parentFile.id, name: parentFile.name}]);
+  /**
+   * @returns {Promise<IFile[]>} list of all user folders, in the format client expects.
+   */
+  async getFilesForUser(user: string): Promise<IFile[]> {
+    const list = await this.fileTreeRepo.find({
+      where: {owner: user},
+      relations: ['notebook', 'folder'],
+    });
+
+    return convertListDbNodeToIFileList(list);
   }
 
-  const name =
-    item.type === FileType.folder ? item.folder!.name : item.notebook!.name;
+  async getFolder(rootId: string): Promise<IFolder | undefined> {
+    const [node, children] = await Promise.all([
+      /* TODO: do this in one query */
+      this.fileTreeRepo.findOne(rootId, {relations: ['folder', 'notebook']}),
+      this.fileTreeRepo.getChildren(rootId),
+    ]);
+    if (node) {
+      const path = await this.computePath(node);
+      const nodeAsFile = convertSignleNodeToIFile(node, path);
 
-  const result: IFile = {
-    id: item.type === FileType.folder ? id : item.notebookId!,
-    dateCreated,
-    dateUpdated,
-    type,
-    name,
-    owner,
-    isLiked: false,
-    path,
-  };
+      const files = convertListDbNodeToIFileList(children, [nodeAsFile]);
+      return {...nodeAsFile, files};
+    }
+    return undefined;
+  }
 
-  resultMap.set(id, result);
-  return result;
+  async computePath(fileNode: DbFileTreeNode) {
+    const mpath = fileNode.mpath;
+    const parentsIds = mpath.split('.').slice(0, -1); // remove own Id
+
+    if (parentsIds.length > 0) {
+      const parents = await this.fileTreeRepo.getNamesByIds(parentsIds);
+      return extractPath(parentsIds, parents);
+    }
+    return [];
+  }
 }

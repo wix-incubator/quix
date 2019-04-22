@@ -1,13 +1,13 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DbNote} from '../../../entities';
+import {DbNote} from 'entities';
 import {Repository} from 'typeorm';
 import {
   noteReducer,
   NoteActions,
   NoteActionTypes,
   INote,
-} from '../../../../../shared/entities/note';
+} from 'shared/entities/note';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {QuixHookNames} from '../types';
 

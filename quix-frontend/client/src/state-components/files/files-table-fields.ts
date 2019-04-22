@@ -18,7 +18,8 @@ export const initTableFields = scope => {
           <i
             class="bi-action bi-icon bi-fade-in"
             ng-if="!vm.marked.map[file.id]"
-            ng-click="$event.stopPropagation(); events.onMarkToggle(file)"
+            ng-click="$event.stopPropagation(); (file.type !== 'folder' && events.onMarkToggle(file))"
+            ng-disabled="::file.type === 'folder'"
           >
             check_box_outline_blank
           </i>
@@ -37,9 +38,19 @@ export const initTableFields = scope => {
             class="bi-icon" 
             ng-class="::file.type === 'folder' ? 'bi-warning' : 'bi-muted'"
           >{{::file.type === 'folder' ? 'folder' : 'insert_drive_file'}}</i>
-          <span>{{::file.name}}</span>
+
+          <span ng-if="!vm.isNew">{{::file.name}}</span>
+          
+          <span
+            ng-if="vm.isNew"
+            contenteditable="{{vm.isNew}}"
+            ce-options="::{autoEdit: true}"
+            ng-model="file.name"
+            ng-blur="vm.isNew = false"
+            on-change="events.onChildNameChange(file)"
+          ></span>
         </div>
-      `, {file}, scope);
+      `, {file, vm: scope.vm.files.get(file)}, scope);
     }
   }, {
     name: 'dateCreated',

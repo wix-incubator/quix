@@ -9,11 +9,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration}
 import org.springframework.core.env.Environment
 import quix.api.db.Db
+import quix.api.execute.AsyncQueryExecutor
 import quix.api.users.DummyUsers
 import quix.core.utils.JsonOps
 import quix.presto._
 import quix.presto.db.RefreshableDb
-import quix.presto.rest.ScalaJPrestoStateClient
+import quix.presto.rest.{Results, ScalaJPrestoStateClient}
 import quix.web.auth.JwtUsers
 import quix.web.controllers.DbController
 
@@ -35,8 +36,8 @@ class AuthConfig extends LazyLogging {
       val cookie = env.getRequiredProperty("auth.cookie")
       val secret = env.getRequiredProperty("auth.secret")
 
-      assert(cookie.nonEmpty, "auth.cookie can't be an empty string")
-      assert(secret.nonEmpty, "auth.secret can't be an empty string")
+      require(cookie.nonEmpty, "auth.cookie can't be an empty string")
+      require(secret.nonEmpty, "auth.secret can't be an empty string")
 
       new JwtUsers(cookie, secret)
     }.onErrorRecoverWith { case NonFatal(e: Exception) =>
@@ -71,14 +72,14 @@ class PrestoConfiguration extends LazyLogging {
     config
   }
 
-  @Bean def initQueryExecutor(config: PrestoConfig): QueryExecutor = {
+  @Bean def initQueryExecutor(config: PrestoConfig): AsyncQueryExecutor[Results] = {
     logger.info("event=[spring-config] bean=[QueryExecutor]")
 
     val prestoClient = new ScalaJPrestoStateClient(config)
     new QueryExecutor(prestoClient)
   }
 
-  @Bean def initPrestoExecutions(executor: QueryExecutor): PrestoExecutions = {
+  @Bean def initPrestoExecutions(executor: AsyncQueryExecutor[Results]): PrestoExecutions = {
     logger.info("event=[spring-config] bean=[PrestoExecutions]")
 
     val execution: PrestoExecutions = new PrestoExecutions(executor)
@@ -104,7 +105,7 @@ class Controllers extends LazyLogging {
 @Configuration
 class DbConfig extends LazyLogging {
 
-  @Bean def initDb(env: Environment, executor: QueryExecutor) = {
+  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[Results]):Db = {
     val initialDelay = env.getProperty("db.refresh.initialDelayInMinutes", classOf[Long], 1L)
     val delay = env.getProperty("db.refresh.delayInMinutes", classOf[Long], 15L)
 

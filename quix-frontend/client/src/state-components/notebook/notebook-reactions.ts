@@ -7,9 +7,7 @@ export function setNotebook(scope: IScope, app: Instance, notebook: INotebook) {
     .set('Result', !!notebook, {notebook})
     .then(() => {
       if (scope.vm.breadcrumbs.folders.length === 1) {
-        scope.vm.breadcrumbs.folders = [{
-          name: scope.permissions.edit ? 'My notebooks' : `${notebook.owner}'s notebooks`
-        }, ...notebook.path, {id: notebook.id, name: notebook.name}];
+        scope.vm.breadcrumbs.folders = [...notebook.path, {id: notebook.id, name: notebook.name}];
         scope.vm.breadcrumbs.reload();
       }
     })

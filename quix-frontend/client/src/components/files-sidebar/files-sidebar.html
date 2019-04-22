@@ -1,9 +1,11 @@
 <div class="bi-fade-in" ng-if="vm.state.is('Content')" data-hook="files-sidebar-content">
   <bi-file-explorer
-    ng-model="vm.state.value().files"
+    ng-model="vm.state.value().tree"
     fe-options="{fileAlias: ['notebook']}"
     on-load="events.onFileExplorerLoad(fileExplorer)"
     on-file-click="events.onFileClick(file)"
+    on-folder-click="events.onFolderClick(folder)"
+    get-folder-permissions="events.getFolderPermissions(folder)"
   ></bi-file-explorer>
 </div>
 
@@ -28,7 +30,7 @@
       <i class="bi-icon">note_add</i>
     </div>
     <div class="bi-empty-state-header">
-      You don't have any notebooks yet
+      You don't have any notebooks
     </div>
     <div class="bi-empty-state-content">
       <a class="bi-link" ng-click="events.onNotebookAdd()">Add notebook</a>

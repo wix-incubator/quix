@@ -20,17 +20,28 @@ export default (app: App, store: Store) => ({
   url: Url,
   scope: Scope,
   options: {isNew: false},
-  controller: async (scope: IScope, params, {syncUrl}) => {
+  controller: async (scope: IScope, params, {syncUrl, setTitle}) => {
     await cache.notebook.fetch(params.id);
     
     syncUrl(() => [store.getState('notebook.notes') || []]);
 
-    store.subscribe('notebook', ({notebook, notes, queue, view, permissions}) => {
+    store.subscribe('notebook', ({notebook, notes, error, queue, view, permissions}) => {
       scope.notebook = notebook;
       scope.notes = notes;
+      scope.error = error;
       scope.queue = queue;
       scope.view = view;
       scope.permissions = permissions;
+    }, scope);
+
+    store.subscribe('notebook.notebook.name', name => {
+      setTitle(({stateName}) => [name]);
+    }, scope);
+
+    store.subscribe('notebook.error', error => {
+      if (error) {
+        setTitle(() => ['Error']);
+      }
     }, scope);
 
     store.subscribe('app.runners', () => {

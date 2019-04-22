@@ -21,4 +21,11 @@ class DbController(db: Db) {
   def getTable(@PathVariable catalog: String, @PathVariable schema: String, @PathVariable table: String) = {
     db.table(catalog, schema, table)
   }
+
+  @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
+  @RequestMapping(value = Array("/db/autocomplete"), method = Array(RequestMethod.GET))
+  @ResponseBody
+  def autocomplete() = {
+    db.autocomplete
+  }
 }

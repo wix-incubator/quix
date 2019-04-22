@@ -1,11 +1,7 @@
 import {Reducer, BaseAction, DefaultAction} from './common-types';
 import {replaceWith} from '../../utils/utils';
 
-export const composeReducers = <T extends {id: string}, A extends BaseAction = DefaultAction>(
-  ...args: Reducer<T, A>[]
-): Reducer<T, A> => (state, action) => args.reduce((s, reducer) => reducer(s, action), state);
-
-export const createReducer = <T extends {id: string; dateUpdated?: number}, A extends BaseAction = DefaultAction>(
+const creatingReducer = <T extends {id: string; dateUpdated?: number}, A extends BaseAction = DefaultAction>(
   entityName: string,
   entityTransformer = (x: any) => x
 ): Reducer<T, A> =>
@@ -18,12 +14,35 @@ export const createReducer = <T extends {id: string; dateUpdated?: number}, A ex
         const owner = action.user ? {owner: action.user} : {};
         return {...entityTransformer(action[entityName]), ...owner};
       }
+
       break;
     }
+    default:
+  }
+
+  return state;
+}
+
+const deletingReducer = <T extends {id: string; dateUpdated?: number}, A extends BaseAction = DefaultAction>(
+  entityName: string
+): Reducer<T, A> =>
+  (state, action_) => {
+  const action = action_ as DefaultAction;
+
+  switch (action.type) {
     case `${entityName}.delete`:
       return state;
     default:
   }
+
+  return state;
+}
+
+const updatingReducer = <T extends {id: string; dateUpdated?: number}, A extends BaseAction = DefaultAction>(
+  entityName: string
+): Reducer<T, A> =>
+  (state, action_) => {
+  const action = action_ as DefaultAction;
 
   if (action.type.startsWith(`${entityName}.update`) && state && state.id === action.id) {
     const prop = action.type.split('.')[2];
@@ -37,9 +56,12 @@ export const createReducer = <T extends {id: string; dateUpdated?: number}, A ex
   return state;
 }
 
-export const createListReducer = <T extends {id: string}, A extends BaseAction = DefaultAction>(
+const listReducer = <T extends {id: string}, A extends BaseAction = DefaultAction>(
   entityOrMap: string | Record<string, Reducer<T, A>>,
-  reducer: Reducer<T, A> = x => x
+  reducer: Reducer<T, A> = x => x,
+  options: {
+    createIfNull: boolean;
+  }
 ) => (s: T[], a: A) => {
   const entityMap = typeof entityOrMap === 'string' ? {[entityOrMap]: reducer} : entityOrMap;
   
@@ -53,7 +75,8 @@ export const createListReducer = <T extends {id: string}, A extends BaseAction =
 
     switch (actionType) {
       case 'create':
-        return [...(state || []), entityReducer(undefined, action) as T];
+        state = !state && options.createIfNull ? [] : state;
+        return state && [...state, entityReducer(undefined, action) as T];
       case 'delete':
       return state && state.filter(item => item.id !== action.id);
       case 'update':
@@ -66,3 +89,32 @@ export const createListReducer = <T extends {id: string}, A extends BaseAction =
 
   return fn(s, a);
 }
+
+export const composeReducers = <T extends {id: string}, A extends BaseAction = DefaultAction>(
+  ...args: Reducer<T, A>[]
+): Reducer<T, A> => (state, action) => args.reduce((s, reducer) => reducer(s, action), state);
+
+export const createReducer = <T extends {id: string; dateUpdated?: number}, A extends BaseAction = DefaultAction>(
+  entityName: string,
+  entityTransformer = (x: any) => x
+): Reducer<T, A> => composeReducers(
+  creatingReducer(entityName, entityTransformer),
+  deletingReducer(entityName),
+  updatingReducer(entityName),
+);
+
+export const createClientReducer = <T extends {id: string; dateUpdated?: number}, A extends BaseAction = DefaultAction>(
+  entityName: string
+): Reducer<T, A> => composeReducers(
+  updatingReducer(entityName),
+);
+
+export const createListReducer = <T extends {id: string}, A extends BaseAction = DefaultAction>(
+  entityOrMap: string | Record<string, Reducer<T, A>>,
+  reducer: Reducer<T, A> = x => x
+) => listReducer(entityOrMap, reducer, {createIfNull: true});
+
+export const createClientListReducer = <T extends {id: string}, A extends BaseAction = DefaultAction>(
+  entityOrMap: string | Record<string, Reducer<T, A>>,
+  reducer: Reducer<T, A> = x => x
+) => listReducer(entityOrMap, reducer, {createIfNull: false});

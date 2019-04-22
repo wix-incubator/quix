@@ -15,5 +15,9 @@ export default () => ({
     this.state = new StateManager(States);
     this.marked.map = {};
     this.marked.list = [];
+
+    this.files = this.createItemsVm({
+      isNew: null
+    });
   }
 });

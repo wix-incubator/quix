@@ -24,8 +24,8 @@ export default (app: Instance, store: Store) => () => ({
         })
         .withVM({})
         .withEvents({
-          onFolderClick(file) {
-            scope.onFolderClick({file});
+          onFolderClick(file, index) {
+            scope.onFolderClick({file, isRoot: index === 0});
           },
           onNameChange(file) {
             scope.onNameChange({file});

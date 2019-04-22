@@ -13,7 +13,7 @@ export function goToFile(fileDef: IItemDef, folder: Folder): File {
     folder = folder.getFolderById(getId(parent)).toggleOpen(true);
   });
 
-  return folder.getFileById(fileDef.id);
+  return folder.getFileById(fileDef.id) || folder.getFolderById(fileDef.id);
 }
 
 /**
@@ -87,7 +87,7 @@ export function itemToDef(item: Item): IItemDef {
   const path: IPathItemDef[] = [];
   let folder: Folder = item.getParent();
 
-  while (folder.getParent()) {
+  while (folder && folder.getParent()) {
     path.unshift({
       id: folder.getId(),
       name: folder.getName()

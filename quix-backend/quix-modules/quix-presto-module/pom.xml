@@ -68,6 +68,7 @@
             <version>${logback.classic.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-core_${scala.dependencies.version}</artifactId>
@@ -75,6 +76,7 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.specs2/specs2-junit -->
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-junit_${scala.dependencies.version}</artifactId>
@@ -97,9 +99,10 @@
         <sourceDirectory>src/main/scala</sourceDirectory>
         <plugins>
             <plugin>
+                <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>3.2.2</version>
+                <version>4.0.1</version>
                 <executions>
                     <execution>
                         <goals>

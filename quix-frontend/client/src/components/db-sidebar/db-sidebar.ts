@@ -40,7 +40,7 @@ export default (app: Instance, store: Store) => () => ({
             const [catalog, schema, table] = path.map(({id}) => id);
 
             return Resources.dbColumns(catalog, schema, table)
-              .then(columns => convert(columns, [...path]))
+              .then(({children: columns}) => convert(columns, [...path]))
               .then(columns => store.dispatch(DbActions.addColumns(folder.id, columns)));
           }
         });

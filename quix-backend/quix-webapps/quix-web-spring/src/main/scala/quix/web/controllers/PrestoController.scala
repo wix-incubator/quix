@@ -22,6 +22,15 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
 
   override def handleTextMessage(socket: WebSocketSession, message: TextMessage): Unit = users.auth(getHeaders(socket)) { user =>
     logger.info(s"event=handle-text-message socket-id=${socket.getId} message=${message.getPayload} user=${user.email}")
+
+    if (message.getPayload == "ping") {
+      handlePingMessage(socket)
+    } else {
+      handleExecutionMessage(socket, message, user)
+    }
+  }
+
+  private def handleExecutionMessage(socket: WebSocketSession, message: TextMessage, user: User) = {
     val payload = message.getPayload.as[StartCommand[String]]
 
     val initConsumer = Task.eval(new WebsocketConsumer[PrestoEvent](socket.getId, user, socket))
@@ -32,6 +41,12 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
 
     val future = task.executeOn(io).runToFuture(io)
     executions.put(socket.getId, future)
+  }
+
+  private def handlePingMessage(socket: WebSocketSession) = {
+    val task = Task(socket.sendMessage(new TextMessage("pong")))
+
+    task.runAsyncAndForget(io)
   }
 
   override def afterConnectionClosed(socket: WebSocketSession, status: CloseStatus): Unit = users.auth(getHeaders(socket)) { user =>

@@ -1,19 +1,27 @@
-import {last} from 'lodash';
+import {takeWhile} from 'lodash';
 import {utils} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {toast} from '../../lib/ui';
 import {Instance} from '../../lib/app';
-import {INote, NotebookActions, IFile, NoteActions, INotebook} from '../../../../shared';
+import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem, createNote} from '../../../../shared';
+import {FileType} from '../../../../shared/entities/file';
 import {IScope} from './notebook-types';
 import {setNotebook, setNote, queueNote, toggleMark, unmarkAll} from '../../store/notebook/notebook-actions';
-import {saveQueuedNotes} from '../../services/notebook';
+import {saveQueuedNotes, deleteNotebook} from '../../services';
 import {removeRunner, addRunner} from '../../store/app/app-actions';
 import {prompt} from '../../services/dialog';
+import {goToFile, goToRoot} from '../../services/files';
+import { copyNotebook } from '../../services/notebook';
 
+export const onBreadcrumbClick = (scope: IScope, store: Store, app: Instance) => (file: IFilePathItem) => {
+  const {notebook: {owner, path}} = scope.vm.state.value();
 
-export const onFileClick = (scope: IScope, store: Store, app: Instance) => (file: IFile = null) => {
-  app.getNavigator().go('base.files', {id: file && file.id, isNew: false});
-}
+  goToFile(app, {...file, owner, type: FileType.folder, path: takeWhile(path, item => item.id !== file.id)});
+};
+
+export const onGoToRootClick = (scope: IScope, store: Store, app: Instance) => () => {
+  goToRoot(app);
+};
 
 export const onNameChange = (scope: IScope, store: Store, app: Instance) => (file: IFile) => {
   const {id, name} = file;
@@ -22,21 +30,22 @@ export const onNameChange = (scope: IScope, store: Store, app: Instance) => (fil
 }
 
 export const onDelete = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
-  const {id, path} = notebook;
-
-  store.dispatchAndLog(NotebookActions.deleteNotebook(id))
-    .then(() => app.getNavigator().go('base.files', {
-      id: path.length ? last<any>(path).id : undefined,
-      isNew: false
-    }));
+  deleteNotebook(store, app, notebook);
 }
 
-export const onCopy = (scope: IScope, store: Store, app: Instance) => () => {
-  // const {id, path} = notebook;
-
-  prompt({title: 'Copy notebook', yes: 'copy', content: `
-    Coming soon...
-  `}, scope);
+export const onCopy = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
+  prompt({
+    title: 'Copy notebook',
+    yes: 'copy',
+    content: `<quix-destination ng-model="model.folder" required></quix-destination>`
+  },
+    scope,
+    {model: {folder: null}}
+  )
+  .then(({model: {folder}}) => copyNotebook(store, app, folder, {
+    ...notebook,
+    notes: scope.vm.state.value().notes
+  }));
 }
 
 export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
@@ -44,8 +53,8 @@ export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook
 
   toast.showToast({
     text: 'Copied notebook url to clipboard',
-    hideDelay: 3000
-  });
+    type: 'success'
+  }, 3000);
 }
 
 export const onMarkedNotesDelete = (scope: IScope, store: Store, app: Instance) => (notes: INote[]) => {
@@ -83,8 +92,9 @@ export const onNoteRun = (scope: IScope, store: Store, app: Instance) => () => {
 export const onNoteAdd = (scope: IScope, store: Store, app: Instance) => () => {
   const {notebook} = scope.vm.state.value();
   const {id} = notebook;
-  const {note} = store.dispatchAndLog(NoteActions.addNote(id)) as any;
-
+  const note = createNote(id);
+  
+  store.dispatchAndLog(NoteActions.addNote(note.id, note));
   store.dispatch(setNote(note));
   
   const vm = scope.vm.notes.get(note);
@@ -98,8 +108,8 @@ export const onNoteShare = (scope: IScope, store: Store, app: Instance) => (note
 
   toast.showToast({
     text: 'Copied note url to clipboard',
-    hideDelay: 3000
-  });
+    type: 'success'
+  }, 3000);
 }
 
 export const onNoteDelete = (scope: IScope, store: Store, app: Instance) => (note: INote) => {

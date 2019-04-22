@@ -12,7 +12,7 @@ export interface IMenuItem {
   onToggle?(app: Instance, item: IMenuItem): any;
 }
 
-export default class Instance<Logger = any> {
+export default class Instance<Config = any> {
   private ngModule: angular.IModule;
 
   constructor(
@@ -22,10 +22,9 @@ export default class Instance<Logger = any> {
     private readonly plugins,
     private readonly user: User,
     private readonly navigator: Navigator,
-    private readonly logger,
     private readonly menuItems: IMenuItem[],
     private readonly store: Store,
-    private readonly config: Record<string, any>,
+    private readonly config: Config,
   ) { }
 
   init(modules: string[] = []) {
@@ -55,10 +54,6 @@ export default class Instance<Logger = any> {
 
   getNavigator(): Navigator {
     return this.navigator;
-  }
-
-  getLogger(): Logger {
-    return this.logger;
   }
 
   getPlugin(id: string) {

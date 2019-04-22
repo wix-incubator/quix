@@ -23,35 +23,51 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
   val user = User("quix-db-tree")
 
   override def table(catalog: String, schema: String, table: String): Table = {
-    val startMillis = System.currentTimeMillis()
-
-    logger.info(s"event=get-table-start $catalog.$schema.$table")
-    val sql = s"select column_name, data_type " +
-      s"from $catalog.information_schema.columns " +
-      s"where table_catalog = '$catalog' " +
-      s"and table_schema = '$schema' " +
-      s"and table_name = '$table'"
+    val sql =
+      s"""select column_name, type_name
+         |from system.jdbc.columns
+         |where table_cat = '$catalog'
+         |and table_schem = '$schema'
+         |and table_name = '$table'""".stripMargin
 
     val mapper: List[String] => Kolumn = {
       case List(name, kind) => Kolumn(name, kind)
     }
 
     val tableTask = for {
-      columns <- executeFor(sql, mapper)
+      _ <- Task(logger.info(s"event=get-table-start $catalog.$schema.$table"))
+      startMillis <- Task(System.currentTimeMillis())
+      columns <- executeFor(sql, mapper).timeout(5.seconds).onErrorFallbackTo(Task(Nil))
+      endMillis <- Task(System.currentTimeMillis())
+      _ <- Task(logger.info(s"event=get-table-finish $catalog.$schema.$table millis=${endMillis - startMillis} seconds=${(endMillis - startMillis) / 1000.0}"))
     } yield Table(table, columns)
 
     val tableFuture = tableTask.executeOn(io).runToFuture(io)
 
-    val result = Await.result(tableFuture, 10.seconds)
-
-    val endMillis = System.currentTimeMillis()
-
-    logger.info(s"event=get-table-finish $catalog.$schema.$table millis=${endMillis - startMillis} seconds=${(endMillis - startMillis) / 1000.0}")
-
-    result
+    Await.result(tableFuture, 6.seconds)
   }
 
-  override def catalogs: List[Catalog] = state.catalogs
+  override def catalogs: List[Catalog] = {
+    if (state.catalogs.isEmpty) {
+      val catalogsTask = for {
+        newCatalogs <- Catalogs.inferCatalogsInSingleQuery
+        _ <- Task(state.catalogs = newCatalogs)
+      } yield newCatalogs
+
+      Await.result(catalogsTask.timeout(4.seconds).onErrorFallbackTo(Task(Nil)).runToFuture(io), 5.seconds)
+    } else state.catalogs
+  }
+
+  override def autocomplete: Map[String, List[String]] = {
+    if (state.autocomplete.isEmpty) {
+      val autocompleteTask = for {
+        newAutocomplete <- Autocomplete.get(catalogs)
+        _ <- Task(state.autocomplete = newAutocomplete)
+      } yield newAutocomplete
+
+      Await.result(autocompleteTask.timeout(4.seconds).onErrorFallbackTo(Task(Map.empty[String, List[String]])).runToFuture(io), 5.seconds)
+    } else state.autocomplete
+  }
 
   def executeForSingleColumn(sql: String, delim: String = "") = {
     executeFor[String](sql, x => x.mkString(delim))
@@ -78,10 +94,30 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     case class RichTable(catalog: String, schema: String, name: String)
 
     def get: Task[List[Catalog]] = {
+      inferCatalogsInSingleQuery
+        .onErrorFallbackTo(inferCatalogsOneByOne)
+    }
+
+    private def inferCatalogsOneByOne = {
       for {
         catalogNames <- executeForSingleColumn("show catalogs")
         catalogs <- Task.traverse(catalogNames)(inferSchemaOfCatalog)
       } yield catalogs
+    }
+
+    def inferCatalogsInSingleQuery: Task[List[Catalog]] = {
+      val sql = """select distinct table_cat, table_schem, table_name from system.jdbc.tables"""
+      val mapper = (row: List[String]) => RichTable(row(0), row(1), row(2))
+
+      for (tables <- executeFor(sql, mapper)) yield {
+        for ((catalogName, catalogTables) <- tables.groupBy(_.catalog).toList)
+          yield {
+            val schemas = for ((schemaName, schemaTables) <- catalogTables.groupBy(_.schema).toList)
+              yield Schema(schemaName, schemaTables.map(tbl => Table(tbl.name, Nil)))
+
+            Catalog(catalogName, schemas)
+          }
+      }
     }
 
     private def inferSchemaOfCatalog(catalogName: String) = {
@@ -96,9 +132,10 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
 
     def inferSchemaInOneQuery(catalogName: String): Task[Catalog] = {
       val sql =
-        s"""select distinct table_catalog, table_schema, table_name
-           |from $catalogName.information_schema.tables
-           |where table_schema not in ('information_schema')""".stripMargin
+        s"""select distinct table_cat, table_schem, table_name
+           |from system.jdbc.tables
+           |where table_cat = '$catalogName'
+           |and table_schem != 'information_schema'""".stripMargin
 
       val mapper: List[String] => RichTable = {
         case List(catalog, schema, name) => RichTable(catalog, schema, name)
@@ -118,25 +155,18 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     }
 
     def inferSchemaOneByOne(catalogName: String): Task[Catalog] = {
-      val sql =
-        """
-          |select distinct table_schema from mysql.information_schema.tables
-          |where table_schema != 'information_schema'
-        """.stripMargin
+      val sql = s"select distinct table_schem from system.jdbc.schemas " +
+        s"where table_catalog = '$catalogName' and table_schem not in ('information_schema');"
 
       for {
         schemaNames <- executeForSingleColumn(sql)
-        schemas <- Task.traverse(schemaNames)(schema => inferTablesOfSchema(schema).map(tables => Schema(schema, tables)))
+        schemas <- Task.traverse(schemaNames)(schema => inferTablesOfSchema(catalogName, schema).map(tables => Schema(schema, tables)))
       } yield Catalog(catalogName, schemas)
     }
 
-    def inferTablesOfSchema(schemaName: String): Task[List[Table]] = {
-      val sql =
-        s"""
-           |select distinct table_name
-           |from mysql.information_schema.columns
-           |where table_schema in ('$schemaName')
-        """.stripMargin
+    def inferTablesOfSchema(catalogName: String, schemaName: String): Task[List[Table]] = {
+      val sql = s"select distinct table_name from system.jdbc.tables " +
+        s"where table_cat = '$catalogName' and table_schem = '$schemaName';"
 
       val task = for {
         tables <- executeForSingleColumn(sql)
@@ -148,24 +178,60 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
     }
   }
 
+  object Autocomplete {
+
+    def get(catalogList: List[Catalog]): Task[Map[String, List[String]]] = {
+      if (catalogList.nonEmpty) singleQueryAutocomplete(catalogList) else get
+    }
+
+    def get: Task[Map[String, List[String]]] = manyQueriesAutocomplete
+  }
+
+  def singleQueryAutocomplete(catalogList: List[Catalog]) = {
+    for {
+      catalogs <- Task.now(catalogList.map(_.name))
+      schemas <- Task.now(catalogList.flatMap(_.children.map(_.name)))
+      tables <- Task.now(catalogList.flatMap(_.children.flatMap(_.children.map(_.name))))
+      columns <- executeForSingleColumn("select distinct column_name from system.jdbc.columns")
+    } yield Map("catalogs" -> catalogs, "schemas" -> schemas, "tables" -> tables, "columns" -> columns)
+  }
+
+  def manyQueriesAutocomplete = {
+    for {
+      catalogs <- executeForSingleColumn("select distinct table_cat from system.jdbc.catalogs")
+      schemas <- executeForSingleColumn("select distinct table_schem from system.jdbc.schemas")
+      tables <- executeForSingleColumn("select distinct table_name from system.jdbc.tables")
+      columns <- executeForSingleColumn("select distinct column_name from system.jdbc.columns")
+    } yield Map("catalogs" -> catalogs, "schemas" -> schemas, "tables" -> tables, "columns" -> columns)
+  }
 
   override def chore(): Unit = {
     val startMillis = System.currentTimeMillis()
 
     val task = for {
       _ <- Task.eval(logger.info(s"event=db-refresh-chore-start"))
+
       newCatalogs <- Catalogs.get
       _ <- Task.eval {
         state.catalogs = RefreshableDb.mergeNewAndOldCatalogs(newCatalogs, state.catalogs)
       }
+
+      autocomplete <- Autocomplete.get(newCatalogs)
+      _ <- Task(state.autocomplete = autocomplete)
+
       _ <- Task.eval(logger.info(s"event=db-refresh-chore-finish millis=${System.currentTimeMillis() - startMillis}"))
     } yield ()
 
     task.runToFuture(io)
   }
+
+  def reset = {
+    state.catalogs = Nil
+    state.autocomplete = Map.empty
+  }
 }
 
-class DbState(var catalogs: List[Catalog] = Nil)
+class DbState(var catalogs: List[Catalog] = Nil, var autocomplete: Map[String, List[String]] = Map.empty)
 
 object RefreshableDb extends LazyLogging {
 

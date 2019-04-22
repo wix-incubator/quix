@@ -1,7 +1,6 @@
 import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import httpProxy from 'http-proxy-middleware';
-import {ConfigService} from '../../config/config.service';
-import {ConfigModule} from '../../config/config.module';
+import {ConfigService, ConfigModule} from 'config';
 
 @Module({
   imports: [ConfigModule],

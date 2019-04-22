@@ -99,7 +99,7 @@ export const dom =  {
     return off;
   },
 
-  scape(str) {
+  escape(str) {
     return escapeHtml(str);
   }
 }

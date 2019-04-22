@@ -1,12 +1,14 @@
 import {TestingModule} from '@nestjs/testing';
 import 'reflect-metadata';
-import {INote, NoteActions} from '../../../../shared/entities/note';
-import {NoteActionT} from '../../../../shared/entities/note/actions';
-import {NotebookActions} from '../../../../shared/entities/notebook';
-import {FileActions, FileType} from '../../../../shared/entities/file';
+import {INote, NoteActions, createNote} from 'shared/entities/note';
+import {NoteActionT} from 'shared/entities/note/actions';
+import {NotebookActions} from 'shared/entities/notebook';
+import {FileActions, FileType} from 'shared/entities/file';
 import {QuixEventBus} from './quix-event-bus';
 import {QuixEventBusDriver} from './quix-event-bus.driver';
 jest.setTimeout(30000);
+
+const defaultUser = 'someUser@wix.com';
 
 describe('event sourcing', () => {
   let driver: QuixEventBusDriver;
@@ -17,7 +19,7 @@ describe('event sourcing', () => {
   // let noteRepo: Repository<DbNote>;
 
   beforeAll(async () => {
-    driver = await QuixEventBusDriver.create();
+    driver = await QuixEventBusDriver.create(defaultUser);
     ({eventBus, module} = await driver);
   });
 
@@ -42,10 +44,10 @@ describe('event sourcing', () => {
     });
 
     it('set owner correctly', async () => {
-      await driver.emitAsUser(eventBus, [createAction], 'someUser');
+      await driver.emitAsUser(eventBus, [createAction]);
       const notebook = await driver.getNotebook(id).and.expectToBeDefined();
 
-      expect(notebook.owner).toBe('someUser');
+      expect(notebook.owner).toBe(defaultUser);
     });
 
     it('update name', async () => {
@@ -89,7 +91,8 @@ describe('event sourcing', () => {
 
     beforeEach(() => {
       [notebookId, createNotebookAction] = driver.createNotebookAction();
-      addNoteAction = NoteActions.addNote(notebookId);
+      note = createNote(notebookId);
+      addNoteAction = NoteActions.addNote(note.id, note);
       note = addNoteAction.note;
     });
 
@@ -103,11 +106,7 @@ describe('event sourcing', () => {
     });
 
     it('create note with bulk actions', async () => {
-      await driver.emitAsUser(
-        eventBus,
-        [createNotebookAction, addNoteAction],
-        'someUser',
-      );
+      await driver.emitAsUser(eventBus, [createNotebookAction, addNoteAction]);
 
       const notebook = await driver.getNotebookWithNotes(notebookId);
 
@@ -118,7 +117,7 @@ describe('event sourcing', () => {
           id,
           name,
           notebookId: parent,
-          owner: 'someUser',
+          owner: defaultUser,
           type,
         }),
       );
@@ -159,10 +158,10 @@ describe('event sourcing', () => {
       await driver.emitAsUser(eventBus, [createNotebookAction, addNoteAction]);
       const [
         secondNotebookId,
-        createNotebookActions2,
+        createNotebookAction2,
       ] = driver.createNotebookAction();
 
-      await driver.emitAsUser(eventBus, [createNotebookActions2]);
+      await driver.emitAsUser(eventBus, [createNotebookAction2]);
 
       await driver.emitAsUser(eventBus, [
         NoteActions.move(note.id, secondNotebookId),
@@ -185,44 +184,36 @@ describe('event sourcing', () => {
     let createNotebookAction: any;
 
     beforeEach(() => {
-      [id, createFolderAction] = driver.createFolderAction(
-        'newFolder',
-        [],
-        'someUser',
-      );
-      [notebookId, createNotebookAction] = driver.createNotebookAction(
-        'someUser',
-        [{id, name: 'doesnt matter'}],
-      );
+      [id, createFolderAction] = driver.createFolderAction('newFolder', []);
+      [notebookId, createNotebookAction] = driver.createNotebookAction([
+        {id, name: 'doesnt matter'},
+      ]);
     });
 
     it('a single folder', async () => {
-      await driver.emitAsUser(eventBus, [createFolderAction], 'someUser');
+      await driver.emitAsUser(eventBus, [createFolderAction]);
 
-      const list = await driver.getFolderDecendents('someUser');
+      const list = await driver.getFolderDecendents(defaultUser);
       expect(list[0].folder!.name).toBe('newFolder');
     });
 
     it('rename folder', async () => {
-      await driver.emitAsUser(eventBus, [createFolderAction], 'someUser');
-      await driver.emitAsUser(
-        eventBus,
-        [FileActions.updateName(id, 'a changedName')],
-        'someUser',
-      );
+      await driver.emitAsUser(eventBus, [createFolderAction]);
+      await driver.emitAsUser(eventBus, [
+        FileActions.updateName(id, 'a changedName'),
+      ]);
 
-      const list = await driver.getFolderDecendents('someUser');
+      const list = await driver.getFolderDecendents(defaultUser);
       expect(list[0].folder!.name).toBe('a changedName');
     });
 
     it('a notebook inside a single folder', async () => {
-      await driver.emitAsUser(
-        eventBus,
-        [createFolderAction, createNotebookAction],
-        'someUser',
-      );
+      await driver.emitAsUser(eventBus, [
+        createFolderAction,
+        createNotebookAction,
+      ]);
 
-      const list = await driver.getFolderDecendents('someUser');
+      const list = await driver.getFolderDecendents(defaultUser);
       const notebookTreeItem = list.find(
         item => item.id === notebookId && item.parentId === id,
       );
@@ -230,18 +221,16 @@ describe('event sourcing', () => {
     });
 
     it('multiple notebooks inside a single folder', async () => {
-      const [notebookId2, createNotebookAction2] = driver.createNotebookAction(
-        'someUser',
-        [{id, name: 'doesnt matter'}],
-      );
-      await driver.emitAsUser(
-        eventBus,
-        [createFolderAction, createNotebookAction],
-        'someUser',
-      );
-      await driver.emitAsUser(eventBus, [createNotebookAction2], 'someUser');
+      const [notebookId2, createNotebookAction2] = driver.createNotebookAction([
+        {id, name: 'doesnt matter'},
+      ]);
+      await driver.emitAsUser(eventBus, [
+        createFolderAction,
+        createNotebookAction,
+        createNotebookAction2,
+      ]);
 
-      const list = await driver.getFolderDecendents('someUser');
+      const list = await driver.getFolderDecendents(defaultUser);
       const notebookItems = list.filter(
         item => item.type === FileType.notebook,
       );

@@ -19,5 +19,7 @@ sealed case class Kolumn(name: String,
 trait Db {
   def catalogs: List[Catalog]
 
+  def autocomplete: Map[String, List[String]]
+
   def table(catalog: String, schema: String, table: String): Table
 }

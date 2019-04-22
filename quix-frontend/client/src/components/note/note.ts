@@ -13,10 +13,10 @@ export default (app: Instance, store: Store) => () => ({
   template,
   scope: {
     note: '<',
+    permissions: '<',
     quixNoteOptions: '<',
     marked: '<',
     runner: '<',
-    readonly: '<',
     onContentChange: '&',
     onNameChange: '&',
     onShare: '&',
@@ -39,7 +39,10 @@ export default (app: Instance, store: Store) => () => ({
             scope.options.focusEditor = false;
           }
         })
-        .withVM({});
+        .withVM({
+          editor: null,
+          runner: null,
+        });
 
       initEvents(scope, conf, app, store, Events);
     }

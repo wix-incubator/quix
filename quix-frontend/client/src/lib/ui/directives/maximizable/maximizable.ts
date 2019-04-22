@@ -1,4 +1,4 @@
-import {initNgScope, inject} from '../../../core';
+import {initNgScope, inject, utils} from '../../../core';
 
 import './maximizable.scss';
 
@@ -8,12 +8,19 @@ export default () => {
     scope: {
       onLoad: '&',
       onToggle: '&',
-      biMaximizable: '='
+      biMaximizable: '=',
+      bmOptions: '=',
     },
 
     link(scope, element) {
+      let cleaner: Function = () => {};
+
       initNgScope(scope)
         .withVM({})
+        .withOptions('bmOptions', {
+          onIcon: 'fullscreen',
+          offIcon: 'fullscreen_exit'
+        })
         .withActions({
           toggle() {
             scope.vm.toggle();
@@ -22,8 +29,10 @@ export default () => {
 
             if (scope.vm.enabled) {
               element.after('<div class="bm-backdrop"></div>');
+              cleaner = utils.dom.onKey('escape', () => scope.actions.toggle(), scope);
             } else {
               element.parent().find('.bm-backdrop').remove();
+              cleaner();
             }
 
             inject('$timeout')(() => scope.onToggle({maximized: scope.vm.enabled}));
@@ -32,8 +41,8 @@ export default () => {
 
       element.append(inject('$compile')(`
         <span class="bm-toggle" ng-if="biMaximizable !== false" ng-click="actions.toggle()">
-          <i class="bi-action bi-icon" ng-if="!vm.enabled">fullscreen</i>
-          <i class="bi-action bi-icon" ng-if="vm.enabled">fullscreen_exit</i>
+          <i class="bi-action bi-icon" ng-if="!vm.enabled">{{::options.onIcon}}</i>
+          <i class="bi-action bi-icon" ng-if="vm.enabled">{{::options.offIcon}}</i>
         </span>
       `)(scope));
 

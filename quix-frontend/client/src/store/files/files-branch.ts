@@ -1,15 +1,11 @@
-import {values} from 'lodash';
 import {combineReducers} from 'redux';
 import {IBranch} from '../../lib/store';
 import {Instance} from '../../lib/app';
-import {IFile, NotebookActionTypes, FileActionTypes, fileReducer, filesReducer, composeReducers} from '../../../../shared';
-
-export interface IView {
-  error: any;
-  fileError: any;
-  markedMap: Record<string, IFile>;
-  markedList: IFile[];
-}
+import {
+  IFolder,
+  clientFileListReducer,
+  composeReducers,
+} from '../../../../shared';
 
 export interface IPermissions {
   edit: boolean;
@@ -17,8 +13,8 @@ export interface IPermissions {
 
 export default (app: Instance): IBranch => register => {
   const files = composeReducers(
-    filesReducer,
-    (state: IFile[] = null, action: any) => {
+    clientFileListReducer,
+    (state: IFolder = null, action: any) => {
       switch (action.type) {
         case 'files.set':
           return action.files;
@@ -29,75 +25,17 @@ export default (app: Instance): IBranch => register => {
     },
   );
 
-  const file = composeReducers(
-    fileReducer,
-    (state: IFile = null, action: any) => {
-      switch (action.type) {
-        case 'file.set':
-          return action.file;
-        default:
-      }
-  
-      return state;
-    },
-  );
-
-  const view = (state: IView = {
-    error: null,
-    fileError: null,
-    markedMap: {},
-    markedList: []
-  }, action: any): IView => {
+  const error = (state: any = null, action: any) => {
     switch (action.type) {
-      case FileActionTypes.createFile:
-      case 'file.set':
-      case 'files.view.unmarkAll':
-        return {
-          error: null,
-          fileError: null,
-          markedMap: {},
-          markedList: []
-        };
-      case 'files.view.setError':
-        return {
-          ...state,
-          error: action.error
-        };
-      case 'files.view.setFileError':
-        return {
-          ...state,
-          fileError: action.error
-        };
-      case FileActionTypes.deleteFile:
-      case NotebookActionTypes.deleteNotebook:
-        // tslint:disable-next-line: no-dynamic-delete
-        delete state.markedMap[action.id];
-        return {...state, markedList: values<IFile>(state.markedMap).filter(n => !!n)};  
-      case 'files.view.toggleMark':
-        state.markedMap[action.file.id] = state.markedMap[action.file.id] ? undefined : action.file;
-        return {...state, markedList: values<IFile>(state.markedMap).filter(f => !!f)};
+      case 'files.set':
+        return null;
+      case 'files.setError':
+        return action.error;
       default:
     }
 
     return state;
   }
 
-  const permissions = (state: IPermissions = {
-    edit: false
-  }, action: any) => {
-    switch (action.type) {
-      case FileActionTypes.createFile:
-      case 'file.set':
-        return action.file && action.file.id ? {
-          edit: app.getUser().getEmail() === action.file.owner
-        } : {
-          edit: true
-        };
-      default:
-    }
-
-    return state;
-  }
-
-  register(combineReducers({files, file, view, permissions}));
+  register(combineReducers({files, error}));
 };

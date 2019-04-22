@@ -9,6 +9,11 @@ const element = async (page: Page, selector) => {
   return page.$(selector);
 }
 
+const elements = async (page: Page, selector) => {
+  await page.waitForSelector(selector, {timeout: WAIT_TIMEOUT});
+  return page.$$(selector);
+}
+
 export class Driver {
   private readonly browser: Browser = browser;
   private page: Page;
@@ -81,11 +86,23 @@ export class Query {
   }
 
   async hooks(hook: string, pseudoClass: string = '') {
-   return this.page.$$(`[data-hook="${hook}"]${pseudoClass}`);
+   return elements(this.page, `[data-hook="${hook}"]${pseudoClass}`);
+  }
+
+  async attr(attr: string, pseudoClass: string = '') {
+    return element(this.page, `[${attr}]${pseudoClass}`);
+  }
+
+  async attrs(attr: string, pseudoClass: string = '') {
+   return elements(this.page, `[${attr}]${pseudoClass}`);
   }
 
   async $(selector: string) {
     return element(this.page, selector);
+  }
+
+  async $$(selector: string) {
+    return elements(this.page, selector);
   }
 }
 

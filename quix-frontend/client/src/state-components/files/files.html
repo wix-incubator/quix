@@ -6,7 +6,7 @@
           class="bi-dont-shrink bi-fade-in"
           breadcrumbs="vm.breadcrumbs"
           quix-breadcrumbs-options="::{focusName: options.isNew}"
-          on-folder-click="events.onFileClick(file)"
+          on-folder-click="events.onBreadcrumbClick(file)"
           on-name-change="events.onNameChange(file)"
           readonly="!permissions.edit"
         ></bi-breadcrumbs>
@@ -32,25 +32,27 @@
 
         <div class="bi-align bi-s-h--x2">
           <quix-actions 
-            ng-if="!!vm.state.value().file.id"
             type="folder"
-            context="vm.state.value().file"
-            quix-actions-options="{reverse: true, forceDelete: vm.state.is('Result')}"
+            context="vm.state.value().folder"
+            permissions="::permissions"
+            quix-actions-options="{
+              reverse: true,
+              confirmOnDelete: vm.state.is('Content')
+            }"
             on-like-toggle="events.onLikeToggle(context)"
             on-share="events.onShare(context)"
             on-delete="events.onDelete(context)"
-            readonly="!permissions.edit"
           ></quix-actions>
         </div>
       </div>
 
-      <div class="bi-align bi-s-h--x2 bi-grow bi-fade-in" ng-if="vm.marked.enabled">
+      <div class="bi-align bi-s-h bi-grow bi-fade-in" ng-if="vm.marked.enabled">
         <quix-actions 
           type="items"
           context="vm.marked.list"
-          quix-actions-options="::{list: true}"
+          permissions="::permissions.bulk"
+          quix-actions-options="::{bulk: true}"
           on-delete="events.onMarkedDelete(context)"
-          readonly="!permissions.edit"
         ></quix-actions>
 
         <span class="bi-text--600 bi-muted">{{vm.marked.list.length}} items selected</span>
@@ -67,8 +69,8 @@
           <i class="bi-icon bi-danger">error_outline</i>
         </div>
         <div class="bi-empty-state-header bi-danger">{{::vm.state.value().error.message}}</div>
-        <div class="bi-empty-state-content" ng-if="::vm.state.value().error.id">
-          <a class="bi-link" ng-click="events.onFileClick()">Go to my notebooks</a>
+        <div class="bi-empty-state-content">
+          <a class="bi-link" ng-click="events.onGoToRootClick()">Go to my notebooks</a>
         </div>
       </div>
 

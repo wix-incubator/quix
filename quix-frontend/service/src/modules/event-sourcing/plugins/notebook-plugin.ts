@@ -1,14 +1,17 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository, InjectEntityManager} from '@nestjs/typeorm';
-import {DbNotebook, DbFileTreeNode} from '../../../entities';
+import {DbNotebook, DbFileTreeNode} from 'entities';
 import {Repository, EntityManager} from 'typeorm';
-import {NotebookActions, NotebookActionTypes} from '../../../../../shared';
-import {notebookReducer} from '../../../../../shared/entities/notebook';
+import {
+  notebookReducer,
+  NotebookActionTypes,
+  NotebookActions,
+} from 'shared/entities/notebook';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {QuixHookNames} from '../types';
 import {last} from 'lodash';
-import {FileType} from '../../../../../shared/entities/file';
-import {FileTreeRepository} from '../../../entities/filenode.repository';
+import {FileType} from 'shared/entities/file';
+import {FileTreeRepository} from 'entities/filenode.repository';
 
 @Injectable()
 export class NotebookPlugin implements EventBusPlugin {

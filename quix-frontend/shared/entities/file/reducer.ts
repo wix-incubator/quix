@@ -1,8 +1,6 @@
-import {IFile} from './types';
-import {createReducer, composeReducers, createListReducer} from '../common/create-reducer';
-import {INotebook, NotebookActionTypes, NotebookActions} from '../notebook';
+import {createReducer, composeReducers, createListReducer, createClientReducer, createClientListReducer} from '../common/create-reducer';
+import {INotebook} from '../notebook';
 import {createFile} from './file';
-import {FileActionTypes, FileActions} from './actions';
 
 export const fileReducer = composeReducers(
   createReducer('file'),
@@ -12,16 +10,17 @@ export const fileReducer = composeReducers(
   }))
 );
 
-export const filesReducer = composeReducers(
+export const clientFileReducer = composeReducers(
+  createClientReducer('file'),
+  createClientReducer('notebook')
+);
+
+export const fileListReducer = composeReducers(
   createListReducer('file', fileReducer) as any,
-  createListReducer('notebook', fileReducer) as any,
-  ((state: IFile[], action: FileActions | NotebookActions) => {
-    switch (action.type) {
-      case FileActionTypes.deleteFile:
-      case NotebookActionTypes.deleteNotebook:
-        return state && state.filter(file => file.path.findIndex(({id}) => id === action.id) === -1);
-      default:
-        return state;
-    }
-  }) as any
+  createListReducer('notebook', fileReducer) as any
+);
+
+export const clientFileListReducer = composeReducers(
+  createClientListReducer('file', fileReducer) as any,
+  createClientListReducer('notebook', fileReducer) as any
 );

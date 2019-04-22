@@ -31,4 +31,8 @@ export class FilesTestkit {
   async clickFile(index) {
     return this.page.click.attr('bi-tbl-row', `:nth-child(${index})`);
   }
+
+  async numOfFiles() {
+    return (await this.page.query.attrs('bi-tbl-row')).length;
+  }
 }

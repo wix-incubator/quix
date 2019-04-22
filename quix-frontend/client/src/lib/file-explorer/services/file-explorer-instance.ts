@@ -21,10 +21,12 @@ export default class Instance extends srv.eventEmitter.EventEmitter {
 
   setActive(fileDef: IItemDef) {
     const file: File = goToFile(fileDef, this.scope.model);
+    this.scope.vm.folder.setCurrent(file);
     this.scope.vm.file.setCurrent(file);
   }
 
   clearActive() {
+    this.scope.vm.folder.setCurrent(null);
     this.scope.vm.file.setCurrent(null);
   }
 }

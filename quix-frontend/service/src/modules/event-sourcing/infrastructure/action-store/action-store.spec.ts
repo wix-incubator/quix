@@ -3,10 +3,9 @@ import {getRepositoryToken, TypeOrmModule} from '@nestjs/typeorm';
 import 'reflect-metadata';
 import {Repository} from 'typeorm';
 import * as uuid from 'uuid';
-import {ConfigModule} from '../../../../config/config.module';
-import {ConfigService} from '../../../../config/injection-symbols';
+import {ConfigService, ConfigModule} from 'config';
 import {DbActionStore} from './action-store';
-import {MySqlAction} from './entities/mysql-action';
+import {DbAction} from './entities/db-action';
 import {IActionStore} from './types';
 
 describe('sqlite store', () => {
@@ -19,10 +18,10 @@ describe('sqlite store', () => {
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           useFactory: async (configService: ConfigService) =>
-            configService.getDbConnection([MySqlAction]),
+            configService.getDbConnection([DbAction]),
           inject: [ConfigService],
         }),
-        TypeOrmModule.forFeature([MySqlAction]),
+        TypeOrmModule.forFeature([DbAction]),
       ],
       providers: [DbActionStore],
       exports: [DbActionStore],
@@ -30,7 +29,7 @@ describe('sqlite store', () => {
 
     actionStore = module.get(DbActionStore);
     await module
-      .get<Repository<MySqlAction>>(getRepositoryToken(MySqlAction))
+      .get<Repository<DbAction>>(getRepositoryToken(DbAction))
       .clear();
   });
 

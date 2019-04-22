@@ -35,8 +35,16 @@ export const onRun = (scope: IScope, store: Store) => () => {
   scope.onRun();
 };
 
-export const onRunnerInstanceLoad = (scope: IScope, store: Store, app: Instance) => (instance) => {
-  instance.setBaseUrl(app.getConfig().quixBackendUrl);
+export const onMaximizeToggle = (scope: IScope, store: Store, app: Instance) => () => {
+  scope.vm.editor.focus();
+};
+
+export const onEditorInstanceLoad = (scope: IScope, store: Store, app: Instance) => (editor) => {
+  scope.vm.editor = editor;
+};
+
+export const onRunnerInstanceLoad = (scope: IScope, store: Store, app: Instance) => (runner) => {
+  scope.vm.runner = runner;
 };
 
 export const onRunnerCreated = (scope: IScope, store: Store) => (runner) => {
