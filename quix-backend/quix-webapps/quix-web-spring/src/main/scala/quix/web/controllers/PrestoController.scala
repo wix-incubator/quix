@@ -43,6 +43,9 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
       case """"ping"""" =>
         handlePingMessage(socket)
 
+      case """{"event":"ping"}""" =>
+        handlePingMessage(socket)
+
       case Start(command) =>
         handleExecutionMessage(socket, command, user)
 
@@ -118,6 +121,9 @@ object Start extends StringJsonHelpersSupport {
   def unapply(payload: String): Option[StartCommand[String]] = {
     Try {
       val command = payload.as[StartCommand[String]]
+
+      assert(command.code != null)
+      assert(command.code.nonEmpty)
 
       command.copy(session = Option(command.session).getOrElse(Map.empty))
     }.toOption
