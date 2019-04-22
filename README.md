@@ -79,7 +79,9 @@ There's also a fourth Docker container provided with this repository running Pre
 
 <!-- ### TODO User authentication -->
 
-## Using Quix
+<!-- ### TODO ## Using Quix
+
+N.B. REVISIT THIS PART WHEN APP IS OUT OF BETA OR WHEN UI IS MORE STABLE
 
 Let's start with two major concepts of Quix - **notebooks** and **notes**.
 
@@ -94,52 +96,7 @@ Notes can be shared and query execution results can be embedded online.
 #### Notebooks
 
 Notebooks are collections of notes and are primarily used to organize things in a neat way. Notebooks helps group notes together and can also be nested within folders.
-
-The **My notebook** tab is a default view that lists all your notebooks. The OTHER tab is used to view all shared notebooks owned by other users.
-
-To create a new note:
-
-Navigate to the Notebooks in the main menu.
-Click Create Notebook to add a notebook to the root: Notebooks Create Icon or click the ellipsis menu next to the folder to put the notebook into, and click New Notebook.
-
-
-Start here this https://github.com/kgshv/tmp-quix-docs/blob/master/documentation/src/content/docs/4.1___notebooks.md
-
-then use this one - https://github.com/kgshv/tmp-quix-docs/blob/master/documentation/src/content/docs/4.2___notes.md
-
-Consider talking about queries
-
-
-
-
-#### Notes
-
-
-### Reports
-Start here (empty but will give an idea on general direction) https://github.com/kgshv/tmp-quix-docs/blob/master/documentation/src/content/docs/4.4___reports.md
-
-Then incorporate this (`maybe move to examples?`):
-https://github.com/kgshv/tmp-quix-docs/blob/master/documentation/src/content/docs/4.5___report_config.md
-
-
-
-## Deploying in the cloud
-
-Amazon aws?
-
-Digital ocean?
-
-----
-## Questions
-- Is there going to be an API avaliable?
-
-`if yes, start here`: https://github.com/kgshv/tmp-quix-docs/blob/master/documentation/src/content/docs/5.1___api.md
-
--
-
-
-
-
+-->
 
 ## License
 MIT
