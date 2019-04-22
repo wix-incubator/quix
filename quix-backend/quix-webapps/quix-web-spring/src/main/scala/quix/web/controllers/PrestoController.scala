@@ -12,8 +12,8 @@ import quix.api.users.{User, Users}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.core.utils.TaskOps._
+import quix.presto._
 import quix.presto.rest.Results
-import quix.presto.{Error, MultiResultBuilder, PrestoEvent, PrestoQuixModule}
 
 import scala.util.Try
 
@@ -71,7 +71,7 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
   private def handlePingMessage(socket: WebSocketSession) = {
     val task = Task {
       logger.info(s"event=ping socket-id=${socket.getId}")
-      socket.sendMessage(new TextMessage("pong"))
+      socket.sendMessage(new TextMessage(Pong(socket.getId).asJsonStr))
     }
 
     task.runAsyncAndForget(io)

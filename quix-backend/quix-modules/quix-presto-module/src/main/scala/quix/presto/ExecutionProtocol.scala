@@ -24,6 +24,8 @@ sealed case class Progress(id: String, percentage: Int) extends PrestoEventData
 
 sealed case class Row(id: String, values: List[AnyRef]) extends PrestoEventData
 
+object Empty extends PrestoEventData
+
 object Start {
   def apply(id: String, numOfQueries: Int): PrestoEvent = PrestoEvent("start", new Start(id, numOfQueries))
 }
@@ -63,4 +65,8 @@ object Error {
 
 object Row {
   def apply(id: String, values: List[AnyRef]): PrestoEvent = PrestoEvent("row", new Row(id, values))
+}
+
+object Pong {
+  def apply(id: String): PrestoEvent = PrestoEvent("pong", Empty)
 }
