@@ -61,6 +61,10 @@ bi-file-explorer-inner {
           background-color: $hover-color;
         }
 
+        &.active {
+          font-weight: bold;
+        }
+
         &.ui-draggable-dragging {
           .fe-toggle,
           .fe-menu-icon {
