@@ -40,6 +40,9 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
       case "ping" =>
         handlePingMessage(socket)
 
+      case """"ping"""" =>
+        handlePingMessage(socket)
+
       case Start(command) =>
         handleExecutionMessage(socket, command, user)
 

@@ -46,6 +46,14 @@ class PrestoControllerTest extends E2EContext with LazyLogging {
   }
 
   @Test
+  def handlePingCommandWithQuotes(): Unit = {
+    executor.withResults(List(List("1")), columns = List("_col0"))
+    val listener = execute("select 1", "\"ping\"")
+
+    assertThat(listener.messagesJ, Matchers.hasItem("pong"))
+  }
+
+  @Test
   def handleMultipleStatements(): Unit = {
     executor
       .withResults(List(List("1")), queryId = "query-1", columns = List("foo"))
