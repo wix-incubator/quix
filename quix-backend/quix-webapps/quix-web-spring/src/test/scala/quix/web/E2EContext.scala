@@ -59,7 +59,7 @@ class MyListener(payloads: String*) extends WebSocketListener with StringJsonHel
 
     for (payload <- payloads) {
       websocket.sendTextFrame(payload)
-      Thread.sleep(100)
+      Thread.sleep(500)
     }
   }
 
