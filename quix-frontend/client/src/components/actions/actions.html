@@ -13,14 +13,14 @@
     Copy {{::type}}
   </bi-tooltip>
     
-  <bi-tooltip ng-if="::!options.list">
+  <bi-tooltip ng-if="::!options.bulk">
     <bi-toggle>
       <i class="bi-action bi-icon" ng-click="events.onShare()">share</i>
     </bi-toggle>
     Share {{::type}}
   </bi-tooltip>
       
-  <!-- <bi-tooltip ng-if="::!options.list">
+  <!-- <bi-tooltip ng-if="::!options.bulk">
     <bi-toggle>
       <i
         class="bi-action bi-icon"

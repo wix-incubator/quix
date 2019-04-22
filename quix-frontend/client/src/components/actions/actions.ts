@@ -26,7 +26,7 @@ export default (app: Instance, store: Store) => () => ({
         .withVM({})
         .withOptions('quixActionsOptions', {
           reverse: false,
-          list: false,
+          bulk: false,
           confirmOnDelete: true
         }, true)
         .withEvents({
@@ -45,7 +45,7 @@ export default (app: Instance, store: Store) => () => ({
             if (!scope.options.confirmOnDelete) {
               fn();
             } else {
-              confirm('delete', scope.type, scope.options.list).then(fn);
+              confirm('delete', scope.type, scope.options.bulk).then(fn);
             }
           }
         });

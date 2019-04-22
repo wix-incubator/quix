@@ -50,8 +50,8 @@
         <quix-actions 
           type="items"
           context="vm.marked.list"
-          permissions="::permissions"
-          quix-actions-options="::{list: true}"
+          permissions="::permissions.bulk"
+          quix-actions-options="::{bulk: true}"
           on-delete="events.onMarkedDelete(context)"
         ></quix-actions>
 

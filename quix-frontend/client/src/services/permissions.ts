@@ -7,6 +7,7 @@ export interface IPermissions {
   delete?: boolean;
   rename?: boolean;
   copy?: boolean;
+  bulk?: IPermissions;
 }
 
 export const isOwner = (app: Instance, entity: Pick<IEntity, 'owner'>) => {
@@ -18,7 +19,8 @@ export const getDefaultPermissions = (): IPermissions => {
     edit: false,
     delete: false,
     rename: false,
-    copy: false
+    copy: false,
+    bulk: null
   };
 }
 
@@ -29,7 +31,13 @@ export const getFolderPermissions = (app: Instance, folder: IFile): IPermissions
     edit: isFolderOwner,
     delete: isFolderOwner && !isRoot(folder),
     rename: isFolderOwner && !isRoot(folder),
-    copy: false
+    copy: false,
+    bulk: {
+      edit: false,
+      delete: isFolderOwner,
+      rename: false,
+      copy: false
+    }
   };
 }
 
@@ -40,6 +48,12 @@ export const getNotebookPermissions = (app: Instance, folder: IFile): IPermissio
     edit: isFolderOwner,
     delete: isFolderOwner,
     rename: isFolderOwner,
-    copy: true
+    copy: true,
+    bulk: {
+      edit: isFolderOwner,
+      delete: isFolderOwner,
+      rename: isFolderOwner,
+      copy: false
+    }
   };
 }

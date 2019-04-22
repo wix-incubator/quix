@@ -64,8 +64,8 @@
         <quix-actions 
           type="notes"
           context="vm.marked.list"
-          permissions="::permissions"
-          quix-actions-options="::{list: true}"
+          permissions="::permissions.bulk"
+          quix-actions-options="::{bulk: true}"
           on-copy="events.onMarkedNotesCopy(context)"
           on-delete="events.onMarkedNotesDelete(context)"
         ></quix-actions>
