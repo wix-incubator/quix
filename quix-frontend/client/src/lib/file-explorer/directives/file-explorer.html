@@ -21,7 +21,7 @@
         >arrow_drop_down</i>
 
         <span class="bi-align bi-grow bi-pointer">
-          <i class="fe-icon fe-folder-icon bi-icon">folder</i>
+          <span bi-html="renderFolderIcon(folder)"></span>
 
           <span>
             <span
@@ -134,10 +134,9 @@
       title="{{::file.getName()}}"
     >
       <span class="bi-align">
-        <i class="fe-icon bi-icon">insert_drive_file</i>
+        <span bi-html="renderFileIcon(file)"></span>
         <span>{{file.getName()}}</span>
       </span>
-      <bi-file-explorer-transclude class="bi-align" file="::file"></bi-file-explorer-transclude>
     </div>
   </li>
 </ul>

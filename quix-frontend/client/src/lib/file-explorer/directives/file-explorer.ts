@@ -18,6 +18,8 @@ function directive(params) {
 
 function initScope(scope, controller: Controller, depth: number) {
   scope.depth = depth;
+  scope.renderFolderIcon = (folder) => controller.renderFolderIcon(scope, folder);
+  scope.renderFileIcon = (file) => controller.renderFileIcon(scope, file);
 
   const helper = initNgScope(scope)
     .readonly(scope.readonly)
@@ -148,7 +150,10 @@ export function fileExplorerInner() {
 export function fileExplorer() {
   return directive({
     require: ['ngModel', 'biFileExplorer'],
-    transclude: true,
+    transclude: {
+      folderIcon: '?folderIcon',
+      fileIcon: '?fileIcon'
+    },
     controller: ['$scope', '$element', '$transclude', Controller],
     scope: {
       feOptions: '<',

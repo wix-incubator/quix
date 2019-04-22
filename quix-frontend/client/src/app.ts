@@ -31,7 +31,7 @@ create<{
     plugin.store(branches, '/api/events', 'Node');
 
     plugin.menuItem({name: 'Notebooks', icon: 'description', template: '<quix-files-sidebar class="bi-c bi-grow"></quix-files-sidebar>'});
-    plugin.menuItem({name: 'DB Explorer', icon: 'dns', template: '<quix-db-sidebar class="bi-c bi-grow"></quix-db-sidebar>'});
+    plugin.menuItem({name: 'DB Explorer', icon: 'storage', template: '<quix-db-sidebar class="bi-c bi-grow"></quix-db-sidebar>'});
 
     plugin.onPluginReady((app, store) => {
       initCache(store);

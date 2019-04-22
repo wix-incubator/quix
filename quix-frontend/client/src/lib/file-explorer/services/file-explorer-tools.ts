@@ -1,3 +1,4 @@
+import {omit} from 'lodash';
 import {IItemDef, IPathItemDef} from './';
 import {Item, Folder, File} from './file-explorer-models';
 
@@ -21,10 +22,8 @@ export function goToFile(fileDef: IItemDef, folder: Folder): File {
  */
 export function defToTree(items: IItemDef[]): Folder {
   const root = new Folder(null, null);
-  const folderNameMap = items.reduce((res, item: IItemDef) => {
-    if (item.type === 'folder') {
-      res[item.id] = item.name;
-    }
+  const itemsMap = items.reduce((res, item: IItemDef) => {
+    res[item.id] = item;
     return res;
   }, {});
 
@@ -34,7 +33,7 @@ export function defToTree(items: IItemDef[]): Folder {
     (item.path || []).forEach((parent) => {
       const id = getId(parent);
 
-      folder = folder.getFolderById(id) || folder.addFolder(id, folderNameMap[id]);
+      folder = folder.getFolderById(id) || folder.addFolder(id, itemsMap[id].name, omit(itemsMap[id], 'id', 'name', 'type', 'path'));
 
       if (item.type !== 'folder') {
         folder.toggleHasFileLeaf(true);
@@ -43,10 +42,10 @@ export function defToTree(items: IItemDef[]): Folder {
 
     if (item.type === 'folder') {
       if (!folder.getFolderById(item.id)) {
-        folder.addFolder(item.id, folderNameMap[item.id]).setLazy(item.lazy);
+        folder.addFolder(item.id, itemsMap[item.id].name, omit(itemsMap[item.id], 'id', 'name', 'type', 'path')).setLazy(item.lazy);
       }
     } else {
-      folder.addFile(item.id, item.name, item.type, item.dateCreated, item.dateUpdated);
+      folder.addFile(item.id, item.name, item.type, omit(itemsMap[item.id], 'id', 'name', 'type', 'path'));
     }
   });
 
@@ -63,8 +62,7 @@ export function treeToDef(item: Item, path = [], res: IItemDef[] = []): IItemDef
       name: item.getName(),
       type: item.getType(),
       path,
-      dateCreated: item.getDateCreated(),
-      dateUpdated: item.getDateUpdated()
+      ...item.getData()
     });
   } else {
     (item as Folder).getFolders().forEach(folder => {
@@ -101,7 +99,6 @@ export function itemToDef(item: Item): IItemDef {
     name: item.getName(),
     type: item.getType(),
     path,
-    dateCreated: item.getDateCreated(),
-    dateUpdated: item.getDateUpdated()
+    ...item.getData()
   };
 }

@@ -18,5 +18,17 @@
     on-file-click="events.onFileClick(file)"
     on-lazy-folder-open="events.onLazyFolderOpen(folder)"
     readonly="true"
-  ></bi-file-explorer>
+  > 
+    <folder-icon class="bi-icon--xs bi-muted">
+      {{::{
+        catalog: 'book',
+        schema: 'storage',
+        table: 'view_module'
+      }[folder.nodeType]}}
+    </folder-icon>
+
+    <file-icon class="bi-text--sm bi-muted">
+     {{file.nodeType}}
+    </file-icon>
+  </bi-file-explorer>
 </div>

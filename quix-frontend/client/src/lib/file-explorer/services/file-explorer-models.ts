@@ -8,7 +8,7 @@ export class Item {
   private parent: Folder;
   private readonly eventEmitter;
 
-  constructor(private readonly id: string, private readonly name: string, private readonly type: string, private readonly dateCreated: number, private readonly dateUpdated: number) {
+  constructor(private readonly id: string, private readonly name: string, private readonly type: string, private data = {}) {
     this.eventEmitter = new EventEmitter();
   }
 
@@ -24,14 +24,6 @@ export class Item {
     return this.type;
   }
 
-  public getDateCreated(): number {
-    return this.dateCreated;
-  }
-
-  public getDateUpdated(): number {
-    return this.dateUpdated;
-  }
-
   public setParent(parent: Folder): Item {
     this.parent = parent;
     return this;
@@ -39,6 +31,10 @@ export class Item {
 
   public getParent(): Folder {
     return this.parent;
+  }
+
+  public getData(): any {
+    return this.data;
   }
 
   public on(name, fn, invoke?, scope?) {
@@ -51,8 +47,8 @@ export class Item {
 }
 
 export class File extends Item {
-  constructor(id: string, name: string, type: string = 'file', dateCreated: number = 0, dateUpdated: number = 0) {
-    super(id, name, type, dateCreated, dateUpdated);
+  constructor(id: string, name: string, type: string = 'file', data = {}) {
+    super(id, name, type, data);
   }
 
   public moveTo(folder: Folder): File {
@@ -71,8 +67,8 @@ export class Folder extends Item {
     hasFileLeaf: false
   };
 
-  constructor(id: string, name: string, dateCreated: number = 0, dateUpdated: number = 0) {
-    super(id, name, 'folder', dateCreated, dateUpdated);
+  constructor(id: string, name: string, data = {}) {
+    super(id, name, 'folder', data);
   }
 
   public setFolders(folders: Folder[]): Folder {
@@ -121,8 +117,8 @@ export class Folder extends Item {
     return this.addFile(uuid(), name, type);
   }
 
-  public addFolder(idOrFolder: string | Folder, name?: string): Folder {
-    const folder = idOrFolder instanceof Folder ? idOrFolder : new Folder(idOrFolder, name);
+  public addFolder(idOrFolder: string | Folder, name?: string, data = {}): Folder {
+    const folder = idOrFolder instanceof Folder ? idOrFolder : new Folder(idOrFolder, name, data);
 
     folder.setParent(this);
 
@@ -131,8 +127,8 @@ export class Folder extends Item {
     return folder;
   }
 
-  public addFile(idOrFile: string | File, name?: string, type?: string, dateCreated: number = 0, dateUpdated: number = 0): File {
-    const file = idOrFile instanceof File ? idOrFile : new File(idOrFile, name, type, dateCreated, dateUpdated);
+  public addFile(idOrFile: string | File, name?: string, type?: string, data = {}): File {
+    const file = idOrFile instanceof File ? idOrFile : new File(idOrFile, name, type, data);
 
     file.setParent(this);
 
