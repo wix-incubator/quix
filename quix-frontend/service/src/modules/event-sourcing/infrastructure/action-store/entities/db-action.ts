@@ -4,9 +4,10 @@ import {IDBAction} from '../types';
 import {dbConf} from '../../../../../config/db-conf';
 
 @Entity()
+@Index(['id', 'type'], {unique: false})
 export class DbAction<T = IEventData, N extends string = string>
   implements IDBAction {
-  @PrimaryColumn(dbConf.idColumn)
+  @Column({...dbConf.idColumn, primary: true, unique: false})
   id!: string;
 
   @Column(dbConf.json)
@@ -16,10 +17,10 @@ export class DbAction<T = IEventData, N extends string = string>
   user?: string;
 
   @Index()
-  @Column(dbConf.eventsTimestamp)
+  @Column({...dbConf.eventsTimestamp, primary: true})
   dateCreated?: Date;
 
-  @Column(dbConf.tinytext)
+  @Column({type: 'varchar', width: 64})
   type!: N;
 
   constructor(base?: IAction<T, N>) {

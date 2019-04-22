@@ -7,6 +7,8 @@ import {
   OneToOne,
   BeforeInsert,
   BeforeUpdate,
+  UpdateDateColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import {DbNote} from './dbnote.entity';
 import {DbFileTreeNode} from './filenode.entity';
@@ -24,10 +26,10 @@ export class DbNotebook implements INotebook {
   @Column(dbConf.tinytext)
   owner!: string;
 
-  @Column(dbConf.dateUpdated)
+  @UpdateDateColumn(dbConf.dateUpdated)
   dateUpdated!: number;
 
-  @Column(dbConf.dateCreated)
+  @CreateDateColumn(dbConf.dateCreated)
   dateCreated!: number;
 
   @Column(dbConf.json)

@@ -8,7 +8,7 @@ import {DbActionStore} from './action-store';
 import {DbAction} from './entities/db-action';
 import {IActionStore} from './types';
 
-describe('sqlite store', () => {
+describe('action store', () => {
   let actionStore: IActionStore;
   let module: TestingModule;
 

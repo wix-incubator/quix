@@ -7,6 +7,8 @@ import {
   AfterLoad,
   BeforeUpdate,
   BeforeInsert,
+  UpdateDateColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import {INote, NoteType, BaseNote} from '../../../shared/entities/note';
 import {DbNotebook} from './dbnotebook.entity';
@@ -33,10 +35,10 @@ export class DbNote implements BaseNote {
   @Column(dbConf.tinytext)
   owner!: string;
 
-  @Column(dbConf.dateUpdated)
+  @UpdateDateColumn(dbConf.dateUpdated)
   dateUpdated!: number;
 
-  @Column(dbConf.dateCreated)
+  @CreateDateColumn(dbConf.dateCreated)
   dateCreated!: number;
 
   @ManyToOne(type => DbNotebook, n => n.notes, {onDelete: 'CASCADE'})
