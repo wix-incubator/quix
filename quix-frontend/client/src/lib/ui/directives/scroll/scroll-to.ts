@@ -11,7 +11,6 @@ export default () => {
         if (scroll === 'true') {
           inject('$timeout')(() => {
             const scrollParent = element.scrollParent();
-            console.log(scrollParent)
             // tslint:disable-next-line: restrict-plus-operands
             const scrollTop = element.parent().offset().top + scrollParent.scrollTop() - Offset;
   
