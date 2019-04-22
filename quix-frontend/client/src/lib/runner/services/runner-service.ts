@@ -158,7 +158,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
       .register('row', (data, meta, status) => {
         const query = data.id ? this.getState().getQueryById(data.id) : this.getState().getCurrentQuery();
 
-        query.addRow(data.row);
+        query.addRow(data.values);
 
         if (status.callCount === 1) {
           this.fire('firstResultReceived', this);
