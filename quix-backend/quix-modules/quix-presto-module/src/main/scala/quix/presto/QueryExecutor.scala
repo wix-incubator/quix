@@ -46,7 +46,7 @@ class QueryExecutor(val client: PrestoStateClient,
   }
 
   def advance(uri: String, builder: ResultBuilder[Results], queryId: String, query: ActiveQuery, delay: FiniteDuration = initialAdvanceDelay): Task[PrestoState] = {
-    logger.info(s"method=advance query-id=${query.id} user=${query.user.email} presto-id=$queryId uri=$uri delay=${delay.toSeconds}")
+    logger.info(s"method=advance query-id=${query.id} user=${query.user.email} presto-id=$queryId uri=$uri delay=${delay.toMillis / 1000.0}")
     client.advance(uri)
       .delayExecution(delay)
       .onErrorHandleWith {
