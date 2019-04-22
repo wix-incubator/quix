@@ -1,7 +1,7 @@
 <bi-foldable class="bi-panel" is-folded="options.fold" on-toggle="events.onFoldToggle(fold)">
   <div class="bi-panel-header">
     <div class="bi-align bi-s-h">
-      <span class="quix-checkbox" ng-if="!readonly">
+      <span class="quix-checkbox" ng-if="::permissions.edit">
         <i
           class="bi-action bi-icon bi-fade-in checked"
           ng-if="marked"
@@ -22,7 +22,7 @@
 
       <span
         class="bi-panel-title bi-dont-shrink"
-        contenteditable="{{!readonly}}"
+        contenteditable="{{::permissions.rename}}"
         ng-model="note.name"
         on-change="events.onNameChange()"
         ce-options="::{autoEdit: options.focusName}"
@@ -39,7 +39,7 @@
         <div>Updated <span>{{note.dateUpdated | biRelativeDate}}</span></div>
       </div>
 
-      <bi-dropdown bd-options="::{align: 'right'}" ng-if="!readonly">
+      <bi-dropdown bd-options="::{align: 'right'}">
         <bi-toggle>
           <i class="bi-action bi-icon">more_vert</i>
         </bi-toggle>
@@ -50,7 +50,7 @@
             <span>Share note</span>
           </li>
           <li class="bi-dropdown-separator"></li>
-          <li class="bi-align bi-s-h" ng-click="events.onDelete()">
+          <li class="bi-align bi-s-h" ng-if="::permissions.delete" ng-click="events.onDelete()">
             <i class="bi-icon bi-danger">delete</i>
             <span>Delete note</span>
           </li>
@@ -72,7 +72,7 @@
       on-runner-load="events.onRunnerInstanceLoad(instance)"
       on-runner-created="events.onRunnerCreated(runner)"
       on-runner-destroyed="events.onRunnerDestroyed(runner)"
-      readonly="readonly"
+      readonly="!permissions.edit"
     ></bi-sql-runner>
   </div>
 </bi-foldable>
