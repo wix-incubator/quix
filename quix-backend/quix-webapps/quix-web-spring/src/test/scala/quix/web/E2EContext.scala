@@ -57,7 +57,10 @@ class MyListener(payloads: String*) extends WebSocketListener with StringJsonHel
   override def onOpen(websocket: WebSocket): Unit = {
     opened = true
 
-    payloads.foreach(websocket.sendTextFrame)
+    for (payload <- payloads) {
+      websocket.sendTextFrame(payload)
+      Thread.sleep(100)
+    }
   }
 
   override def onClose(websocket: WebSocket, code: Int, reason: String): Unit = {
