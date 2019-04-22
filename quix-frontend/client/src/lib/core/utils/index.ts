@@ -104,10 +104,11 @@ export const dom =  {
   }
 }
 
-export function stripDollars<T>(data: T): T {
+export function stripDollars<T extends object>(data: T): Partial<T> {
   if (_.isPlainObject(data)) {
-    data = _.omit<T, T>(data, (value, key) => ('' + key).charAt(0) === '$');
-    data = _.mapValues(data, value => stripDollars(value));
+    // tslint:disable-next-line: restrict-plus-operands
+    data = _.omitBy(data, (value, key) => ('' + key).charAt(0) === '$') as T;
+    data = _.mapValues(data, value => stripDollars(value as any)) as T;
   }
 
   if (_.isArray(data)) {

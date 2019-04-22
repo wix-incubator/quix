@@ -8,7 +8,7 @@ export class Item {
   private parent: Folder;
   private readonly eventEmitter;
 
-  constructor(private readonly id: string, private readonly name: string, private readonly type: string, private data = {}) {
+  constructor(private readonly id: string, private readonly name: string, private readonly type: string, private readonly data = {}) {
     this.eventEmitter = new EventEmitter();
   }
 

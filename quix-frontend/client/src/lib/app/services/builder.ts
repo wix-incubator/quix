@@ -155,7 +155,7 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
               userActionToUrlParam[(enrichedListener as any).from().type] = {param, listener: enrichedListener};
 
               return enrichedListener;
-            });
+            }) as {[key: string]: IUrlParamListener};
 
             fromUrl(url, inject('$location').search());
             inject('$timeout')(() => {

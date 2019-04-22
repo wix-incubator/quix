@@ -1,3 +1,4 @@
+import {last} from 'lodash';
 import angular from 'angular';
 import {inject, utils} from '../../core';
 
@@ -106,6 +107,6 @@ export function updateText(text: string) {
     return;
   }
 
-  const {scope} = _.last(instances);
+  const {scope} = last(instances);
   utils.scope.safeApply(scope, () => scope.text = text);
 }
