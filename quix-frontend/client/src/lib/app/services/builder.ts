@@ -1,6 +1,6 @@
 import {mapValues, last} from 'lodash';
 import {paramCase, camelCase, headerCase} from 'change-case';
-import {srv, inject} from '../../core';
+import {srv, inject, utils} from '../../core';
 import {IBranches} from '../../../lib/store/services/store';
 import {createStore, Store} from '../../../lib/store';
 import Navigator from './navigator';
@@ -116,7 +116,8 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
   stateComponent(config: IStateComponentConfig, app: Instance, store: Store): Builder<Config> {
     function fromUrl(url: {[key: string]: IUrlParamListener}, params: object) {
       const actions = Object.keys(url).map(param => (url as any)[param].from(params[param]));
-      store.dispatch(actions);
+
+      utils.scope.safeApply(inject('$rootScope'), () => store.dispatch(actions));
     }
 
     const [fullStateName, paramName] = config.name.split(':');

@@ -25,7 +25,13 @@ const mocks = {
   '/api/files/:id': ({id}) => createMockFolderPayload([
     createMockFile()
   ], {id}),
-  '/api/notebook/:id': ({id}) => createMockNotebook([createMockNote(id)], {id}),
+  '/api/notebook/:id': ({id}) => createMockNotebook([
+    createMockNote(id, {id: '1001'}),
+    createMockNote(id, {id: '1002'}),
+    createMockNote(id, {id: '1003'}),
+    createMockNote(id, {id: '1004'}),
+    createMockNote(id, {id: '1005'}),
+  ], {id}),
   '/api/search/none': () => [],
   '/api/search/:text': ({text}) => {
     const res = [createMockNote('1'), createMockNote('2'), createMockNote('3')];
