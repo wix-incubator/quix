@@ -21,7 +21,7 @@ export const addNotebook = async (store: Store, app: Instance, parentOrPath: IFo
 
   store.dispatchAndLog([
     NotebookActions.createNotebook(notebook.id, notebook),
-    NoteActions.addNote(notebook.id, createNote(note.id, note))
+    NoteActions.addNote(note.id, note)
   ])
   .then(() => goToFile(app, {...notebook, type: FileType.notebook}, {isNew: true}));
 }
