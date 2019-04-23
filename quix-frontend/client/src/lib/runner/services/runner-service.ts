@@ -29,7 +29,7 @@ function initSocket(socket: RunnerSocket, events: RunnerEvents, transformers, sc
   socket.transformResponse(transformers.response);
 }
 
-function sendSocketData(socket, data, user, transformers, mode = 'stream', metaKey = 'session') {
+function sendSocketData(socket, data, user, transformers, mode = 'stream') {
   const meta: any = {};
 
   if (user && user.getPermission() && user.getPermission().isElevated()) {
@@ -42,9 +42,9 @@ function sendSocketData(socket, data, user, transformers, mode = 'stream', metaK
     const transformed = transformers.request({data, meta});
 
     if (transformed.data && transformed.data.then) {
-      transformed.data.then(transformedData => socket.send({data: transformedData, [metaKey]: transformed.meta}));
+      transformed.data.then(transformedData => socket.send({data: transformedData, session: transformed.meta}));
     } else {
-      socket.send({code: transformed.data, [metaKey]: transformed.meta});
+      socket.send({code: transformed.data, session: transformed.meta});
     }
   });
 }
@@ -101,7 +101,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
 
       this.getEvents().register('query-download', (data) => {
         if (data.url) {
-          this.fire('downloadFile', data.url, this, this.getCurrentQuery());
+          this.fire('downloadFile', `${this.baseUrl}${data.url}`, this, this.getCurrentQuery());
         }
       })
 
@@ -274,7 +274,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
     this.payload = data;
 
     initSocket(this.socket, this.events, this.transformers, this.scope, this.logEvents);
-    sendSocketData(this.socket, data, user, this.transformers, this.mode, this.version >=2 ? 'session' : 'meta');
+    sendSocketData(this.socket, data, user, this.transformers, this.mode);
 
     this.socket.on('close', () => {
       if (!this.getState().getStatus().finished) {

@@ -48,7 +48,7 @@ export default (app: Instance, store: Store) => () => ({
       initEvents(scope, conf, app, store, Events);
 
       scope.getDownloadFileName = (query: RunnerQuery) => {
-        return `${scope.note.name}${query.getIndex() > 0 ? `_${query.getIndex()}` : ''}`
+        return `${scope.note.name}${query.getIndex() > 0 ? `_${query.getIndex()}` : ''}.csv`
       }
     }
   }
