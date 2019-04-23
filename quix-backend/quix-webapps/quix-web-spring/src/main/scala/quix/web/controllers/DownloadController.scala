@@ -8,11 +8,12 @@ import javax.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation._
 import quix.api.execute._
+import quix.presto.PrestoEvent
 import quix.presto.rest.Results
 
 @Controller
 @RequestMapping(Array("/api"))
-class DownloadController(val downloadableQueries: DownloadableQueries[Results]) extends LazyLogging {
+class DownloadController(val downloadableQueries: DownloadableQueries[Results, PrestoEvent]) extends LazyLogging {
   val charset = Charset.forName("UTF-8")
 
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))

@@ -5,9 +5,10 @@ import java.util.concurrent.{CountDownLatch, LinkedBlockingQueue}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
+import quix.presto.{Download, PrestoEvent}
 import quix.presto.rest.Results
 
-class DownloadResultBuilder(delegate: ResultBuilder[Results], downloadableQueries: DownloadableQueries[Results])
+class DownloadResultBuilder(delegate: ResultBuilder[Results], downloadableQueries: DownloadableQueries[Results, PrestoEvent], val consumer: Consumer[PrestoEvent])
   extends ResultBuilder[Results] with LazyLogging {
   var sentColumns = scala.collection.mutable.Map.empty[String, Boolean].withDefaultValue(false)
 
@@ -41,6 +42,7 @@ class DownloadResultBuilder(delegate: ResultBuilder[Results], downloadableQuerie
 
     for {
       _ <- delegate.startSubQuery(queryId, code, results.copy(data = List.empty))
+      _ <- consumer.write(Download(queryId, "/api/download/" + queryId))
       _ <- Task {
         logger.info("event=wait-for-download-to-start")
         latch.await()

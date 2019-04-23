@@ -93,7 +93,7 @@ class PrestoConfiguration extends LazyLogging {
     new PrestoQuixModule(executions)
   }
 
-  @Bean def initDownloadableQueries: DownloadableQueries[Results] = {
+  @Bean def initDownloadableQueries: DownloadableQueries[Results, PrestoEvent] = {
     logger.info(s"event=[spring-config] bean=[DownloadableQueries]")
     new DownloadableQueriesImpl
   }
@@ -107,7 +107,7 @@ class Controllers extends LazyLogging {
     new DbController(db)
   }
 
-  @Bean def initDownloadController(downloadableQueries: DownloadableQueries[Results]): DownloadController = {
+  @Bean def initDownloadController(downloadableQueries: DownloadableQueries[Results, PrestoEvent]): DownloadController = {
     logger.info("event=[spring-config] bean=[DownloadController]")
     new DownloadController(downloadableQueries)
   }
