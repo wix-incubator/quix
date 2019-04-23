@@ -1,3 +1,5 @@
+import {assign} from 'lodash';
+import {inject} from '../../core';
 import {Item, File, Folder} from './file-explorer-models';
 import {itemToDef} from './file-explorer-tools';
 import Instance from './file-explorer-instance';
@@ -15,7 +17,7 @@ export default class Controller {
   private readonly instance: Instance;
   private currentFolder: Folder = null;
   private currentFile: File = null;
-  private readonly $transclude: Function;
+  private readonly $transclude: ng.ITranscludeFunction;
 
   constructor(private readonly $scope, $element, $transclude) {
     this.instance = new Instance($scope);
@@ -84,5 +86,33 @@ export default class Controller {
       scope.bfe = {file};
       element.append(clone);
     });
+  }
+
+  renderFolderIcon(scope, folder: Folder) {
+    let html;
+
+    if (!this.$transclude.isSlotFilled('folderIcon')) {
+      html = inject('$compile')(`
+        <i class="fe-icon fe-folder-icon bi-icon">folder</i>
+      `)(assign(scope.$new(), {folder}));
+    } else {
+      html = this.$transclude((_, s) => s.folder = itemToDef(folder), null, 'folderIcon');
+    }
+  
+    return {html};
+  }
+
+  renderFileIcon(scope, file: File) {
+    let html;
+
+    if (!this.$transclude.isSlotFilled('fileIcon')) {
+      html = inject('$compile')(`
+        <i class="fe-icon bi-icon">insert_drive_file</i>
+      `)(assign(scope.$new(), {file}));
+    } else {
+      html = this.$transclude((_, s) => s.file = itemToDef(file), null, 'fileIcon');
+    }
+  
+    return {html};
   }
 }

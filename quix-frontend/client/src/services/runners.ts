@@ -1,4 +1,4 @@
-import {zipObject} from 'lodash';
+import {fromPairs} from 'lodash';
 
 const runners = new Map();
 
@@ -14,4 +14,4 @@ export const getRunner = (id: string) => {
   return runners.get(id);
 }
 
-export const getRunners = () => zipObject([...runners.entries()]);
+export const getRunners = () => fromPairs([...runners.entries()]);

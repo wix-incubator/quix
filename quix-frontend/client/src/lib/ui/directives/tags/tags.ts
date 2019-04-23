@@ -1,4 +1,4 @@
-import {contains, uniq} from 'lodash';
+import {includes, uniq} from 'lodash';
 import {initNgScope, createNgModel, utils} from '../../../core';
 
 import template from './tags.html';
@@ -151,7 +151,7 @@ export default function directive(): ng.IDirective {
 
         scope.renderItem = item => renderItem(item, biOptions);
         scope.filterExsitingTags = function (item) {
-          return !contains(scope.vm.current, renderItem(item, biOptions));
+          return !includes(scope.vm.current, renderItem(item, biOptions));
         };
       }
     }

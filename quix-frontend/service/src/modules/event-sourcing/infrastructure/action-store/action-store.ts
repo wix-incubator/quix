@@ -1,4 +1,4 @@
-import {Repository} from 'typeorm';
+import {Repository, In} from 'typeorm';
 import {IAction} from '../types';
 import {DbAction} from './entities/db-action';
 import {IActionStore, IDBAction} from './types';
@@ -13,7 +13,7 @@ const convertDbActionToAction = (input: IDBAction): IAction => {
 
 const convertActionToDbAction = (input: IAction): IDBAction => {
   const {id, dateCreated, type, user, ...rest} = input;
-  return {data: rest, id, dateCreated, type, user};
+  return {data: rest, id, type, user};
 };
 
 @Injectable()
@@ -28,8 +28,10 @@ export class DbActionStore implements IActionStore {
 
   // TODO: implement orderBy
   async get(aggId?: string | string[], orderBy?: string) {
-    const ids = Array.isArray(aggId) ? aggId : [aggId];
-    const results = await (!ids ? this.repo.find() : this.repo.findByIds(ids));
+    const ids = !!aggId ? (Array.isArray(aggId) ? aggId : [aggId]) : undefined;
+    const results = await (!ids
+      ? this.repo.find()
+      : this.repo.find({id: In(ids)}));
 
     return results.map(convertDbActionToAction);
   }

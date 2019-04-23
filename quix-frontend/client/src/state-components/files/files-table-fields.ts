@@ -39,18 +39,18 @@ export const initTableFields = scope => {
             ng-class="::file.type === 'folder' ? 'bi-warning' : 'bi-muted'"
           >{{::file.type === 'folder' ? 'folder' : 'insert_drive_file'}}</i>
 
-          <span ng-if="!vm.isNew">{{::file.name}}</span>
+          <span ng-if="!vm.get(file).isNew">{{::file.name}}</span>
           
           <span
-            ng-if="vm.isNew"
-            contenteditable="{{vm.isNew}}"
+            ng-if="vm.get(file).isNew"
+            contenteditable="{{vm.get(file).isNew}}"
             ce-options="::{autoEdit: true}"
             ng-model="file.name"
-            ng-blur="vm.isNew = false"
+            ng-blur="vm.get(file).isNew = false"
             on-change="events.onChildNameChange(file)"
           ></span>
         </div>
-      `, {file, vm: scope.vm.files.get(file)}, scope);
+      `, {file, vm: scope.vm.files}, scope);
     }
   }, {
     name: 'dateCreated',

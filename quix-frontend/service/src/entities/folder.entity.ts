@@ -5,6 +5,8 @@ import {
   PrimaryColumn,
   OneToOne,
   JoinColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
 } from 'typeorm';
 import {dbConf} from '../config/db-conf';
 import {DbFileTreeNode} from './filenode.entity';
@@ -20,11 +22,11 @@ export class DbFolder {
   @Column(dbConf.tinytext)
   owner!: string;
 
-  @Column(dbConf.dateUpdated)
-  dateUpdated!: Date;
+  @UpdateDateColumn(dbConf.dateUpdated)
+  dateUpdated!: number;
 
-  @Column(dbConf.dateCreated)
-  dateCreated!: Date;
+  @CreateDateColumn(dbConf.dateCreated)
+  dateCreated!: number;
 
   isLiked!: boolean;
 }

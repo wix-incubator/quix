@@ -61,6 +61,12 @@ bi-file-explorer-inner {
           background-color: $hover-color;
         }
 
+        &.active {
+          .fe-item-name {
+            font-weight: bold;
+          }
+        }
+
         &.ui-draggable-dragging {
           .fe-toggle,
           .fe-menu-icon {
@@ -129,5 +135,9 @@ bi-file-explorer-inner {
         padding: 0 7px;
       }
     }
+  }
+
+  [bi-html] {
+    line-height: 0;
   }
 }

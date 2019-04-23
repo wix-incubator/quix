@@ -16,8 +16,12 @@ export const addRunner = (id: string, runner: string, origin: 'user' | 'machine'
   };
 };
 
-export const removeRunner = (id: string, origin: 'user' | 'machine' = 'machine') => ({
-  type: 'app.removeRunner',
-  id,
-  origin
-});
+export const removeRunner = (id: string, origin: 'user' | 'machine' = 'machine') => {
+  Runners.removeRunner(id);
+
+  return {
+    type: 'app.removeRunner',
+    id,
+    origin
+  };
+};

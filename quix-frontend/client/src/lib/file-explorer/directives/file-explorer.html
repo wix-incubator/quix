@@ -13,15 +13,15 @@
       jqyoui-options="{accept: '.fe-item', greedy: true}"
       ng-model="vm.dropped.item"
     >
-      <div class="bi-align" ng-click="events.onFolderClick(folder)">
+      <div class="bi-align">
         <i
           class="fe-toggle bi-action bi-icon bi-pointer"
           ng-class="{'fe-toggle--hidden': folder.isEmpty() || options.expandAllFolders}"
-          ng-click="events.onFolderToggle(folder)"
+          ng-click="events.onFolderToggle(folder);"
         >arrow_drop_down</i>
 
-        <span class="bi-align bi-grow bi-pointer">
-          <i class="fe-icon fe-folder-icon bi-icon">folder</i>
+        <span class="fe-item-name bi-align bi-grow bi-pointer" ng-click="events.onFolderClick(folder)">
+          <span bi-html="renderFolderIcon(folder)"></span>
 
           <span>
             <span
@@ -134,10 +134,9 @@
       title="{{::file.getName()}}"
     >
       <span class="bi-align">
-        <i class="fe-icon bi-icon">insert_drive_file</i>
+        <span bi-html="renderFileIcon(file)"></span>
         <span>{{file.getName()}}</span>
       </span>
-      <bi-file-explorer-transclude class="bi-align" file="::file"></bi-file-explorer-transclude>
     </div>
   </li>
 </ul>
