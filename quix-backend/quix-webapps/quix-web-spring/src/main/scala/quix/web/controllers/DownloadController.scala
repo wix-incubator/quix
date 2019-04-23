@@ -16,7 +16,7 @@ class DownloadController(val downloadableQueries: DownloadableQueries[Results]) 
   val charset = Charset.forName("UTF-8")
 
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
-  @RequestMapping(value = Array("/download/{queryId}/*"), method = Array(RequestMethod.GET))
+  @RequestMapping(value = Array("/download/{queryId}"), method = Array(RequestMethod.GET))
   def startDownload(@PathVariable queryId: String, response: HttpServletResponse) = {
     logger.info(s"event=download-start query-id=$queryId")
 

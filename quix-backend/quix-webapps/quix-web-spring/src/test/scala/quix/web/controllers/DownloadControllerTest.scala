@@ -25,7 +25,7 @@ class DownloadControllerTest extends E2EContext {
 
   @Test
   def passSanity(): Unit = {
-    val response = getResponse("/api/download/i-do-not-exist/filename.csv")
+    val response = getResponse("/api/download/i-do-not-exist")
 
     assertThat(response.code, Matchers.is(404))
   }
@@ -35,7 +35,7 @@ class DownloadControllerTest extends E2EContext {
     executor.withResults(List(List("1")), columns = List("_col0"), queryId = "downloadable-query-id")
     runAndDownload("select 1")
 
-    val response = getResponse("/api/download/downloadable-query-id/filename.csv")
+    val response = getResponse("/api/download/downloadable-query-id")
 
     assertThat(response.body, Matchers.is("\"_col0\"\n\"1\"\n"))
   }
@@ -48,8 +48,8 @@ class DownloadControllerTest extends E2EContext {
 
     runAndDownload("select 1 as foo;\nselect 2 as bar;")
 
-    val first = getResponse("/api/download/query-id-1/filename.csv")
-    val second = getResponse("/api/download/query-id-2/filename.csv")
+    val first = getResponse("/api/download/query-id-1")
+    val second = getResponse("/api/download/query-id-2")
 
     assertThat(first.body, Matchers.is("\"foo\"\n\"1\"\n"))
     assertThat(second.body, Matchers.is("\"bar\"\n\"2\"\n"))
