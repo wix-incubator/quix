@@ -6,15 +6,15 @@ import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.Scheduler
 import quix.api.db._
-import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Results}
+import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Batch}
 import quix.api.users.User
-import quix.core.results.SingleResultBuilder
+import quix.core.results.SingleBuilder
 import quix.core.utils.Chores
 
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
+class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Batch],
                     val state: DbState = new DbState())
   extends Db with Chores with LazyLogging {
 
@@ -74,7 +74,7 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Results],
 
   def executeFor[T](sql: String, resultMapper: List[String] => T) = {
     val query = ActiveQuery(UUID.randomUUID().toString, sql, 1, user, false, Map.empty)
-    val resultBuilder = new SingleResultBuilder
+    val resultBuilder = new SingleBuilder
     for {
       _ <- queryExecutor.runTask(query, resultBuilder)
       results <- Task.eval(resultBuilder.build())

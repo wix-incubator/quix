@@ -17,7 +17,7 @@ trait DownloadableQueries[Results, Message] {
 
   def add(runningQuery: DownloadableQuery): Unit
 
-  def adapt(delegate: ResultBuilder[Results], consumer: Consumer[Message]): ResultBuilder[Results]
+  def adapt(delegate: Builder[Results], consumer: Consumer[Message]): Builder[Results]
 }
 
 

@@ -6,11 +6,11 @@ import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
 
-class DownloadResultBuilder(delegate: ResultBuilder[Results],
-                            downloadableQueries: DownloadableQueries[Results, ExecutionEvent],
-                            consumer: Consumer[ExecutionEvent],
-                            downloadConfig: DownloadConfig)
-  extends ResultBuilder[Results] with LazyLogging {
+class DownloadBuilder(delegate: Builder[Batch],
+                      downloadableQueries: DownloadableQueries[Batch, ExecutionEvent],
+                      consumer: Consumer[ExecutionEvent],
+                      downloadConfig: DownloadConfig)
+  extends Builder[Batch] with LazyLogging {
   val sentColumns = collection.mutable.Set.empty[String]
 
   override def start(query: ActiveQuery): Task[Unit] = delegate.start(query)
@@ -35,7 +35,7 @@ class DownloadResultBuilder(delegate: ResultBuilder[Results],
 
   override def lastError: Option[Throwable] = delegate.lastError
 
-  override def startSubQuery(queryId: String, code: String, results: Results): Task[Unit] = {
+  override def startSubQuery(queryId: String, code: String, results: Batch): Task[Unit] = {
     val queue = new LinkedBlockingQueue[DownloadPayload](1)
     val latch = new CountDownLatch(1)
     downloadableQueries.add(DownloadableQuery(queryId, queue, isRunning = true, latch))
@@ -57,7 +57,7 @@ class DownloadResultBuilder(delegate: ResultBuilder[Results],
     } yield ()
   }
 
-  override def addSubQuery(queryId: String, results: Results): Task[Unit] = {
+  override def addSubQuery(queryId: String, results: Batch): Task[Unit] = {
     val columnsTask = {
       val columns = results.columns.getOrElse(Nil).map(_.name)
       if (!sentColumns(queryId) && columns.nonEmpty) {

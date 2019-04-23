@@ -11,7 +11,7 @@ import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
 import quix.api.execute.ActiveQuery
 import quix.api.users.User
-import quix.core.results.SingleResultBuilder
+import quix.core.results.SingleBuilder
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.presto.rest.{PrestoState, PrestoStateClient, PrestoStateToResults}
@@ -22,7 +22,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
   class ctx extends Scope {
     val client = mock[PrestoStateClient]
-    val builder = spy(new SingleResultBuilder)
+    val builder = spy(new SingleBuilder)
     val queryId = UUID.randomUUID().toString
     val query = ActiveQuery(queryId, "select 1", 1, User("user@quix"), false, Map.empty)
     val stateWithoutNext = {

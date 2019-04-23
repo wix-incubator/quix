@@ -9,7 +9,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler
 import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSession}
 import quix.api.execute._
 import quix.api.users.{User, Users}
-import quix.core.results.MultiResultBuilder
+import quix.core.results.MultiBuilder
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.core.utils.TaskOps._
@@ -17,7 +17,7 @@ import quix.presto._
 
 import scala.util.Try
 
-class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val downloadableQueries: DownloadableQueries[Results, ExecutionEvent])
+class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val downloadableQueries: DownloadableQueries[Batch, ExecutionEvent])
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
 
   val io = Scheduler.io("presto-executor")
@@ -94,9 +94,9 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
 
   def makeResultBuilder(consumer: Consumer[ExecutionEvent], session: Map[String, String]) = {
     if (session.get("mode").contains("download")) {
-      downloadableQueries.adapt(new MultiResultBuilder(consumer), consumer)
+      downloadableQueries.adapt(new MultiBuilder(consumer), consumer)
     } else {
-      new MultiResultBuilder(consumer)
+      new MultiBuilder(consumer)
     }
   }
 }

@@ -1,7 +1,7 @@
 package quix.presto.rest
 
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
-import quix.api.execute.{Results, ResultsColumn, ResultsError, ResultsStats}
+import quix.api.execute.{Batch, BatchColumn, BatchError, BatchStats}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 case class PrestoState(id: String,
@@ -76,7 +76,7 @@ case class PrestoQueryStats(outputDataSize: String,
 
 object PrestoStateToResults {
 
-  def apply(state: PrestoState): Results = {
+  def apply(state: PrestoState): Batch = {
     val stats = state.stats
     val completed = {
       val total = stats.totalSplits
@@ -86,11 +86,11 @@ object PrestoStateToResults {
       else 0
     }
 
-    val columns = state.columns.map(_.map(pc => ResultsColumn(pc.name)))
-    val error = state.error.map(pe => ResultsError(pe.message))
-    val resultStats = Option(ResultsStats(stats.state, completed))
+    val columns = state.columns.map(_.map(pc => BatchColumn(pc.name)))
+    val error = state.error.map(pe => BatchError(pe.message))
+    val resultStats = Option(BatchStats(stats.state, completed))
 
-    Results(state.data.getOrElse(Nil), columns, resultStats, error)
+    Batch(state.data.getOrElse(Nil), columns, resultStats, error)
   }
 }
 

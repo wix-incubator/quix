@@ -2,7 +2,7 @@ package quix.web
 
 import org.springframework.context.annotation.{Bean, Configuration, Import, Primary}
 import quix.api.db.Db
-import quix.api.execute.{AsyncQueryExecutor, Results}
+import quix.api.execute.{AsyncQueryExecutor, Batch}
 import quix.presto.TestQueryExecutor
 import quix.presto.db.RefreshableDb
 import quix.web.spring._
@@ -13,7 +13,7 @@ class SpringConfigWithTestExecutor {
 
   @Bean
   @Primary
-  def initQueryExecutorMock: AsyncQueryExecutor[Results] = MockBeans.queryExecutor
+  def initQueryExecutorMock: AsyncQueryExecutor[Batch] = MockBeans.queryExecutor
 
   @Bean
   @Primary

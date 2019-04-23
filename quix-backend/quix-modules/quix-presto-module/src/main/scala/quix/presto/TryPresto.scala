@@ -7,7 +7,7 @@ import monix.eval.Task
 import monix.execution.Scheduler
 import quix.api.execute.ActiveQuery
 import quix.api.users.User
-import quix.core.results.SingleResultBuilder
+import quix.core.results.SingleBuilder
 import quix.presto.rest.ScalaJPrestoStateClient
 
 import scala.concurrent.Await
@@ -27,7 +27,7 @@ object TryPresto extends LazyLogging {
     val results = for {
       i <- 1 to 5
       query = activeQuery(s"-- query $i\n select 1")
-      builder = new SingleResultBuilder
+      builder = new SingleBuilder
     } yield executor.runTask(query, builder).map(_ => builder)
 
     val futureResults = Task.sequence(results).runToFuture(Scheduler.global)
