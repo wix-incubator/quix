@@ -1,4 +1,4 @@
-package quix.presto
+package quix.core.results
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task

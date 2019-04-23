@@ -5,8 +5,9 @@ import java.util.UUID
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.Scheduler
-import quix.api.execute.{ActiveQuery}
+import quix.api.execute.ActiveQuery
 import quix.api.users.User
+import quix.core.results.SingleResultBuilder
 import quix.presto.rest.ScalaJPrestoStateClient
 
 import scala.concurrent.Await

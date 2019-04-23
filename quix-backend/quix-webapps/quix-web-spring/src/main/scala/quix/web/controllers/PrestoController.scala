@@ -9,6 +9,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler
 import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSession}
 import quix.api.execute._
 import quix.api.users.{User, Users}
+import quix.core.results.MultiResultBuilder
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.core.utils.TaskOps._

@@ -8,8 +8,8 @@ import monix.execution.Scheduler
 import quix.api.db._
 import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Results}
 import quix.api.users.User
+import quix.core.results.SingleResultBuilder
 import quix.core.utils.Chores
-import quix.presto.SingleResultBuilder
 
 import scala.concurrent.Await
 import scala.concurrent.duration._

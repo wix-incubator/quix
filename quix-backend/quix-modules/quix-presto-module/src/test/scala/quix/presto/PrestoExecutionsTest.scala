@@ -7,6 +7,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
 import quix.api.users.User
+import quix.core.results.SingleResultBuilder
 import quix.presto.rest.PrestoSql
 
 class PrestoExecutionsTest extends SpecWithJUnit with Mockito {

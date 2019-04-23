@@ -11,6 +11,7 @@ import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
 import quix.api.execute.ActiveQuery
 import quix.api.users.User
+import quix.core.results.SingleResultBuilder
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.presto.rest.{PrestoState, PrestoStateClient, PrestoStateToResults}
