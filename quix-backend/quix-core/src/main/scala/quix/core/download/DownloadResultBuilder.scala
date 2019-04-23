@@ -11,7 +11,7 @@ class DownloadResultBuilder(delegate: ResultBuilder[Results],
                             consumer: Consumer[ExecutionEvent],
                             downloadConfig: DownloadConfig)
   extends ResultBuilder[Results] with LazyLogging {
-  var sentColumns = scala.collection.mutable.Map.empty[String, Boolean].withDefaultValue(false)
+  val sentColumns = collection.mutable.Set.empty[String]
 
   override def start(query: ActiveQuery): Task[Unit] = delegate.start(query)
 
@@ -63,7 +63,7 @@ class DownloadResultBuilder(delegate: ResultBuilder[Results],
       if (!sentColumns(queryId) && columns.nonEmpty) {
         Task {
           downloadableQueries.get(queryId).forall(_.results.add(DownloadableRow(columns)))
-          sentColumns.put(queryId, true)
+          sentColumns += queryId
         }
       } else Task.unit
     }
