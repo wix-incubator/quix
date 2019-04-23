@@ -99,9 +99,9 @@ export class Runner extends srv.eventEmitter.EventEmitter {
         return data;
       });
 
-      this.getEvents().register('query-validation', (data) => {
-        if (data.downloadUrl) {
-          this.fire('downloadFile', data.downloadUrl, this, this.getCurrentQuery());
+      this.getEvents().register('query-download', (data) => {
+        if (data.url) {
+          this.fire('downloadFile', data.url, this, this.getCurrentQuery());
         }
       })
 

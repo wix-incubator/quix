@@ -125,7 +125,7 @@ export default class RunnerQuery extends srv.eventEmitter.EventEmitter {
     return this.id;
   }
 
-  public getIndex(): string {
+  public getIndex(): number {
     return this.index;
   }
 
