@@ -30,7 +30,7 @@ export default class Controller {
   }
 
   getPermissions(folder): Permissions {
-    return this.$scope.getFolderPermissions({folder: itemToDef(folder)}) || {
+    return this.$scope.permissions({folder: itemToDef(folder)}) || {
       rename: true,
       delete: true
     };

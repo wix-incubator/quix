@@ -115,10 +115,9 @@
   jqyoui-options="{accept: '.fe-item', greedy: true}"
   ng-model="vm.dropped.item"
 >
-  <div
-    ng-if="model.isLazy()"
-    class="fe-item {{::'fe-item-depth-' + depth}} bi-muted bi-fade-in"
-  >Loading...</div>
+  <li ng-if="model.isLazy()">
+    <div class="fe-item {{::'fe-item-depth-' + depth}} bi-align bi-muted bi-fade-in">Loading...</div>
+  </li>
 
   <li
     ng-repeat="file in model.getFiles() | orderBy:vm.order.field track by file.getId()"

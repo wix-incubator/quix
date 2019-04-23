@@ -86,24 +86,33 @@ bi-file-explorer-inner {
       }
     }
   }
+  
+  &.fe-folder-mode-select {
+    ul.fe-files {
+      > li {
+        &:hover {
+          border-color: darken($hover-color, 30);
+        }
+
+        &.active {
+          background-color: transparent !important;
+          border-color: $primary-color !important;
+          font-weight: bold;
+  
+          .fe-icon {
+            color: $primary-color;
+          }
+        }
+      }
+    }
+  }
 
   ul.fe-files {
     > li {
       border-left: 4px solid transparent;
 
-      &.active {
-        background-color: transparent !important;
-        border-color: $primary-color !important;
-        font-weight: bold;
-
-        .fe-icon {
-          color: $primary-color;
-        }
-      }
-
       &:hover {
         background-color: $hover-color;
-        border-color: darken($hover-color, 30);
       }
 
       &.ui-draggable-dragging {
