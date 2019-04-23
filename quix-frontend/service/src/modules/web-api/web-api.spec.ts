@@ -6,21 +6,29 @@ import {
 } from '@nestjs/typeorm';
 import {Connection, Repository} from 'typeorm';
 import uuid from 'uuid/v4';
-import {FileType} from '../../../../shared/entities/file';
+import {FileType} from 'shared';
 import {ConfigService, ConfigModule} from 'config';
+import {range} from 'lodash';
 
-import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from '../../entities';
-import {FileTreeRepository} from '../../entities/filenode.repository';
+import {
+  DbFileTreeNode,
+  DbFolder,
+  DbNote,
+  DbNotebook,
+  NoteRepository,
+  FileTreeRepository,
+} from 'entities';
 import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action';
 import {FoldersService} from './folders/folders.service';
 import {NotebookController} from './notebooks/notebooks.controller';
 import {NotebookService} from './notebooks/notebooks.service';
+import {NoteType} from 'shared/entities/note';
 jest.setTimeout(60000);
 
-// TODO: write a driver for this test
+// TODO: write a driver for this test, refactor everything @aviad
 describe('web-api module', () => {
   let module: TestingModule;
-  let noteRepo: Repository<DbNote>;
+  let noteRepo: NoteRepository;
   let notebookRepo: Repository<DbNotebook>;
   let folderRepo: Repository<DbFolder>;
   let eventsRepo: Repository<DbAction>;
@@ -72,6 +80,7 @@ describe('web-api module', () => {
           DbNotebook,
           DbAction,
           FileTreeRepository,
+          NoteRepository,
         ]),
       ],
       providers: [FoldersService, NotebookService, NotebookController],
@@ -81,9 +90,9 @@ describe('web-api module', () => {
     notebookRepo = module.get<Repository<DbNotebook>>(
       getRepositoryToken(DbNotebook),
     );
-    noteRepo = module.get<Repository<DbNote>>(getRepositoryToken(DbNote));
+    noteRepo = module.get(NoteRepository);
     eventsRepo = module.get<Repository<DbAction>>(getRepositoryToken(DbAction));
-    fileTreeRepo = module.get<FileTreeRepository>(FileTreeRepository);
+    fileTreeRepo = module.get(FileTreeRepository);
     folderRepo = module.get<Repository<DbFolder>>(getRepositoryToken(DbFolder));
     folderService = module.get(FoldersService);
     notebookService = module.get(NotebookService);
@@ -219,6 +228,30 @@ describe('web-api module', () => {
         {name: 'folderName2', id: folderNode2.id},
       ]);
     });
+
+    it('get a notebook, with notes sorted in order', async () => {
+      const notebookName = 'some new notebook';
+      const [notebookNode, notebook] = createNotebookNode(
+        defaultUser,
+        notebookName,
+      );
+
+      await notebookRepo.save(notebook);
+      await fileTreeRepo.save(notebookNode);
+
+      const notes = range(5).map(i =>
+        createNote(defaultUser, `note${i}`, notebook.id),
+      );
+      for (const note of notes) {
+        await noteRepo.insertNewWithRank(note);
+      }
+      const from = 3;
+      const to = 1;
+      await noteRepo.reorder(notes[from], to);
+
+      const response = await notebookService.getId(notebook.id);
+      expect(response!.notes[to].name).toBe(`note${from}`);
+    });
   });
 });
 
@@ -234,6 +267,20 @@ function createNotebookNode(defaultUser: string, notebookName: string) {
   notebookNode.notebookId = notebook.id;
   notebookNode.type = FileType.notebook;
   return [notebookNode, notebook] as const;
+}
+
+function createNote(defaultUser: string, noteName: string, notebookId: string) {
+  const note = new DbNote({
+    id: uuid(),
+    owner: defaultUser,
+    name: noteName,
+    content: '',
+    type: NoteType.PRESTO,
+    notebookId,
+    dateCreated: 1,
+    dateUpdated: 1,
+  });
+  return note;
 }
 
 function createFolderNode(defaultUser: string, folderName: string) {

@@ -21,6 +21,7 @@
       "modules/*": ["./src/modules/*"],
       "config/*": ["./src/config/*"],
       "config": ["./src/config"],
+      "errors": ["./src/errors"],
       "global-types": ["./src/types"],
       "utils/*": ["./src/utils/*"]
     }

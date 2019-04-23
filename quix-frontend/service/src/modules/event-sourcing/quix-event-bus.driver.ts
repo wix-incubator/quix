@@ -10,7 +10,14 @@ import {
   getConnectionToken,
   getCustomRepositoryToken,
 } from '@nestjs/typeorm';
-import {DbNotebook, DbNote, DbFileTreeNode, DbFolder} from 'entities';
+import {
+  DbNotebook,
+  DbNote,
+  DbFileTreeNode,
+  DbFolder,
+  FileTreeRepository,
+  NoteRepository,
+} from 'entities';
 import {DbAction} from './infrastructure/action-store/entities/db-action';
 import {Repository, EntityManager, IsNull, Connection} from 'typeorm';
 import {QuixEventBus} from './quix-event-bus';
@@ -18,7 +25,6 @@ import * as uuid from 'uuid';
 import {NotebookActions, createNotebook} from 'shared/entities/notebook';
 import {FileActions, FileType, IFilePathItem} from 'shared/entities/file';
 import {AuthModule} from 'modules/auth/auth.module';
-import {FileTreeRepository} from 'entities/filenode.repository';
 import {dbConf} from 'config/db-conf';
 import {} from 'shared/entities/file';
 
