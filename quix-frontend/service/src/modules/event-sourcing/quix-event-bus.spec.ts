@@ -6,6 +6,9 @@ import {NotebookActions} from 'shared/entities/notebook';
 import {FileActions, FileType} from 'shared/entities/file';
 import {QuixEventBus} from './quix-event-bus';
 import {QuixEventBusDriver} from './quix-event-bus.driver';
+import {range, reject} from 'lodash';
+
+/* tslint:disable:no-shadowed-variable */
 jest.setTimeout(30000);
 
 const defaultUser = 'someUser@wix.com';
@@ -28,7 +31,7 @@ describe('event sourcing', () => {
 
   afterAll(() => module.close());
 
-  describe('notebooks', () => {
+  describe('notebooks::', () => {
     let id: string;
     let createAction: NotebookActions;
 
@@ -93,7 +96,6 @@ describe('event sourcing', () => {
       [notebookId, createNotebookAction] = driver.createNotebookAction();
       note = createNote(notebookId);
       addNoteAction = NoteActions.addNote(note.id, note);
-      note = addNoteAction.note;
     });
 
     it('create note', async () => {
@@ -175,6 +177,77 @@ describe('event sourcing', () => {
       );
       expect(secondNotebook.notes).toHaveLength(1);
     });
+
+    describe('note rank/order', () => {
+      let notes: INote[];
+      let createNoteActions: NoteActionT<'note.create'>[];
+      const howManyNotes = 6;
+
+      beforeEach(async () => {
+        notes = range(howManyNotes).map(() => createNote(notebookId));
+        createNoteActions = notes.map(n => NoteActions.addNote(n.id, n));
+
+        await driver.emitAsUser(eventBus, [createNotebookAction]);
+        await driver.emitAsUser(eventBus, createNoteActions);
+      });
+
+      it('should create new notes with correct order', async () => {
+        const notebook = await driver.getNotebookWithNotes(notebookId);
+        const doesRankMatchInsertOrder = notes.every(
+          (note, index) =>
+            notebook.notes.find(n => n.id === note.id)!.rank === index,
+        );
+
+        expect(doesRankMatchInsertOrder).toBeTruthy();
+      });
+
+      const deleteCases = [
+        [0, 'start'],
+        [howManyNotes - 1, 'end'],
+        [3, 'middle'],
+      ] as const;
+
+      deleteCases.forEach(([noteIndexToDelete, testName]) => {
+        it(`on delete should set order of remaining notes correctly, when removing from ${testName}`, async () => {
+          const noteIdToDelete = notes[noteIndexToDelete].id;
+          const deleteAction = NoteActions.deleteNote(noteIdToDelete);
+          await driver.emitAsUser(eventBus, [deleteAction]);
+
+          const filteredNotes = reject(notes, {id: noteIdToDelete});
+
+          const notebook = await driver.getNotebookWithNotes(notebookId);
+          const doesRankMatchInsertOrder = filteredNotes.every(
+            (note, index) =>
+              notebook.notes.find(n => n.id === note.id)!.rank === index,
+          );
+
+          expect(doesRankMatchInsertOrder).toBeTruthy();
+        });
+      });
+
+      const reorderCases = [
+        [4, 2, '"from" greater than "to"'],
+        [1, 5, '"to" greater than "from"'],
+      ] as const;
+
+      reorderCases.forEach(([from, to, testName]) => {
+        it(`reorder notes correctly, when ${testName}`, async () => {
+          const noteIdMove = notes[from].id;
+          const reorderAction = NoteActions.reorderNote(noteIdMove, to);
+          await driver.emitAsUser(eventBus, [reorderAction]);
+
+          const reorderdNotes = reorderPos(notes, from, to);
+          const notebook = await driver.getNotebookWithNotes(notebookId);
+
+          const doesRankMatchInsertOrder = reorderdNotes.every(
+            (note, index) =>
+              notebook.notes.find(n => n.id === note.id)!.rank === index,
+          );
+
+          expect(doesRankMatchInsertOrder).toBeTruthy();
+        });
+      });
+    });
   });
 
   describe('folder tree::', () => {
@@ -238,3 +311,11 @@ describe('event sourcing', () => {
     });
   });
 });
+
+function reorderPos<T>(items: T[], from: number, to: number) {
+  const clone = items.slice();
+  const [item] = clone.splice(from, 1);
+  clone.splice(to, 0, item);
+
+  return clone;
+}

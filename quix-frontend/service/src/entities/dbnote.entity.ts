@@ -47,6 +47,9 @@ export class DbNote implements BaseNote {
   @Column()
   notebookId!: string;
 
+  @Column({type: 'integer'})
+  rank!: number;
+
   content: any;
 
   @AfterLoad()

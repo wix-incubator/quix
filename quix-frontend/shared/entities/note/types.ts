@@ -9,6 +9,7 @@ export interface BaseNote extends IEntity {
   notebookId: string;
   type: NoteType;
   content: any;
+  rank?: number; //TODO: TEMP, SHOULD BE REMOVED @aviad
 }
 
 export interface PrestoNote extends BaseNote {

@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DbNote} from 'entities';
+import {DbNote, NoteRepository} from 'entities';
 import {Repository} from 'typeorm';
 import {
   noteReducer,
@@ -16,8 +16,8 @@ export class NotePlugin implements EventBusPlugin {
   name = 'notebook';
 
   constructor(
-    @InjectRepository(DbNote)
-    private noteRepository: Repository<DbNote>,
+    @InjectRepository(NoteRepository)
+    private noteRepository: NoteRepository,
   ) {}
 
   registerFn: EventBusPluginFn = api => {
@@ -36,17 +36,31 @@ export class NotePlugin implements EventBusPlugin {
     });
 
     api.hooks.listen(QuixHookNames.PROJECTION, async (action: NoteActions) => {
-      const model =
-        action.type === NoteActionTypes.addNote
-          ? undefined
-          : await this.noteRepository.findOne(action.id);
+      if (action.type === NoteActionTypes.addNote) {
+        const note = await noteReducer(undefined, action);
+        if (note) {
+          return this.noteRepository.insertNewWithRank(new DbNote(note));
+        }
+        return;
+      }
 
-      const newModel = noteReducer(model as INote, action);
+      const model = await this.noteRepository.findOneOrFail(action.id);
 
-      if (newModel && model !== newModel) {
-        return this.noteRepository.save(new DbNote(newModel));
-      } else if (action.type === NoteActionTypes.deleteNote) {
-        return this.noteRepository.delete({id: action.id});
+      switch (action.type) {
+        case NoteActionTypes.reorderNote: {
+          return this.noteRepository.reorder(model, action.to);
+        }
+
+        case NoteActionTypes.deleteNote: {
+          return this.noteRepository.deleteOneAndOrderRank(model);
+        }
+
+        default: {
+          const newModel = noteReducer(model as INote, action);
+          if (newModel && model !== newModel) {
+            return this.noteRepository.save(new DbNote(newModel));
+          }
+        }
       }
     });
   };
