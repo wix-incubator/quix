@@ -8,17 +8,17 @@ import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
 import quix.api.users.User
-import quix.presto.rest.{PrestoSql, Results}
+import quix.presto.rest.PrestoSql
 
-class PrestoExecutions(val executor: AsyncQueryExecutor[Results])
-  extends Executions[PrestoSql, Results] with LazyLogging {
+class PrestoExecutions(val executor: AsyncQueryExecutor[Batch])
+  extends Executions[PrestoSql, Batch] with LazyLogging {
 
   val queries: Cache[String, ActiveQuery] = CacheBuilder.newBuilder()
     .maximumSize(1000)
     .expireAfterWrite(90, TimeUnit.MINUTES)
     .build()
 
-  def execute(sqls: Seq[PrestoSql], user: User, resultBuilder: ResultBuilder[Results]): Task[Unit] = {
+  def execute(sqls: Seq[PrestoSql], user: User, resultBuilder: Builder[Batch]): Task[Unit] = {
     val activeQuery = ActiveQuery(UUID.randomUUID().toString, "", sqls.size, user, isCancelled = false, Map.empty)
 
     val loop = for {
@@ -35,7 +35,7 @@ class PrestoExecutions(val executor: AsyncQueryExecutor[Results])
     }
   }
 
-  def makeLoop(activeQuery: ActiveQuery, sqls: Seq[PrestoSql], builder: ResultBuilder[Results]): Task[Unit] = {
+  def makeLoop(activeQuery: ActiveQuery, sqls: Seq[PrestoSql], builder: Builder[Batch]): Task[Unit] = {
     Task.eval(builder.lastError).flatMap {
       case None =>
         sqls match {

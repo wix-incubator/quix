@@ -1,7 +1,7 @@
 package quix.presto
 
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, ResultBuilder}
+import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Builder, Batch}
 import quix.presto.rest._
 
 import scala.collection.mutable
@@ -18,7 +18,7 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
     } else None
   }
 
-  def act(query: ActiveQuery, builder: ResultBuilder[Results]): Task[Unit] = {
+  def act(query: ActiveQuery, builder: Builder[Batch]): Task[Unit] = {
     val client = new PrestoStateClient {
       var index = 0
 
@@ -66,10 +66,10 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
   }
 }
 
-class TestQueryExecutor extends AsyncQueryExecutor[Results] {
+class TestQueryExecutor extends AsyncQueryExecutor[Batch] {
 
   val executions: mutable.Queue[SingleExecution] = mutable.Queue.empty
-  var resultBuilder: ResultBuilder[Results] = _
+  var resultBuilder: Builder[Batch] = _
 
   def withException(e: Exception) = {
     executions.enqueue(new SingleExecution(exception = Some(e)))
@@ -92,7 +92,7 @@ class TestQueryExecutor extends AsyncQueryExecutor[Results] {
     this
   }
 
-  override def runTask(query: ActiveQuery, builder: ResultBuilder[Results]): Task[Unit] = {
+  override def runTask(query: ActiveQuery, builder: Builder[Batch]): Task[Unit] = {
     for {
       _ <- Task.eval(resultBuilder = builder)
       execution <- Task.eval(executions.dequeue())

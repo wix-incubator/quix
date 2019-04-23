@@ -10,7 +10,7 @@ case class ActiveQuery(id: String,
                        var isCancelled: Boolean,
                        var session: Map[String, Any])
 
-trait ResultBuilder[Results] {
+trait Builder[Results] {
   def start(query: ActiveQuery): Task[Unit]
 
   def end(query: ActiveQuery): Task[Unit]
@@ -31,11 +31,11 @@ trait ResultBuilder[Results] {
 }
 
 trait Executions[Code, Results] {
-  def execute(statements: Seq[Code], user: User, resultBuilder: ResultBuilder[Results]): Task[Unit]
+  def execute(statements: Seq[Code], user: User, resultBuilder: Builder[Results]): Task[Unit]
 
   def kill(queryId: String, user: User): Task[Unit]
 }
 
 trait AsyncQueryExecutor[Results] {
-  def runTask(query: ActiveQuery, builder: ResultBuilder[Results]): Task[Unit]
+  def runTask(query: ActiveQuery, builder: Builder[Results]): Task[Unit]
 }

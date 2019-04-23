@@ -1,16 +1,14 @@
-package quix.presto.download
+package quix.core.download
 
 import java.util.concurrent.ConcurrentHashMap
 
 import com.typesafe.scalalogging.LazyLogging
-import quix.api.execute.{Consumer, DownloadableQueries, DownloadableQuery, ResultBuilder}
-import quix.presto.PrestoEvent
-import quix.presto.rest.Results
+import quix.api.execute._
 
 case class DownloadConfig(waitTimeForDownloadInMillis: Long)
 
 class DownloadableQueriesImpl(val downloadConfig: DownloadConfig = DownloadConfig(1000L * 30))
-  extends DownloadableQueries[Results, PrestoEvent] with LazyLogging {
+  extends DownloadableQueries[Batch, ExecutionEvent] with LazyLogging {
 
   import scala.collection.JavaConverters._
 
@@ -28,7 +26,7 @@ class DownloadableQueriesImpl(val downloadConfig: DownloadConfig = DownloadConfi
     queries.put(query.id, query)
   }
 
-  override def adapt(delegate: ResultBuilder[Results], consumer: Consumer[PrestoEvent]): ResultBuilder[Results] = {
-    new DownloadResultBuilder(delegate, this, consumer, downloadConfig)
+  override def adapt(delegate: Builder[Batch], consumer: Consumer[ExecutionEvent]): Builder[Batch] = {
+    new DownloadBuilder(delegate, this, consumer, downloadConfig)
   }
 }

@@ -1,19 +1,17 @@
-package quix.presto.download
+package quix.core.download
 
 import java.util.concurrent.{CountDownLatch, LinkedBlockingQueue, TimeUnit}
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
-import quix.presto.rest.Results
-import quix.presto.{Download, PrestoEvent}
 
-class DownloadResultBuilder(delegate: ResultBuilder[Results],
-                            downloadableQueries: DownloadableQueries[Results, PrestoEvent],
-                            consumer: Consumer[PrestoEvent],
-                            downloadConfig: DownloadConfig)
-  extends ResultBuilder[Results] with LazyLogging {
-  var sentColumns = scala.collection.mutable.Map.empty[String, Boolean].withDefaultValue(false)
+class DownloadBuilder(delegate: Builder[Batch],
+                      downloadableQueries: DownloadableQueries[Batch, ExecutionEvent],
+                      consumer: Consumer[ExecutionEvent],
+                      downloadConfig: DownloadConfig)
+  extends Builder[Batch] with LazyLogging {
+  val sentColumns = collection.mutable.Set.empty[String]
 
   override def start(query: ActiveQuery): Task[Unit] = delegate.start(query)
 
@@ -37,7 +35,7 @@ class DownloadResultBuilder(delegate: ResultBuilder[Results],
 
   override def lastError: Option[Throwable] = delegate.lastError
 
-  override def startSubQuery(queryId: String, code: String, results: Results): Task[Unit] = {
+  override def startSubQuery(queryId: String, code: String, results: Batch): Task[Unit] = {
     val queue = new LinkedBlockingQueue[DownloadPayload](1)
     val latch = new CountDownLatch(1)
     downloadableQueries.add(DownloadableQuery(queryId, queue, isRunning = true, latch))
@@ -59,13 +57,13 @@ class DownloadResultBuilder(delegate: ResultBuilder[Results],
     } yield ()
   }
 
-  override def addSubQuery(queryId: String, results: Results): Task[Unit] = {
+  override def addSubQuery(queryId: String, results: Batch): Task[Unit] = {
     val columnsTask = {
       val columns = results.columns.getOrElse(Nil).map(_.name)
       if (!sentColumns(queryId) && columns.nonEmpty) {
         Task {
           downloadableQueries.get(queryId).forall(_.results.add(DownloadableRow(columns)))
-          sentColumns.put(queryId, true)
+          sentColumns += queryId
         }
       } else Task.unit
     }
