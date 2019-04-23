@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration}
 import org.springframework.core.env.Environment
 import quix.api.db.Db
-import quix.api.execute.{AsyncQueryExecutor, DownloadableQueries}
+import quix.api.execute.{AsyncQueryExecutor, DownloadableQueries, ExecutionEvent}
 import quix.api.users.DummyUsers
 import quix.core.utils.JsonOps
 import quix.presto._
@@ -93,7 +93,7 @@ class PrestoConfiguration extends LazyLogging {
     new PrestoQuixModule(executions)
   }
 
-  @Bean def initDownloadableQueries: DownloadableQueries[Results, PrestoEvent] = {
+  @Bean def initDownloadableQueries: DownloadableQueries[Results, ExecutionEvent] = {
     logger.info(s"event=[spring-config] bean=[DownloadableQueries]")
     new DownloadableQueriesImpl
   }
@@ -107,7 +107,7 @@ class Controllers extends LazyLogging {
     new DbController(db)
   }
 
-  @Bean def initDownloadController(downloadableQueries: DownloadableQueries[Results, PrestoEvent]): DownloadController = {
+  @Bean def initDownloadController(downloadableQueries: DownloadableQueries[Results, ExecutionEvent]): DownloadController = {
     logger.info("event=[spring-config] bean=[DownloadController]")
     new DownloadController(downloadableQueries)
   }

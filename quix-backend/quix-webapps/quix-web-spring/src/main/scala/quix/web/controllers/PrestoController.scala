@@ -7,7 +7,7 @@ import monix.eval.Task
 import monix.execution.{CancelableFuture, Scheduler}
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSession}
-import quix.api.execute.{Consumer, DownloadableQueries, StartCommand}
+import quix.api.execute._
 import quix.api.users.{User, Users}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
@@ -17,7 +17,7 @@ import quix.presto.rest.Results
 
 import scala.util.Try
 
-class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val downloadableQueries: DownloadableQueries[Results, PrestoEvent])
+class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val downloadableQueries: DownloadableQueries[Results, ExecutionEvent])
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
 
   val io = Scheduler.io("presto-executor")
@@ -55,13 +55,13 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
   }
 
   private def handleExecutionMessage(socket: WebSocketSession, payload: StartCommand[String], user: User) = {
-    val initConsumer = Task.eval(new WebsocketConsumer[PrestoEvent](socket.getId, user, socket))
-    val useConsumer = (consumer: WebsocketConsumer[PrestoEvent]) => {
+    val initConsumer = Task.eval(new WebsocketConsumer[ExecutionEvent](socket.getId, user, socket))
+    val useConsumer = (consumer: WebsocketConsumer[ExecutionEvent]) => {
       logger.info(s"event=start-execution socket-id=${socket.getId} sql=${payload.code}")
       prestoModule.start(payload, consumer.id, consumer.user, makeResultBuilder(consumer, payload.session))
     }
 
-    val closeConsumer = (consumer: WebsocketConsumer[PrestoEvent]) => consumer.close()
+    val closeConsumer = (consumer: WebsocketConsumer[ExecutionEvent]) => consumer.close()
 
     val task = initConsumer.bracket(useConsumer)(closeConsumer)
 
@@ -92,7 +92,7 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
     socket.getAttributes.asScala.mapValues(String.valueOf).toMap
   }
 
-  def makeResultBuilder(consumer: Consumer[PrestoEvent], session: Map[String, String]) = {
+  def makeResultBuilder(consumer: Consumer[ExecutionEvent], session: Map[String, String]) = {
     if (session.get("mode").contains("download")) {
       downloadableQueries.adapt(new MultiResultBuilder(consumer), consumer)
     } else {

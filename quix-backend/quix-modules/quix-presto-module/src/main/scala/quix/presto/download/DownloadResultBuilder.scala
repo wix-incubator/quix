@@ -6,11 +6,10 @@ import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
 import quix.presto.rest.Results
-import quix.presto.{Download, PrestoEvent}
 
 class DownloadResultBuilder(delegate: ResultBuilder[Results],
-                            downloadableQueries: DownloadableQueries[Results, PrestoEvent],
-                            consumer: Consumer[PrestoEvent],
+                            downloadableQueries: DownloadableQueries[Results, ExecutionEvent],
+                            consumer: Consumer[ExecutionEvent],
                             downloadConfig: DownloadConfig)
   extends ResultBuilder[Results] with LazyLogging {
   var sentColumns = scala.collection.mutable.Map.empty[String, Boolean].withDefaultValue(false)

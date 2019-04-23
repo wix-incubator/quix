@@ -2,10 +2,10 @@ package quix.presto
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, Consumer, ResultBuilder}
+import quix.api.execute._
 import quix.presto.rest.{PrestoColumn, PrestoError, Results, ResultsStats}
 
-class MultiResultBuilder(val consumer: Consumer[PrestoEvent])
+class MultiResultBuilder(val consumer: Consumer[ExecutionEvent])
   extends ResultBuilder[Results] with LazyLogging {
 
   val started = System.currentTimeMillis()
