@@ -1,6 +1,7 @@
 package quix.presto.rest
 
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
+import quix.api.execute.{Results, ResultsColumn, ResultsError, ResultsStats}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 case class PrestoState(id: String,
@@ -73,17 +74,7 @@ case class PrestoQueryStats(outputDataSize: String,
                             outputPositions: Long)
 
 
-case class Results(@JsonProperty("headers") columns: Option[List[PrestoColumn]],
-                   @JsonProperty("data") data: List[List[AnyRef]],
-                   @JsonProperty("stats") stats: ResultsStats,
-                   @JsonProperty("prestoId") prestoId: String,
-                   @JsonProperty("error") error: Option[PrestoError] = None)
-
-case class ResultsStats(@JsonProperty("state") state: String,
-                        @JsonProperty("completed") completed: Int,
-                        @JsonProperty("moreData") moreData: Option[AnyRef] = None)
-
-object Results {
+object PrestoStateToResults {
 
   def apply(state: PrestoState): Results = {
     val stats = state.stats
@@ -95,12 +86,11 @@ object Results {
       else 0
     }
 
-    new Results(state.columns, state.data.getOrElse(Nil), ResultsStats(stats.state, completed), prestoId = state.id, error = state.error)
-  }
+    val columns = state.columns.map(_.map(pc => ResultsColumn(pc.name, pc.dataType)))
+    val error = state.error.map(pe => ResultsError(pe.message))
+    val resultStats = Option(ResultsStats(stats.state, completed))
 
-  def apply(results: Results, moreData: AnyRef) = {
-    val newStats = results.stats.copy(moreData = Option(moreData))
-    results.copy(stats = newStats)
+    new Results(state.data.getOrElse(Nil), columns, resultStats, error)
   }
 }
 

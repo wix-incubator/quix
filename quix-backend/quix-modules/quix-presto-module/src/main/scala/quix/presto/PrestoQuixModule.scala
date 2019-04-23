@@ -6,7 +6,7 @@ import monix.eval.Task
 import quix.api.execute._
 import quix.api.module.ExecutionModule
 import quix.api.users.User
-import quix.presto.rest.{PrestoSql, Results}
+import quix.presto.rest.PrestoSql
 
 import scala.collection.JavaConverters._
 

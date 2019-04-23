@@ -3,7 +3,7 @@ package quix.presto
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
-import quix.presto.rest.{PrestoColumn, PrestoError, Results, ResultsStats}
+import quix.presto.rest.PrestoError
 
 class MultiResultBuilder(val consumer: Consumer[ExecutionEvent])
   extends ResultBuilder[Results] with LazyLogging {
@@ -35,7 +35,7 @@ class MultiResultBuilder(val consumer: Consumer[ExecutionEvent])
 
   override def addSubQuery(queryId: String, results: Results) = {
     val columnTask: Task[Unit] = results.columns.map(columns => sendColumns(queryId, columns)).getOrElse(Task.unit)
-    val progressTask: Task[Unit] = sendProgress(queryId, results.stats)
+    val progressTask: Task[Unit] =  results.stats.map(stats => sendProgress(queryId, stats)).getOrElse(Task.unit)
     val errorTask: Task[Unit] = results.error.map(error => sendErrors(queryId, error)).getOrElse(Task.unit)
 
     rows += results.data.size
@@ -47,7 +47,7 @@ class MultiResultBuilder(val consumer: Consumer[ExecutionEvent])
     Task.sequence(Seq(columnTask, progressTask, errorTask, rowTask)).map(_ => ())
   }
 
-  def sendErrors(queryId: String, prestoError: PrestoError) = {
+  def sendErrors(queryId: String, prestoError: ResultsError) = {
     lastError = Some(new RuntimeException(prestoError.message))
     consumer.write(Error(queryId, prestoError.message))
   }
@@ -61,7 +61,7 @@ class MultiResultBuilder(val consumer: Consumer[ExecutionEvent])
     consumer.write(SubQueryError(queryId, e.getMessage))
   }
 
-  def sendColumns(queryId: String, names: List[PrestoColumn]) = {
+  def sendColumns(queryId: String, names: List[ResultsColumn]) = {
     val sentColumns = sentColumnsPerQuery.contains(queryId)
     if (!sentColumns && names.nonEmpty) {
       sentColumnsPerQuery += queryId

@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation._
 import quix.api.execute._
-import quix.presto.rest.Results
 
 @Controller
 @RequestMapping(Array("/api"))

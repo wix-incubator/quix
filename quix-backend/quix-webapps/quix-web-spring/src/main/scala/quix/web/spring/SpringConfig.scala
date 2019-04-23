@@ -9,13 +9,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration}
 import org.springframework.core.env.Environment
 import quix.api.db.Db
-import quix.api.execute.{AsyncQueryExecutor, DownloadableQueries, ExecutionEvent}
+import quix.api.execute.{AsyncQueryExecutor, DownloadableQueries, ExecutionEvent, Results}
 import quix.api.users.DummyUsers
 import quix.core.utils.JsonOps
 import quix.presto._
 import quix.presto.db.RefreshableDb
 import quix.presto.download.DownloadableQueriesImpl
-import quix.presto.rest.{Results, ScalaJPrestoStateClient}
+import quix.presto.rest.ScalaJPrestoStateClient
 import quix.web.auth.JwtUsers
 import quix.web.controllers.{DbController, DownloadController}
 

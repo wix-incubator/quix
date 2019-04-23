@@ -6,11 +6,10 @@ import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.Scheduler
 import quix.api.db._
-import quix.api.execute.{ActiveQuery, AsyncQueryExecutor}
+import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Results}
 import quix.api.users.User
 import quix.core.utils.Chores
 import quix.presto.SingleResultBuilder
-import quix.presto.rest.Results
 
 import scala.concurrent.Await
 import scala.concurrent.duration._

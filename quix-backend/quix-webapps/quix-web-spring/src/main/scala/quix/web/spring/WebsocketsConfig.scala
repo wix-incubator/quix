@@ -10,10 +10,9 @@ import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.server.HandshakeInterceptor
 import org.springframework.web.socket.server.jetty.JettyRequestUpgradeStrategy
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
-import quix.api.execute.{DownloadableQueries, ExecutionEvent}
+import quix.api.execute.{DownloadableQueries, ExecutionEvent, Results}
 import quix.api.users.Users
 import quix.presto.PrestoQuixModule
-import quix.presto.rest.Results
 import quix.web.controllers.PrestoController
 
 @Configuration

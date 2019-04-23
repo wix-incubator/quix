@@ -8,7 +8,7 @@ import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
 import quix.api.users.User
-import quix.presto.rest.{PrestoSql, Results}
+import quix.presto.rest.PrestoSql
 
 class PrestoExecutions(val executor: AsyncQueryExecutor[Results])
   extends Executions[PrestoSql, Results] with LazyLogging {

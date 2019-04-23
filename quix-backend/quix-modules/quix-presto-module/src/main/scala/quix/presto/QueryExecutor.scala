@@ -4,11 +4,11 @@ import java.net.{ConnectException, SocketException, SocketTimeoutException}
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, ResultBuilder}
+import quix.api.execute._
+import quix.core.utils.TaskOps._
+import quix.presto.rest.{PrestoState, PrestoStateClient, PrestoStateToResults}
 
 import scala.concurrent.duration._
-import quix.core.utils.TaskOps._
-import quix.presto.rest.{PrestoState, PrestoStateClient, Results}
 
 class QueryExecutor(val client: PrestoStateClient,
                     val initialAdvanceDelay: FiniteDuration = 100.millis,
@@ -23,7 +23,7 @@ class QueryExecutor(val client: PrestoStateClient,
         for {
           nextState <- advance(uri, builder, prestoId, query, delay)
 
-          _ <- builder.addSubQuery(prestoId, Results(nextState))
+          _ <- builder.addSubQuery(prestoId, PrestoStateToResults(nextState))
             .logOnError(s"method=loop event=error-addSubQuery query-id=${query.id} user=${query.user.email} presto-id=$prestoId")
 
           state = nextState.stats.state
@@ -66,7 +66,7 @@ class QueryExecutor(val client: PrestoStateClient,
   def runTask(query: ActiveQuery, builder: ResultBuilder[Results]): Task[Unit] = {
     val executionTask = initClient(query, builder).bracket { firstState =>
       for {
-        _ <- builder.startSubQuery(firstState.id, query.text, Results(firstState))
+        _ <- builder.startSubQuery(firstState.id, query.text, PrestoStateToResults(firstState))
           .logOnError(s"method=runAsync event=error-startSubQuery query-id=${query.id} user=${query.user.email} presto-id=${firstState.id}")
 
         _ <- loop(firstState.id, firstState.stats.state, firstState.data.map(_.size).getOrElse(0), firstState.nextUri, builder, query)

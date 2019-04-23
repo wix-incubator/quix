@@ -5,7 +5,6 @@ import java.util.concurrent.{CountDownLatch, LinkedBlockingQueue, TimeUnit}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
-import quix.presto.rest.Results
 
 class DownloadResultBuilder(delegate: ResultBuilder[Results],
                             downloadableQueries: DownloadableQueries[Results, ExecutionEvent],

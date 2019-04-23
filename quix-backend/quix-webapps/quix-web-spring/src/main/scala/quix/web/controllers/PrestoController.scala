@@ -13,7 +13,6 @@ import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.core.utils.TaskOps._
 import quix.presto._
-import quix.presto.rest.Results
 
 import scala.util.Try
 

@@ -4,7 +4,6 @@ import java.util.concurrent.ConcurrentHashMap
 
 import com.typesafe.scalalogging.LazyLogging
 import quix.api.execute._
-import quix.presto.rest.Results
 
 case class DownloadConfig(waitTimeForDownloadInMillis: Long)
 
