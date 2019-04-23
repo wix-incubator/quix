@@ -87,16 +87,48 @@
     ng-show="query.getId() === vm.result.current.getId()"
     ng-repeat="query in runner.getQueries()"
   >
-    <div class="bi-c-h bi-grow" ng-if="!query.getError() && query.getResults().bufferSize() > 0" bi-html="renderResult(scope, query)"></div>
+    <div 
+      class="bi-c-h bi-grow"
+      ng-if="!query.getError() && query.getResults().bufferSize() > 0"
+      bi-html="renderResult(scope, query)"
+    ></div>
 
-    <div class="bi-empty-state--nothing" ng-if="query.finished && !query.getError() && query.getResults().bufferSize() === 0">
-      <div class="bi-empty-state-content">No results</div>
+    <div 
+      class="bi-c-h bi-grow bi-align bi-center"
+      ng-if="query.finished && !query.getError() && query.getResults().bufferSize() === 0"
+    >
+      <div class="bi-empty-state" ng-if="::runner.getMode() === 'stream'">
+        <div class="bi-empty-state-icon">
+          <i class="bi-icon">sentiment_dissatisfied</i>
+        </div>
+        <div class="bi-empty-state-header">No results</div>
+      </div>
+
+      <div class="bi-empty-state" ng-if="::runner.getMode() === 'download'">
+        <div class="bi-empty-state-icon">
+          <i class="bi-icon">file_download</i>
+        </div>
+        <div class="bi-empty-state-header">See downloaded file</div>
+        <div class="bi-empty-state-content">{{::vm.result.csvFileName}}</div>
+      </div>
     </div>
 
-    <div ng-if="query.finished && query.getError()">
-      <div class="bi-danger" ng-if="::!vm.result.queries.get(query).errorType">{{::query.getError().msg}}</div>
-      <div class="bi-empty-state--error" ng-if="::vm.result.queries.get(query).errorType === 'timeout'">
-        <div class="bi-empty-state-header">Presto seems to be down at the moment</div>
+    <div 
+      class="bi-c-h bi-grow bi-align bi-center"
+      ng-if="query.finished && query.getError()"
+    >
+      <div class="bi-empty-state" ng-if="::!vm.result.queries.get(query).errorType">
+        <div class="bi-empty-state-icon">
+          <i class="bi-icon bi-danger">warning</i>
+        </div>
+        <div class="bi-empty-state-content bi-danger">{{::query.getError().msg}}</div>
+      </div>
+
+      <div class="bi-empty-state" ng-if="::vm.result.queries.get(query).errorType === 'timeout'">
+        <div class="bi-empty-state-icon">
+          <i class="bi-icon bi-danger">error_outline</i>
+        </div>
+        <div class="bi-empty-state-header bi-danger">Presto seems to be down at the moment</div>
         <div class="bi-empty-state-content">Please try again in 5 minutes</div>
     </div>
   </div>

@@ -99,11 +99,9 @@ function renderResult(scope, queryScope, query, tableFormatter, transclude) {
   if (!transclude.isSlotFilled('result')) {
     queryScope.query = query;
     queryScope.tableFormatter = tableFormatter;
-    queryScope.mode = scope.runner.getMode();
 
     return inject('$compile')(`
       <bi-viz
-        ng-if="mode === 'stream'"
         class="bi-c-h bi-grow"
         data="query.getResults().buffer"
         table-data="query.getResults()"
@@ -114,8 +112,6 @@ function renderResult(scope, queryScope, query, tableFormatter, transclude) {
         table-formatter="tableFormatter()"
         $state="$state"
       ></bi-viz>
-
-      <span class="bi-muted" ng-if="mode === 'download'">See downloaded file</span>
     `)(queryScope);
   }
 
