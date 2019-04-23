@@ -1,4 +1,4 @@
-package quix.presto.download
+package quix.core.download
 
 import java.util.concurrent.{CountDownLatch, LinkedBlockingQueue, TimeUnit}
 

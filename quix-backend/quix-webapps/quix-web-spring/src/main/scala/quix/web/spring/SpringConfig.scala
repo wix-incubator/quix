@@ -11,10 +11,10 @@ import org.springframework.core.env.Environment
 import quix.api.db.Db
 import quix.api.execute.{AsyncQueryExecutor, DownloadableQueries, ExecutionEvent, Results}
 import quix.api.users.DummyUsers
+import quix.core.download.DownloadableQueriesImpl
 import quix.core.utils.JsonOps
 import quix.presto._
 import quix.presto.db.RefreshableDb
-import quix.presto.download.DownloadableQueriesImpl
 import quix.presto.rest.ScalaJPrestoStateClient
 import quix.web.auth.JwtUsers
 import quix.web.controllers.{DbController, DownloadController}
@@ -42,7 +42,7 @@ class AuthConfig extends LazyLogging {
 
       new JwtUsers(cookie, secret)
     }.onErrorRecoverWith { case NonFatal(e: Exception) =>
-      logger.warn("failed to construct secureAuth, falling back to dummy user auth", e)
+      logger.warn("failed to construct secureAuth, falling back to dummy user auth")
       Coeval(DummyUsers)
     }
 
@@ -55,8 +55,6 @@ class PrestoConfiguration extends LazyLogging {
 
   @Bean def initPrestoConfig(env: Environment): PrestoConfig = {
     val prestoBaseApi = env.getRequiredProperty("presto.api")
-
-    logger.info(s"Presto API URL is $prestoBaseApi")
 
     val statementsApi = prestoBaseApi + "/statement"
     val healthApi = prestoBaseApi + "/cluster"
