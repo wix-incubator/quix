@@ -3,7 +3,6 @@ package quix.presto
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
-import quix.presto.rest.PrestoError
 
 class MultiResultBuilder(val consumer: Consumer[ExecutionEvent])
   extends ResultBuilder[Results] with LazyLogging {
@@ -35,7 +34,7 @@ class MultiResultBuilder(val consumer: Consumer[ExecutionEvent])
 
   override def addSubQuery(queryId: String, results: Results) = {
     val columnTask: Task[Unit] = results.columns.map(columns => sendColumns(queryId, columns)).getOrElse(Task.unit)
-    val progressTask: Task[Unit] =  results.stats.map(stats => sendProgress(queryId, stats)).getOrElse(Task.unit)
+    val progressTask: Task[Unit] = results.stats.map(stats => sendProgress(queryId, stats)).getOrElse(Task.unit)
     val errorTask: Task[Unit] = results.error.map(error => sendErrors(queryId, error)).getOrElse(Task.unit)
 
     rows += results.data.size
