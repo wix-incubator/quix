@@ -7,7 +7,10 @@ import quix.api.execute.{Consumer, DownloadableQueries, DownloadableQuery, Resul
 import quix.presto.PrestoEvent
 import quix.presto.rest.Results
 
-class DownloadableQueriesImpl extends DownloadableQueries[Results, PrestoEvent] with LazyLogging {
+case class DownloadConfig(waitTimeForDownloadInMillis: Long)
+
+class DownloadableQueriesImpl(val downloadConfig: DownloadConfig = DownloadConfig(1000L * 30))
+  extends DownloadableQueries[Results, PrestoEvent] with LazyLogging {
 
   import scala.collection.JavaConverters._
 
@@ -25,7 +28,7 @@ class DownloadableQueriesImpl extends DownloadableQueries[Results, PrestoEvent] 
     queries.put(query.id, query)
   }
 
-  override def adapt(delegate: ResultBuilder[Results], consumer : Consumer[PrestoEvent]): ResultBuilder[Results] = {
-    new DownloadResultBuilder(delegate, this, consumer)
+  override def adapt(delegate: ResultBuilder[Results], consumer: Consumer[PrestoEvent]): ResultBuilder[Results] = {
+    new DownloadResultBuilder(delegate, this, consumer, downloadConfig)
   }
 }

@@ -1,14 +1,17 @@
 package quix.presto.download
 
-import java.util.concurrent.{CountDownLatch, LinkedBlockingQueue}
+import java.util.concurrent.{CountDownLatch, LinkedBlockingQueue, TimeUnit}
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
-import quix.presto.{Download, PrestoEvent}
 import quix.presto.rest.Results
+import quix.presto.{Download, PrestoEvent}
 
-class DownloadResultBuilder(delegate: ResultBuilder[Results], downloadableQueries: DownloadableQueries[Results, PrestoEvent], val consumer: Consumer[PrestoEvent])
+class DownloadResultBuilder(delegate: ResultBuilder[Results],
+                            downloadableQueries: DownloadableQueries[Results, PrestoEvent],
+                            consumer: Consumer[PrestoEvent],
+                            downloadConfig: DownloadConfig)
   extends ResultBuilder[Results] with LazyLogging {
   var sentColumns = scala.collection.mutable.Map.empty[String, Boolean].withDefaultValue(false)
 
@@ -37,16 +40,21 @@ class DownloadResultBuilder(delegate: ResultBuilder[Results], downloadableQuerie
   override def startSubQuery(queryId: String, code: String, results: Results): Task[Unit] = {
     val queue = new LinkedBlockingQueue[DownloadPayload](1)
     val latch = new CountDownLatch(1)
-    val downloadableQuery = DownloadableQuery(queryId, queue, true, latch)
-    downloadableQueries.add(downloadableQuery)
+    downloadableQueries.add(DownloadableQuery(queryId, queue, isRunning = true, latch))
 
     for {
       _ <- delegate.startSubQuery(queryId, code, results.copy(data = List.empty))
       _ <- consumer.write(Download(queryId, "/api/download/" + queryId))
-      _ <- Task {
-        logger.info("event=wait-for-download-to-start")
-        latch.await()
+      downloadStarted <- Task {
+        logger.info(s"event=wait-for-download-to-start timeout=${downloadConfig.waitTimeForDownloadInMillis}")
+        latch.await(downloadConfig.waitTimeForDownloadInMillis, TimeUnit.MILLISECONDS)
       }
+      _ <- if (!downloadStarted) {
+        val exception = new IllegalStateException("Download failed to start within " + downloadConfig.waitTimeForDownloadInMillis / 1000 + " seconds")
+
+        delegate.errorSubQuery(queryId, exception)
+        Task.raiseError(exception)
+      } else Task.unit
       _ <- addSubQuery(queryId, results)
     } yield ()
   }
