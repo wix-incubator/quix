@@ -5,7 +5,7 @@ function createSocket(self: Socket, url: string): any {
   const socket = new WebSocket(url);
 
   socket.onmessage = (message) => {
-    const data = JSON.parse(message.data);
+    const data = JSON.parse(message.data || '{}');
 
     self.trigger('event', self, data.event, data);
   };

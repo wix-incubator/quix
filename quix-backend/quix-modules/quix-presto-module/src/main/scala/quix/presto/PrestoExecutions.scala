@@ -8,7 +8,7 @@ import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
 import quix.api.users.User
-import quix.presto.rest.{ActiveQueryNotFound, PrestoSql, Results}
+import quix.presto.rest.{PrestoSql, Results}
 
 class PrestoExecutions(val executor: AsyncQueryExecutor[Results])
   extends Executions[PrestoSql, Results] with LazyLogging {
@@ -57,9 +57,9 @@ class PrestoExecutions(val executor: AsyncQueryExecutor[Results])
   }
 
   override def kill(id: String, user: User): Task[Unit] = Task {
-    logger.info(s"User $user is trying to kill query $id")
-    val query = Option(queries.getIfPresent(id)).getOrElse(throw new ActiveQueryNotFound(id))
-    query.isCancelled = true
+    for {
+      query <- Option(queries.getIfPresent(id))
+    } query.isCancelled = true
   }
 }
 

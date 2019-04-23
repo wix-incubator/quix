@@ -38,11 +38,10 @@ class MultiResultBuilder(val consumer: Consumer[PrestoEvent])
     val progressTask: Task[Unit] = sendProgress(queryId, results.stats)
     val errorTask: Task[Unit] = results.error.map(error => sendErrors(queryId, error)).getOrElse(Task.unit)
 
-    val columns = results.columns.getOrElse(Nil).map(_.name)
     rows += results.data.size
 
     val rowTask = Task.traverse(results.data) { row =>
-      consumer.write(Row(queryId, columns.zip(row).toMap))
+      consumer.write(Row(queryId, row))
     }
 
     Task.sequence(Seq(columnTask, progressTask, errorTask, rowTask)).map(_ => ())

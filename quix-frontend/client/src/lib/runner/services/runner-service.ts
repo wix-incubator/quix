@@ -29,7 +29,7 @@ function initSocket(socket: RunnerSocket, events: RunnerEvents, transformers, sc
   socket.transformResponse(transformers.response);
 }
 
-function sendSocketData(socket, data, user, transformers, mode = 'stream', metaKey = 'session') {
+function sendSocketData(socket, data, user, transformers, mode = 'stream') {
   const meta: any = {};
 
   if (user && user.getPermission() && user.getPermission().isElevated()) {
@@ -42,9 +42,9 @@ function sendSocketData(socket, data, user, transformers, mode = 'stream', metaK
     const transformed = transformers.request({data, meta});
 
     if (transformed.data && transformed.data.then) {
-      transformed.data.then(transformedData => socket.send({data: transformedData, [metaKey]: transformed.meta}));
+      transformed.data.then(transformedData => socket.send({data: transformedData, session: transformed.meta}));
     } else {
-      socket.send({code: transformed.data, [metaKey]: transformed.meta});
+      socket.send({code: transformed.data, session: transformed.meta});
     }
   });
 }
@@ -99,9 +99,9 @@ export class Runner extends srv.eventEmitter.EventEmitter {
         return data;
       });
 
-      this.getEvents().register('query-validation', (data) => {
-        if (data.downloadUrl) {
-          this.fire('downloadFile', data.downloadUrl, this, this.getCurrentQuery());
+      this.getEvents().register('query-download', (data) => {
+        if (data.url) {
+          this.fire('downloadFile', `${this.baseUrl}${data.url}`, this, this.getCurrentQuery());
         }
       })
 
@@ -158,7 +158,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
       .register('row', (data, meta, status) => {
         const query = data.id ? this.getState().getQueryById(data.id) : this.getState().getCurrentQuery();
 
-        query.addRow(data.row);
+        query.addRow(data.values);
 
         if (status.callCount === 1) {
           this.fire('firstResultReceived', this);
@@ -178,10 +178,10 @@ export class Runner extends srv.eventEmitter.EventEmitter {
     this.getState()
       .setRunningStatus(true)
       .startDurationCount();
-
-      if (this.version) {
-        this.keepAliveInterval = inject('$interval')(() => this.getSocket().send('ping'), 30 * 1000);
-      }
+    
+    this.keepAliveInterval = inject('$interval')(() => this.getSocket().send({
+      event: 'ping'
+    }), 30 * 1000);
   }
 
   protected finish() {
@@ -274,7 +274,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
     this.payload = data;
 
     initSocket(this.socket, this.events, this.transformers, this.scope, this.logEvents);
-    sendSocketData(this.socket, data, user, this.transformers, this.mode, this.version >=2 ? 'session' : 'meta');
+    sendSocketData(this.socket, data, user, this.transformers, this.mode);
 
     this.socket.on('close', () => {
       if (!this.getState().getStatus().finished) {

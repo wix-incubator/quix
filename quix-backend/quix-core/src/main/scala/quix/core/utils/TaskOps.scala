@@ -12,7 +12,7 @@ object TaskOps extends LazyLogging {
       task.onErrorHandleWith {
         case ex: Exception =>
           if (maxRetries > 0) {
-            logger.warn(s"method=retry error=${ex.getClass.getSimpleName} retries=$maxRetries delay=${firstDelay.toSeconds}")
+            logger.warn(s"method=retry error=${ex.getClass.getSimpleName} retries=$maxRetries delay=${firstDelay.toMillis / 1000.0}")
             retry(maxRetries - 1, firstDelay * 2).delayExecution(firstDelay)
           }
           else

@@ -7,6 +7,7 @@ import {Instance} from '../../lib/app';
 import {IScope} from './note-types';
 import { initEvents} from '../../services/scope';
 import * as Events from './note-events';
+import {RunnerQuery} from '../../lib/runner';
 
 export default (app: Instance, store: Store) => () => ({
   restrict: 'E',
@@ -45,6 +46,10 @@ export default (app: Instance, store: Store) => () => ({
         });
 
       initEvents(scope, conf, app, store, Events);
+
+      scope.getDownloadFileName = (query: RunnerQuery) => {
+        return `${scope.note.name}${query.getIndex() > 0 ? `_${query.getIndex()}` : ''}.csv`
+      }
     }
   }
 });
