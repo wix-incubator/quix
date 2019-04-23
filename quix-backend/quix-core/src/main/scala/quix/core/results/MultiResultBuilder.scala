@@ -52,7 +52,7 @@ class MultiResultBuilder(val consumer: Consumer[ExecutionEvent])
   }
 
   def sendProgress(queryId: String, stats: ResultsStats) = {
-    consumer.write(Progress(queryId, stats.completed))
+    consumer.write(Progress(queryId, stats.percentage))
   }
 
   override def errorSubQuery(queryId: String, e: Throwable) = {

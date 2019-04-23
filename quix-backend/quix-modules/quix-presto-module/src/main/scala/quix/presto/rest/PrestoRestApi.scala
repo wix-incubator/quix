@@ -86,11 +86,11 @@ object PrestoStateToResults {
       else 0
     }
 
-    val columns = state.columns.map(_.map(pc => ResultsColumn(pc.name, pc.dataType)))
+    val columns = state.columns.map(_.map(pc => ResultsColumn(pc.name)))
     val error = state.error.map(pe => ResultsError(pe.message))
     val resultStats = Option(ResultsStats(stats.state, completed))
 
-    new Results(state.data.getOrElse(Nil), columns, resultStats, error)
+    Results(state.data.getOrElse(Nil), columns, resultStats, error)
   }
 }
 
