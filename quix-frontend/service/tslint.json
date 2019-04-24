@@ -28,6 +28,7 @@
     "arrow-parens": false,
     "object-literal-sort-keys": false,
     "max-classes-per-file": false,
+    "no-non-null-assertion": true,
     "prettier": true
   },
   "rulesDirectory": [

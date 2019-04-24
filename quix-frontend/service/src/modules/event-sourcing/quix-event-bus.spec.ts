@@ -1,3 +1,6 @@
+/* tslint:disable:no-shadowed-variable */
+/* tslint:disable:no-non-null-assertion */
+
 import {TestingModule} from '@nestjs/testing';
 import 'reflect-metadata';
 import {INote, NoteActions, createNote} from 'shared/entities/note';
@@ -6,9 +9,8 @@ import {NotebookActions} from 'shared/entities/notebook';
 import {FileActions, FileType} from 'shared/entities/file';
 import {QuixEventBus} from './quix-event-bus';
 import {QuixEventBusDriver} from './quix-event-bus.driver';
-import {range, reject} from 'lodash';
+import {range, reject, find} from 'lodash';
 
-/* tslint:disable:no-shadowed-variable */
 jest.setTimeout(30000);
 
 const defaultUser = 'someUser@wix.com';
@@ -156,7 +158,7 @@ describe('event sourcing', () => {
       expect(notebook.notes[0].content).toBe('select foo from bar');
     });
 
-    it('move notebook', async () => {
+    it('move note between notebook', async () => {
       await driver.emitAsUser(eventBus, [createNotebookAction, addNoteAction]);
       const [
         secondNotebookId,
@@ -251,32 +253,35 @@ describe('event sourcing', () => {
   });
 
   describe('folder tree::', () => {
-    let id: string;
+    let folderId: string;
     let createFolderAction: any;
     let notebookId: string;
     let createNotebookAction: any;
 
     beforeEach(() => {
-      [id, createFolderAction] = driver.createFolderAction('newFolder', []);
+      [folderId, createFolderAction] = driver.createFolderAction(
+        'rootFolder',
+        [],
+      );
       [notebookId, createNotebookAction] = driver.createNotebookAction([
-        {id, name: 'doesnt matter'},
+        {id: folderId},
       ]);
     });
 
     it('a single folder', async () => {
       await driver.emitAsUser(eventBus, [createFolderAction]);
 
-      const list = await driver.getFolderDecendents(defaultUser);
-      expect(list[0].folder!.name).toBe('newFolder');
+      const list = await driver.getUserFileTree(defaultUser);
+      expect(list[0].folder!.name).toBe('rootFolder');
     });
 
     it('rename folder', async () => {
       await driver.emitAsUser(eventBus, [createFolderAction]);
       await driver.emitAsUser(eventBus, [
-        FileActions.updateName(id, 'a changedName'),
+        FileActions.updateName(folderId, 'a changedName'),
       ]);
 
-      const list = await driver.getFolderDecendents(defaultUser);
+      const list = await driver.getUserFileTree(defaultUser);
       expect(list[0].folder!.name).toBe('a changedName');
     });
 
@@ -286,16 +291,16 @@ describe('event sourcing', () => {
         createNotebookAction,
       ]);
 
-      const list = await driver.getFolderDecendents(defaultUser);
+      const list = await driver.getUserFileTree(defaultUser);
       const notebookTreeItem = list.find(
-        item => item.id === notebookId && item.parentId === id,
+        item => item.id === notebookId && item.parentId === folderId,
       );
       expect(notebookTreeItem).toBeDefined();
     });
 
-    it('multiple notebooks inside a single folder', async () => {
+    it('have multiple notebooks inside a single folder', async () => {
       const [notebookId2, createNotebookAction2] = driver.createNotebookAction([
-        {id, name: 'doesnt matter'},
+        {id: folderId},
       ]);
       await driver.emitAsUser(eventBus, [
         createFolderAction,
@@ -303,11 +308,153 @@ describe('event sourcing', () => {
         createNotebookAction2,
       ]);
 
-      const list = await driver.getFolderDecendents(defaultUser);
+      const list = await driver.getUserFileTree(defaultUser);
       const notebookItems = list.filter(
         item => item.type === FileType.notebook,
       );
       expect(notebookItems).toHaveLength(2);
+    });
+
+    it('notebook move', async () => {
+      const [subFolder1, createSubFolder1] = driver.createFolderAction(
+        'subFolder1',
+        [{id: folderId}],
+      );
+
+      await driver.emitAsUser(eventBus, [
+        createFolderAction,
+        createSubFolder1,
+        createNotebookAction,
+      ]);
+
+      await driver.emitAsUser(eventBus, [
+        NotebookActions.moveNotebook(notebookId, {id: subFolder1, name: ''}),
+      ]);
+
+      const list = await driver.getUserFileTree(defaultUser);
+      const notebook = list.find(item => item.id === notebookId);
+      expect(notebook!.mpath).toBe(`${folderId}.${subFolder1}.${notebookId}`);
+    });
+
+    it('folder tree move', async () => {
+      const [subFolder1, createSubFolder1] = driver.createFolderAction(
+        'subFolder1',
+        [{id: folderId}],
+      );
+
+      const [subFolder2, createSubFolder2] = driver.createFolderAction(
+        'subFolder2',
+        [{id: subFolder1}],
+      );
+
+      const [subFolder3, createSubFolder3] = driver.createFolderAction(
+        'subFolder3',
+        [{id: folderId}],
+      );
+
+      const [notebookId, createNotebookAction] = driver.createNotebookAction([
+        {id: subFolder2},
+      ]);
+
+      await driver.emitAsUser(eventBus, [
+        createFolderAction,
+        createSubFolder1,
+        createSubFolder2,
+        createSubFolder3,
+        createNotebookAction,
+      ]);
+
+      /**
+       * structure:
+       * rootFolder ->
+       *           folder1 ->
+       *             folder2->
+       *               notebook
+       *           folder3
+       */
+
+      await driver.emitAsUser(eventBus, [
+        FileActions.moveFile(subFolder1, {id: subFolder3, name: ''}),
+      ]);
+
+      /**
+       * structure:
+       * rootFolder ->
+       *           folder3 ->
+       *             folder1 ->
+       *               folder2->
+       *                 notebook
+       */
+
+      const list = await driver.getUserFileTree(defaultUser);
+      expect(find(list, {id: subFolder1})).toMatchObject({
+        parentId: subFolder3,
+      });
+      expect(find(list, {id: notebookId})).toMatchObject({
+        mpath: [folderId, subFolder3, subFolder1, subFolder2, notebookId].join(
+          '.',
+        ),
+      });
+      expect(find(list, {id: subFolder2})).toMatchObject({
+        mpath: [folderId, subFolder3, subFolder1, subFolder2].join('.'),
+      });
+    });
+
+    it('delete an empty folder', async () => {
+      const [subFolder1, createSubFolder1] = driver.createFolderAction(
+        'subFolder1',
+        [{id: folderId}],
+      );
+
+      await driver.emitAsUser(eventBus, [createFolderAction, createSubFolder1]);
+      const beforeList = await driver.getUserFileTree(defaultUser);
+      expect(beforeList).toHaveLength(2);
+
+      await driver.emitAsUser(eventBus, [FileActions.deleteFile(subFolder1)]);
+
+      const afterList = await driver.getUserFileTree(defaultUser);
+      expect(afterList).toMatchObject([
+        expect.objectContaining({id: folderId}),
+      ]);
+    });
+
+    fit('recursively delete a folder', async () => {
+      const [subFolder1, createSubFolder1] = driver.createFolderAction(
+        'subFolder1',
+        [{id: folderId}],
+      );
+
+      const [subFolder2, createSubFolder2] = driver.createFolderAction(
+        'subFolder2',
+        [{id: subFolder1}],
+      );
+
+      const [subFolder3, createSubFolder3] = driver.createFolderAction(
+        'subFolder3',
+        [{id: subFolder2}],
+      );
+
+      const [notebookId, createNotebookAction] = driver.createNotebookAction([
+        {id: subFolder2},
+      ]);
+
+      await driver.emitAsUser(eventBus, [
+        createFolderAction,
+        createSubFolder1,
+        createSubFolder2,
+        createSubFolder3,
+        createNotebookAction,
+      ]);
+
+      await driver.emitAsUser(eventBus, [FileActions.deleteFile(subFolder1)]);
+      const afterList = await driver.getUserFileTree(defaultUser);
+
+      expect(afterList).toMatchObject([
+        expect.objectContaining({id: folderId}),
+      ]);
+      /* Checking that deletion deletes entities from other tables */
+      await driver.getNotebook(notebookId).and.expectToBeUndefined();
+      expect(await driver.folderRepo.find()).toHaveLength(1);
     });
   });
 });

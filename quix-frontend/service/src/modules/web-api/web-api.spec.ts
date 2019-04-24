@@ -1,3 +1,5 @@
+/* tslint:disable:no-non-null-assertion */
+
 import {Test, TestingModule} from '@nestjs/testing';
 import {
   getConnectionToken,
