@@ -37,8 +37,8 @@ export const copyNotebook = async (store: Store, app: Instance, parentOrPath: IF
 
   store.dispatchAndLog([
     NotebookActions.createNotebook(newNotebook.id, newNotebook),
-    ...notes.map(({type, content, owner}) => {
-      const note = createNote(newNotebook.id, {type, content, owner} as any);
+    ...notes.map(({name: noteName, type, content, owner}) => {
+      const note = createNote(newNotebook.id, {name: noteName, type, content, owner} as any);
       return NoteActions.addNote(note.id, note);
     })
   ])
