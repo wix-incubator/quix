@@ -7,7 +7,7 @@
 
 Quix is a robust easy-to-use business intelligence & data analytics tool built to handle both quick insights and massive resource-demanding queries. It features data visualization and export, user management, and organizes queries in notebooks for easy access and sharing across teams.
 
-A web-based IDE for [Presto](https://github.com/prestodb/presto), Quix is your single point of truth and a shared space for your company's BI insights, with quick turnaround, interactive visual perspectives, and mixed data sources.
+A web-based IDE for [Presto](https://github.com/prestosql/presto), Quix is your single point of truth and a shared space for your company's BI insights, with quick turnaround, interactive visual perspectives, and mixed data sources.
 
 ![](docs/flow.gif)
 
@@ -34,7 +34,7 @@ Quix is flexible enough to be used in an array of applications on any scale. It 
 * [Docker](https://www.docker.com/products) (engine, enterprise or desktop edition, whichever works for you)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
-**N.B.** Quix relies on [Presto](http://prestodb.github.io/), which is included with the Docker container in this repository, but for the **demo purposes** only. To work with real data, it must be accessible via a Presto API URL (more on this in [Configuring](#Configuring)).
+**N.B.** Quix relies on [Presto](https://prestosql.io/), which is included with the Docker container in this repository, but for the **demo purposes** only. To work with real data, it must be accessible via a Presto API URL (more on this in [Configuring](#Configuring)).
 
 ## Setup and running
 
