@@ -9,7 +9,7 @@ import {NotebookActions} from 'shared/entities/notebook';
 import {FileActions, FileType} from 'shared/entities/file';
 import {QuixEventBus} from './quix-event-bus';
 import {QuixEventBusDriver} from './quix-event-bus.driver';
-import {range, reject} from 'lodash';
+import {range, reject, find} from 'lodash';
 
 jest.setTimeout(30000);
 
@@ -260,7 +260,7 @@ describe('event sourcing', () => {
 
     beforeEach(() => {
       [folderId, createFolderAction] = driver.createFolderAction(
-        'newFolder',
+        'rootFolder',
         [],
       );
       [notebookId, createNotebookAction] = driver.createNotebookAction([
@@ -271,8 +271,8 @@ describe('event sourcing', () => {
     it('a single folder', async () => {
       await driver.emitAsUser(eventBus, [createFolderAction]);
 
-      const list = await driver.getFolderDecendents(defaultUser);
-      expect(list[0].folder!.name).toBe('newFolder');
+      const list = await driver.getUserFileTree(defaultUser);
+      expect(list[0].folder!.name).toBe('rootFolder');
     });
 
     it('rename folder', async () => {
@@ -281,7 +281,7 @@ describe('event sourcing', () => {
         FileActions.updateName(folderId, 'a changedName'),
       ]);
 
-      const list = await driver.getFolderDecendents(defaultUser);
+      const list = await driver.getUserFileTree(defaultUser);
       expect(list[0].folder!.name).toBe('a changedName');
     });
 
@@ -291,7 +291,7 @@ describe('event sourcing', () => {
         createNotebookAction,
       ]);
 
-      const list = await driver.getFolderDecendents(defaultUser);
+      const list = await driver.getUserFileTree(defaultUser);
       const notebookTreeItem = list.find(
         item => item.id === notebookId && item.parentId === folderId,
       );
@@ -308,7 +308,7 @@ describe('event sourcing', () => {
         createNotebookAction2,
       ]);
 
-      const list = await driver.getFolderDecendents(defaultUser);
+      const list = await driver.getUserFileTree(defaultUser);
       const notebookItems = list.filter(
         item => item.type === FileType.notebook,
       );
@@ -331,9 +331,73 @@ describe('event sourcing', () => {
         NotebookActions.moveNotebook(notebookId, {id: subFolder1, name: ''}),
       ]);
 
-      const list = await driver.getFolderDecendents(defaultUser);
+      const list = await driver.getUserFileTree(defaultUser);
       const notebook = list.find(item => item.id === notebookId);
       expect(notebook!.mpath).toBe(`${folderId}.${subFolder1}.${notebookId}`);
+    });
+
+    it('folder tree move', async () => {
+      const [subFolder1, createSubFolder1] = driver.createFolderAction(
+        'subFolder1',
+        [{id: folderId}],
+      );
+
+      const [subFolder2, createSubFolder2] = driver.createFolderAction(
+        'subFolder2',
+        [{id: subFolder1}],
+      );
+
+      const [subFolder3, createSubFolder3] = driver.createFolderAction(
+        'subFolder3',
+        [{id: folderId}],
+      );
+
+      const [notebookId, createNotebookAction] = driver.createNotebookAction([
+        {id: subFolder2},
+      ]);
+
+      await driver.emitAsUser(eventBus, [
+        createFolderAction,
+        createSubFolder1,
+        createSubFolder2,
+        createSubFolder3,
+        createNotebookAction,
+      ]);
+
+      /**
+       * structure:
+       * rootFolder ->
+       *           folder1 ->
+       *             folder2->
+       *               notebook
+       *           folder3
+       */
+
+      await driver.emitAsUser(eventBus, [
+        FileActions.moveFile(subFolder1, {id: subFolder3, name: ''}),
+      ]);
+
+      /**
+       * structure:
+       * rootFolder ->
+       *           folder3 ->
+       *             folder1 ->
+       *               folder2->
+       *                 notebook
+       */
+
+      const list = await driver.getUserFileTree(defaultUser);
+      expect(find(list, {id: subFolder1})).toMatchObject({
+        parentId: subFolder3,
+      });
+      expect(find(list, {id: notebookId})).toMatchObject({
+        mpath: [folderId, subFolder3, subFolder1, subFolder2, notebookId].join(
+          '.',
+        ),
+      });
+      expect(find(list, {id: subFolder2})).toMatchObject({
+        mpath: [folderId, subFolder3, subFolder1, subFolder2].join('.'),
+      });
     });
   });
 });

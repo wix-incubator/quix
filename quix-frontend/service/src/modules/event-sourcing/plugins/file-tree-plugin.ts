@@ -37,12 +37,23 @@ export class FileTreePlugin implements EventBusPlugin {
             if (file.type === FileType.notebook) {
               throw new Error('Notebooks should be created directly');
             }
+            break;
           }
           case FileActionTypes.deleteFile: {
             const node = await this.fileTreeNodeRepo.findOne(action.id);
             if (node && node.type === FileType.notebook) {
               throw new Error('Notebooks should be deleted directly');
             }
+            break;
+          }
+          case FileActionTypes.moveFile: {
+            const node = await this.fileTreeNodeRepo.findOneOrFail(action.id);
+            if (node.type === FileType.notebook) {
+              throw new Error('Notebooks should be moved directly');
+            } else {
+              hookApi.context.set({fileNode: node});
+            }
+            break;
           }
           default:
         }
@@ -51,7 +62,7 @@ export class FileTreePlugin implements EventBusPlugin {
 
     api.hooks.listen(
       QuixHookNames.PROJECTION,
-      async (action: FileActions | NotebookActions) => {
+      async (action: FileActions | NotebookActions, hookApi) => {
         switch (action.type) {
           case FileActionTypes.createFile: {
             const {file} = action;
@@ -89,6 +100,15 @@ export class FileTreePlugin implements EventBusPlugin {
             const {id, path} = action;
             const node = new DbFileTreeNode(id, {parentId: path.id});
             return this.fileTreeNodeRepo.save(node);
+          }
+
+          case FileActionTypes.moveFile: {
+            const {id, path} = action;
+            const newParent = await this.fileTreeNodeRepo.findOneOrFail(
+              path.id,
+            );
+            const fileNode: DbFileTreeNode = hookApi.context.get().fileNode;
+            return this.fileTreeNodeRepo.moveTree(fileNode, newParent);
           }
 
           case FileActionTypes.toggleIsLiked: {

@@ -187,30 +187,14 @@ export class QuixEventBusDriver {
     return this.noteRepo.findOne(id);
   }
 
-  async getFolderDecendents(user: string) {
-    const root = await this.fileTreeRepo.findOne(
-      {owner: user, parentId: IsNull()},
-      {relations: ['notebook', 'folder']},
-    );
+  async getUserFileTree(user: string) {
+    const q = this.fileTreeRepo
+      .createQueryBuilder('node')
+      .where('node.owner = :user', {user})
+      .leftJoinAndSelect('node.folder', 'folder')
+      .leftJoinAndSelect('node.notebook', 'notebook');
 
-    if (root) {
-      const sub = this.fileTreeRepo
-        .createQueryBuilder('root')
-        .select('root.mpath')
-        .where(`root.id = :id`)
-        .getQuery();
-
-      const q = this.fileTreeRepo
-        .createQueryBuilder('node')
-        .where('node.owner = :user', {user})
-        .andWhere(`node.mpath LIKE ${dbConf.concat(`(${sub})`, `'%'`)}`)
-        .setParameter('id', root.id)
-        .leftJoinAndSelect('node.folder', 'folder')
-        .leftJoinAndSelect('node.notebook', 'notebook');
-
-      return q.getMany();
-    }
-    return [];
+    return q.getMany();
   }
 
   clearEvents() {

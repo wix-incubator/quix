@@ -6,6 +6,7 @@ import {
   Entity,
 } from 'typeorm';
 import {DbFileTreeNode} from './filenode.entity';
+import {dbConf} from 'config/db-conf';
 /**
  * This custom repository saves a tree structure in sql, using path enumeration/materialized path.
  * We don't use the built in solution by typeorm as it doesn't support moving/deletions yet.
@@ -31,37 +32,41 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
     if (Array.isArray(itemOrItems)) {
       const items = itemOrItems;
       for (const item of items) {
-        await this.setMpath(item);
+        await this.setMpathByParent(item);
       }
       return super.save(items, options);
     } else {
       const item = itemOrItems;
-      await this.setMpath(item);
+      await this.setMpathByParent(item);
       return super.save(item, options);
     }
   }
 
+  private async getParentPath(item: DeepPartial<DbFileTreeNode>) {
+    if (item.parent && item.parent.mpath) {
+      return item.parent.mpath;
+    }
+    const parentId = getParentId(item);
+    if (parentId) {
+      return this.findOneOrFail(parentId)
+        .then(parent => parent.mpath)
+        .catch(() => {
+          throw new Error(
+            `saving file item ${item.id}:: Can't find parent node ${
+              item.parentId
+            }`,
+          );
+        });
+    }
+    return '';
+  }
   /**
    * Given a node with it's parent or parentId set,
    * set the mpath correctly for it.
    * @param item
    */
-  private async setMpath(item: DeepPartial<DbFileTreeNode>) {
-    let base = '';
-    if (item.parent && item.parent.mpath) {
-      base = item.parent.mpath;
-    } else if (item.parentId || (item.parent && item.parent.id)) {
-      const parent = await this.findOne(item.parentId || item.parent!.id);
-      if (parent) {
-        base = parent.mpath;
-      } else {
-        throw new Error(
-          `saving file item ${item.id}:: Can't find parent node ${
-            item.parentId
-          }`,
-        );
-      }
-    }
+  private async setMpathByParent(item: DeepPartial<DbFileTreeNode>) {
+    const base = await this.getParentPath(item);
     item.mpath = base + (base ? '.' : '') + item.id;
   }
 
@@ -85,25 +90,6 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
   }
 
   /**
-   * Given a user, return a list of tree items, not orderd in any order, not nested, just a plain list.
-   * @returns {Promise<DbFileTreeNode[]>}
-   */
-  getNamesByUser(user: string) {
-    return this.createQueryBuilder('node')
-      .select([
-        'node.id',
-        'node.type',
-        'node.parentId',
-        'notebook.name',
-        'folder.name',
-      ])
-      .leftJoin('node.notebook', 'notebook')
-      .leftJoin('node.folder', 'folder')
-      .where('node.owner = :user', {user})
-      .getMany();
-  }
-
-  /**
    * Get a list of first level children
    * @returns {Promise<DbFileTreeNode[]>}
    */
@@ -114,4 +100,39 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
       .where('node.parentId = :rootId', {rootId})
       .getMany();
   }
+
+  async moveTree(root: DbFileTreeNode, newParentNode: DbFileTreeNode) {
+    if (root.id === newParentNode.id) {
+      throw new Error(
+        `Illegal request: can't move folder to itslef, or to it's parent`,
+      );
+    }
+    if (root.parentId === newParentNode.id) {
+      return;
+    }
+    const baseMpath = root.mpath;
+    const newBasePath = newParentNode.mpath + '.' + root.id;
+    return this.manager.transaction(async em => {
+      const q = em
+        .createQueryBuilder()
+        .update(DbFileTreeNode)
+        .set({
+          mpath: () => `replace(\`mpath\`, '${baseMpath}', '${newBasePath}')`,
+        })
+        .where(`mpath LIKE ${dbConf.concat(`('${baseMpath}')`, `'%'`)}`);
+      await q.execute();
+      await em
+        .createQueryBuilder()
+        .update(DbFileTreeNode)
+        .set({parentId: newParentNode.id})
+        .where('id = :id', {id: root.id})
+        .execute();
+    });
+  }
+}
+
+function getParentId(node: DeepPartial<DbFileTreeNode>) {
+  return node.parent && node.parent.id !== undefined
+    ? node.parent.id
+    : node.parentId;
 }
