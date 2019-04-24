@@ -56,3 +56,8 @@ export const saveQueuedNotes = (store: Store) => {
 
   return store.dispatchAndLog(Object.keys(notes).map(id => NoteActions.updateContent(id, notes[id].content)));
 }
+
+export const hasQueuedNotes = (store: Store) => {
+  console.log(store.getState('notebook').queue)
+  return store.getState('notebook').queue.size > 0;
+}
