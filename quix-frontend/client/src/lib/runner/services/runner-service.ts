@@ -29,22 +29,26 @@ function initSocket(socket: RunnerSocket, events: RunnerEvents, transformers, sc
   socket.transformResponse(transformers.response);
 }
 
-function sendSocketData(socket, data, user, transformers, mode = 'stream') {
-  const meta: any = {};
+function sendSocketData(socket, code, user, transformers, mode = 'stream') {
+  const session: any = {mode};
 
   if (user && user.getPermission() && user.getPermission().isElevated()) {
-    meta['user.password'] = user.getPermission().getPassword();
+    session['user.password'] = user.getPermission().getPassword();
   }
 
-  meta.mode = mode;
-
   socket.on('open', () => {
-    const transformed = transformers.request({data, meta});
+    code = transformers.request(code);
 
-    if (transformed.data && transformed.data.then) {
-      transformed.data.then(transformedData => socket.send({data: transformedData, session: transformed.meta}));
+    if (code && code.then) {
+      code.then(c => socket.send({
+        event: 'execute', 
+        data: {code: c, session}
+      }));
     } else {
-      socket.send({code: transformed.data, session: transformed.meta});
+      socket.send({
+        event: 'execute',
+        data: {code, session}
+      });
     }
   });
 }
@@ -56,7 +60,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
   private socket: RunnerSocket;
   private readonly events: RunnerEvents;
   private readonly state = new RunnerState();
-  private payload = null;
+  private code = null;
   private logEvents: boolean = false;
   private keepAliveInterval;
 
@@ -253,8 +257,8 @@ export class Runner extends srv.eventEmitter.EventEmitter {
     return this.getState().getStatus().running;
   }
 
-  public getPayload() {
-    return this.payload;
+  public getCode() {
+    return this.code;
   }
 
   public transformRequest(transformer): Runner {
@@ -269,12 +273,12 @@ export class Runner extends srv.eventEmitter.EventEmitter {
     return this;
   }
 
-  public run(data, user?): Runner {
+  public run(code, user?): Runner {
     this.socket = new RunnerSocket(this.type, this.version, this.baseUrl);
-    this.payload = data;
+    this.code = code;
 
     initSocket(this.socket, this.events, this.transformers, this.scope, this.logEvents);
-    sendSocketData(this.socket, data, user, this.transformers, this.mode);
+    sendSocketData(this.socket, code, user, this.transformers, this.mode);
 
     this.socket.on('close', () => {
       if (!this.getState().getStatus().finished) {

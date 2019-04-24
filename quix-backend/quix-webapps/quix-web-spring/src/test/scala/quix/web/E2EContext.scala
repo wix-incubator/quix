@@ -2,7 +2,7 @@ package quix.web
 
 import org.asynchttpclient.Dsl.asyncHttpClient
 import org.asynchttpclient.ws.{WebSocket, WebSocketListener, WebSocketUpgradeHandler}
-import quix.api.execute.StartCommand
+import quix.api.execute.{ExecutionEvent, StartCommand}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import scalaj.http.Http
@@ -18,12 +18,13 @@ trait E2EContext extends StringJsonHelpersSupport {
     Http("http://localhost:8888/" + url).asString
   }
 
-  def execute(sql: String, session: Map[String, String] = Map.empty) = startSocket(true, StartCommand[String](sql, session).asJsonStr)
+  def execute(sql: String, session: Map[String, String] = Map.empty) =
+    startSocket(true, ExecutionEvent("execute", StartCommand[String](sql, session)).asJsonStr)
 
   def send(text: String) = startSocket(false, text)
 
   def runAndDownload(sql: String) =
-    startSocket(false, StartCommand[String](sql, Map("mode" -> "download")).asJsonStr)
+    startSocket(false, ExecutionEvent("execute", StartCommand[String](sql, Map("mode" -> "download"))).asJsonStr)
 
   def startSocket(awaitFinish: Boolean, texts: String*) = {
     val listener = new MyListener(texts: _*)

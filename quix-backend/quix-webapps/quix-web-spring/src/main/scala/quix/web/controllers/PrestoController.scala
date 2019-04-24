@@ -37,16 +37,10 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
     logger.info(s"event=handle-text-message socket-id=${socket.getId} message=${message.getPayload} user=${user.email}")
 
     message.getPayload match {
-      case "ping" =>
+      case ExecutionEvent("ping", _) =>
         handlePingMessage(socket)
 
-      case """"ping"""" =>
-        handlePingMessage(socket)
-
-      case """{"event":"ping"}""" =>
-        handlePingMessage(socket)
-
-      case Start(command) =>
+      case ExecutionEvent("execute", command: StartCommand[String]) =>
         handleExecutionMessage(socket, command, user)
 
       case _ =>
@@ -127,5 +121,23 @@ object Start extends StringJsonHelpersSupport {
 
       command.copy(session = Option(command.session).getOrElse(Map.empty))
     }.toOption
+  }
+}
+
+object ExecutionEvent extends StringJsonHelpersSupport {
+  def unapply(event: String): Option[(String, EventData)] = {
+    val name = event.get("event")
+    val data = event.get("data")
+
+    (name, data) match {
+      case ("ping", _) =>
+        Some(name, Empty)
+
+      case ("execute", Start(command)) =>
+        Some(name, command)
+
+      case (_, _) =>
+        Some(name, Empty)
+    }
   }
 }

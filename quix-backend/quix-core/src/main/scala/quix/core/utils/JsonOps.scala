@@ -10,6 +10,8 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module
 import com.fasterxml.jackson.module.scala.DefaultScalaModule
 import quix.core.utils.JacksonSupport._
 
+import scala.util.control.NonFatal
+
 trait StringJsonHelpersSupport {
 
   implicit class String2jsonNode(s: String) {
@@ -17,6 +19,18 @@ trait StringJsonHelpersSupport {
 
     def as[T](implicit mn: Manifest[T], mapper: ObjectMapper): T = deserialize[T](s)
 
+    def get(key: String, default: String = "")(implicit mapper: ObjectMapper) = {
+      try {
+        s.asJson.get(key) match {
+          case null => default
+          case node if node.isTextual => node.asText(default)
+          case node if node.isObject && node.toString.nonEmpty => node.toString
+          case _ => default
+        }
+      } catch {
+        case NonFatal(_) => default
+      }
+    }
   }
 
   implicit class AnyObject2JsonNode(o: Any) {
