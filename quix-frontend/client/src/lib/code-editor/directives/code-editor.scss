@@ -7,6 +7,8 @@ bi-code-editor {
   display: flex;
 
   .bce-params-list {
+    padding-bottom: 60px;
+
     .bce-params-list-inner {
       &.bi-form--vertical {
         .bi-form-row {
