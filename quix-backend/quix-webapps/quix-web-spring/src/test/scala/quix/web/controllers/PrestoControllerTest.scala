@@ -38,19 +38,11 @@ class PrestoControllerTest extends E2EContext with LazyLogging {
   }
 
   @Test
-  def handlePingCommand(): Unit = {
+  def handleUnknownMessage(): Unit = {
     executor.withResults(List(List("1")), columns = List("_col0"))
     val listener = send("ping")
 
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"pong","data":{}}"""))
-  }
-
-  @Test
-  def handlePingCommandWithQuotes(): Unit = {
-    executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = send("\"ping\"")
-
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"pong","data":{}}"""))
+    assertThat(listener.messagesJ, Matchers.hasItem(Matchers.containsString("Failed to handle unknown message : [ping]")))
   }
 
   @Test
