@@ -56,27 +56,39 @@ export class FileTreePlugin implements EventBusPlugin {
           case FileActionTypes.createFile: {
             const {file} = action;
             const parent = last(file.path);
-            const node = new DbFileTreeNode();
-            node.id = file.id;
-            node.owner = (action as any).user;
-            node.parent = parent ? new DbFileTreeNode(parent.id) : undefined;
             const folder = new DbFolder();
-            folder.id = file.id;
-            folder.owner = (action as any).user;
-            folder.name = file.name;
-            node.folder = folder;
+
+            Object.assign(folder, {
+              id: file.id,
+              owner: (action as any).user,
+              name: file.name,
+            });
+            const node = new DbFileTreeNode();
+
+            Object.assign(node, {
+              id: file.id,
+              owner: (action as any).user,
+              parent: parent ? new DbFileTreeNode(parent.id) : undefined,
+              folder,
+            });
+
             return this.fileTreeNodeRepo.save(node);
           }
+
           case FileActionTypes.updateName: {
             const {id} = action;
-            const folder = await this.folderRepo.findOne(id, {
+            const folder = await this.folderRepo.findOneOrFail(id, {
               loadRelationIds: true,
             });
-            if (folder) {
-              folder.name = action.name;
-              return this.folderRepo.save(folder);
-            }
-            throw new Error(`Can't find folder`);
+
+            folder.name = action.name;
+            return this.folderRepo.save(folder);
+          }
+
+          case NotebookActionTypes.moveNotebook: {
+            const {id, path} = action;
+            const node = new DbFileTreeNode(id, {parentId: path.id});
+            return this.fileTreeNodeRepo.save(node);
           }
 
           case FileActionTypes.toggleIsLiked: {

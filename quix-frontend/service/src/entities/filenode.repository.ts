@@ -6,7 +6,10 @@ import {
   Entity,
 } from 'typeorm';
 import {DbFileTreeNode} from './filenode.entity';
-
+/**
+ * This custom repository saves a tree structure in sql, using path enumeration/materialized path.
+ * We don't use the built in solution by typeorm as it doesn't support moving/deletions yet.
+ */
 @EntityRepository(DbFileTreeNode)
 export class FileTreeRepository extends Repository<DbFileTreeNode> {
   save(
@@ -38,6 +41,11 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
     }
   }
 
+  /**
+   * Given a node with it's parent or parentId set,
+   * set the mpath correctly for it.
+   * @param item
+   */
   private async setMpath(item: DeepPartial<DbFileTreeNode>) {
     let base = '';
     if (item.parent && item.parent.mpath) {
@@ -57,6 +65,10 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
     item.mpath = base + (base ? '.' : '') + item.id;
   }
 
+  /**
+   * given a list of ids, return a list of matching tree nodes, joined with name from folder/notebook.
+   * @param ids
+   */
   getNamesByIds(ids: string[]) {
     return this.createQueryBuilder('node')
       .select([
@@ -73,7 +85,7 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
   }
 
   /**
-   * Get a list of tree items for a specific user, not orderd in any order, not nested, just a plain list.
+   * Given a user, return a list of tree items, not orderd in any order, not nested, just a plain list.
    * @returns {Promise<DbFileTreeNode[]>}
    */
   getNamesByUser(user: string) {

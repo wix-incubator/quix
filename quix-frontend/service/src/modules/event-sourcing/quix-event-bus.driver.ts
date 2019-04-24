@@ -1,4 +1,6 @@
 /* Helper driver for event-bus tests */
+/* tslint:disable:no-non-null-assertion */
+
 import {ConfigService, ConfigModule} from 'config';
 
 import {EventSourcingModule} from './event-sourcing.module';
@@ -59,8 +61,8 @@ export class QuixEventBusDriver {
         AuthModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          useFactory: async (configService: ConfigService) =>
-            configService.getDbConnection([
+          useFactory: async (cs: ConfigService) =>
+            cs.getDbConnection([
               DbFileTreeNode,
               DbFolder,
               DbNote,
@@ -120,10 +122,16 @@ export class QuixEventBusDriver {
     );
   }
 
-  createNotebookAction(path: IFilePathItem[] = [], user = this.defaultUser) {
+  createNotebookAction(
+    path: Partial<IFilePathItem>[] = [],
+    user = this.defaultUser,
+  ) {
     const id = uuid.v4();
     const action = {
-      ...NotebookActions.createNotebook(id, createNotebook(path, {id})),
+      ...NotebookActions.createNotebook(
+        id,
+        createNotebook(path as IFilePathItem[], {id}),
+      ),
       user,
     };
     return [id, action] as const;
@@ -131,7 +139,7 @@ export class QuixEventBusDriver {
 
   createFolderAction(
     name: string,
-    path: IFilePathItem[],
+    path: {id: string}[],
     user = this.defaultUser,
   ) {
     const id = uuid.v4();
@@ -140,7 +148,7 @@ export class QuixEventBusDriver {
         id,
         type: FileType.folder,
         name,
-        path,
+        path: path as IFilePathItem[],
         isLiked: false,
         owner: '',
         dateCreated: 0,

@@ -24,9 +24,11 @@ export class NotebookPlugin implements EventBusPlugin {
   ) {}
 
   registerFn: EventBusPluginFn = api => {
-    const handledEvents: string[] = Object.entries(NotebookActionTypes).map(
-      ([_, s]) => s,
-    );
+    const handledEvents: string[] = [
+      NotebookActionTypes.createNotebook,
+      NotebookActionTypes.deleteNotebook,
+      NotebookActionTypes.updateName,
+    ];
     api.setEventFilter(type => handledEvents.includes(type));
 
     api.hooks.listen(QuixHookNames.VALIDATION, (action: NotebookActions) => {
