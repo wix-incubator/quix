@@ -12,7 +12,7 @@ export const addFolder = async (store: Store, app: Instance, parentOrPath: IFold
     name: parentOrPath.name
   }];
 
-  path = path.length ? path : [await fetchRootPathItem()];
+  path = path.length ? path : [await fetchRootPath()];
 
   const folder = createFolder(path, {...props, owner: app.getUser().getEmail()});
 
@@ -29,7 +29,7 @@ export const isRoot = (file: Pick<IFile, 'name' | 'type' | 'path'>) => {
   return !file.path.length && file.type === FileType.folder && file.name === 'My notebooks';
 }
 
-export const fetchRootPathItem = (): Promise<IFilePathItem> => {
+export const fetchRootPath = (): Promise<IFilePathItem> => {
   return cache.files.get()
     .then(files => files.find(isRoot))
     .then(file => file && {id: file.id, name: file.name});

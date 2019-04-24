@@ -23,17 +23,12 @@ const MySqlConf: DbColumnConf = {
   tinytext: {type: 'tinytext'},
   noteContent: {type: 'mediumtext', nullable: true},
   dateUpdated: {
-    type: 'timestamp',
-    precision: 3,
-    default: () => 'CURRENT_TIMESTAMP(3)',
-    onUpdate: 'CURRENT_TIMESTAMP(3)',
     transformer: {from: (d: Date) => d.valueOf(), to: () => undefined},
+    readonly: true,
   },
   dateCreated: {
-    type: 'timestamp',
-    precision: 3,
-    default: () => 'CURRENT_TIMESTAMP(3)',
     transformer: {from: (d: Date) => d.valueOf(), to: () => undefined},
+    readonly: true,
   },
   eventsTimestamp: {
     type: 'timestamp',
@@ -61,23 +56,41 @@ const SqliteConf: DbColumnConf = {
   noteContent: {type: 'text', nullable: true},
   dateUpdated: {
     type: 'integer',
-    default: () => `strftime('%s', 'now')`,
     transformer: {
-      from: (d: number) => d,
-      to: () => Date.now() /* on update not supported by sqlite */,
+      from: (d: number) => {
+        const date = new Date(d);
+        return Date.UTC(
+          date.getUTCFullYear(),
+          date.getUTCMonth(),
+          date.getUTCDate(),
+          date.getUTCHours(),
+          date.getUTCMinutes(),
+          date.getUTCSeconds(),
+        ).valueOf();
+      },
+      to: () => undefined,
     },
   },
   dateCreated: {
     type: 'integer',
-    default: () => `strftime('%s', 'now')`,
     transformer: {
-      from: (d: number) => d,
+      from: (d: number) => {
+        const date = new Date(d);
+        return Date.UTC(
+          date.getUTCFullYear(),
+          date.getUTCMonth(),
+          date.getUTCDate(),
+          date.getUTCHours(),
+          date.getUTCMinutes(),
+          date.getUTCSeconds(),
+        ).valueOf();
+      },
       to: () => undefined,
     },
   },
   eventsTimestamp: {
     type: 'integer',
-    default: () => `strftime('%s', 'now')`,
+    default: () => `CAST((julianday('now') - 2440587.5)*86400000 AS INTEGER)`,
     transformer: {
       from: (d: number) => d,
       to: (d?: Date) => d && d.valueOf(),

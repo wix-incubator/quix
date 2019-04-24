@@ -1,6 +1,7 @@
 package quix.presto.rest
 
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
+import quix.api.execute.{Batch, BatchColumn, BatchError, BatchStats}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 case class PrestoState(id: String,
@@ -73,19 +74,9 @@ case class PrestoQueryStats(outputDataSize: String,
                             outputPositions: Long)
 
 
-case class Results(@JsonProperty("headers") columns: Option[List[PrestoColumn]],
-                   @JsonProperty("data") data: List[List[AnyRef]],
-                   @JsonProperty("stats") stats: ResultsStats,
-                   @JsonProperty("prestoId") prestoId: String,
-                   @JsonProperty("error") error: Option[PrestoError] = None)
+object PrestoStateToResults {
 
-case class ResultsStats(@JsonProperty("state") state: String,
-                        @JsonProperty("completed") completed: Int,
-                        @JsonProperty("moreData") moreData: Option[AnyRef] = None)
-
-object Results {
-
-  def apply(state: PrestoState): Results = {
+  def apply(state: PrestoState): Batch = {
     val stats = state.stats
     val completed = {
       val total = stats.totalSplits
@@ -95,12 +86,11 @@ object Results {
       else 0
     }
 
-    new Results(state.columns, state.data.getOrElse(Nil), ResultsStats(stats.state, completed), prestoId = state.id, error = state.error)
-  }
+    val columns = state.columns.map(_.map(pc => BatchColumn(pc.name)))
+    val error = state.error.map(pe => BatchError(pe.message))
+    val resultStats = Option(BatchStats(stats.state, completed))
 
-  def apply(results: Results, moreData: AnyRef) = {
-    val newStats = results.stats.copy(moreData = Option(moreData))
-    results.copy(stats = newStats)
+    Batch(state.data.getOrElse(Nil), columns, resultStats, error)
   }
 }
 

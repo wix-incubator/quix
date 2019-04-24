@@ -4,12 +4,14 @@ import './db-sidebar.scss';
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {Instance} from '../../lib/app';
+import {IFile} from '../../../../shared';
 import {IScope} from './db-sidebar-types';
 import {cache} from '../../store';
-import {convert} from '../../services/db';
+import {convert, getTableQuery} from '../../services/db';
 import * as Resources from '../../services/resources';
 import * as DbActions from '../../store/db/db-actions';
 import {StateManager} from '../../services/state';
+import {openTempQuery} from '../../services';
 
 enum States {
   Initial,
@@ -35,15 +37,24 @@ export default (app: Instance, store: Store) => () => ({
           onFileExplorerLoad() {
             scope.vm.state.set('Visible');
           },
-          onLazyFolderOpen(folder) {
+          onLazyFolderFetch(folder: IFile) {
             const path = [...folder.path, {id: folder.id, name: folder.name}];
             const [catalog, schema, table] = path.map(({id}) => id);
 
             return Resources.dbColumns(catalog, schema, table)
               .then(({children: columns}) => convert(columns, [...path]))
               .then(columns => store.dispatch(DbActions.addColumns(folder.id, columns)));
+          },
+          onSelectTableRows(table: IFile) {
+            openTempQuery(scope, getTableQuery(table), true);
           }
         });
+
+      scope.getFolderPermissions = (folder: any) => {
+        return {
+          menu: folder.nodeType === 'table'
+        };
+      }
 
       cache.db.get();
       store.subscribe('db', (db) => {

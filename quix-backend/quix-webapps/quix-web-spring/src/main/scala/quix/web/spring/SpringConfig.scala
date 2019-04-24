@@ -9,14 +9,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration}
 import org.springframework.core.env.Environment
 import quix.api.db.Db
-import quix.api.execute.AsyncQueryExecutor
+import quix.api.execute.{AsyncQueryExecutor, DownloadableQueries, ExecutionEvent, Batch}
 import quix.api.users.DummyUsers
+import quix.core.download.DownloadableQueriesImpl
 import quix.core.utils.JsonOps
 import quix.presto._
 import quix.presto.db.RefreshableDb
-import quix.presto.rest.{Results, ScalaJPrestoStateClient}
+import quix.presto.rest.ScalaJPrestoStateClient
 import quix.web.auth.JwtUsers
-import quix.web.controllers.DbController
+import quix.web.controllers.{DbController, DownloadController}
 
 import scala.util.control.NonFatal
 
@@ -41,7 +42,7 @@ class AuthConfig extends LazyLogging {
 
       new JwtUsers(cookie, secret)
     }.onErrorRecoverWith { case NonFatal(e: Exception) =>
-      logger.warn("failed to construct secureAuth, falling back to dummy user auth", e)
+      logger.warn("failed to construct secureAuth, falling back to dummy user auth")
       Coeval(DummyUsers)
     }
 
@@ -54,8 +55,6 @@ class PrestoConfiguration extends LazyLogging {
 
   @Bean def initPrestoConfig(env: Environment): PrestoConfig = {
     val prestoBaseApi = env.getRequiredProperty("presto.api")
-
-    logger.info(s"Presto API URL is $prestoBaseApi")
 
     val statementsApi = prestoBaseApi + "/statement"
     val healthApi = prestoBaseApi + "/cluster"
@@ -72,14 +71,14 @@ class PrestoConfiguration extends LazyLogging {
     config
   }
 
-  @Bean def initQueryExecutor(config: PrestoConfig): AsyncQueryExecutor[Results] = {
+  @Bean def initQueryExecutor(config: PrestoConfig): AsyncQueryExecutor[Batch] = {
     logger.info("event=[spring-config] bean=[QueryExecutor]")
 
     val prestoClient = new ScalaJPrestoStateClient(config)
     new QueryExecutor(prestoClient)
   }
 
-  @Bean def initPrestoExecutions(executor: AsyncQueryExecutor[Results]): PrestoExecutions = {
+  @Bean def initPrestoExecutions(executor: AsyncQueryExecutor[Batch]): PrestoExecutions = {
     logger.info("event=[spring-config] bean=[PrestoExecutions]")
 
     val execution: PrestoExecutions = new PrestoExecutions(executor)
@@ -91,6 +90,11 @@ class PrestoConfiguration extends LazyLogging {
     logger.info(s"event=[spring-config] bean=[PrestoQuixModule]")
     new PrestoQuixModule(executions)
   }
+
+  @Bean def initDownloadableQueries: DownloadableQueries[Batch, ExecutionEvent] = {
+    logger.info(s"event=[spring-config] bean=[DownloadableQueries]")
+    new DownloadableQueriesImpl
+  }
 }
 
 @Configuration
@@ -100,12 +104,17 @@ class Controllers extends LazyLogging {
     logger.info("event=[spring-config] bean=[DbController]")
     new DbController(db)
   }
+
+  @Bean def initDownloadController(downloadableQueries: DownloadableQueries[Batch, ExecutionEvent]): DownloadController = {
+    logger.info("event=[spring-config] bean=[DownloadController]")
+    new DownloadController(downloadableQueries)
+  }
 }
 
 @Configuration
 class DbConfig extends LazyLogging {
 
-  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[Results]):Db = {
+  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[Batch]): Db = {
     val initialDelay = env.getProperty("db.refresh.initialDelayInMinutes", classOf[Long], 1L)
     val delay = env.getProperty("db.refresh.delayInMinutes", classOf[Long], 15L)
 

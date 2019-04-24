@@ -1,3 +1,5 @@
+import {assign, defaults} from 'lodash';
+import {inject} from '../../core';
 import {Item, File, Folder} from './file-explorer-models';
 import {itemToDef} from './file-explorer-tools';
 import Instance from './file-explorer-instance';
@@ -15,12 +17,15 @@ export default class Controller {
   private readonly instance: Instance;
   private currentFolder: Folder = null;
   private currentFile: File = null;
-  private readonly $transclude: Function;
+  private readonly $transclude: ng.ITranscludeFunction;
+  private readonly slots: Record<string, boolean> = {};
 
   constructor(private readonly $scope, $element, $transclude) {
     this.instance = new Instance($scope);
     this.ngModel = $element.controller('ngModel');
     this.$transclude = $transclude;
+
+    this.slots.menu = this.$transclude.isSlotFilled('menu');
   }
 
   getInstance(): Instance {
@@ -28,10 +33,15 @@ export default class Controller {
   }
 
   getPermissions(folder): Permissions {
-    return this.$scope.getFolderPermissions({folder: itemToDef(folder)}) || {
-      rename: true,
-      delete: true
-    };
+    return defaults({}, this.$scope.permissions({folder: itemToDef(folder)}), {
+      rename: !this.$scope.readonly,
+      delete: !this.$scope.readonly,
+      menu: !this.$scope.readonly
+    });
+  }
+
+  getSlots() {
+    return this.slots;
   }
 
   setCurrentFolder(folder: Folder): Controller {
@@ -75,8 +85,8 @@ export default class Controller {
     return this;
   }
 
-  openLazyFolder(folder: Folder) {
-    return this.$scope.onLazyFolderOpen({folder: itemToDef(folder)});
+  fetchLazyFolder(folder: Folder) {
+    return this.$scope.onLazyFolderFetch({folder: itemToDef(folder)});
   }
 
   transclude(element, file) {
@@ -84,5 +94,99 @@ export default class Controller {
       scope.bfe = {file};
       element.append(clone);
     });
+  }
+
+  renderFolderIcon(scope, folder: Folder) {
+    let html;
+
+    if (!this.$transclude.isSlotFilled('folderIcon')) {
+      html = inject('$compile')(`
+        <i class="fe-icon fe-folder-icon bi-icon">folder</i>
+      `)(assign(scope.$new(), {folder}));
+    } else {
+      html = this.$transclude((_, s) => s.folder = itemToDef(folder), null, 'folderIcon');
+    }
+  
+    return {html};
+  }
+
+  renderFileIcon(scope, file: File) {
+    let html;
+
+    if (!this.$transclude.isSlotFilled('fileIcon')) {
+      html = inject('$compile')(`
+        <i class="fe-icon bi-icon">insert_drive_file</i>
+      `)(assign(scope.$new(), {file}));
+    } else {
+      html = this.$transclude((_, s) => s.file = itemToDef(file), null, 'fileIcon');
+    }
+  
+    return {html};
+  }
+
+  renderMenu(scope, folder: Folder) {
+    let html;
+
+    if (!this.$transclude.isSlotFilled('menu')) {
+      html = inject('$compile')(`
+        <ul class="bi-dropdown-menu">
+          <li 
+            class="bi-align bi-space-h"
+            ng-repeat="type in ::options.fileAlias"
+            ng-disabled="::!events.onFileCreate"
+            ng-click="events.onFileCreate && events.onFileCreate(type, folder)"
+          >
+            <i class="bi-icon bi-success">note_add</i>
+            <span>New {{::type}}</span>
+          </li>
+
+          <li class="bi-dropdown-separator"></li>
+
+          <li 
+            class="bi-align bi-space-h"
+            ng-disabled="::!events.onFolderCreate"
+            ng-click="events.onFolderCreate && events.onFolderCreate(folder)"
+          >
+            <i class="bi-icon bi-warning">create_new_folder</i>
+            <span>New folder</span>
+          </li>
+
+          <li class="bi-dropdown-separator" ng-if="::options.settings"></li>
+
+          <li 
+            class="bi-align bi-space-h"
+            ng-if="::options.settings"
+            ng-click="events.onSettingsClick && events.onSettingsClick(folder)"
+          >
+            <i class="bi-icon">settings</i>
+            <span>Settings</span>
+          </li>
+
+          <li class="bi-dropdown-separator"></li>
+
+          <li 
+            class="bi-align bi-space-h"
+            ng-disabled="::!events.onFolderRename || !vm.folder.canRename(folder)"
+            ng-click="events.onFolderRename && vm.folder.canRename(folder) && events.onFolderRename(folder)"
+          >
+            <i class="bi-icon">edit</i>
+            <span>Rename</span>
+          </li>
+
+          <li 
+            class="bi-align bi-space-h"
+            ng-disabled="::!events.onFolderDelete || !vm.folder.canDelete(folder)"
+            ng-click="events.onFolderDelete && vm.folder.canDelete(folder) && events.onFolderDelete(folder)"
+          >
+            <i class="bi-icon bi-danger">delete</i>
+            <span>Delete</span>
+          </li>
+        </ul>
+      `)(assign(scope.$new(), {folder}));
+    } else {
+      html = this.$transclude((_, s) => s.folder = itemToDef(folder), null, 'menu');
+    }
+  
+    return {html};
   }
 }

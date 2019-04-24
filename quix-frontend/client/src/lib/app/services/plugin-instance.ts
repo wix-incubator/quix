@@ -24,7 +24,7 @@ export interface IPluginBranches<Config = any> {
 
 export type IStateComponentFactory<Config = any> = (app: Instance<Config>, store: Store) => IStateComponentConfig;
 
-export type IUrlParamListener  = Function | {from: Function; to: Function};
+export type IUrlParamListener = Function | {from: Function; to: Function};
 
 export type IScopeListener = (scope, current: any, previous: any, store: Store) => any
 interface IScopeListeners extends Record<string, IScopeListener | IScopeListeners> {}

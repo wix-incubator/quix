@@ -1,8 +1,14 @@
 import {Module} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {ConfigModule} from '../../config/config.module';
-import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from '../../entities';
-import {FileTreeRepository} from '../../entities/filenode.repository';
+import {
+  DbFileTreeNode,
+  DbFolder,
+  DbNote,
+  DbNotebook,
+  FileTreeRepository,
+  NoteRepository,
+} from '../../entities';
 import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action';
 import {FoldersController} from './folders/folders.controller';
 import {FoldersService} from './folders/folders.service';
@@ -21,6 +27,7 @@ import {EventSourcingModule} from '../event-sourcing/event-sourcing.module';
       DbNotebook,
       DbAction,
       FileTreeRepository,
+      NoteRepository,
     ]),
     ConfigModule,
     AuthModule,

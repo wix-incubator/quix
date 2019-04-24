@@ -2,7 +2,7 @@ import {Browser, Page} from 'puppeteer';
 import {baseURL} from './e2e-common';
 import fetch from 'node-fetch';
 
-const WAIT_TIMEOUT = 3000;
+const WAIT_TIMEOUT = 5000;
 
 const element = async (page: Page, selector) => {
   await page.waitForSelector(selector, {timeout: WAIT_TIMEOUT});

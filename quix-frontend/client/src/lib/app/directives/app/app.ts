@@ -31,7 +31,7 @@ export default () => {
 
         initNgScope(scope)
           .withVM({
-            apps: without(Apps, find(Apps, {id: scope.app.getId()})),
+            apps: without(Apps, find(Apps, {id: scope.app.getId()} as any)),
             menu: {
               current: null
             }

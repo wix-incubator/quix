@@ -95,9 +95,7 @@ quix-breadcrumbs {
   }
 
   .bi-section-content {
-    .bi-empty-state,
-    .bi-empty-state--error,
-    .bi-empty-state--empty {
+    .quix-empty-state {
       margin-top: -60px;
     }
 

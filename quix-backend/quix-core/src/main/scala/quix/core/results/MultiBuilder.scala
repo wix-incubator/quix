@@ -1,12 +1,11 @@
-package quix.presto
+package quix.core.results
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, Consumer, ResultBuilder}
-import quix.presto.rest.{PrestoColumn, PrestoError, Results, ResultsStats}
+import quix.api.execute._
 
-class MultiResultBuilder(val consumer: Consumer[PrestoEvent])
-  extends ResultBuilder[Results] with LazyLogging {
+class MultiBuilder(val consumer: Consumer[ExecutionEvent])
+  extends Builder[Batch] with LazyLogging {
 
   val started = System.currentTimeMillis()
   var rows = 0L
@@ -21,7 +20,7 @@ class MultiResultBuilder(val consumer: Consumer[PrestoEvent])
     consumer.write(End(query.id))
   }
 
-  override def startSubQuery(queryId: String, code: String, results: Results) = {
+  override def startSubQuery(queryId: String, code: String, results: Batch) = {
     val startTask = consumer.write(SubQueryStart(queryId))
     val detailsTask = consumer.write(SubQueryDetails(queryId, code))
     val subqueryTask = addSubQuery(queryId, results)
@@ -33,28 +32,27 @@ class MultiResultBuilder(val consumer: Consumer[PrestoEvent])
     consumer.write(SubQueryEnd(queryId))
   }
 
-  override def addSubQuery(queryId: String, results: Results) = {
+  override def addSubQuery(queryId: String, results: Batch) = {
     val columnTask: Task[Unit] = results.columns.map(columns => sendColumns(queryId, columns)).getOrElse(Task.unit)
-    val progressTask: Task[Unit] = sendProgress(queryId, results.stats)
+    val progressTask: Task[Unit] = results.stats.map(stats => sendProgress(queryId, stats)).getOrElse(Task.unit)
     val errorTask: Task[Unit] = results.error.map(error => sendErrors(queryId, error)).getOrElse(Task.unit)
 
-    val columns = results.columns.getOrElse(Nil).map(_.name)
     rows += results.data.size
 
     val rowTask = Task.traverse(results.data) { row =>
-      consumer.write(Row(queryId, columns.zip(row).toMap))
+      consumer.write(Row(queryId, row))
     }
 
     Task.sequence(Seq(columnTask, progressTask, errorTask, rowTask)).map(_ => ())
   }
 
-  def sendErrors(queryId: String, prestoError: PrestoError) = {
+  def sendErrors(queryId: String, prestoError: BatchError) = {
     lastError = Some(new RuntimeException(prestoError.message))
     consumer.write(Error(queryId, prestoError.message))
   }
 
-  def sendProgress(queryId: String, stats: ResultsStats) = {
-    consumer.write(Progress(queryId, stats.completed))
+  def sendProgress(queryId: String, stats: BatchStats) = {
+    consumer.write(Progress(queryId, stats.percentage))
   }
 
   override def errorSubQuery(queryId: String, e: Throwable) = {
@@ -62,7 +60,7 @@ class MultiResultBuilder(val consumer: Consumer[PrestoEvent])
     consumer.write(SubQueryError(queryId, e.getMessage))
   }
 
-  def sendColumns(queryId: String, names: List[PrestoColumn]) = {
+  def sendColumns(queryId: String, names: List[BatchColumn]) = {
     val sentColumns = sentColumnsPerQuery.contains(queryId)
     if (!sentColumns && names.nonEmpty) {
       sentColumnsPerQuery += queryId

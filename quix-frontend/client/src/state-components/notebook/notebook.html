@@ -75,11 +75,11 @@
     </div>
 
     <div class="bi-c-h bi-grow bi-align bi-center" ng-if="vm.state.before('Content')">
-      <div class="bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
+      <div class="quix-empty-state bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
         <div class="bi-empty-state-content">Loading notebook...</div>
       </div>
 
-      <div class="bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="notebook-error">
+      <div class="quix-empty-state bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="notebook-error">
         <div class="bi-empty-state-icon bi-danger">
           <i class="bi-icon bi-danger">error_outline</i>
         </div>
@@ -90,7 +90,7 @@
       </div>
 
       <div
-        class="bi-empty-state bi-s-v bi-fade-in"
+        class="quix-empty-state bi-empty-state bi-s-v bi-fade-in"
         ng-if="vm.state.is('Result')"
         data-hook="notebook-empty"
       >

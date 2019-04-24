@@ -1,13 +1,8 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {FileType, IFilePathItem} from '../../../../../shared/entities/file';
-import {INotebook} from '../../../../../shared/entities/notebook';
-import {
-  DbFileTreeNode,
-  DbNotebook,
-  FileTreeRepository,
-} from '../../../entities';
+import {INotebook} from 'shared';
+import {DbNotebook, DbFileTreeNode} from 'entities';
 import {FoldersService} from '../folders/folders.service';
 
 @Injectable()
@@ -18,13 +13,21 @@ export class NotebookService {
   ) {}
 
   async getId(getId: string): Promise<INotebook | undefined> {
-    const notebook = await this.notebookRepo.findOne(getId, {
-      relations: ['notes', 'fileNode'],
-    });
+    const q = this.notebookRepo
+      .createQueryBuilder('notebook')
+      .leftJoinAndSelect('notebook.fileNode', 'fileNode')
+      .leftJoinAndSelect('notebook.notes', 'note')
+      .where('notebook.id = :id', {id: getId})
+      .orderBy({
+        'note.rank': 'ASC',
+      });
+
+    const notebook = await q.getOne();
 
     if (!notebook) {
       return undefined;
     }
+
     const path =
       (await this.folderService.computePath(notebook.fileNode)) || [];
     const {

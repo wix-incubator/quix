@@ -9,7 +9,7 @@ import {cache} from '../../store';
 import {initEvents} from '../../services/scope';
 import {IScope} from './notebook-types';
 import VM from './notebook-vm';
-import * as Runners from '../../services/runners';
+import {getRunners} from '../../services';
 import * as Url from './notebook-url';
 import * as Scope from './notebook-scope';
 import * as Events from './notebook-events';
@@ -45,7 +45,7 @@ export default (app: App, store: Store) => ({
     }, scope);
 
     store.subscribe('app.runners', () => {
-      scope.runners = Runners.getRunners();
+      scope.runners = getRunners();
     }, scope);
   },
   link: scope => {

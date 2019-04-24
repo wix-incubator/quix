@@ -32,6 +32,12 @@ export const NoteActions = {
     type: 'note.delete' as const,
     id
   }),
+
+  reorderNote: (id: string, to: number) => ({
+    type: 'note.reorder' as const,
+    id,
+    to
+  }),
 }
 
 export type NoteActions = ExtractActions<typeof NoteActions>;

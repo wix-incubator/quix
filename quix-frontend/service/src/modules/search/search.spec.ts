@@ -80,6 +80,7 @@ describe('Search', () => {
       dateUpdated: 1,
       notebookId,
     });
+    note.rank = 0;
     return noteRepo.save(note);
   };
 

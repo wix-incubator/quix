@@ -4,7 +4,7 @@
   runner="runner"
   br-options="{
     buttonText: vm.runnerOptions.buttonText,
-    disableCustomActions: !vm.customActions.enabled || options.disableCustomActions
+    disableCustomActions: options.disableCustomActions
   }"
   on-run="events.onRun(runner)"
   on-runner-created="events.onRunnerCreated(runner)"

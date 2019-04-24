@@ -1,20 +1,20 @@
 <div class="bi-fade-in" ng-if="vm.state.is('Content')" data-hook="files-sidebar-content">
   <bi-file-explorer
     ng-model="vm.state.value().tree"
-    fe-options="{fileAlias: ['notebook']}"
+    fe-options="{fileAlias: ['notebook'], folderMode: 'select'}"
     on-load="events.onFileExplorerLoad(fileExplorer)"
     on-file-click="events.onFileClick(file)"
     on-folder-click="events.onFolderClick(folder)"
-    get-folder-permissions="events.getFolderPermissions(folder)"
+    permissions="getFolderPermissions(folder)"
   ></bi-file-explorer>
 </div>
 
 <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.before('Content')">
-  <div class="bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
+  <div class="quix-empty-state bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
     <div class="bi-empty-state-content">Loading notebooks...</div>
   </div>
 
-  <div class="bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="files-sidebar-error">
+  <div class="quix-empty-state bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="files-sidebar-error">
     <div class="bi-empty-state-icon bi-danger">
       <i class="bi-icon bi-danger">error_outline</i>
     </div>
@@ -22,7 +22,7 @@
   </div>
 
   <div
-    class="bi-empty-state bi-s-v bi-fade-in"
+    class="quix-empty-state bi-empty-state bi-s-v bi-fade-in"
     ng-if="vm.state.is('Result')"
     data-hook="files-sidebar-empty"
   >

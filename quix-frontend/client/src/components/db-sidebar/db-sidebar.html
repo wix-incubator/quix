@@ -1,11 +1,11 @@
 <div class="bi-c-h bi-align bi-center bi-grow bi-fade-in" ng-if="vm.state.is('Initial')">
-  <div class="bi-empty-state--loading">
+  <div class="quix-empty-state bi-empty-state--loading">
     <div class="bi-empty-state-content">Loading DB...</div>
   </div>
 </div>
 
 <div class="bi-c-h bi-align bi-center bi-grow bi-fade-in" ng-if="vm.state.is('Result')">
-  <div class="bi-empty-state">
+  <div class="quix-empty-state bi-empty-state">
     <div class="bi-empty-state-header">Database is empty</div>
   </div>
 </div>
@@ -16,7 +16,31 @@
     ng-model="vm.state.value().db"
     on-load="events.onFileExplorerLoad()"
     on-file-click="events.onFileClick(file)"
-    on-lazy-folder-open="events.onLazyFolderOpen(folder)"
+    on-lazy-folder-fetch="events.onLazyFolderFetch(folder)"
+    permissions="getFolderPermissions(folder)"
     readonly="true"
-  ></bi-file-explorer>
+  > 
+    <folder-icon class="bi-icon--xs bi-muted">
+      {{::{
+        catalog: 'book',
+        schema: 'storage',
+        table: 'view_module'
+      }[folder.nodeType]}}
+    </folder-icon>
+
+    <file-icon class="bi-text--sm bi-muted">
+     {{file.nodeType}}
+    </file-icon>
+
+    <menu>
+      <ul class="bi-dropdown-menu" ng-if="::folder.nodeType === 'table'">
+        <li 
+          class="bi-align bi-space-h"
+          ng-click="events.onSelectTableRows(folder)"
+        >
+          <div>Select rows (limit 1000)</div>
+        </li>
+      </ul>
+    </menu>
+  </bi-file-explorer>
 </div>

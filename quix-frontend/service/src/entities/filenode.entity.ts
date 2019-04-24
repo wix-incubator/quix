@@ -9,6 +9,8 @@ import {
   JoinColumn,
   Tree,
   ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import {IFile, FileType} from '../../../shared/entities/file';
 import {DbNotebook} from './dbnotebook.entity';
@@ -30,10 +32,10 @@ export class DbFileTreeNode {
   @Column(dbConf.owner)
   owner!: string;
 
-  @Column(dbConf.dateUpdated)
+  @UpdateDateColumn(dbConf.dateUpdated)
   dateUpdated!: number;
 
-  @Column(dbConf.dateCreated)
+  @CreateDateColumn(dbConf.dateCreated)
   dateCreated!: number;
 
   @Column(dbConf.fileTypeEnum)

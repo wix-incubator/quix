@@ -1,3 +1,4 @@
+import {zipObject} from 'lodash';
 import moment from 'moment';
 import {srv, inject} from '../../core';
 
@@ -124,7 +125,7 @@ export default class RunnerQuery extends srv.eventEmitter.EventEmitter {
     return this.id;
   }
 
-  public getIndex(): string {
+  public getIndex(): number {
     return this.index;
   }
 
@@ -171,7 +172,7 @@ export default class RunnerQuery extends srv.eventEmitter.EventEmitter {
   }
 
   public addRow(row): Object {
-    this._results.feed(row);
+    this._results.feed(zipObject(this._rawFields, row));
 
     if (this.getResults().bufferSize() === 1) {
       this.fire('firstResultReceived', this);

@@ -7,44 +7,75 @@ import monix.eval.Task
 import monix.execution.{CancelableFuture, Scheduler}
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSession}
-import quix.api.execute.{Consumer, StartCommand}
+import quix.api.execute._
 import quix.api.users.{User, Users}
+import quix.core.results.MultiBuilder
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
-import quix.presto.{PrestoEvent, PrestoQuixModule}
+import quix.core.utils.TaskOps._
+import quix.presto._
 
-class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
+import scala.util.Try
+
+class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val downloadableQueries: DownloadableQueries[Batch, ExecutionEvent])
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
 
   val io = Scheduler.io("presto-executor")
 
   val executions = new ConcurrentHashMap[String, CancelableFuture[Unit]]
 
+  def handleUnknownMessage(socket: WebSocketSession, payload: String, user: User) = {
+    val task = Task {
+      logger.info(s"event=unknown-message socket-id=${socket.getId} payload=$payload")
+      socket.sendMessage(new TextMessage(Error(socket.getId, s"Failed to handle unknown message : [$payload]").asJsonStr))
+    }
+
+    task.executeOn(io).runAsyncAndForget(io)
+  }
+
   override def handleTextMessage(socket: WebSocketSession, message: TextMessage): Unit = users.auth(getHeaders(socket)) { user =>
     logger.info(s"event=handle-text-message socket-id=${socket.getId} message=${message.getPayload} user=${user.email}")
 
-    if (message.getPayload == "ping") {
-      handlePingMessage(socket)
-    } else {
-      handleExecutionMessage(socket, message, user)
+    message.getPayload match {
+      case "ping" =>
+        handlePingMessage(socket)
+
+      case """"ping"""" =>
+        handlePingMessage(socket)
+
+      case """{"event":"ping"}""" =>
+        handlePingMessage(socket)
+
+      case Start(command) =>
+        handleExecutionMessage(socket, command, user)
+
+      case _ =>
+        handleUnknownMessage(socket, message.getPayload, user)
     }
   }
 
-  private def handleExecutionMessage(socket: WebSocketSession, message: TextMessage, user: User) = {
-    val payload = message.getPayload.as[StartCommand[String]]
+  private def handleExecutionMessage(socket: WebSocketSession, payload: StartCommand[String], user: User) = {
+    val initConsumer = Task.eval(new WebsocketConsumer[ExecutionEvent](socket.getId, user, socket))
+    val useConsumer = (consumer: WebsocketConsumer[ExecutionEvent]) => {
+      logger.info(s"event=start-execution socket-id=${socket.getId} sql=${payload.code}")
+      prestoModule.start(payload, consumer.id, consumer.user, makeResultBuilder(consumer, payload.session))
+    }
 
-    val initConsumer = Task.eval(new WebsocketConsumer[PrestoEvent](socket.getId, user, socket))
-    val useConsumer = (consumer: WebsocketConsumer[PrestoEvent]) => prestoModule.start(payload, consumer)
-    val closeConsumer = (consumer: WebsocketConsumer[PrestoEvent]) => consumer.close()
+    val closeConsumer = (consumer: WebsocketConsumer[ExecutionEvent]) => consumer.close()
 
     val task = initConsumer.bracket(useConsumer)(closeConsumer)
 
-    val future = task.executeOn(io).runToFuture(io)
+    val future = task
+      .logOnError(s"event=execution-failure socket-id=${socket.getId} sql=${payload.code}")
+      .executeOn(io).runToFuture(io)
     executions.put(socket.getId, future)
   }
 
   private def handlePingMessage(socket: WebSocketSession) = {
-    val task = Task(socket.sendMessage(new TextMessage("pong")))
+    val task = Task {
+      logger.info(s"event=ping socket-id=${socket.getId}")
+      socket.sendMessage(new TextMessage(Pong(socket.getId).asJsonStr))
+    }
 
     task.runAsyncAndForget(io)
   }
@@ -59,6 +90,14 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users)
   def getHeaders(socket: WebSocketSession): Map[String, String] = {
     import scala.collection.JavaConverters._
     socket.getAttributes.asScala.mapValues(String.valueOf).toMap
+  }
+
+  def makeResultBuilder(consumer: Consumer[ExecutionEvent], session: Map[String, String]) = {
+    if (session.get("mode").contains("download")) {
+      downloadableQueries.adapt(new MultiBuilder(consumer), consumer)
+    } else {
+      new MultiBuilder(consumer)
+    }
   }
 }
 
@@ -75,5 +114,18 @@ class WebsocketConsumer[Results](val id: String, val user: User, socket: WebSock
 
     if (socket.isOpen)
       socket.close()
+  }
+}
+
+object Start extends StringJsonHelpersSupport {
+  def unapply(payload: String): Option[StartCommand[String]] = {
+    Try {
+      val command = payload.as[StartCommand[String]]
+
+      assert(command.code != null)
+      assert(command.code.nonEmpty)
+
+      command.copy(session = Option(command.session).getOrElse(Map.empty))
+    }.toOption
   }
 }

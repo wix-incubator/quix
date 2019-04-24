@@ -18,19 +18,27 @@ trait E2EContext extends StringJsonHelpersSupport {
     Http("http://localhost:8888/" + url).asString
   }
 
-  def execute(sql: String) = startSocket(StartCommand[String](sql, Map.empty).asJsonStr)
+  def execute(sql: String, session: Map[String, String] = Map.empty) = startSocket(true, StartCommand[String](sql, session).asJsonStr)
 
-  def execute(sql: String, text: String) = startSocket(StartCommand[String](sql, Map.empty).asJsonStr, text)
+  def send(text: String) = startSocket(false, text)
 
-  def startSocket(texts: String*) = {
+  def runAndDownload(sql: String) =
+    startSocket(false, StartCommand[String](sql, Map("mode" -> "download")).asJsonStr)
+
+  def startSocket(awaitFinish: Boolean, texts: String*) = {
     val listener = new MyListener(texts: _*)
 
     val handler = new WebSocketUpgradeHandler.Builder().addWebSocketListener(listener).build()
 
-    c.prepareGet("ws://localhost:8888/api/v1/execute/sql").execute(handler).get()
+    c.prepareGet("ws://localhost:8888/api/v1/execute/sql").execute(handler)
 
-    while (!listener.closed)
+    while(listener.messages.isEmpty)
       Thread.sleep(10)
+
+    if (awaitFinish) {
+      while (!listener.closed)
+        Thread.sleep(10)
+    }
 
     listener
   }
@@ -49,7 +57,9 @@ class MyListener(payloads: String*) extends WebSocketListener with StringJsonHel
   override def onOpen(websocket: WebSocket): Unit = {
     opened = true
 
-    payloads.foreach(websocket.sendTextFrame)
+    for (payload <- payloads) {
+      websocket.sendTextFrame(payload)
+    }
   }
 
   override def onClose(websocket: WebSocket, code: Int, reason: String): Unit = {

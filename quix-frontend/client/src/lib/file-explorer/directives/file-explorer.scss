@@ -13,6 +13,10 @@ bi-file-explorer-inner {
     user-select: none;
     cursor: default !important;
 
+    .fe-icon-container {
+      line-height: 0;
+    }
+
     .fe-icon {
       margin-right: 4px;
       font-size: 18px;
@@ -61,6 +65,12 @@ bi-file-explorer-inner {
           background-color: $hover-color;
         }
 
+        &.active {
+          .fe-item-name {
+            font-weight: bold;
+          }
+        }
+
         &.ui-draggable-dragging {
           .fe-toggle,
           .fe-menu-icon {
@@ -80,24 +90,33 @@ bi-file-explorer-inner {
       }
     }
   }
+  
+  &.fe-folder-mode-select {
+    ul.fe-files {
+      > li {
+        &:hover {
+          border-color: darken($hover-color, 30);
+        }
+
+        &.active {
+          background-color: transparent !important;
+          border-color: $primary-color !important;
+          font-weight: bold;
+  
+          .fe-icon {
+            color: $primary-color;
+          }
+        }
+      }
+    }
+  }
 
   ul.fe-files {
     > li {
       border-left: 4px solid transparent;
 
-      &.active {
-        background-color: transparent !important;
-        border-color: $primary-color !important;
-        font-weight: bold;
-
-        .fe-icon {
-          color: $primary-color;
-        }
-      }
-
       &:hover {
         background-color: $hover-color;
-        border-color: darken($hover-color, 30);
       }
 
       &.ui-draggable-dragging {

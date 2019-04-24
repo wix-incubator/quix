@@ -87,6 +87,7 @@
       "^modules/(.*)$": "<rootDir>/modules/$1",
       "^config/(.*)": "<rootDir>/config/$1",
       "^config": "<rootDir>/config",
+      "^errors": "<rootDir>/errors",
       "^global-types": "<rootDir>/types",
       "^utils/(.*)": "<rootDir>/utils/$1"
     }

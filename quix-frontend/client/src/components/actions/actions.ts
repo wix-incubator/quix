@@ -5,7 +5,7 @@ import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {Instance} from '../../lib/app';
 import {IScope} from './actions-types';
-import {confirm} from '../../services';
+import {confirmAction} from '../../services';
 
 export default (app: Instance, store: Store) => () => ({
   restrict: 'E',
@@ -45,7 +45,7 @@ export default (app: Instance, store: Store) => () => ({
             if (!scope.options.confirmOnDelete) {
               fn();
             } else {
-              confirm('delete', scope.type, scope.options.bulk).then(fn);
+              confirmAction('delete', scope.type, scope.options.bulk).then(fn);
             }
           }
         });

@@ -4,18 +4,18 @@ import java.net.{ConnectException, SocketException, SocketTimeoutException}
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, ResultBuilder}
+import quix.api.execute._
+import quix.core.utils.TaskOps._
+import quix.presto.rest.{PrestoState, PrestoStateClient, PrestoStateToResults}
 
 import scala.concurrent.duration._
-import quix.core.utils.TaskOps._
-import quix.presto.rest.{PrestoState, PrestoStateClient, Results}
 
 class QueryExecutor(val client: PrestoStateClient,
                     val initialAdvanceDelay: FiniteDuration = 100.millis,
                     val maxAdvanceDelay: FiniteDuration = 33.seconds)
-  extends AsyncQueryExecutor[Results] with LazyLogging {
+  extends AsyncQueryExecutor[Batch] with LazyLogging {
 
-  def loop(prestoId: String, state: String, rows: Int, nextUri: Option[String], builder: ResultBuilder[Results], query: ActiveQuery, delay: FiniteDuration = initialAdvanceDelay): Task[Option[String]] = {
+  def loop(prestoId: String, state: String, rows: Int, nextUri: Option[String], builder: Builder[Batch], query: ActiveQuery, delay: FiniteDuration = initialAdvanceDelay): Task[Option[String]] = {
     logger.info(s"method=loop event=start query-id=${query.id} user=${query.user.email} presto-id=$prestoId state=$state rows=$rows")
 
     nextUri match {
@@ -23,7 +23,7 @@ class QueryExecutor(val client: PrestoStateClient,
         for {
           nextState <- advance(uri, builder, prestoId, query, delay)
 
-          _ <- builder.addSubQuery(prestoId, Results(nextState))
+          _ <- builder.addSubQuery(prestoId, PrestoStateToResults(nextState))
             .logOnError(s"method=loop event=error-addSubQuery query-id=${query.id} user=${query.user.email} presto-id=$prestoId")
 
           state = nextState.stats.state
@@ -45,8 +45,8 @@ class QueryExecutor(val client: PrestoStateClient,
       delay.mul(2).min(maxAdvanceDelay) else initialAdvanceDelay
   }
 
-  def advance(uri: String, builder: ResultBuilder[Results], queryId: String, query: ActiveQuery, delay: FiniteDuration = initialAdvanceDelay): Task[PrestoState] = {
-    logger.info(s"method=advance query-id=${query.id} user=${query.user.email} presto-id=$queryId uri=$uri delay=${delay.toSeconds}")
+  def advance(uri: String, builder: Builder[Batch], queryId: String, query: ActiveQuery, delay: FiniteDuration = initialAdvanceDelay): Task[PrestoState] = {
+    logger.info(s"method=advance query-id=${query.id} user=${query.user.email} presto-id=$queryId uri=$uri delay=${delay.toMillis / 1000.0}")
     client.advance(uri)
       .delayExecution(delay)
       .onErrorHandleWith {
@@ -63,10 +63,10 @@ class QueryExecutor(val client: PrestoStateClient,
       }
   }
 
-  def runTask(query: ActiveQuery, builder: ResultBuilder[Results]): Task[Unit] = {
+  def runTask(query: ActiveQuery, builder: Builder[Batch]): Task[Unit] = {
     val executionTask = initClient(query, builder).bracket { firstState =>
       for {
-        _ <- builder.startSubQuery(firstState.id, query.text, Results(firstState))
+        _ <- builder.startSubQuery(firstState.id, query.text, PrestoStateToResults(firstState))
           .logOnError(s"method=runAsync event=error-startSubQuery query-id=${query.id} user=${query.user.email} presto-id=${firstState.id}")
 
         _ <- loop(firstState.id, firstState.stats.state, firstState.data.map(_.size).getOrElse(0), firstState.nextUri, builder, query)
@@ -86,7 +86,7 @@ class QueryExecutor(val client: PrestoStateClient,
     task
   }
 
-  def initClient(query: ActiveQuery, builder: ResultBuilder[Results]): Task[PrestoState] = {
+  def initClient(query: ActiveQuery, builder: Builder[Batch]): Task[PrestoState] = {
     logger.info(s"method=initClient event=start query-id=${query.id} user=${query.user.email}")
     client.init(query).onErrorHandleWith {
       case e: Exception =>

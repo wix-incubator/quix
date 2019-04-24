@@ -17,10 +17,21 @@ const AUTO_PARAMS = [{
   meta: 'datetime'
 }];
 
-function renderActions(editorComponentInstance, runnerComponentInstance, transclude) {
-  return transclude((_, scope) => {
-    scope.editorComponentInstance = editorComponentInstance;
-    scope.runnerComponentInstance = runnerComponentInstance;
+function renderActions(scope, editorComponentInstance, runnerComponentInstance, transclude: ng.ITranscludeFunction) {
+  if (!transclude.isSlotFilled('actions')) {
+    return inject('$compile')(`
+      <ul class="bi-dropdown-menu">
+        <li ng-click="events.onRunAndDownload()">
+          <i class="bi-icon">file_download</i>
+          <div>Run and download</div>
+        </li>
+      </ul>
+    `)(scope);
+  }
+
+  return transclude((_, s) => {
+    s.editorComponentInstance = editorComponentInstance;
+    s.runnerComponentInstance = runnerComponentInstance;
   }, null, 'actions');
 }
 
@@ -79,11 +90,6 @@ export default () => {
             hint: {
               run: {
                 enabled: true
-              }
-            },
-            customActions: {
-              $init() {
-                this.toggle(transclude.isSlotFilled('actions'));
               }
             },
             viz: {
@@ -204,18 +210,23 @@ export default () => {
               scope.onRunnerCreated({runner});
             },
             onRunnerDestroyed(runner) {
-              editorInstance.setValid(null);
-              editorInstance.getAnnotator().hideAll();
+              deferredEditor.promise.then(() => {
+                editorInstance.setValid(null);
+                editorInstance.getAnnotator().hideAll();
+              });
 
               scope.vm.hint.run.toggle(true);
               scope.onRunnerDestroyed({runner});
             },
             onRun(runner) {
               scope.onRun({runner});
+            },
+            onRunAndDownload() {
+              runnerInstance.run('download');
             }
           });
 
-        scope.renderActions = () => ({html: renderActions(editorInstance, runnerInstance, transclude)});
+        scope.renderActions = () => ({html: renderActions(scope, editorInstance, runnerInstance, transclude)});
 
         scope.getCtrlKeyName = () => {
           return navigator.platform === 'MacIntel' ? 'Command' : 'Ctrl';

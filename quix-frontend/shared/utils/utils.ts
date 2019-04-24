@@ -9,5 +9,5 @@ export const replaceWith = (collection: any[], predicate: Record<string, any>, v
 
   collection.splice(index, 1, value(collection[index]));
 
-  return collection;
+  return [...collection];
 }

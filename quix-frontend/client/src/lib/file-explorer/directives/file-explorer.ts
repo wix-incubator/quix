@@ -18,6 +18,9 @@ function directive(params) {
 
 function initScope(scope, controller: Controller, depth: number) {
   scope.depth = depth;
+  scope.renderFolderIcon = (folder) => controller.renderFolderIcon(scope, folder);
+  scope.renderFileIcon = (file) => controller.renderFileIcon(scope, file);
+  scope.renderMenu = (folder) => controller.renderMenu(scope, folder);
 
   const helper = initNgScope(scope)
     .readonly(scope.readonly)
@@ -27,11 +30,7 @@ function initScope(scope, controller: Controller, depth: number) {
       orderReversed: false,
       expandAllFolders: false,
       hideEmptyFolders: false,
-      actions: {
-        folder: {
-          createFile: false
-        }
-      },
+      folderMode: 'expand', // expand|select 
       settings: false
     }, ({orderBy, orderReversed, fileAlias}) => {
       scope.options.fileAlias = isArray(fileAlias) ? fileAlias : [fileAlias];
@@ -39,6 +38,10 @@ function initScope(scope, controller: Controller, depth: number) {
     })
     .withVM(VM)
     .withEditableEvents({
+      onFileCreate(type = scope.options.fileAlias[0], folder?: Folder) {
+        const file = (folder || scope.model).toggleOpen(true).createFile(`New ${type}`, type);
+        controller.syncItem(file, 'fileCreated', type);
+      },
       onFolderDelete(folder: Folder) {
         folder.destroy();
 
@@ -74,10 +77,9 @@ function initScope(scope, controller: Controller, depth: number) {
       onFolderToggle(folder: Folder) {
         if (!scope.vm.folders.get(folder).edit.enabled) {
           scope.vm.folder.toggleOpen(folder);
-          scope.vm.folder.setCurrent(folder);
 
           if (folder.isLazy() && scope.vm.folder.isOpen(folder)) {
-            const promise = controller.openLazyFolder(folder);
+            const promise = controller.fetchLazyFolder(folder);
 
             if (promise && promise.then) {
               promise.then(() => folder.setLazy(false));
@@ -86,28 +88,25 @@ function initScope(scope, controller: Controller, depth: number) {
         }
       },
       onFolderClick(folder: Folder) {
-        scope.vm.folder.setCurrent(folder);
-        scope.vm.file.setCurrent(null);
-        controller.clickFolder(folder);
+        if (scope.options.folderMode === 'select') {
+          scope.vm.folder.setCurrent(folder);
+          scope.vm.file.setCurrent(null);
+          controller.clickFolder(folder);
+        } else {
+          scope.events.onFolderToggle(folder);
+        }
       },
       onFileClick(file: File) {
-        scope.vm.file.setCurrent(file);
-        scope.vm.folder.setCurrent(null);
-        controller.clickFile(file);
+        if (scope.options.folderMode === 'select') {
+          scope.vm.file.setCurrent(file);
+          scope.vm.folder.setCurrent(null);
+          controller.clickFile(file);
+        }
       },
       onSettingsClick(folder: Folder) {
         controller.fireEvent(folder, 'settingsClicked');
       }
     });
-
-    if (!scope.readonly || scope.options.actions.folder.createFile) {
-      helper.withEvents({
-        onFileCreate(type = scope.options.fileAlias[0], folder?: Folder) {
-          const file = (folder || scope.model).toggleOpen(true).createFile(`New ${type}`, type);
-          controller.syncItem(file, 'fileCreated', type);
-        }
-      });
-    }
 
     if (depth < 2) {
       helper.withEditableEvents({
@@ -148,15 +147,19 @@ export function fileExplorerInner() {
 export function fileExplorer() {
   return directive({
     require: ['ngModel', 'biFileExplorer'],
-    transclude: true,
+    transclude: {
+      folderIcon: '?folderIcon',
+      fileIcon: '?fileIcon',
+      menu: '?menu'
+    },
     controller: ['$scope', '$element', '$transclude', Controller],
     scope: {
       feOptions: '<',
-      onLazyFolderOpen: '&',
+      onLazyFolderFetch: '&',
       onFileClick: '&',
       onFolderClick: '&',
       onLoad: '&',
-      getFolderPermissions: '&',
+      permissions: '&',
       emptyText: '@',
       readonly: '='
     },
@@ -173,8 +176,9 @@ export function fileExplorer() {
           })
           .feedBack(false);
 
-        scope.container = element;
         initScope(scope, controller, 0);
+
+        scope.container = element.addClass(`fe-folder-mode-${scope.options.folderMode}`);
       }
     }
   });
