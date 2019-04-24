@@ -40,9 +40,11 @@ export class FileTreePlugin implements EventBusPlugin {
             break;
           }
           case FileActionTypes.deleteFile: {
-            const node = await this.fileTreeNodeRepo.findOne(action.id);
+            const node = await this.fileTreeNodeRepo.findOneOrFail(action.id);
             if (node && node.type === FileType.notebook) {
               throw new Error('Notebooks should be deleted directly');
+            } else {
+              hookApi.context.set({fileNode: node});
             }
             break;
           }
@@ -122,7 +124,9 @@ export class FileTreePlugin implements EventBusPlugin {
           }
 
           case FileActionTypes.deleteFile: {
-            return this.fileTreeNodeRepo.delete({id: action.id});
+            debugger;
+            const fileNode: DbFileTreeNode = hookApi.context.get().fileNode;
+            return this.fileTreeNodeRepo.deleteTree(fileNode);
           }
         }
       },

@@ -4,9 +4,15 @@ import {
   SaveOptions,
   DeepPartial,
   Entity,
+  EntityManager,
 } from 'typeorm';
 import {DbFileTreeNode} from './filenode.entity';
 import {dbConf} from 'config/db-conf';
+import assert from 'assert';
+import {FileType} from 'shared';
+import {groupBy} from 'lodash';
+import {DbNotebook} from './dbnotebook.entity';
+import {DbFolder} from './folder.entity';
 /**
  * This custom repository saves a tree structure in sql, using path enumeration/materialized path.
  * We don't use the built in solution by typeorm as it doesn't support moving/deletions yet.
@@ -101,6 +107,23 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
       .getMany();
   }
 
+  /**
+   * Get a list of all children
+   * @returns {Promise<DbFileTreeNode[]>}
+   */
+  async getDeepChildren(root: DbFileTreeNode, enityManager?: EntityManager) {
+    const baseMpath = root.mpath;
+    assert(baseMpath && baseMpath.length > 0, 'mpath is empty/undefined');
+
+    const qb = enityManager
+      ? enityManager.createQueryBuilder(DbFileTreeNode, 'node')
+      : this.createQueryBuilder('node');
+
+    return qb
+      .where(`node.mpath LIKE ${dbConf.concat(`('${baseMpath}')`, `'%'`)}`)
+      .getMany();
+  }
+
   async moveTree(root: DbFileTreeNode, newParentNode: DbFileTreeNode) {
     if (root.id === newParentNode.id) {
       throw new Error(
@@ -111,22 +134,58 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
       return;
     }
     const baseMpath = root.mpath;
+    assert(baseMpath && baseMpath.length > 0, 'mpath is empty/undefined');
+
     const newBasePath = newParentNode.mpath + '.' + root.id;
     return this.manager.transaction(async em => {
-      const q = em
+      await em
         .createQueryBuilder()
         .update(DbFileTreeNode)
         .set({
           mpath: () => `replace(\`mpath\`, '${baseMpath}', '${newBasePath}')`,
         })
-        .where(`mpath LIKE ${dbConf.concat(`('${baseMpath}')`, `'%'`)}`);
-      await q.execute();
+        .where(`mpath LIKE ${dbConf.concat(`('${baseMpath}')`, `'%'`)}`)
+        .execute();
+
       await em
         .createQueryBuilder()
         .update(DbFileTreeNode)
         .set({parentId: newParentNode.id})
         .where('id = :id', {id: root.id})
         .execute();
+    });
+  }
+
+  async deleteTree(root: DbFileTreeNode) {
+    const baseMpath = root.mpath;
+    assert(baseMpath && baseMpath.length > 0, 'mpath is empty/undefined');
+    const children = await this.getDeepChildren(root);
+
+    const [foldersToDeltete, notebooksToDelete] = children.reduce(
+      ([foldersIds, notebookIds], node) => {
+        (node.type === FileType.folder ? foldersIds : notebookIds).push(node);
+        return [foldersIds, notebookIds];
+      },
+      [[], []] as DbFileTreeNode[][],
+    );
+
+    return this.manager.transaction(async em => {
+      if (notebooksToDelete.length) {
+        await em
+          .createQueryBuilder()
+          .delete()
+          .from(DbNotebook)
+          .whereInIds(notebooksToDelete)
+          .execute();
+      }
+      if (foldersToDeltete.length) {
+        await em
+          .createQueryBuilder()
+          .delete()
+          .from(DbFolder)
+          .whereInIds(foldersToDeltete)
+          .execute();
+      }
     });
   }
 }

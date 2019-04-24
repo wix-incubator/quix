@@ -399,6 +399,63 @@ describe('event sourcing', () => {
         mpath: [folderId, subFolder3, subFolder1, subFolder2].join('.'),
       });
     });
+
+    it('delete an empty folder', async () => {
+      const [subFolder1, createSubFolder1] = driver.createFolderAction(
+        'subFolder1',
+        [{id: folderId}],
+      );
+
+      await driver.emitAsUser(eventBus, [createFolderAction, createSubFolder1]);
+      const beforeList = await driver.getUserFileTree(defaultUser);
+      expect(beforeList).toHaveLength(2);
+
+      await driver.emitAsUser(eventBus, [FileActions.deleteFile(subFolder1)]);
+
+      const afterList = await driver.getUserFileTree(defaultUser);
+      expect(afterList).toMatchObject([
+        expect.objectContaining({id: folderId}),
+      ]);
+    });
+
+    fit('recursively delete a folder', async () => {
+      const [subFolder1, createSubFolder1] = driver.createFolderAction(
+        'subFolder1',
+        [{id: folderId}],
+      );
+
+      const [subFolder2, createSubFolder2] = driver.createFolderAction(
+        'subFolder2',
+        [{id: subFolder1}],
+      );
+
+      const [subFolder3, createSubFolder3] = driver.createFolderAction(
+        'subFolder3',
+        [{id: subFolder2}],
+      );
+
+      const [notebookId, createNotebookAction] = driver.createNotebookAction([
+        {id: subFolder2},
+      ]);
+
+      await driver.emitAsUser(eventBus, [
+        createFolderAction,
+        createSubFolder1,
+        createSubFolder2,
+        createSubFolder3,
+        createNotebookAction,
+      ]);
+
+      await driver.emitAsUser(eventBus, [FileActions.deleteFile(subFolder1)]);
+      const afterList = await driver.getUserFileTree(defaultUser);
+
+      expect(afterList).toMatchObject([
+        expect.objectContaining({id: folderId}),
+      ]);
+      /* Checking that deletion deletes entities from other tables */
+      await driver.getNotebook(notebookId).and.expectToBeUndefined();
+      expect(await driver.folderRepo.find()).toHaveLength(1);
+    });
   });
 });
 
