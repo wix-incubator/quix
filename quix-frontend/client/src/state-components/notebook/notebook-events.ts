@@ -124,6 +124,14 @@ export const onNoteNameChange = (scope: IScope, store: Store, app: Instance) => 
   store.dispatchAndLog(NoteActions.updateName(note.id, note.name));
 }
 
+export const onNoteReorder = (scope: IScope, store: Store, app: Instance) => (e: any, {item}: any) => {
+  const {model: note, dropindex: index} = item.sortable;
+
+  if (typeof index !== 'undefined') {
+    store.dispatchAndLog(NoteActions.reorderNote(note.id, index));
+  }
+}
+
 export const onMarkToggle = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
   store.dispatch(toggleMark(note));
 };
