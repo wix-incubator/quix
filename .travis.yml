@@ -57,6 +57,6 @@ matrix:
       before_install:
         - cd ./quix-backend
       install:
-        - mvn install
+        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
       script:
         - mvn test
