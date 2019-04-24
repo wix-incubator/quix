@@ -1,3 +1,5 @@
+import {IFile} from '../../../shared';
+
 export const convert = (nodes: any[], path = [], res = []) => {
   nodes.forEach(node => {
     if (!node.children) {
@@ -13,3 +15,12 @@ export const convert = (nodes: any[], path = [], res = []) => {
 
   return res;
 }
+
+export const getFullTableName = (table: IFile) => {
+  return [...table.path, table].map(({name}) => name).join('.');
+}
+
+export const getTableQuery = (table: IFile) => `SELECT *
+FROM ${getFullTableName(table)}
+LIMIT 1000
+`;

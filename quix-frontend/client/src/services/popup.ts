@@ -11,7 +11,7 @@ export const closePopup = () => popup((scope, element) => {
   return null;
 });
 
-export const openPopup = (html: string, scope, locals: Record<any, any> = {}) => {
+const openPopup = (html: string, scope, locals: Record<any, any> = {}) => {
   if (popup()) {
     return () => {};
   }
@@ -39,5 +39,31 @@ export const openPopup = (html: string, scope, locals: Record<any, any> = {}) =>
     >${html}</div>
   `)(popupScope).appendTo(document.body);
 
-  return closePopup()(popupScope, element);
+  closePopup()(popupScope, element);
+
+  return closePopup;
+}
+
+export const openSearchResults = (scope) => {
+  const closeFn = openPopup(`
+    <quix-search-results class="bi-c-h bi-grow"></quix-search-results>
+  `, scope);
+
+  popup((_, element) => element.addClass('quix-search-popup'));
+
+  return closeFn;
+}
+
+export const openTempQuery = (scope, code: string = '', autorun = false) => {
+  return openPopup(`
+    <quix-temp-query
+      class="bi-c-h bi-grow"
+      code="code"
+      autorun="autorun"
+    ></quix-temp-query>`, 
+    scope, {
+      code,
+      autorun
+    }
+  );
 }

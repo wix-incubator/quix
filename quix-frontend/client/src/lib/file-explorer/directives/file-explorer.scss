@@ -13,6 +13,10 @@ bi-file-explorer-inner {
     user-select: none;
     cursor: default !important;
 
+    .fe-icon-container {
+      line-height: 0;
+    }
+
     .fe-icon {
       margin-right: 4px;
       font-size: 18px;
@@ -144,9 +148,5 @@ bi-file-explorer-inner {
         padding: 0 7px;
       }
     }
-  }
-
-  [bi-html] {
-    line-height: 0;
   }
 }

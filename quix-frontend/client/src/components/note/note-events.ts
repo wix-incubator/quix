@@ -1,6 +1,6 @@
 import {Store} from '../../lib/store';
 import {IScope} from './note-types';
-import {confirm} from '../../services';
+import {confirmAction} from '../../services';
 import {Instance} from '../../lib/app';
 
 export const onFoldToggle = (scope: IScope, store: Store) => () => {
@@ -24,7 +24,7 @@ export const onShare = (scope: IScope, store: Store) => () => {
 };
 
 export const onDelete = (scope: IScope, store: Store) => () => {
-  confirm('delete', 'note').then(() =>  scope.onDelete({note: scope.note}));
+  confirmAction('delete', 'note').then(() =>  scope.onDelete({note: scope.note}));
 };
 
 export const onSave = (scope: IScope, store: Store) => () => {

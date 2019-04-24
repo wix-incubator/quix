@@ -21,6 +21,9 @@ export default {
     canRename(folder) {
       return this.getPermissions(folder).rename;
     },
+    hasMenu(folder) {
+      return this.getPermissions(folder).menu;
+    },
     toggleOpen(folder, value) {
       this.$root.folders.get(folder).open.toggle(value);
     },
@@ -66,11 +69,17 @@ export default {
     }
   },
   $init() {
-    this.folders = this.folders || this.createItemsVm({
-      menu: {},
-      edit: {},
-      open: {},
-      permissions: null
-    });
+    if (this.$params.controller) {
+      this.folders = this.folders || this.createItemsVm({
+        menu: {},
+        edit: {},
+        open: {},
+        permissions: null
+      });
+
+      this.slots = {
+        menu: this.$params.controller.getSlots().menu
+      };
+    }
   }
 };

@@ -210,8 +210,10 @@ export default () => {
               scope.onRunnerCreated({runner});
             },
             onRunnerDestroyed(runner) {
-              editorInstance.setValid(null);
-              editorInstance.getAnnotator().hideAll();
+              deferredEditor.promise.then(() => {
+                editorInstance.setValid(null);
+                editorInstance.getAnnotator().hideAll();
+              });
 
               scope.vm.hint.run.toggle(true);
               scope.onRunnerDestroyed({runner});

@@ -9,12 +9,21 @@ import {IScope} from './temp-query-types';
 export default (app: Instance, store: Store) => () => ({
   restrict: 'E',
   template,
-  scope: {},
+  scope: {
+    code: '<',
+    autorun: '<'
+  },
   link: {
     async pre(scope: IScope) {
       initNgScope(scope)
         .withVM({})
-        .withEvents({});
+        .withEvents({
+          onRunnerInstanceLoad(instance) {
+            if (scope.autorun) {
+              instance.run();
+            }
+          }
+        });
     }
   }
 });

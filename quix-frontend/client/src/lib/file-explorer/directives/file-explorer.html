@@ -21,7 +21,7 @@
         >arrow_drop_down</i>
 
         <span class="fe-item-name bi-align bi-grow bi-pointer" ng-click="events.onFolderClick(folder)">
-          <span bi-html="renderFolderIcon(folder)"></span>
+          <span class="fe-icon-container" bi-html="renderFolderIcon(folder)"></span>
 
           <span>
             <span
@@ -35,64 +35,12 @@
         </span>
       </div>
 
-      <bi-dropdown bd-options="::{align: 'right'}" ng-if="::!readonly">
+      <bi-dropdown bd-options="::{align: 'right'}" ng-if="::vm.folder.hasMenu(folder)">
         <bi-toggle>
           <i class="bi-action bi-icon">more_vert</i>
         </bi-toggle>
 
-        <ul class="bi-dropdown-menu">
-          <li 
-            class="bi-align bi-space-h"
-            ng-repeat="type in ::options.fileAlias"
-            ng-disabled="::!events.onFileCreate"
-            ng-click="events.onFileCreate && events.onFileCreate(type, folder)"
-          >
-            <i class="bi-icon bi-success">note_add</i>
-            <span>New {{::type}}</span>
-          </li>
-
-          <li class="bi-dropdown-separator"></li>
-
-          <li 
-            class="bi-align bi-space-h"
-            ng-disabled="::!events.onFolderCreate"
-            ng-click="events.onFolderCreate && events.onFolderCreate(folder)"
-          >
-            <i class="bi-icon bi-warning">create_new_folder</i>
-            <span>New folder</span>
-          </li>
-
-          <li class="bi-dropdown-separator" ng-if="::options.settings"></li>
-
-          <li 
-            class="bi-align bi-space-h"
-            ng-if="::options.settings"
-            ng-click="events.onSettingsClick && events.onSettingsClick(folder)"
-          >
-            <i class="bi-icon">settings</i>
-            <span>Settings</span>
-          </li>
-
-          <li class="bi-dropdown-separator"></li>
-
-          <li 
-            class="bi-align bi-space-h"
-            ng-disabled="::!events.onFolderRename || !vm.folder.canRename(folder)"
-            ng-click="events.onFolderRename && vm.folder.canRename(folder) && events.onFolderRename(folder)"
-          >
-            <i class="bi-icon">edit</i>
-            <span>Rename</span>
-          </li>
-
-          <li 
-            class="bi-align bi-space-h"
-            ng-disabled="::!events.onFolderDelete || !vm.folder.canDelete(folder)"
-            ng-click="events.onFolderDelete && vm.folder.canDelete(folder) && events.onFolderDelete(folder)"
-          >
-            <i class="bi-icon bi-danger">delete</i>
-            <span>Delete</span>
-          </li>
-        </ul>
+        <div bi-html="renderMenu(folder)"></div>
       </bi-dropdown>
     </div>
 
@@ -133,7 +81,7 @@
       title="{{::file.getName()}}"
     >
       <span class="bi-align">
-        <span bi-html="renderFileIcon(file)"></span>
+        <span class="fe-icon-container" bi-html="renderFileIcon(file)"></span>
         <span>{{file.getName()}}</span>
       </span>
     </div>

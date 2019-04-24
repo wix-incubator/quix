@@ -16,7 +16,8 @@
     ng-model="vm.state.value().db"
     on-load="events.onFileExplorerLoad()"
     on-file-click="events.onFileClick(file)"
-    on-lazy-folder-open="events.onLazyFolderOpen(folder)"
+    on-lazy-folder-fetch="events.onLazyFolderFetch(folder)"
+    permissions="getFolderPermissions(folder)"
     readonly="true"
   > 
     <folder-icon class="bi-icon--xs bi-muted">
@@ -30,5 +31,16 @@
     <file-icon class="bi-text--sm bi-muted">
      {{file.nodeType}}
     </file-icon>
+
+    <menu>
+      <ul class="bi-dropdown-menu" ng-if="::folder.nodeType === 'table'">
+        <li 
+          class="bi-align bi-space-h"
+          ng-click="events.onSelectTableRows(folder)"
+        >
+          <div>Select rows (limit 1000)</div>
+        </li>
+      </ul>
+    </menu>
   </bi-file-explorer>
 </div>

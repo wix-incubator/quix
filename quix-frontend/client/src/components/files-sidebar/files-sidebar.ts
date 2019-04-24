@@ -67,19 +67,20 @@ export default (app: Instance, store: Store) => () => ({
           }, 
           onNotebookAdd() {
             addNotebook(store, app, []);
-          },
-          getFolderPermissions(folder: IFile) {
-            const isRootFolder = isRoot(folder);
-            const owner = scope.vm.state.value().files[0].owner;
-            const permissions = getFolderPermissions(app, {...folder, owner});
-
-            return {
-              ...getFolderPermissions(app, folder),
-              delete: permissions.delete && !isRootFolder,
-              rename: permissions.rename && !isRootFolder
-            };
           }
         });
+
+      scope.getFolderPermissions = (folder: IFile) => {
+        const isRootFolder = isRoot(folder);
+        const owner = scope.vm.state.value().files[0].owner;
+        const permissions = getFolderPermissions(app, {...folder, owner});
+
+        return {
+          ...getFolderPermissions(app, folder),
+          delete: permissions.delete && !isRootFolder,
+          rename: permissions.rename && !isRootFolder
+        };
+      }
 
       cache.files.get();
       store.subscribe('files.files', (files: IFile[]) => {

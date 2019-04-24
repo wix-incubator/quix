@@ -20,6 +20,7 @@ function initScope(scope, controller: Controller, depth: number) {
   scope.depth = depth;
   scope.renderFolderIcon = (folder) => controller.renderFolderIcon(scope, folder);
   scope.renderFileIcon = (file) => controller.renderFileIcon(scope, file);
+  scope.renderMenu = (folder) => controller.renderMenu(scope, folder);
 
   const helper = initNgScope(scope)
     .readonly(scope.readonly)
@@ -78,7 +79,7 @@ function initScope(scope, controller: Controller, depth: number) {
           scope.vm.folder.toggleOpen(folder);
 
           if (folder.isLazy() && scope.vm.folder.isOpen(folder)) {
-            const promise = controller.openLazyFolder(folder);
+            const promise = controller.fetchLazyFolder(folder);
 
             if (promise && promise.then) {
               promise.then(() => folder.setLazy(false));
@@ -148,12 +149,13 @@ export function fileExplorer() {
     require: ['ngModel', 'biFileExplorer'],
     transclude: {
       folderIcon: '?folderIcon',
-      fileIcon: '?fileIcon'
+      fileIcon: '?fileIcon',
+      menu: '?menu'
     },
     controller: ['$scope', '$element', '$transclude', Controller],
     scope: {
       feOptions: '<',
-      onLazyFolderOpen: '&',
+      onLazyFolderFetch: '&',
       onFileClick: '&',
       onFolderClick: '&',
       onLoad: '&',
