@@ -30,7 +30,6 @@ Quix is flexible enough to be used in an array of applications on any scale. It 
 <!-- TODO Full text search -->
 
 ## Requirements
-
 * [Docker](https://www.docker.com/products) (engine, enterprise or desktop edition, whichever works for you)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
