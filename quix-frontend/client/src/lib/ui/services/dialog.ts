@@ -1,4 +1,4 @@
-import {assign} from 'lodash';
+import {assign, defaults} from 'lodash';
 import angular from 'angular';
 import {registerDialog} from 'dialog-polyfill';
 import {inject} from '../../core';
@@ -10,16 +10,19 @@ export interface IDialog extends ng.IPromise<any> {
   scope(): Object;
 }
 
+export interface IDialogOptions {
+  html: string;
+  title?: string;
+  showCloseAction?: boolean;
+  onConfirm?(scope): any;
+}
+
 function createScope(deferred, scope?, locals?) {
   scope = scope ? scope.$new() : inject('$rootScope').$new(true);
 
   if (locals) {
     assign(scope, locals);
   }
-
-  scope.dialogOptions = {
-    showCloseButton: true
-  };
 
   scope.dialogEvents = {
     reject() {
@@ -29,12 +32,12 @@ function createScope(deferred, scope?, locals?) {
       const res = this.onConfirm();
 
       if (res && res.then) {
-        scope.error = null;
-        scope.resolving = true;
+        scope.dialogError = null;
+        scope.dialogResolving = true;
 
         res
-          .then(() => deferred.resolve(scope), e => scope.error = e)
-          .finally(() => scope.resolving = false);
+          .then(() => deferred.resolve(scope), e => scope.dialogError = e)
+          .finally(() => scope.dialogResolving = false);
       } else {
         deferred.resolve(scope);
       }
@@ -44,21 +47,48 @@ function createScope(deferred, scope?, locals?) {
   return scope;
 }
 
-function showDialog(scope, htmlOrElement) {
-  const element = (typeof htmlOrElement === 'string' ? angular.element(htmlOrElement) : htmlOrElement.clone())
+function showDialog(scope, htmlOrOptions: string | IDialogOptions) {
+  let options: IDialogOptions;
+
+  if (typeof htmlOrOptions === 'string') {
+    options = {
+      html: htmlOrOptions
+    }
+  } else {
+    options = {
+      ...htmlOrOptions,
+      html:  `
+        <dialog>
+          <dialog-title>${htmlOrOptions.title}</dialog-title>
+          <dialog-content>${htmlOrOptions.html}</dialog-content>
+        </dialog>
+      `
+    };
+  }
+
+  options = defaults({}, options, {
+    showCloseAction: true
+  });
+
+  const element = angular.element(options.html)
     .removeAttr('ng-non-bindable')
     .addClass('bi-dialog')
     .prepend(`
-      <span class="bi-dialog-close" ng-if="dialogOptions.showCloseButton">
+      <span class="bi-dialog-close" ng-if="dialogOptions.showCloseAction">
         <i class="bi-action bi-icon" ng-click="dialogEvents.reject()">close</i>
       </span>
-      <span class="bi-dialog-loader bi-spinner" ng-if="resolving"><span>
+      <span class="bi-dialog-loader bi-spinner" ng-if="dialogResolving"><span>
     `)
-    .append(`<dialog-error class="bi-danger" ng-if="error">{{error.data && error.data.errorDescription || 'Unknown error'}}</dialog-error>`);
+    .append(`
+      <dialog-error 
+        class="bi-danger"
+        ng-if="error"
+      >{{dialogError.data && dialogError.data.errorDescription || 'Unknown error'}}</dialog-error>
+    `);
 
-  scope.dialogEvents.onConfirm = () => inject('$parse')(element.attr('on-confirm'))(scope);
+  scope.dialogEvents.onConfirm = options.onConfirm || (() => inject('$parse')(element.attr('on-confirm'))(scope));
 
-  const dialog = inject('$compile')(element)(scope)
+  const dialog = inject('$compile')(element)(assign(scope, {dialogOptions: options}))
     .on('close', () => scope.dialogEvents.reject())
     .appendTo(window.document.body)
     .get(0);
@@ -85,11 +115,11 @@ function destroy({scope, dialog}) {
   instance = {scope: null, dialog: null};
 }
 
-export default function(htmlOrElement, parentScope?, locals?): IDialog {
+export default function(htmlOrOptions: string | IDialogOptions, parentScope?, locals?): IDialog {
   destroy(instance);
 
   const deferred = ((inject('$q') as ng.IQService)).defer();
-  const {scope, dialog} = showDialog(createScope(deferred, parentScope, locals), htmlOrElement);
+  const {scope, dialog} = showDialog(createScope(deferred, parentScope, locals), htmlOrOptions);
 
   const promise = deferred.promise.finally(() => destroy({scope, dialog})) as IDialog;
   promise.element = () => angular.element(dialog);
