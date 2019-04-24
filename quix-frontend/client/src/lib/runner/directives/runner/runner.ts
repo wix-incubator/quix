@@ -149,15 +149,15 @@ export class RunnerComponentInstance extends srv.eventEmitter.EventEmitter {
     return this.baseUrl;
   }
 
-  setDataTransformer(fn: Function) {
-    this.dataTransformer = ({data, meta}) => ({data: fn(data), meta});
+  setRequestTransformer(fn: (code) => typeof code) {
+    this.dataTransformer = fn;
   }
 
-  setResponseTransformer(fn: Function) {
-    this.responseTransformer = (payload) => fn(payload);
+  setResponseTransformer(fn: (response) => typeof response) {
+    this.responseTransformer = fn;
   }
 
-  setErrorTransformer(fn: Function) {
+  setErrorTransformer(fn: (runner, query, error) => typeof error) {
     this.errorTransformer = (runner, query, error) => fn(runner, query, error);
   }
 

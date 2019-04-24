@@ -110,7 +110,7 @@ export default () => {
             onRunnerLoad(instance: RunnerComponentInstance) {
               runnerInstance = instance;
 
-              runnerInstance.setDataTransformer(() => editorInstance.getParams().format(scope.vm.selection || scope.model.value));
+              runnerInstance.setRequestTransformer(() => editorInstance.getParams().format(scope.vm.selection || scope.model.value));
 
               runnerInstance.setErrorTransformer((runner, query, msg) => {
                 if (isPermissionError(msg) && scope.options.promptOnPermissionError) {
