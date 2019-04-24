@@ -37,7 +37,7 @@ export const onCopy = (scope: IScope, store: Store, app: Instance) => (notebook:
   prompt({
     title: 'Copy notebook',
     yes: 'copy',
-    content: `<quix-destination ng-model="model.folder" required></quix-destination>`
+    content: `<quix-destination-picker ng-model="model.folder" required></quix-destination-picker>`
   },
     scope,
     {model: {folder: null}}
