@@ -24,7 +24,7 @@ class SingleBuilder extends Builder[Batch] with LazyLogging {
 
   override def errorSubQuery(queryId: String, e: Throwable) = Task {
     failureCause = Option(e)
-    logger.error("Got exception", e)
+    logger.error("Got exception " + e.getMessage)
   }
 
   override def startSubQuery(queryId: String, code: String, results: Batch) = Task {
