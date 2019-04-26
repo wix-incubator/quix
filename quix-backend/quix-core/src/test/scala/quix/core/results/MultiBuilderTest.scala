@@ -118,6 +118,28 @@ class MultiBuilderTest extends SpecWithJUnit {
     }
   }
 
+  "MultiBuilder.errorSubQuery" should {
+
+    "send SubQueryError event on errorSubQuery(query)" in new ctx {
+      builder.errorSubQuery(query.id, new Exception("boom!")).runToFuture(Scheduler.global)
+
+      eventually {
+        consumer.payloads must contain(SubQueryError(query.id, "boom!"))
+      }
+    }
+  }
+
+  "MultiBuilder.error" should {
+
+    "send Error event on error(query)" in new ctx {
+      builder.error(query.id, new Exception("boom!")).runToFuture(Scheduler.global)
+
+      eventually {
+        consumer.payloads must contain(Error(query.id, "boom!"))
+      }
+    }
+  }
+
 }
 
 class TestConsumer[T] extends Consumer[T] {
