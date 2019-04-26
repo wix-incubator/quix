@@ -140,6 +140,66 @@ class MultiBuilderTest extends SpecWithJUnit {
     }
   }
 
+  "MultiBuilder.addSubQuery" should {
+
+    "send SubQueryFields if columns are present in results during addSubQuery(queryId, results)" in new ctx {
+      val batch = Batch(List.empty, Option(List(BatchColumn("column"))))
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
+
+      eventually {
+        consumer.payloads must contain(SubQueryFields("query-id", List("column")))
+      }
+    }
+
+    "send SubQueryFields only once if columns are present in results during addSubQuery(queryId, results)" in new ctx {
+      val batch = Batch(List.empty, Option(List(BatchColumn("column"))))
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
+
+      eventually {
+        consumer.payloads.filter(_ == SubQueryFields("query-id", List("column"))) must haveSize(1)
+      }
+    }
+
+    "send Progress if present in results during addSubQuery(queryId, results)" in new ctx {
+      val batch = Batch(List.empty, stats = Option(BatchStats("state", 100)))
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
+
+      eventually {
+        consumer.payloads must contain(Progress("query-id", 100))
+      }
+    }
+
+    "send Progress on every batch during addSubQuery(queryId, results)" in new ctx {
+      val batch = Batch(List.empty, stats = Option(BatchStats("state", 100)))
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
+
+      eventually {
+        consumer.payloads.filter(_ == Progress("query-id", 100)) must haveSize(2)
+      }
+    }
+
+    "send Error if present in results during addSubQuery(queryId, results)" in new ctx {
+      val batch = Batch(List.empty, error = Option(BatchError("boom!")))
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
+
+      eventually {
+        consumer.payloads must contain(Error("query-id", "boom!"))
+      }
+    }
+
+    "send Row events if data is present in results during addSubQuery(queryId, code, results)" in new ctx {
+      val batch = Batch(List(List("a", "b", "c"), List("d", "e", "f")))
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
+
+      eventually {
+        consumer.payloads must contain(Row("query-id", List("a", "b", "c")))
+        consumer.payloads must contain(Row("query-id", List("d", "e", "f")))
+      }
+    }
+  }
+
 }
 
 class TestConsumer[T] extends Consumer[T] {
