@@ -61,6 +61,7 @@ const listReducer = <T extends {id: string}, A extends BaseAction = DefaultActio
   reducer: Reducer<T, A> = x => x,
   options: {
     createIfNull: boolean;
+    delete: boolean
   }
 ) => (s: T[], a: A) => {
   const entityMap = typeof entityOrMap === 'string' ? {[entityOrMap]: reducer} : entityOrMap;
@@ -78,7 +79,7 @@ const listReducer = <T extends {id: string}, A extends BaseAction = DefaultActio
         state = !state && options.createIfNull ? [] : state;
         return state && [...state, entityReducer(undefined, action) as T];
       case 'delete':
-      return state && state.filter(item => item.id !== action.id);
+      return state && options.delete && state.filter(item => item.id !== action.id);
       case 'update':
         return state && replaceWith(state, {id: action.id}, item => entityReducer(item, action));
       default:
@@ -112,9 +113,12 @@ export const createClientReducer = <T extends {id: string; dateUpdated?: number}
 export const createListReducer = <T extends {id: string}, A extends BaseAction = DefaultAction>(
   entityOrMap: string | Record<string, Reducer<T, A>>,
   reducer: Reducer<T, A> = x => x
-) => listReducer(entityOrMap, reducer, {createIfNull: true});
+) => listReducer(entityOrMap, reducer, {createIfNull: true, delete: true});
 
 export const createClientListReducer = <T extends {id: string}, A extends BaseAction = DefaultAction>(
   entityOrMap: string | Record<string, Reducer<T, A>>,
-  reducer: Reducer<T, A> = x => x
-) => listReducer(entityOrMap, reducer, {createIfNull: false});
+  reducer: Reducer<T, A> = x => x,
+  options: {
+    delete: boolean;
+  } = {delete: true}
+) => listReducer(entityOrMap, reducer, {createIfNull: false, delete: options.delete});

@@ -16,7 +16,7 @@ export default {
       return (vm.permissions = vm.permissions || this.$params.controller.getPermissions(folder));
     },
     canDelete(folder) {
-      return folder.isEmpty() && this.getPermissions(folder).delete;
+      return this.getPermissions(folder).delete;
     },
     canRename(folder) {
       return this.getPermissions(folder).rename;

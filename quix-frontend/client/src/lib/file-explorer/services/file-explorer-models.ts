@@ -37,6 +37,21 @@ export class Item {
     return this.data;
   }
 
+  public getParentById(id: string): Item {
+    let res: Item;
+    let parent: Item = this;
+
+    // tslint:disable-next-line: no-conditional-assignment
+    while (parent = parent.getParent()) {
+      if (parent.getId() === id) {
+        res = res || parent;
+        break;
+      }
+    }
+
+    return res;
+  }
+
   public on(name, fn, invoke?, scope?) {
     this.eventEmitter.on(name, fn, invoke, scope);
   }
@@ -194,7 +209,7 @@ export class Folder extends Item {
     return this;
   }
 
-  public moveTo(folder: Folder): File {
+  public moveTo(folder: Folder): Folder {
     folder.addFolder(this.getParent().removeFolder(this));
     return this;
   }
