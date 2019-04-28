@@ -9,8 +9,7 @@
       ng-class="{active: vm.folder.isActive(folder)}"
       drop="::!readonly"
       jqyoui-droppable="{onDrop: 'events.onItemDrop(folder)'}"
-      jqyoui-droppable="{onDrop: 'events.onItemDrop(folder)'}"
-      jqyoui-options="{accept: '.fe-item', greedy: true}"
+      jqyoui-options="{accept: '.fe-item, .fe-item-name', greedy: true}"
       ng-model="vm.dropped.item"
     >
       <div class="bi-align">
@@ -20,7 +19,14 @@
           ng-click="events.onFolderToggle(folder);"
         >arrow_drop_down</i>
 
-        <span class="fe-item-name bi-align bi-grow bi-pointer" ng-click="events.onFolderClick(folder)">
+        <span 
+          class="fe-item-name bi-align bi-grow bi-pointer"
+          ng-click="events.onFolderClick(folder)"
+          drag="!readonly"
+          jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
+          jqyoui-options="{helper: 'clone', distance: 5, scroll: true, containment: container}"
+          ng-model="folder"
+        >
           <span class="fe-icon-container" bi-html="renderFolderIcon(folder)"></span>
 
           <span>

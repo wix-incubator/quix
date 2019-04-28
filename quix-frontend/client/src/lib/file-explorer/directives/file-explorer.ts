@@ -60,13 +60,16 @@ function initScope(scope, controller: Controller, depth: number) {
     })
     .withEvents({
       onItemDrop(_, __, folder: Folder) {
-        scope.vm.dropped.item.moveTo(folder);
+        const {item}: {item: File | Folder} =  scope.vm.dropped;
 
-        if (scope.vm.dropped.item instanceof File) {
-          controller.syncItem(scope.vm.dropped.item, 'fileMoved');
-        } else {
-          controller.syncItem(scope.vm.dropped.item, 'folderMoved');
+        if (item instanceof File) {
+          scope.vm.dropped.item.moveTo(folder);
+          controller.syncItem(item, 'fileMoved');
+        } else if (item instanceof Folder && item.getParent().getId() !== folder.getId()) {
+          // scope.vm.dropped.item.moveTo(folder);
+          // controller.syncItem(scope.vm.dropped.item, 'folderMoved');
         }
+        
       },
       onFolderDragStart(_, __, folder: Folder) {
         // scope.vm.folder.toggleOpen(folder, false);

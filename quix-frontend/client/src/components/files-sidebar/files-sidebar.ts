@@ -26,7 +26,7 @@ enum States {
 const listenToEvents = (scope, app: Instance, store: Store, fileExplorer) => {
   fileExplorer
     .on('fileCreated', ({id, path}) => addNotebook(store, app, path, {id}), false, scope)
-    .on('fileMoved', ({id, path}) => store.dispatch(NotebookActions.moveNotebook(id, path)), false, scope)
+    .on('fileMoved', ({id, path}) => store.dispatchAndLog(NotebookActions.moveNotebook(id, path)), false, scope)
     .on('folderDeleted', ({id}) => store.dispatchAndLog(FileActions.deleteFile(id)), false, scope)
     .on('folderCreated', ({id, path}) => addFolder(store, app, path, {id}), false, scope)
     .on('folderRenamed', ({id, name}) => store.dispatchAndLog(FileActions.updateName(id, name)), false, scope)
