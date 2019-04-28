@@ -61,7 +61,7 @@ const listReducer = <T extends {id: string}, A extends BaseAction = DefaultActio
   reducer: Reducer<T, A> = x => x,
   options: {
     createIfNull: boolean;
-    delete: boolean
+    delete: boolean;
   }
 ) => (s: T[], a: A) => {
   const entityMap = typeof entityOrMap === 'string' ? {[entityOrMap]: reducer} : entityOrMap;

@@ -33,6 +33,18 @@ export class Item {
     return this.parent;
   }
 
+  public getDepth(): number {
+    let res = 0;
+    let parent: Item = this;
+
+    // tslint:disable-next-line: no-conditional-assignment
+    while (parent = parent.getParent()) {
+      res++;
+    }
+
+    return res;
+  }
+
   public getData(): any {
     return this.data;
   }
@@ -212,6 +224,10 @@ export class Folder extends Item {
   public moveTo(folder: Folder): Folder {
     folder.addFolder(this.getParent().removeFolder(this));
     return this;
+  }
+
+  public getLength(res = 1): number {
+    return Math.max(res, ...(this.folders.map(folder => folder.getLength(res + 1))));
   }
 
   public destroy() {

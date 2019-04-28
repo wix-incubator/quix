@@ -6,13 +6,14 @@ import {IFilePathItem, IFile, FileType} from './types';
 import {FileActionTypes} from './actions';
 
 const moveFile = (files: IFile[], id: string, path: IFilePathItem[]) => {
-  const file = files.find(file => file.id === id);
+  const file = files.find(f => f.id === id);
 
   if (file) {
     file.path = path;
 
     if (file.type === FileType.folder) {
-      files.filter(f => 
+      files.filter(f =>
+        // tslint:disable-next-line: no-non-null-assertion
         f.path.length && last(f.path)!.id === id).forEach(f => 
           moveFile(files, f.id, [...path, {id: file.id, name: file.name}]));
     }
@@ -26,6 +27,7 @@ const deleteFile = (files: IFile[], id: string) => {
 
   if (file && file.type === FileType.folder) {
     files.filter(f => 
+      // tslint:disable-next-line: no-non-null-assertion
       f.path.length && last(f.path)!.id === id).forEach(f => 
         deleteFile(files, f.id));
   }

@@ -11,13 +11,14 @@ import template from './file-explorer.html';
 import './file-explorer.scss';
 
 
-const confirmAction = (action: 'delete', context: 'folder') => {
+const confirmAction = (action: 'delete', context: 'folder', name: string) => {
   return confirm({
     title: `${action} ${context}`,
     actionType: action === 'delete' ? 'destroy' : 'neutral',
     yes: action,
     html: `
-      The folder and all it's contents will be lost.
+      The folder <b>"${name}"</b> and all it's content will be lost.
+      <br>
       <br>
       Are you sure you want to delete this ${context}?
     `
@@ -58,7 +59,7 @@ function initScope(scope, controller: Controller, depth: number) {
         controller.syncItem(file, 'fileCreated', type);
       },
       onFolderDelete(folder: Folder) {
-        confirmAction('delete', 'folder').then(() => {
+        const fn = () => {
           folder.destroy();
 
           if (folder.getParent().isEmpty()) {
@@ -66,7 +67,13 @@ function initScope(scope, controller: Controller, depth: number) {
           }
   
           controller.syncItem(folder, 'folderDeleted');
-        });
+        };
+
+        if (folder.isEmpty()) {
+          fn();
+        } else {
+          confirmAction('delete', 'folder', folder.getName()).then(fn);
+        }
       },
       onFolderRename(folder: Folder) {
         scope.vm.folder.toggleEdit(folder, true);
@@ -79,10 +86,16 @@ function initScope(scope, controller: Controller, depth: number) {
       onItemDrop(_, __, folder: Folder) {
         const {item}: {item: File | Folder} =  scope.vm.dropped;
 
-        if (item instanceof File) {
+        if (item instanceof File && !folder.getFileById(item.getId())) {
           item.moveTo(folder);
           controller.syncItem(item, 'fileMoved');
-        } else if (item instanceof Folder && !folder.getFolderById(item.getId()) && !folder.getParentById(item.getId())) {
+        } else if (
+          item instanceof Folder
+          && folder.getId() !== item.getId()
+          && !folder.getFolderById(item.getId())
+          && !folder.getParentById(item.getId())
+          && folder.getDepth() + item.getLength() <= 3
+        ) {
           item.moveTo(folder);
           controller.syncItem(item, 'folderMoved');
         }
