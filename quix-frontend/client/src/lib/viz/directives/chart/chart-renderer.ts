@@ -1,16 +1,11 @@
-// import HS from 'highcharts/highstock';
 import {IMeta, IData, IFilterData} from '../../services/chart/chart-conf';
 import {isDimension, isDate} from '../../services/chart/chart-utils';
-
-const HS = {chart: () => {}} as any;
-
-function getChartType(filter: IFilterData, meta: IMeta) {
-  if (isDimension(filter.x, meta)) {
-    return 'column';
-  }
-    return 'line';
-
-}
+import * as echarts from 'echarts/lib/echarts';
+import 'echarts/lib/chart/line'
+import 'echarts/lib/chart/bar'
+import 'echarts/lib/component/tooltip'
+import 'echarts/lib/component/title'
+import 'echarts/lib/component/legend'
 
 function getXAxisType(filter: IFilterData, meta: IMeta) {
   if (isDate(filter.x, meta)) {
@@ -33,32 +28,43 @@ export class ChartRenderer {
   }
 
   public draw(data: IData[], filteredMeta: IMeta, meta: IMeta, filter: IFilterData) {
-    const chartType = getChartType(filter, meta);
     const xAxisType = getXAxisType(filter, meta);
 
-    this.chart = HS.chart(this.container.get(0), {
-      title: null,
-      credits: {enabled: null},
-      chart: {type: chartType},
-      legend: {enabled: data.length > 1},
-      plotOptions: {
-        series: {
-          animation: false
+    this.chart = echarts.init(this.container.get(0));
+    this.chart.clear();
+    this.chart.setOption({
+      title: {
+        text: null
+      },
+      tooltip: {
+        formatter: function (params) {
+          var data = params.data || [0, 0];
+          return data[0].toFixed(2) + ', ' + data[1].toFixed(2);
         }
+      },
+      legend: {
+        show: data.length > 1,
+        data: data.map(series => series['name']),
+        bottom: true
       },
       xAxis: {
         type: xAxisType,
-        title: {
-          text: filter.x
+        name: filter.x,
+        nameLocation: 'center',
+        nameTextStyle: {
+          lineHeight: 40
         }
       },
       yAxis: {
-        title: {
-          text: filter.y.length === 1 ? filter.y[0] : null
+        name: filter.y.length === 1 ? filter.y[0] : null,
+        nameLocation: 'center',
+        nameTextStyle: {
+          lineHeight: 40
         }
       },
       series: data
     });
+    this.chart.resize();
   }
 
   public destroy() {
