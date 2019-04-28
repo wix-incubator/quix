@@ -44,7 +44,7 @@ export class ChartRenderer {
       },
       legend: {
         show: data.length > 1,
-        data: data.map(series => series.name),
+        data: data.map((series: any) => series.name),
         bottom: true
       },
       xAxis: {
