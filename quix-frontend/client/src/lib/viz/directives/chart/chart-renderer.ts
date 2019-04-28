@@ -37,14 +37,14 @@ export class ChartRenderer {
         text: null
       },
       tooltip: {
-        formatter: function (params) {
-          var data = params.data || [0, 0];
-          return data[0].toFixed(2) + ', ' + data[1].toFixed(2);
+        formatter(params) {
+          const pdata = params.data || [0, 0];
+          return `${pdata[0].toFixed(2)}, ${pdata[1].toFixed(2)}`;
         }
       },
       legend: {
         show: data.length > 1,
-        data: data.map(series => series['name']),
+        data: data.map(series => series.name),
         bottom: true
       },
       xAxis: {
