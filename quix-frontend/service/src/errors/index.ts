@@ -1,1 +1,1 @@
-export {ItemNotFound} from './exceptions';
+export {ItemNotFound, BadAction} from './exceptions';

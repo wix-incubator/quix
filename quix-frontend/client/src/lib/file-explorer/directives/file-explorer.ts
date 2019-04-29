@@ -1,5 +1,6 @@
 import {assign, isArray} from 'lodash';
 import {createNgModel, initNgScope, inject} from '../../core';
+import {confirm} from '../../ui';
 import {IItemDef} from '../services';
 import {File, Folder} from '../services/file-explorer-models';
 import {treeToDef, defToTree} from '../services/file-explorer-tools';
@@ -8,6 +9,21 @@ import VM from './file-explorer-vm';
 
 import template from './file-explorer.html';
 import './file-explorer.scss';
+
+
+const confirmAction = (action: 'delete', context: 'folder', name: string) => {
+  return confirm({
+    title: `${action} ${context}`,
+    actionType: action === 'delete' ? 'destroy' : 'neutral',
+    yes: action,
+    html: `
+      The folder <b>"${name}"</b> and all it's content will be lost.
+      <br>
+      <br>
+      Are you sure you want to delete this ${context}?
+    `
+  });
+}
 
 function directive(params) {
   return assign({
@@ -43,13 +59,21 @@ function initScope(scope, controller: Controller, depth: number) {
         controller.syncItem(file, 'fileCreated', type);
       },
       onFolderDelete(folder: Folder) {
-        folder.destroy();
+        const fn = () => {
+          folder.destroy();
 
-        if (folder.getParent().isEmpty()) {
-          folder.getParent().toggleOpen(false);
+          if (folder.getParent().isEmpty()) {
+            folder.getParent().toggleOpen(false);
+          }
+  
+          controller.syncItem(folder, 'folderDeleted');
+        };
+
+        if (folder.isEmpty()) {
+          fn();
+        } else {
+          confirmAction('delete', 'folder', folder.getName()).then(fn);
         }
-
-        controller.syncItem(folder, 'folderDeleted');
       },
       onFolderRename(folder: Folder) {
         scope.vm.folder.toggleEdit(folder, true);
@@ -62,14 +86,19 @@ function initScope(scope, controller: Controller, depth: number) {
       onItemDrop(_, __, folder: Folder) {
         const {item}: {item: File | Folder} =  scope.vm.dropped;
 
-        if (item instanceof File) {
-          scope.vm.dropped.item.moveTo(folder);
+        if (item instanceof File && !folder.getFileById(item.getId())) {
+          item.moveTo(folder);
           controller.syncItem(item, 'fileMoved');
-        } else if (item instanceof Folder && item.getParent().getId() !== folder.getId()) {
-          // scope.vm.dropped.item.moveTo(folder);
-          // controller.syncItem(scope.vm.dropped.item, 'folderMoved');
+        } else if (
+          item instanceof Folder
+          && folder.getId() !== item.getId()
+          && !folder.getFolderById(item.getId())
+          && !folder.getParentById(item.getId())
+          && folder.getDepth() + item.getLength() <= 3
+        ) {
+          item.moveTo(folder);
+          controller.syncItem(item, 'folderMoved');
         }
-        
       },
       onFolderDragStart(_, __, folder: Folder) {
         // scope.vm.folder.toggleOpen(folder, false);

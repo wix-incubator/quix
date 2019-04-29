@@ -84,7 +84,7 @@ export class QuixEventBusDriver {
     noteRepo = module.get<Repository<DbNote>>(getRepositoryToken(DbNote));
     eventsRepo = module.get<Repository<DbAction>>(getRepositoryToken(DbAction));
     fileTreeRepo = module.get<FileTreeRepository>(
-      getCustomRepositoryToken(FileTreeRepository),
+      getRepositoryToken(FileTreeRepository),
     );
     folderRepo = module.get<Repository<DbFolder>>(getRepositoryToken(DbFolder));
     conn = module.get<Connection>(getConnectionToken());

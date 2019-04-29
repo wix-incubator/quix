@@ -4,7 +4,7 @@ matrix:
       name: "Shared"
       language: node_js
       node_js:
-        - 11
+        - 10
       cache: npm
       install:
         - cd ./quix-frontend/shared
@@ -15,7 +15,7 @@ matrix:
       name: "Client"
       language: node_js
       node_js:
-        - 11
+        - 10
       cache: npm
       install:
         - cd ./quix-frontend/shared
@@ -28,7 +28,7 @@ matrix:
       name: "Frontend"
       language: node_js
       node_js:
-        - 11
+        - 10
       cache: npm
       services:
         - mysql

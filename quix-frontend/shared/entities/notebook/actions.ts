@@ -14,7 +14,7 @@ export const NotebookActions = {
     id
   }),
 
-  moveNotebook: (id: string, newPath: IFilePathItem) => ({
+  moveNotebook: (id: string, newPath: IFilePathItem[]) => ({
     type: 'notebook.update.path' as const,
     id,
     path: newPath

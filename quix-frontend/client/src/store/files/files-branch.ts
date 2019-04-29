@@ -13,7 +13,6 @@ export interface IPermissions {
 
 export default (app: Instance): IBranch => register => {
   const files = composeReducers(
-    clientFileListReducer,
     (state: IFolder = null, action: any) => {
       switch (action.type) {
         case 'files.set':
@@ -23,6 +22,7 @@ export default (app: Instance): IBranch => register => {
   
       return state;
     },
+    clientFileListReducer,
   );
 
   const error = (state: any = null, action: any) => {

@@ -9,6 +9,7 @@ import {QuixHookNames} from '../types';
 import {last} from 'lodash';
 import {FileType} from 'shared/entities/file';
 import {FileTreeRepository} from 'entities/filenode.repository';
+import {BadAction} from 'errors';
 
 @Injectable()
 export class FileTreePlugin implements EventBusPlugin {
@@ -100,17 +101,23 @@ export class FileTreePlugin implements EventBusPlugin {
 
           case NotebookActionTypes.moveNotebook: {
             const {id, path} = action;
-            const node = new DbFileTreeNode(id, {parentId: path.id});
+            const parent = lastAndAssertExist(path, () =>
+              BadAction(action.type, 'path property should be an array'),
+            );
+            const node = new DbFileTreeNode(id, {parentId: parent.id});
             return this.fileTreeNodeRepo.save(node);
           }
 
           case FileActionTypes.moveFile: {
             const {id, path} = action;
-            const newParent = await this.fileTreeNodeRepo.findOneOrFail(
-              path.id,
+            const parent = lastAndAssertExist(path, () =>
+              BadAction(action.type, 'path property should be an array'),
+            );
+            const parentNode = await this.fileTreeNodeRepo.findOneOrFail(
+              parent.id,
             );
             const fileNode: DbFileTreeNode = hookApi.context.get().fileNode;
-            return this.fileTreeNodeRepo.moveTree(fileNode, newParent);
+            return this.fileTreeNodeRepo.moveTree(fileNode, parentNode);
           }
 
           case FileActionTypes.toggleIsLiked: {
@@ -124,7 +131,6 @@ export class FileTreePlugin implements EventBusPlugin {
           }
 
           case FileActionTypes.deleteFile: {
-            debugger;
             const fileNode: DbFileTreeNode = hookApi.context.get().fileNode;
             return this.fileTreeNodeRepo.deleteTree(fileNode);
           }
@@ -132,4 +138,12 @@ export class FileTreePlugin implements EventBusPlugin {
       },
     );
   };
+}
+
+function lastAndAssertExist<T>(arr: T[], errorFn: () => Error): T {
+  const item = last(arr);
+  if (!item) {
+    throw errorFn();
+  }
+  return item;
 }
