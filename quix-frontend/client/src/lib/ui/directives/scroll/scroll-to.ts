@@ -1,6 +1,6 @@
-import {inject} from '../../../core';
+import {inject, utils} from '../../../core';
 
-const Offset = 25;
+const OFFSET = -25;
 
 export default () => {
   return {
@@ -10,11 +10,7 @@ export default () => {
       attr.$observe('biScrollTo', scroll => {
         if (scroll === 'true') {
           inject('$timeout')(() => {
-            const scrollParent = element.scrollParent();
-            // tslint:disable-next-line: restrict-plus-operands
-            const scrollTop = element.parent().offset().top + scrollParent.scrollTop() - Offset;
-  
-            scrollParent.animate({scrollTop}, 300);
+            utils.dom.scrollIntoView(element, true, OFFSET);
           });
         }
       });
