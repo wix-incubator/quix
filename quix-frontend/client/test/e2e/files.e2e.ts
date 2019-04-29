@@ -117,7 +117,7 @@ describe('Files ::', () => {
     expect(await testkit.numOfFiles()).to.equal(1);
   });
 
-  it('should create a notebook in a root folder and navigate to it', async () => {
+  it.skip('should create a notebook in a root folder and navigate to it', async () => {
     await driver.goto('/files/');
     await testkit.clickAddNotebook();
 
