@@ -79,7 +79,10 @@ const listReducer = <T extends {id: string}, A extends BaseAction = DefaultActio
         state = !state && options.createIfNull ? [] : state;
         return state && [...state, entityReducer(undefined, action) as T];
       case 'delete':
-      return state && options.delete && state.filter(item => item.id !== action.id);
+        if (options.delete) {
+          return state && state.filter(item => item.id !== action.id);
+        }
+        break;
       case 'update':
         return state && replaceWith(state, {id: action.id}, item => entityReducer(item, action));
       default:
