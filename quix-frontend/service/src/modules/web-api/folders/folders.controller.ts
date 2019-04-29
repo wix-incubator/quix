@@ -37,7 +37,7 @@ export class FoldersController {
   @Get('files/:id')
   async GetSpecificFolder(@Param('id') id: string, @Req() req: Request) {
     const {email} = await this.authService.getUser(req);
-    const folder = this.foldersService.getFolder(id);
+    const folder = await this.foldersService.getFolder(id);
     if (!folder) {
       throw new HttpException(`Can't find folder`, HttpStatus.NOT_FOUND);
     }
