@@ -4,9 +4,9 @@ import {default as dialog, IDialogOptions} from './dialog';
 
 export interface IConfirmOptions extends IDialogOptions {
   actionType: 'create' | 'destroy' | 'neutral';
+  icon?: string;
   yes?: string;
   no?: string;
-
 }
 
 function init(htmlOrOptions: string | IConfirmOptions , promise: any) {
@@ -33,6 +33,7 @@ function init(htmlOrOptions: string | IConfirmOptions , promise: any) {
   });
 
   scope.dialogOptions.showCloseAction = false;
+  scope.dialogOptions.iconClass = options.actionType === 'destroy' ? 'bi-danger' : 'bi-primary';
 
   element
     .addClass('bi-confirm')

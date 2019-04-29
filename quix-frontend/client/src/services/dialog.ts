@@ -4,6 +4,7 @@ export const confirmAction = (action: 'delete', context: 'notebook' | 'note' | '
   return confirmDialog({
     title: `${action} ${context}`,
     actionType: action === 'delete' ? 'destroy' : 'neutral',
+    icon: action === 'delete' ? 'report' : null,
     yes: action,
     html: `Are you sure you want to delete ${list ? 'the selected' : 'this'} ${context}?`
   });
