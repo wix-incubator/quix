@@ -94,7 +94,7 @@ describe('web-api module', () => {
     );
     noteRepo = module.get(getRepositoryToken(NoteRepository));
     eventsRepo = module.get(getRepositoryToken(DbAction));
-    fileTreeRepo = module.get(FileTreeRepository);
+    fileTreeRepo = module.get(getRepositoryToken(FileTreeRepository));
     folderRepo = module.get(getRepositoryToken(DbFolder));
     folderService = module.get(FoldersService);
     notebookService = module.get(NotebookService);
