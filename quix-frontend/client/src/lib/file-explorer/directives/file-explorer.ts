@@ -16,9 +16,9 @@ const confirmAction = (action: 'delete', context: 'folder', name: string) => {
     title: `${action} ${context}`,
     actionType: action === 'delete' ? 'destroy' : 'neutral',
     yes: action,
+    icon: 'report',
     html: `
       The folder <b>"${name}"</b> and all it's content will be lost.
-      <br>
       <br>
       Are you sure you want to delete this ${context}?
     `
