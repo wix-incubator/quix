@@ -1,7 +1,9 @@
 <div class="bi-align bi-s-h--x2" ng-class="{'quix-actions-reverse': options.reverse}">
   <bi-tooltip ng-if="permissions.delete">
     <bi-toggle>
-      <i class="bi-action bi-icon" ng-click="events.onDelete()">delete</i>
+      <i class="bi-action bi-icon" ng-click="events.onDelete()">
+        {{::options.bulk ? 'delete_sweep' : 'delete'}}
+      </i>
     </bi-toggle>
     Delete {{::type}}
   </bi-tooltip>
