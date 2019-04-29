@@ -92,13 +92,13 @@ describe('web-api module', () => {
     notebookRepo = module.get<Repository<DbNotebook>>(
       getRepositoryToken(DbNotebook),
     );
-    noteRepo = module.get(NoteRepository);
-    eventsRepo = module.get<Repository<DbAction>>(getRepositoryToken(DbAction));
+    noteRepo = module.get(getRepositoryToken(NoteRepository));
+    eventsRepo = module.get(getRepositoryToken(DbAction));
     fileTreeRepo = module.get(FileTreeRepository);
-    folderRepo = module.get<Repository<DbFolder>>(getRepositoryToken(DbFolder));
+    folderRepo = module.get(getRepositoryToken(DbFolder));
     folderService = module.get(FoldersService);
     notebookService = module.get(NotebookService);
-    conn = module.get<Connection>(getConnectionToken());
+    conn = module.get(getConnectionToken());
     configService = module.get(ConfigService);
   });
 
