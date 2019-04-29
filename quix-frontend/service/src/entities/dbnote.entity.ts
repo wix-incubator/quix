@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
 } from 'typeorm';
-import {INote, NoteType, BaseNote} from '../../../shared/entities/note';
+import {INote, NoteType, BaseNote} from 'shared/entities/note';
 import {DbNotebook} from './dbnotebook.entity';
 import {dbConf} from '../config/db-conf';
 

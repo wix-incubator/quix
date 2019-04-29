@@ -3,9 +3,9 @@ import {getRepositoryToken, TypeOrmModule} from '@nestjs/typeorm';
 import 'reflect-metadata';
 import {Repository} from 'typeorm';
 import uuid from 'uuid/v4';
-import {NoteType} from '../../../../shared/entities/note';
+import {NoteType} from 'shared/entities/note';
 import {ConfigService, ConfigModule} from 'config';
-import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from '../../entities';
+import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from 'entities';
 import {SearchController} from './search.controller';
 import {SearchModule} from './search.module';
 

@@ -12,7 +12,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import {IFile, FileType} from '../../../shared/entities/file';
+import {IFile, FileType} from 'shared/entities/file';
 import {DbNotebook} from './dbnotebook.entity';
 import {DbFolder} from './folder.entity';
 import {dbConf} from '../config/db-conf';

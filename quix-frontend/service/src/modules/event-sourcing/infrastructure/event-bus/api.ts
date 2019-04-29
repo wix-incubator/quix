@@ -8,10 +8,7 @@ import {
 } from './types';
 import {ContextFactory} from './context';
 import {Dictionary} from '../../../../types';
-import {
-  BaseAction,
-  DefaultAction,
-} from '../../../../../../shared/entities/common/common-types';
+import {BaseAction, DefaultAction} from 'shared/entities/common/common-types';
 
 export class RegisterApi {
   constructor(private descriptor: PluginDescriptor) {}

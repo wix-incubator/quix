@@ -1,17 +1,14 @@
 import {Injectable} from '@nestjs/common';
-import {InjectEntityManager, InjectRepository} from '@nestjs/typeorm';
-import {EntityManager, Repository} from 'typeorm';
-import {dbConf} from '../../../config/db-conf';
-import {DbFileTreeNode, DbFolder, FileTreeRepository} from '../../../entities';
+import {InjectEntityManager} from '@nestjs/typeorm';
+import {DbFileTreeNode, FileTreeRepository} from 'entities';
+import {IFile} from 'shared/entities/file';
+import {IFolder} from 'shared/entities/folder';
+import {EntityManager} from 'typeorm';
 import {
-  extractPath,
-  dbNodeToFileItem,
-  computeName,
-  convertSignleNodeToIFile,
   convertListDbNodeToIFileList,
+  convertSignleNodeToIFile,
+  extractPath,
 } from './utils';
-import {IFile} from '../../../../../shared/entities/file';
-import {IFolder} from '../../../../../shared/entities/folder';
 
 @Injectable()
 export class FoldersService {
