@@ -10,7 +10,6 @@ import {last} from 'lodash';
 import {FileType} from 'shared/entities/file';
 import {FileTreeRepository} from 'entities/filenode.repository';
 import {BadAction} from 'errors';
-import {BaseAction} from 'shared/dist/entities/common/common-types';
 
 @Injectable()
 export class FileTreePlugin implements EventBusPlugin {
