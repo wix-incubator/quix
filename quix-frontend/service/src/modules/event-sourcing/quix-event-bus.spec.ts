@@ -328,7 +328,7 @@ describe('event sourcing', () => {
       ]);
 
       await driver.emitAsUser(eventBus, [
-        NotebookActions.moveNotebook(notebookId, {id: subFolder1, name: ''}),
+        NotebookActions.moveNotebook(notebookId, [{id: subFolder1, name: ''}]),
       ]);
 
       const list = await driver.getUserFileTree(defaultUser);
@@ -374,7 +374,7 @@ describe('event sourcing', () => {
        */
 
       await driver.emitAsUser(eventBus, [
-        FileActions.moveFile(subFolder1, {id: subFolder3, name: ''}),
+        FileActions.moveFile(subFolder1, [{id: subFolder3, name: ''}]),
       ]);
 
       /**

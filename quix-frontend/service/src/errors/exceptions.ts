@@ -16,3 +16,14 @@ class ItemNotFoundT extends Error {
 
 export const ItemNotFound = (type: Ctor | string, id: string) =>
   new ItemNotFoundT(type, id);
+
+class BadActionT extends Error {
+  constructor(type: string, customMsg: string) {
+    super();
+    this.message = `type ${type}. ${customMsg}`;
+    this.name = `BAD_ACTION`;
+  }
+}
+
+export const BadAction = (type: string, msg: string) =>
+  new BadActionT(type, msg);
