@@ -55,7 +55,7 @@ export const fileListReducer = composeReducers(
 
 export const clientFileListReducer = composeReducers(
   createClientListReducer('file', fileReducer, {delete: false}) as any,
-  createClientListReducer('notebook', fileReducer, {delete: false}) as any,
+  createClientListReducer('notebook', fileReducer) as any,
   ((state: IFile[], action: any) => {
     switch (action.type) {
       case FileActionTypes.moveFile:
