@@ -10,7 +10,7 @@ import {FoldersService} from './folders.service';
 import {AuthService} from '../../auth/auth.service';
 import {Request} from 'express';
 import {QuixEventBus} from '../../event-sourcing/quix-event-bus';
-import {FileActions, createFolder} from '../../../../../shared/entities/file';
+import {FileActions, createFolder} from 'shared/entities/file';
 import uuid from 'uuid/v4';
 
 @Controller('/api')

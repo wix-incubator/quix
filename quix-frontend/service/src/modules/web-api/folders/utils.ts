@@ -1,9 +1,5 @@
-import {
-  FileType,
-  IFile,
-  IFilePathItem,
-} from '../../../../../shared/entities/file';
-import {DbFileTreeNode} from '../../../entities';
+import {FileType, IFile, IFilePathItem} from 'shared/entities/file';
+import {DbFileTreeNode} from 'entities';
 
 /**
  * @param list The list dbNodes you want to convert to a IFile

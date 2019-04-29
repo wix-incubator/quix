@@ -1,7 +1,7 @@
 import {ColumnType, ColumnOptions} from 'typeorm';
 import {getEnv} from './utils';
 import {QuixEnviorments} from './utils';
-import {FileType} from '../../../shared/entities/file';
+import {FileType} from 'shared/entities/file';
 
 /* A comptability layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
 interface DbColumnConf {

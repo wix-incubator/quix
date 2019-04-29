@@ -1,9 +1,6 @@
 import {RegisterApi, MiddlewareApi} from './api';
 import {Context} from './context';
-import {
-  DefaultAction,
-  BaseAction,
-} from '../../../../../../shared/entities/common/common-types';
+import {DefaultAction, BaseAction} from 'shared/entities/common/common-types';
 
 export type EventBusMiddleware = <A extends BaseAction = DefaultAction>(
   action: A,
