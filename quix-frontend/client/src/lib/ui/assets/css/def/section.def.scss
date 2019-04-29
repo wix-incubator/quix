@@ -15,7 +15,6 @@ $section-separator-class: '.bi-section-header-spr';
 
 %section {
   @include flex(column);
-  overflow: hidden;
 
   > #{$section-header-class} {
     @include header(46px, $blue-grey--800, $white);
@@ -68,8 +67,6 @@ $section-separator-class: '.bi-section-header-spr';
 // Full-height, full-width section with scrollable content
 @mixin section($content-bg-color, $accent: $grey--300) {
   @extend %section;
-
-  flex: 1;
 
   > #{$section-header-class} {
     border-bottom: 4px solid $accent;

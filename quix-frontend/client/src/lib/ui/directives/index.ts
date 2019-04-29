@@ -27,3 +27,4 @@ export {filter, filterTerm, filterItems} from './filter';
 export {default as html} from './html/html';
 export {default as breadcrumbs} from './breadcrumbs/breadcrumbs';
 export {scrollTo} from './scroll';
+export {default as resizable} from './resizable/resizable';
