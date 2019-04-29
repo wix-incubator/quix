@@ -24,7 +24,7 @@
           </div>
 
           <div class="bi-align bi-s-h--x15">
-            <bi-tooltip ng-if="!be.edit" bt-text="Copy share url to clipboard">
+            <bi-tooltip ng-if="!be.edit && vm.params.all.length" bt-text="Share with parameters">
               <bi-toggle>
                 <i class="bi-action bi-icon" ng-click="events.onShareClick()">share</i>
               </bi-toggle>
