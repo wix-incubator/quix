@@ -11,17 +11,19 @@ import quix.api.users.User
 import quix.core.results.SingleBuilder
 import quix.core.utils.Chores
 
-import scala.concurrent.Await
 import scala.concurrent.duration._
 
+case class RefreshableDbConfig(firstEmptyStateTimeoutInMillis: Long, requestTimeoutInMillis: Long)
+
 class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Batch],
+                    val config: RefreshableDbConfig,
                     val state: DbState = new DbState())
   extends Db with Chores with LazyLogging {
 
   val io: Scheduler = Scheduler.io("quix-db-tree")
   val user = User("quix-db-tree")
 
-  override def table(catalog: String, schema: String, table: String): Table = {
+  override def table(catalog: String, schema: String, table: String): Task[Table] = {
     val sql =
       s"""select column_name, type_name
          |from system.jdbc.columns
@@ -33,39 +35,40 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Batch],
       case List(name, kind) => Kolumn(name, kind)
     }
 
-    val tableTask = for {
+    for {
       _ <- Task(logger.info(s"event=get-table-start $catalog.$schema.$table"))
       startMillis <- Task(System.currentTimeMillis())
-      columns <- executeFor(sql, mapper).timeout(5.seconds).onErrorFallbackTo(Task(Nil))
+
+      columns <- executeFor(sql, mapper)
+        .timeout(config.requestTimeoutInMillis.milli)
+        .onErrorFallbackTo(Task(Nil))
+
       endMillis <- Task(System.currentTimeMillis())
       _ <- Task(logger.info(s"event=get-table-finish $catalog.$schema.$table millis=${endMillis - startMillis} seconds=${(endMillis - startMillis) / 1000.0}"))
     } yield Table(table, columns)
 
-    val tableFuture = tableTask.executeOn(io).runToFuture(io)
-
-    Await.result(tableFuture, 6.seconds)
   }
 
-  override def catalogs: List[Catalog] = {
+  override def catalogs: Task[List[Catalog]] = {
     if (state.catalogs.isEmpty) {
-      val catalogsTask = for {
-        newCatalogs <- Catalogs.inferCatalogsInSingleQuery
+      for {
+        newCatalogs <- Catalogs
+          .inferCatalogsInSingleQuery
+          .timeout(config.firstEmptyStateTimeoutInMillis.milli)
+          .onErrorFallbackTo(Task(Nil))
         _ <- Task(state.catalogs = newCatalogs)
       } yield newCatalogs
-
-      Await.result(catalogsTask.timeout(4.seconds).onErrorFallbackTo(Task(Nil)).runToFuture(io), 5.seconds)
-    } else state.catalogs
+    } else Task.now(state.catalogs)
   }
 
-  override def autocomplete: Map[String, List[String]] = {
+  override def autocomplete: Task[Map[String, List[String]]] = {
     if (state.autocomplete.isEmpty) {
-      val autocompleteTask = for {
-        newAutocomplete <- Autocomplete.get(catalogs)
+      for {
+        catalogList <- catalogs
+        newAutocomplete <- Autocomplete.get(catalogList)
         _ <- Task(state.autocomplete = newAutocomplete)
       } yield newAutocomplete
-
-      Await.result(autocompleteTask.timeout(4.seconds).onErrorFallbackTo(Task(Map.empty[String, List[String]])).runToFuture(io), 5.seconds)
-    } else state.autocomplete
+    } else Task.now(state.autocomplete)
   }
 
   def executeForSingleColumn(sql: String, delim: String = "") = {
