@@ -1,16 +1,18 @@
 package quix.presto
 
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Builder, Batch}
+import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Batch, Builder}
 import quix.presto.rest._
 
 import scala.collection.mutable
+import scala.concurrent.duration.{Duration, FiniteDuration}
 
 class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
                       error: Option[PrestoError] = Option.empty[PrestoError],
                       results: List[List[AnyRef]] = Nil,
                       queryId: String = "test-query-id",
-                      columns: List[String] = Nil) {
+                      columns: List[String] = Nil,
+                      delay: FiniteDuration = Duration.Zero) {
 
   def prestoColumns = {
     if (columns.nonEmpty) {
@@ -62,7 +64,7 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
         PrestoHealth(0, 0, 0, 0, 0, 0, 0, 0, 0)
       }
     }
-    new QueryExecutor(client).runTask(query, builder)
+    new QueryExecutor(client).runTask(query, builder).delayExecution(delay)
   }
 }
 
@@ -87,8 +89,8 @@ class TestQueryExecutor extends AsyncQueryExecutor[Batch] {
     this
   }
 
-  def withResults(results: List[List[AnyRef]], queryId: String = "query-id", columns: List[String] = Nil) = {
-    executions.enqueue(new SingleExecution(results = results, queryId = queryId, columns = columns))
+  def withResults(results: List[List[AnyRef]], queryId: String = "query-id", columns: List[String] = Nil, delay: FiniteDuration = Duration.Zero) = {
+    executions.enqueue(new SingleExecution(results = results, queryId = queryId, columns = columns, delay = delay))
     this
   }
 
