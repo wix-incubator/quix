@@ -4,8 +4,10 @@ import org.springframework.context.annotation.{Bean, Configuration, Import, Prim
 import quix.api.db.Db
 import quix.api.execute.{AsyncQueryExecutor, Batch}
 import quix.presto.TestQueryExecutor
-import quix.presto.db.RefreshableDb
+import quix.presto.db.{RefreshableDb, RefreshableDbConfig}
 import quix.web.spring._
+
+import scala.concurrent.duration.FiniteDuration
 
 @Configuration
 @Import(Array(classOf[SpringConfig]))
@@ -21,6 +23,7 @@ class SpringConfigWithTestExecutor {
 }
 
 object MockBeans {
+  val duration = FiniteDuration(5, "seconds")
   val queryExecutor = new TestQueryExecutor
-  val db = new RefreshableDb(queryExecutor)
+  val db = new RefreshableDb(queryExecutor, RefreshableDbConfig(duration, duration))
 }
