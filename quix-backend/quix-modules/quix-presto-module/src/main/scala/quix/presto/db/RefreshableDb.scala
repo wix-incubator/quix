@@ -67,6 +67,7 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Batch],
       for {
         catalogList <- catalogs
         newAutocomplete <- Autocomplete.get(catalogList)
+          .onErrorFallbackTo(Task(Map.empty[String, List[String]]))
         _ <- Task(state.autocomplete = newAutocomplete)
       } yield newAutocomplete
     } else Task.now(state.autocomplete)
