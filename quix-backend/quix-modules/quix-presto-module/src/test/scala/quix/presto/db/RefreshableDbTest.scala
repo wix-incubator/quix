@@ -68,7 +68,7 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
   class ctx extends Scope {
     val executor = new TestQueryExecutor
     val state = new DbState()
-    val config = RefreshableDbConfig(1000L, 1000L)
+    val config = RefreshableDbConfig(1000L.millis, 1000L.millis)
 
     val db = new RefreshableDb(executor, config, state)
 

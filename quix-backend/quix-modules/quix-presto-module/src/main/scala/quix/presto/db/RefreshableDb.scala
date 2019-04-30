@@ -13,7 +13,8 @@ import quix.core.utils.Chores
 
 import scala.concurrent.duration._
 
-case class RefreshableDbConfig(firstEmptyStateTimeoutInMillis: Long, requestTimeoutInMillis: Long)
+case class RefreshableDbConfig(firstEmptyStateTimeout: FiniteDuration,
+                               requestTimeout: FiniteDuration)
 
 class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Batch],
                     val config: RefreshableDbConfig,
@@ -40,7 +41,7 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Batch],
       startMillis <- Task(System.currentTimeMillis())
 
       columns <- executeFor(sql, mapper)
-        .timeout(config.requestTimeoutInMillis.milli)
+        .timeout(config.requestTimeout)
         .onErrorFallbackTo(Task(Nil))
 
       endMillis <- Task(System.currentTimeMillis())
@@ -54,7 +55,7 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Batch],
       for {
         newCatalogs <- Catalogs
           .inferCatalogsInSingleQuery
-          .timeout(config.firstEmptyStateTimeoutInMillis.milli)
+          .timeout(config.firstEmptyStateTimeout)
           .onErrorFallbackTo(Task(Nil))
         _ <- Task(state.catalogs = newCatalogs)
       } yield newCatalogs
