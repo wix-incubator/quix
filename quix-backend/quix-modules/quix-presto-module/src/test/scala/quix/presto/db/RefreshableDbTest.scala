@@ -10,6 +10,7 @@ import quix.presto.TestQueryExecutor
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 
 class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
 
@@ -67,8 +68,9 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
   class ctx extends Scope {
     val executor = new TestQueryExecutor
     val state = new DbState()
+    val config = RefreshableDbConfig(1000L, 1000L)
 
-    val db = new RefreshableDb(executor, state)
+    val db = new RefreshableDb(executor, config, state)
 
     def materialize[T](task: Task[T]): T = {
       val future = task.runToFuture(Scheduler.global)
@@ -87,17 +89,24 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
     "return table and columns" in new ctx {
       executor.withResults(List(List("uuid", "varchar")))
 
-      val table = db.table("sunduk", "tbl", "reg_users")
+      val table = materialize(db.table("sunduk", "tbl", "reg_users"))
 
       table.name must_=== "reg_users"
       table.children must contain(Kolumn("uuid", "varchar"))
+    }
+
+    "if state.catalogs is empty, but query didn't finish in time, fallback to empty state" in new ctx {
+      executor
+        .withResults(List(List("test-catalog", "test-schema", "test-table")), "first-query-id", delay = 11.seconds)
+
+      materialize(db.catalogs) must beEmpty
     }
 
     "if state.catalogs is empty, try inferring catalogs in single efficient query and store them" in new ctx {
       executor
         .withResults(List(List("test-catalog", "test-schema", "test-table")), "first-query-id")
 
-      db.catalogs must contain(Catalog("test-catalog", List(Schema("test-schema", List(Table("test-table", List.empty))))))
+      materialize(db.catalogs) must contain(Catalog("test-catalog", List(Schema("test-schema", List(Table("test-table", List.empty))))))
     }
 
     "calculate catalogs via single efficient query" in new ctx {
