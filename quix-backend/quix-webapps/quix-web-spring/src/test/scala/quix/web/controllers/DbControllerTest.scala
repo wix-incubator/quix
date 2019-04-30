@@ -70,7 +70,7 @@ class DbControllerTest extends E2EContext {
 
   @Test
   def handleAutoCompleteRequestWhenPrestoIsOffline(): Unit = {
-    executor.withException(new Exception("presto is down"))
+    executor.withExceptions(new Exception("presto is down"), 100)
 
     val actual = get[Map[String, List[String]]]("api/db/autocomplete")
 
