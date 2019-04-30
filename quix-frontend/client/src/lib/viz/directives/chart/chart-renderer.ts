@@ -7,15 +7,28 @@ import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/title'
 import 'echarts/lib/component/legend'
 
-function getXAxisType(filter: IFilterData, meta: IMeta) {
-  if (isDate(filter.x, meta)) {
-    return 'datetime';
-  }  if (isDimension(filter.x, meta)) {
-    return 'category';
+function getChartType(filter: IFilterData, meta: IMeta) {
+  if (isDimension(filter.x, meta)) {
+    return 'bar';
   }
-  return null;
+  return 'line';
+
 }
 
+function getXAxisType(filter: IFilterData, meta: IMeta) {
+  if (isDate(filter.x, meta)) {
+    return 'time';
+  } if (isDimension(filter.x, meta)) {
+    return 'category';
+  }
+  return 'value';
+}
+
+function getMaxInterval(xAxisType, data) {
+  const x = 0
+  const series = data[0];
+  return xAxisType === 'time' && series.data.length > 1 ? series.data[1][x] - series.data[0][x] : {};
+}
 export class ChartRenderer {
   private chart = null;
 
@@ -28,27 +41,26 @@ export class ChartRenderer {
   }
 
   public draw(data: IData[], filteredMeta: IMeta, meta: IMeta, filter: IFilterData) {
+    const chartType = getChartType(filter, meta);
     const xAxisType = getXAxisType(filter, meta);
+
+    const maxInterval = getMaxInterval(xAxisType, data);
+    data.map(series => (series as any).type = chartType);
 
     this.chart = echarts.init(this.container.get(0));
     this.chart.clear();
     this.chart.setOption({
-      title: {
-        text: null
-      },
       tooltip: {
-        formatter(params) {
-          const pdata = params.data || [0, 0];
-          return `${pdata[0].toFixed(2)}, ${pdata[1].toFixed(2)}`;
-        }
+        trigger: 'axis'
       },
       legend: {
         show: data.length > 1,
-        data: data.map((series: any) => series.name),
+        data: data.map(series => series['name']),
         bottom: true
       },
       xAxis: {
         type: xAxisType,
+        maxInterval,
         name: filter.x,
         nameLocation: 'center',
         nameTextStyle: {
@@ -68,6 +80,6 @@ export class ChartRenderer {
   }
 
   public destroy() {
-    this.chart.destroy();
+    this.chart.dispose();
   }
 }

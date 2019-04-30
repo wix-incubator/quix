@@ -2,7 +2,6 @@ import {VizData} from '../viz-data-service';
 import {IInputItem} from '../viz-conf';
 import {IMeta, IData, IFilterData} from './chart-conf';
 import {metaTransducer, inputFilterTransducer} from '../../transducers/chart';
-import { isDimension } from '../../services/chart/chart-utils';
 
 /**
  * Class responsible for input transformation and filtering
@@ -28,7 +27,6 @@ export class ChartData extends VizData<IInputItem, IMeta, IData, IFilterData> {
 
         res[serieIndexes[key]] = res[serieIndexes[key]] || {
           name: key,
-          type: isDimension(filter.x, this.getMeta()) ? 'bar' : 'line',
           data: []
         };
 
