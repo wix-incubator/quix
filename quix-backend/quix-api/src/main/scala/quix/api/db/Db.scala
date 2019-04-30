@@ -1,5 +1,7 @@
 package quix.api.db
 
+import monix.eval.Task
+
 sealed case class Catalog(name: String,
                           children: List[Schema],
                           `type`: String = "catalog")
@@ -17,9 +19,9 @@ sealed case class Kolumn(name: String,
                          `type`: String = "column")
 
 trait Db {
-  def catalogs: List[Catalog]
+  def catalogs: Task[List[Catalog]]
 
-  def autocomplete: Map[String, List[String]]
+  def autocomplete: Task[Map[String, List[String]]]
 
-  def table(catalog: String, schema: String, table: String): Table
+  def table(catalog: String, schema: String, table: String): Task[Table]
 }

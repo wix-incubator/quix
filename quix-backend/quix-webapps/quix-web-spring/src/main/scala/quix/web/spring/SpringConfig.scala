@@ -9,12 +9,12 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration}
 import org.springframework.core.env.Environment
 import quix.api.db.Db
-import quix.api.execute.{AsyncQueryExecutor, DownloadableQueries, ExecutionEvent, Batch}
+import quix.api.execute.{AsyncQueryExecutor, Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.users.DummyUsers
 import quix.core.download.DownloadableQueriesImpl
 import quix.core.utils.JsonOps
 import quix.presto._
-import quix.presto.db.RefreshableDb
+import quix.presto.db.{RefreshableDb, RefreshableDbConfig}
 import quix.presto.rest.ScalaJPrestoStateClient
 import quix.web.auth.JwtUsers
 import quix.web.controllers.{DbController, DownloadController}
@@ -100,9 +100,10 @@ class PrestoConfiguration extends LazyLogging {
 @Configuration
 class Controllers extends LazyLogging {
 
-  @Bean def initDbController(db: Db) = {
+
+  @Bean def initDbController(db: Db, config: RefreshableDbConfig) = {
     logger.info("event=[spring-config] bean=[DbController]")
-    new DbController(db)
+    new DbController(db, config.requestTimeout)
   }
 
   @Bean def initDownloadController(downloadableQueries: DownloadableQueries[Batch, ExecutionEvent]): DownloadController = {
@@ -114,11 +115,22 @@ class Controllers extends LazyLogging {
 @Configuration
 class DbConfig extends LazyLogging {
 
-  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[Batch]): Db = {
+  import scala.concurrent.duration._
+
+  @Bean def initRefreshableDbConfig(env: Environment): RefreshableDbConfig = {
+    val firstEmptyStateDelay = env.getProperty("db.state.firstDelayInMillis", classOf[Long], 1000L * 10)
+    val requestTimeout = env.getProperty("db.state.requestDelayInMillis", classOf[Long], 5000L)
+
+    logger.info(s"event=[spring-config] bean=[RefreshableDbConfig] firstEmptyStateDelay=$firstEmptyStateDelay requestTimeout=$requestTimeout")
+
+    RefreshableDbConfig(firstEmptyStateDelay.millis, requestTimeout.millis)
+  }
+
+  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[Batch], config: RefreshableDbConfig): Db = {
     val initialDelay = env.getProperty("db.refresh.initialDelayInMinutes", classOf[Long], 1L)
     val delay = env.getProperty("db.refresh.delayInMinutes", classOf[Long], 15L)
 
-    val db = new RefreshableDb(executor)
+    val db = new RefreshableDb(executor, config)
 
     logger.info(s"event=[spring-config] bean=[DbController] initial-delay=$initialDelay delay=$delay")
 
