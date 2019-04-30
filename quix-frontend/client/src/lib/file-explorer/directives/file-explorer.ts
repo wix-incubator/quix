@@ -47,7 +47,7 @@ function initScope(scope, controller: Controller, depth: number) {
       expandAllFolders: false,
       hideEmptyFolders: false,
       folderMode: 'expand', // expand|select 
-      settings: false
+      draggable: false
     }, ({orderBy, orderReversed, fileAlias}) => {
       scope.options.fileAlias = isArray(fileAlias) ? fileAlias : [fileAlias];
       scope.vm.order.setField(orderBy, orderReversed);
@@ -100,8 +100,8 @@ function initScope(scope, controller: Controller, depth: number) {
           controller.syncItem(item, 'folderMoved');
         }
       },
-      onFolderDragStart(_, __, folder: Folder) {
-        // scope.vm.folder.toggleOpen(folder, false);
+      onDrag(item: Folder | File) {
+        return item.getName();
       },
       onFolderBlur(folder: Folder) {
         scope.vm.folder.toggleEdit(folder, false);
@@ -134,9 +134,6 @@ function initScope(scope, controller: Controller, depth: number) {
           scope.vm.folder.setCurrent(null);
           controller.clickFile(file);
         }
-      },
-      onSettingsClick(folder: Folder) {
-        controller.fireEvent(folder, 'settingsClicked');
       }
     });
 
@@ -210,7 +207,7 @@ export function fileExplorer() {
 
         initScope(scope, controller, 0);
 
-        scope.container = element.addClass(`fe-folder-mode-${scope.options.folderMode}`);
+        element.addClass(`fe-folder-mode-${scope.options.folderMode}`);
       }
     }
   });

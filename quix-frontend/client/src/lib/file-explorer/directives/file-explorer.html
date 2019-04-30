@@ -24,19 +24,28 @@
           ng-click="events.onFolderClick(folder)"
           drag="!readonly"
           jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
-          jqyoui-options="{helper: 'clone', distance: 5, scroll: true, containment: container}"
+          jqyoui-options="{
+            helper: 'clone',
+            distance: 5,
+            scroll: true,
+            appendTo: 'body',
+            containment: options.draggable ? 'window' : vm.container
+          }"
           ng-model="folder"
         >
           <span class="fe-icon-container" bi-html="renderFolderIcon(folder)"></span>
 
-          <span>
+          <span bi-draggable="events.onDrag(folder)">
             <span
+              ng-if="vm.folders.get(folder).edit.enabled"
               ng-model="folder.name"
               contenteditable="{{vm.folders.get(folder).edit.enabled}}"
               on-change="events.onFolderRenamed(folder)"
               on-blur="events.onFolderBlur(folder)"
               ce-options="::{autoEdit: true}"
             >{{folder.getName()}}</span>
+
+            <span ng-if="!vm.folders.get(folder).edit.enabled">{{folder.getName()}}</span>
           </span>
         </span>
       </div>
@@ -82,13 +91,19 @@
       class="fe-item {{::'fe-item-depth-' + depth}} bi-spread bi-align bi-pointer"
       drag="!readonly"
       jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
-      jqyoui-options="{helper: 'clone', distance: 5, scroll: true, containment: container}"
+      jqyoui-options="{
+        helper: 'clone',
+        distance: 5,
+        scroll: true,
+        appendTo: 'body',
+        containment: options.draggable ? 'window' : vm.container
+      }"
       ng-model="file"
       title="{{::file.getName()}}"
     >
-      <span class="bi-align">
+      <span class="fe-item-name bi-align">
         <span class="fe-icon-container" bi-html="renderFileIcon(file)"></span>
-        <span>{{file.getName()}}</span>
+        <span bi-draggable="events.onDrag(file)">{{file.getName()}}</span>
       </span>
     </div>
   </li>

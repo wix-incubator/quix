@@ -20,7 +20,7 @@ export default class Controller {
   private readonly $transclude: ng.ITranscludeFunction;
   private readonly slots: Record<string, boolean> = {};
 
-  constructor(private readonly $scope, $element, $transclude) {
+  constructor(private readonly $scope, private readonly $element, $transclude) {
     this.instance = new Instance($scope);
     this.ngModel = $element.controller('ngModel');
     this.$transclude = $transclude;
@@ -42,6 +42,10 @@ export default class Controller {
 
   getSlots() {
     return this.slots;
+  }
+
+  getContainer() {
+    return this.$element;
   }
 
   setCurrentFolder(folder: Folder): Controller {
@@ -101,7 +105,7 @@ export default class Controller {
 
     if (!this.$transclude.isSlotFilled('folderIcon')) {
       html = inject('$compile')(`
-        <i class="fe-icon fe-folder-icon bi-icon">folder</i>
+        <i class="fe-icon bi-icon bi-warning">folder</i>
       `)(assign(scope.$new(), {folder}));
     } else {
       html = this.$transclude((_, s) => s.folder = itemToDef(folder), null, 'folderIcon');
@@ -149,17 +153,6 @@ export default class Controller {
           >
             <i class="bi-icon bi-warning">create_new_folder</i>
             <span>New folder</span>
-          </li>
-
-          <li class="bi-dropdown-separator" ng-if="::options.settings"></li>
-
-          <li 
-            class="bi-align bi-space-h"
-            ng-if="::options.settings"
-            ng-click="events.onSettingsClick && events.onSettingsClick(folder)"
-          >
-            <i class="bi-icon">settings</i>
-            <span>Settings</span>
           </li>
 
           <li class="bi-dropdown-separator"></li>

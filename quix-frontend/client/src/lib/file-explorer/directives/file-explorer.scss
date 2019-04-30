@@ -2,8 +2,6 @@
 
 bi-file-explorer,
 bi-file-explorer-inner {
-  $folder-color: $orange--500;
-  $primary-color: $blue--500;
   $hover-color: $grey--200;
 
   position: relative;
@@ -13,30 +11,8 @@ bi-file-explorer-inner {
     user-select: none;
     cursor: default !important;
 
-    .fe-icon-container {
-      line-height: 0;
-    }
-
-    .fe-icon {
-      margin-right: 4px;
-      font-size: 18px;
-      color: $grey--600;
-      vertical-align: text-bottom;
-    }
-
     .fe-menu-icon {
       line-height: 33px;
-    }
-  }
-
-  .fe-item {
-    padding-right: 5px;
-    height: 35px;
-
-    > div {
-      flex-grow: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
   }
 
@@ -84,10 +60,6 @@ bi-file-explorer-inner {
           }
         }
       }
-
-      .fe-icon.fe-folder-icon {
-        color: $folder-color;
-      }
     }
   }
   
@@ -100,11 +72,11 @@ bi-file-explorer-inner {
 
         &.active {
           background-color: transparent !important;
-          border-color: $primary-color !important;
+          border-color: $primary !important;
           font-weight: bold;
   
           .fe-icon {
-            color: $primary-color;
+            color: $primary;
           }
         }
       }
@@ -148,5 +120,30 @@ bi-file-explorer-inner {
         padding: 0 7px;
       }
     }
+  }
+}
+
+.fe-item {
+  padding-right: 5px;
+  height: 35px;
+
+  > div {
+    flex-grow: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* The rule is global because it needs to be applied during dragging */
+.fe-item-name {
+  .fe-icon-container {
+    line-height: 0;
+  }
+
+  .fe-icon {
+    margin-right: 4px;
+    font-size: 18px;
+    color: $grey--600;
+    vertical-align: text-bottom;
   }
 }

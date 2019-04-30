@@ -80,6 +80,8 @@ export default {
       this.slots = {
         menu: this.$params.controller.getSlots().menu
       };
+
+      this.container = this.$params.controller.getContainer();
     }
   }
 };
