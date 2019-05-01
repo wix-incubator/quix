@@ -72,17 +72,13 @@ export class QuixEventBusDriver {
     }).compile();
 
     eventBus = module.get(QuixEventBus);
-    notebookRepo = module.get<Repository<DbNotebook>>(
-      getRepositoryToken(DbNotebook),
-    );
-    noteRepo = module.get<Repository<DbNote>>(getRepositoryToken(DbNote));
-    eventsRepo = module.get<Repository<DbAction>>(getRepositoryToken(DbAction));
-    fileTreeRepo = module.get<FileTreeRepository>(
-      getCustomRepositoryToken(FileTreeRepository),
-    );
-    folderRepo = module.get<Repository<DbFolder>>(getRepositoryToken(DbFolder));
-    conn = module.get<Connection>(getConnectionToken());
-    configService = module.get<ConfigService>(ConfigService);
+    notebookRepo = module.get(getRepositoryToken(DbNotebook));
+    noteRepo = module.get(getRepositoryToken(DbNote));
+    eventsRepo = module.get(getRepositoryToken(DbAction));
+    fileTreeRepo = module.get(FileTreeRepository);
+    folderRepo = module.get(getRepositoryToken(DbFolder));
+    conn = module.get(getConnectionToken());
+    configService = module.get(ConfigService);
 
     return new QuixEventBusDriver(
       eventBus,
