@@ -84,6 +84,9 @@ class QueryExecutor(val client: PrestoStateClient,
       _ <- Task {
         query.catalog = info.setCatalog
         query.schema = info.setSchema
+
+        query.session = (query.session ++ info.setSessionProperties)
+          .filterKeys(key => !info.resetSessionProperties.contains(key))
       }
       _ <- Task.eval(logger.info(s"method=runAsync event=end query-id=${query.id} user=${query.user.email} rows=${builder.rowCount}"))
     } yield ()

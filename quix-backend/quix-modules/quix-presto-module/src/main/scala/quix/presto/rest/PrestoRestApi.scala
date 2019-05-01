@@ -64,7 +64,9 @@ case class PrestoQueryInfo(queryId: String,
                            state: String,
                            queryStats: PrestoQueryStats,
                            setCatalog: Option[String],
-                           setSchema: Option[String])
+                           setSchema: Option[String],
+                           setSessionProperties: Map[String, String],
+                           resetSessionProperties: List[String])
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 case class PrestoQueryStats(outputDataSize: String,
@@ -94,12 +96,6 @@ object PrestoStateToResults {
 
     Batch(state.data.getOrElse(Nil), columns, resultStats, error)
   }
-}
-
-trait PrestoSql {
-  def text: String
-
-  def session: Map[String, String]
 }
 
 class ActiveQueryNotFound(id: String) extends RuntimeException(s"query with id $id wasn't not found")
