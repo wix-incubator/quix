@@ -62,7 +62,9 @@ case class PrestoHealth(runningQueries: Int,
 @JsonIgnoreProperties(ignoreUnknown = true)
 case class PrestoQueryInfo(queryId: String,
                            state: String,
-                           queryStats: PrestoQueryStats)
+                           queryStats: PrestoQueryStats,
+                           setCatalog: Option[String],
+                           setSchema: Option[String])
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 case class PrestoQueryStats(outputDataSize: String,
