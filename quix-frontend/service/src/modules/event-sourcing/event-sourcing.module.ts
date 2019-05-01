@@ -16,11 +16,12 @@ import {NotePlugin} from './plugins/note-plugin';
 import {NotebookPlugin} from './plugins/notebook-plugin';
 import {FileTreePlugin} from './plugins/file-tree-plugin';
 import {AuthModule} from '../auth/auth.module';
+import {PassportModule} from '@nestjs/passport';
 import {EventsController} from './events.controller';
 
 @Module({
   imports: [
-    AuthModule,
+    AuthModule.create(),
     TypeOrmModule.forFeature([
       DbFileTreeNode,
       DbFolder,
@@ -31,6 +32,7 @@ import {EventsController} from './events.controller';
       NoteRepository,
     ]),
     ConfigModule,
+    PassportModule,
   ],
   controllers: [EventsController],
   providers: [

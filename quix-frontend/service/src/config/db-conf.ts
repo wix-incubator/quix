@@ -1,6 +1,5 @@
-import {ColumnType, ColumnOptions} from 'typeorm';
-import {getEnv} from './utils';
-import {QuixEnviorments} from './utils';
+import {ColumnOptions} from 'typeorm';
+import {getEnv} from './env';
 import {FileType} from 'shared/entities/file';
 
 /* A comptability layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
@@ -106,10 +105,5 @@ const SqliteConf: DbColumnConf = {
       .join(' AND ');
   },
 };
-
-export const dbConf = [
-  QuixEnviorments.TEST,
-  QuixEnviorments.LOCALUSER,
-].includes(getEnv())
-  ? SqliteConf
-  : MySqlConf;
+debugger;
+export const dbConf = getEnv().DbType === 'mysql' ? MySqlConf : SqliteConf;
