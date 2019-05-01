@@ -6,7 +6,7 @@ import quix.api.execute.{ActiveQuery, Builder, Batch, BatchColumn}
 
 import scala.collection.mutable.ListBuffer
 
-class SingleBuilder extends Builder[Batch] with LazyLogging {
+class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
 
   private val rows = ListBuffer.empty[Seq[Any]]
   private val headers = ListBuffer.empty[BatchColumn]
@@ -18,7 +18,7 @@ class SingleBuilder extends Builder[Batch] with LazyLogging {
     failureCause = Option(e)
   }
 
-  override def startSubQuery(queryId: String, code: String, results: Batch) = Task {
+  override def startSubQuery(queryId: String, code: Code, results: Batch) = Task {
     addSubQuery(queryId, results)
   }
 
@@ -36,9 +36,9 @@ class SingleBuilder extends Builder[Batch] with LazyLogging {
 
   override def endSubQuery(queryId: String) = Task.unit
 
-  override def start(query: ActiveQuery) = Task.unit
+  override def start(query: ActiveQuery[Code]) = Task.unit
 
-  override def end(query: ActiveQuery) = Task.unit
+  override def end(query: ActiveQuery[Code]) = Task.unit
 
   def isFailure = failureCause.isDefined
 

@@ -14,7 +14,7 @@ case class PrestoConfig(statementsApi: String, healthApi: String, queryInfoApi: 
 class PrestoQuixModule(val prestoExecutions: PrestoExecutions) extends ExecutionModule[String, Batch] with LazyLogging {
   override def name: String = "presto"
 
-  override def start(command: StartCommand[String], id: String, user: User, resultBuilder: Builder[Batch]): Task[Unit] = {
+  override def start(command: StartCommand[String], id: String, user: User, resultBuilder: Builder[String, Batch]): Task[Unit] = {
     logger.info(s"event=start-command consumer-id=$id user=${user.email}")
 
     val sqls = PlainPrestoSqlSupport.splitToStatements(command.code)

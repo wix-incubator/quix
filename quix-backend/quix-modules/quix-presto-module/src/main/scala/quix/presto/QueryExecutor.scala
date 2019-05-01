@@ -13,9 +13,9 @@ import scala.concurrent.duration._
 class QueryExecutor(val client: PrestoStateClient,
                     val initialAdvanceDelay: FiniteDuration = 100.millis,
                     val maxAdvanceDelay: FiniteDuration = 33.seconds)
-  extends AsyncQueryExecutor[Batch] with LazyLogging {
+  extends AsyncQueryExecutor[String, Batch] with LazyLogging {
 
-  def loop(prestoId: String, state: String, rows: Int, nextUri: Option[String], builder: Builder[Batch], query: ActiveQuery, delay: FiniteDuration = initialAdvanceDelay): Task[Option[String]] = {
+  def loop(prestoId: String, state: String, rows: Int, nextUri: Option[String], builder: Builder[String, Batch], query: ActiveQuery[String], delay: FiniteDuration = initialAdvanceDelay): Task[Option[String]] = {
     logger.info(s"method=loop event=start query-id=${query.id} user=${query.user.email} presto-id=$prestoId state=$state rows=$rows")
 
     nextUri match {
@@ -45,7 +45,7 @@ class QueryExecutor(val client: PrestoStateClient,
       delay.mul(2).min(maxAdvanceDelay) else initialAdvanceDelay
   }
 
-  def advance(uri: String, builder: Builder[Batch], queryId: String, query: ActiveQuery, delay: FiniteDuration = initialAdvanceDelay): Task[PrestoState] = {
+  def advance(uri: String, builder: Builder[String, Batch], queryId: String, query: ActiveQuery[String], delay: FiniteDuration = initialAdvanceDelay): Task[PrestoState] = {
     logger.info(s"method=advance query-id=${query.id} user=${query.user.email} presto-id=$queryId uri=$uri delay=${delay.toMillis / 1000.0}")
     client.advance(uri)
       .delayExecution(delay)
@@ -63,7 +63,7 @@ class QueryExecutor(val client: PrestoStateClient,
       }
   }
 
-  def runTask(query: ActiveQuery, builder: Builder[Batch]): Task[Unit] = {
+  def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
     val executionTask = initClient(query, builder).bracket { firstState =>
       for {
         _ <- builder.startSubQuery(firstState.id, query.text, PrestoStateToResults(firstState))
@@ -94,7 +94,7 @@ class QueryExecutor(val client: PrestoStateClient,
     task
   }
 
-  def initClient(query: ActiveQuery, builder: Builder[Batch]): Task[PrestoState] = {
+  def initClient(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[PrestoState] = {
     logger.info(s"method=initClient event=start query-id=${query.id} user=${query.user.email}")
     client.init(query).onErrorHandleWith {
       case e: Exception =>

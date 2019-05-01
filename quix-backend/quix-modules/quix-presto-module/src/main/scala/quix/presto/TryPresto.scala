@@ -27,7 +27,7 @@ object TryPresto extends LazyLogging {
     val results = for {
       i <- 1 to 5
       query = activeQuery(s"-- query $i\n select 1")
-      builder = new SingleBuilder
+      builder = new SingleBuilder[String]
     } yield executor.runTask(query, builder).map(_ => builder)
 
     val futureResults = Task.sequence(results).runToFuture(Scheduler.global)
@@ -39,7 +39,7 @@ object TryPresto extends LazyLogging {
     } logger.info(s"builder $index got ${builder.build().length} rows")
   }
 
-  def activeQuery(text: String): ActiveQuery = {
+  def activeQuery(text: String): ActiveQuery[String] = {
     val id = UUID.randomUUID().toString
     ActiveQuery(id, text, 1, User(id = "user", email = "user@quix"), false, Map.empty)
   }

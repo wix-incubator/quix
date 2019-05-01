@@ -22,7 +22,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
   class ctx extends Scope {
     val client = mock[PrestoStateClient]
-    val builder = spy(new SingleBuilder)
+    val builder = spy(new SingleBuilder[String])
     val queryId = UUID.randomUUID().toString
     val query = ActiveQuery(queryId, "select 1", 1, User("user@quix"), false, Map.empty)
     val stateWithoutNext = {

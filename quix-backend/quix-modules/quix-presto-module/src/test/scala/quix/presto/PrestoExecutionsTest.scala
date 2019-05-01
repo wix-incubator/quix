@@ -15,19 +15,19 @@ class PrestoExecutionsTest extends SpecWithJUnit with Mockito {
     val executor = new TestQueryExecutor
     val executions = new PrestoExecutions(executor)
     val user = User("test")
-    val builder = spy(new SingleBuilder)
+    val builder = spy(new SingleBuilder[String])
     val builderSpy = spy(builder)
 
     val zeroQueries: Seq[String] = Seq.empty
     val oneQuery: Seq[String] = Seq("select 1")
     val twoQueries: Seq[String] = Seq("select 1", "select 2")
 
-    def have(item: String): Matcher[SingleBuilder] = {
-      be_==(item) ^^ ((resultBuilder: SingleBuilder) => resultBuilder.build().map(_.mkString(",")).mkString)
+    def have(item: String): Matcher[SingleBuilder[String]] = {
+      be_==(item) ^^ ((resultBuilder: SingleBuilder[String]) => resultBuilder.build().map(_.mkString(",")).mkString)
     }
 
-    def haveZeroResults: Matcher[SingleBuilder] = {
-      be_==(0) ^^ ((builder: SingleBuilder) => builder.build().size)
+    def haveZeroResults: Matcher[SingleBuilder[String]] = {
+      be_==(0) ^^ ((builder: SingleBuilder[String]) => builder.build().size)
     }
   }
 

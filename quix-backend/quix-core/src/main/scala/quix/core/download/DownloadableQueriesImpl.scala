@@ -7,8 +7,8 @@ import quix.api.execute._
 
 case class DownloadConfig(waitTimeForDownloadInMillis: Long)
 
-class DownloadableQueriesImpl(val downloadConfig: DownloadConfig = DownloadConfig(1000L * 30))
-  extends DownloadableQueries[Batch, ExecutionEvent] with LazyLogging {
+class DownloadableQueriesImpl[Code](val downloadConfig: DownloadConfig = DownloadConfig(1000L * 30))
+  extends DownloadableQueries[Code, Batch, ExecutionEvent] with LazyLogging {
 
   import scala.collection.JavaConverters._
 
@@ -26,7 +26,7 @@ class DownloadableQueriesImpl(val downloadConfig: DownloadConfig = DownloadConfi
     queries.put(query.id, query)
   }
 
-  override def adapt(delegate: Builder[Batch], consumer: Consumer[ExecutionEvent]): Builder[Batch] = {
+  override def adapt(delegate: Builder[Code, Batch], consumer: Consumer[ExecutionEvent]): Builder[Code, Batch] = {
     new DownloadBuilder(delegate, this, consumer, downloadConfig)
   }
 }

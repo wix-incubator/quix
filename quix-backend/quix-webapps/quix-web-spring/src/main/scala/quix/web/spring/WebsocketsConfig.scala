@@ -19,7 +19,7 @@ import quix.web.controllers.PrestoController
 @ImportResource(Array("classpath:websockets.xml"))
 class WebsocketsConfig extends LazyLogging {
 
-  @Bean def initPrestoController(users: Users, prestoModule: PrestoQuixModule, downloadableQueries: DownloadableQueries[Batch, ExecutionEvent]) = {
+  @Bean def initPrestoController(users: Users, prestoModule: PrestoQuixModule, downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]) = {
     logger.info("event=[spring-config] bean=[PrestoController]")
     new PrestoController(prestoModule, users, downloadableQueries)
   }

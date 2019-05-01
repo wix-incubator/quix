@@ -71,14 +71,14 @@ class PrestoConfiguration extends LazyLogging {
     config
   }
 
-  @Bean def initQueryExecutor(config: PrestoConfig): AsyncQueryExecutor[Batch] = {
+  @Bean def initQueryExecutor(config: PrestoConfig): AsyncQueryExecutor[String, Batch] = {
     logger.info("event=[spring-config] bean=[QueryExecutor]")
 
     val prestoClient = new ScalaJPrestoStateClient(config)
     new QueryExecutor(prestoClient)
   }
 
-  @Bean def initPrestoExecutions(executor: AsyncQueryExecutor[Batch]): PrestoExecutions = {
+  @Bean def initPrestoExecutions(executor: AsyncQueryExecutor[String, Batch]): PrestoExecutions = {
     logger.info("event=[spring-config] bean=[PrestoExecutions]")
 
     val execution: PrestoExecutions = new PrestoExecutions(executor)
@@ -91,7 +91,7 @@ class PrestoConfiguration extends LazyLogging {
     new PrestoQuixModule(executions)
   }
 
-  @Bean def initDownloadableQueries: DownloadableQueries[Batch, ExecutionEvent] = {
+  @Bean def initDownloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent] = {
     logger.info(s"event=[spring-config] bean=[DownloadableQueries]")
     new DownloadableQueriesImpl
   }
@@ -106,7 +106,7 @@ class Controllers extends LazyLogging {
     new DbController(db, config.requestTimeout)
   }
 
-  @Bean def initDownloadController(downloadableQueries: DownloadableQueries[Batch, ExecutionEvent]): DownloadController = {
+  @Bean def initDownloadController(downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]): DownloadController = {
     logger.info("event=[spring-config] bean=[DownloadController]")
     new DownloadController(downloadableQueries)
   }
@@ -126,7 +126,7 @@ class DbConfig extends LazyLogging {
     RefreshableDbConfig(firstEmptyStateDelay.millis, requestTimeout.millis)
   }
 
-  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[Batch], config: RefreshableDbConfig): Db = {
+  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[String, Batch], config: RefreshableDbConfig): Db = {
     val initialDelay = env.getProperty("db.refresh.initialDelayInMinutes", classOf[Long], 1L)
     val delay = env.getProperty("db.refresh.delayInMinutes", classOf[Long], 15L)
 

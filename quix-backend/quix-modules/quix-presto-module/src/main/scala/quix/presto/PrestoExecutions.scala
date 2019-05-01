@@ -9,16 +9,16 @@ import monix.eval.Task
 import quix.api.execute._
 import quix.api.users.User
 
-class PrestoExecutions(val executor: AsyncQueryExecutor[Batch])
+class PrestoExecutions(val executor: AsyncQueryExecutor[String, Batch])
   extends Executions[String, Batch] with LazyLogging {
 
-  val queries: Cache[String, ActiveQuery] = CacheBuilder.newBuilder()
+  val queries: Cache[String, ActiveQuery[String]] = CacheBuilder.newBuilder()
     .maximumSize(1000)
     .expireAfterWrite(90, TimeUnit.MINUTES)
     .build()
 
-  def execute(sqls: Seq[String], user: User, resultBuilder: Builder[Batch]): Task[Unit] = {
-    val activeQuery = ActiveQuery(UUID.randomUUID().toString, "", sqls.size, user, isCancelled = false, session = Map.empty)
+  def execute(sqls: Seq[String], user: User, resultBuilder: Builder[String, Batch]): Task[Unit] = {
+    val activeQuery = ActiveQuery[String](UUID.randomUUID().toString, "", sqls.size, user, isCancelled = false, session = Map.empty)
 
     val loop = for {
       _ <- Task.eval(queries.put(activeQuery.id, activeQuery))
@@ -34,7 +34,7 @@ class PrestoExecutions(val executor: AsyncQueryExecutor[Batch])
     }
   }
 
-  def makeLoop(activeQuery: ActiveQuery, sqls: Seq[String], builder: Builder[Batch]): Task[Unit] = {
+  def makeLoop(activeQuery: ActiveQuery[String], sqls: Seq[String], builder: Builder[String, Batch]): Task[Unit] = {
     Task.eval(builder.lastError).flatMap {
       case None =>
         sqls match {

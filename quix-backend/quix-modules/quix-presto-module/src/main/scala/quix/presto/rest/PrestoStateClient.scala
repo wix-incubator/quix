@@ -5,7 +5,7 @@ import quix.api.execute.ActiveQuery
 
 trait PrestoStateClient {
 
-  def init(query: ActiveQuery): Task[PrestoState]
+  def init(query: ActiveQuery[String]): Task[PrestoState]
 
   def advance(uri: String): Task[PrestoState]
 

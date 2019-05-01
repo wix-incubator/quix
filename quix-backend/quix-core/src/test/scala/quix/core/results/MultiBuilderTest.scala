@@ -13,8 +13,8 @@ class MultiBuilderTest extends SpecWithJUnit {
 
   class ctx extends Scope {
     val consumer = new TestConsumer[ExecutionEvent]
-    val builder = new MultiBuilder(consumer)
-    val query = ActiveQuery("id", "text", 1, User("test"), isCancelled = false, Map.empty)
+    val builder = new MultiBuilder[String](consumer)
+    val query = ActiveQuery[String]("id", "text", 1, User("test"), isCancelled = false, Map.empty)
   }
 
   "MultiBuilder.start" should {

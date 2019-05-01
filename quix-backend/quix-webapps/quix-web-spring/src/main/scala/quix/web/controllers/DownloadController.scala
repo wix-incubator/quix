@@ -11,7 +11,7 @@ import quix.api.execute._
 
 @Controller
 @RequestMapping(Array("/api"))
-class DownloadController(val downloadableQueries: DownloadableQueries[Batch, ExecutionEvent]) extends LazyLogging {
+class DownloadController(val downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]) extends LazyLogging {
   val charset = Charset.forName("UTF-8")
 
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))

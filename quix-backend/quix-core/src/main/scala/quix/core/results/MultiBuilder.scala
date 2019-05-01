@@ -4,25 +4,25 @@ import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
 
-class MultiBuilder(val consumer: Consumer[ExecutionEvent])
-  extends Builder[Batch] with LazyLogging {
+class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
+  extends Builder[Code, Batch] with LazyLogging {
 
   val started = System.currentTimeMillis()
   var rows = 0L
   val sentColumnsPerQuery = collection.mutable.Set.empty[String]
   var lastError: Option[Throwable] = None
 
-  override def start(query: ActiveQuery) = {
+  override def start(query: ActiveQuery[Code]) = {
     consumer.write(Start(query.id, query.numOfQueries))
   }
 
-  override def end(query: ActiveQuery) = {
+  override def end(query: ActiveQuery[Code]) = {
     consumer.write(End(query.id))
   }
 
-  override def startSubQuery(queryId: String, code: String, results: Batch) = {
+  override def startSubQuery(queryId: String, code: Code, results: Batch) = {
     val startTask = consumer.write(SubQueryStart(queryId))
-    val detailsTask = consumer.write(SubQueryDetails(queryId, code))
+    val detailsTask = consumer.write(SubQueryDetails[Code](queryId, code))
     val subqueryTask = addSubQuery(queryId, results)
 
     Task.sequence(List(startTask, detailsTask, subqueryTask)).map(_ => ())
