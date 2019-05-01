@@ -6,27 +6,34 @@ matrix:
       node_js:
         - 10
       cache: npm
+      env: PROJECT=shared
       install:
+        - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - cd ./quix-frontend/shared
         - npm install
       script:
+        - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - npm test
     - stage: test
       name: "Client"
       language: node_js
+      env: PROJECT=client
       node_js:
         - 10
       cache: npm
       install:
+        - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - cd ./quix-frontend/shared
         - npm install
         - cd ../client
         - npm install
       script:
+        - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - npm test
     - stage: test
       name: "Frontend"
       language: node_js
+      env: PROJECT=service
       node_js:
         - 10
       cache: npm
@@ -42,14 +49,17 @@ matrix:
       before_install:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS quixtest;'
       install:
+        - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - cd ./quix-frontend/shared
         - npm install
         - cd ../service
         - npm install
       script:
+        - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - npm run test:mysql
     - state: test
       name: "Backend"
+      env: PROJECT=backend
       language: java
       cache:
         directories:
@@ -57,6 +67,8 @@ matrix:
       before_install:
         - cd ./quix-backend
       install:
+        - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
       script:
+        - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - mvn test
