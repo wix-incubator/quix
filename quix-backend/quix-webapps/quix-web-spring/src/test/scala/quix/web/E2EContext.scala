@@ -73,4 +73,9 @@ class MyListener(payloads: String*) extends WebSocketListener with StringJsonHel
   override def onTextFrame(payload: String, finalFragment: Boolean, rsv: Int): Unit = {
     messages += payload
   }
+
+  def await(message: String) = {
+    while (!messages.contains(message))
+      Thread.sleep(10)
+  }
 }

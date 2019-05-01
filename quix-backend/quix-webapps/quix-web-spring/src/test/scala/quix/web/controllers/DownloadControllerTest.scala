@@ -48,14 +48,14 @@ class DownloadControllerTest extends E2EContext {
 
     val listener = runAndDownload("select 1 as foo;\nselect 2 as bar;")
 
+    listener.await("""{"event":"query-download","data":{"id":"query-id-1","url":"/api/download/query-id-1"}}""")
     val first = getResponse("/api/download/query-id-1")
+
+    listener.await("""{"event":"query-download","data":{"id":"query-id-2","url":"/api/download/query-id-2"}}""")
     val second = getResponse("/api/download/query-id-2")
 
     assertThat(first.body, Matchers.is("\"foo\"\n\"1\"\n"))
     assertThat(second.body, Matchers.is("\"bar\"\n\"2\"\n"))
-
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-download","data":{"id":"query-id-1","url":"/api/download/query-id-1"}}"""))
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-download","data":{"id":"query-id-2","url":"/api/download/query-id-2"}}"""))
   }
 
 }
