@@ -57,7 +57,7 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
 
       override def info(state: PrestoState): Task[PrestoQueryInfo] = Task.eval {
         val queryStats = PrestoQueryStats("0", "0", 0, "", "", "", 0)
-        PrestoQueryInfo(queryId, "FINISHED", queryStats, None, None)
+        PrestoQueryInfo(queryId, "FINISHED", queryStats, None, None, Map.empty, List.empty)
       }
 
       override def health(): Task[PrestoHealth] = Task.eval {

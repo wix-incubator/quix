@@ -1,7 +1,7 @@
 package quix.presto
 
 import org.specs2.mutable.Specification
-import quix.presto.PlainPrestoSqlSupport.{getSessionProperties => session, splitToStatements => split}
+import quix.presto.PlainPrestoSqlSupport.{splitToStatements => split}
 
 class PlainPrestoSqlSupportTest extends Specification {
 
@@ -24,20 +24,5 @@ class PlainPrestoSqlSupportTest extends Specification {
       split(sql) must contain("select 1", "select 2")
     }
 
-  }
-
-  "PlainPrestoSqlSupport.getSessionProperties" should {
-    "handle statements without session params" in {
-
-      val sql = session("select 1")
-      sql.text === "select 1"
-      sql.session must beEmpty
-    }
-
-    "handle statements with session params" in {
-      val sql = session("set session foo = 123;\nselect 1")
-      sql.text === "select 1"
-      sql.session === Map("foo" -> "123")
-    }
   }
 }

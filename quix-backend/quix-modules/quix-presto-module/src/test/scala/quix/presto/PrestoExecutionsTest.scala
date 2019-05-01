@@ -8,7 +8,6 @@ import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
 import quix.api.users.User
 import quix.core.results.SingleBuilder
-import quix.presto.rest.PrestoSql
 
 class PrestoExecutionsTest extends SpecWithJUnit with Mockito {
 
@@ -19,9 +18,9 @@ class PrestoExecutionsTest extends SpecWithJUnit with Mockito {
     val builder = spy(new SingleBuilder)
     val builderSpy = spy(builder)
 
-    val zeroQueries: Seq[PrestoSql] = Seq.empty
-    val oneQuery: Seq[PrestoSql] = Seq(PrestoSqlWithSession("select 1"))
-    val twoQueries: Seq[PrestoSql] = Seq(PrestoSqlWithSession("select 1"), PrestoSqlWithSession("select 2"))
+    val zeroQueries: Seq[String] = Seq.empty
+    val oneQuery: Seq[String] = Seq("select 1")
+    val twoQueries: Seq[String] = Seq("select 1", "select 2")
 
     def have(item: String): Matcher[SingleBuilder] = {
       be_==(item) ^^ ((resultBuilder: SingleBuilder) => resultBuilder.build().map(_.mkString(",")).mkString)
