@@ -58,6 +58,7 @@ export class QuixEventBusDriver {
           useFactory: async (cs: ConfigService) =>
             cs.getDbConnection([
               DbFileTreeNode,
+              FileTreeRepository,
               DbFolder,
               DbNote,
               DbNotebook,
