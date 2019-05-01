@@ -34,6 +34,22 @@ class ScalaJPrestoOpsTest extends SpecWithJUnit with MustMatchers {
       request.method must_=== "POST"
       request.headers must contain("x-presto-session" -> "foo=1, bar=2")
     }
+
+    "use catalog/schema from active query" in new ctx {
+      val queryWithCatalogs = query.copy(catalog = Some("catalog"), schema = Some("schema"))
+      val request = factory.buildInitRequest(queryWithCatalogs, config)
+
+      request.headers must contain("x-presto-catalog" -> "catalog")
+      request.headers must contain("x-presto-schema" -> "schema")
+    }
+
+    "fallback to default catalog/schema values from config if missing in active query" in new ctx {
+      val queryNoCatalogSchema = query.copy(catalog = None, schema = None)
+      val request = factory.buildInitRequest(queryNoCatalogSchema, config)
+
+      request.headers must contain("x-presto-catalog" -> "default-catalog")
+      request.headers must contain("x-presto-schema" -> "default-schema")
+    }
   }
 
 }

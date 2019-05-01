@@ -72,14 +72,19 @@ class QueryExecutor(val client: PrestoStateClient,
         _ <- loop(firstState.id, firstState.stats.state, firstState.data.map(_.size).getOrElse(0), firstState.nextUri, builder, query)
 
         _ <- builder.endSubQuery(firstState.id)
+        info <- client.info(firstState)
           .logOnError(s"method=runAsync event=error-endSubQuery query-id=${query.id} user=${query.user.email} presto-id=${firstState.id}")
-      } yield ()
+      } yield info
     }(client.close)
 
     val task = for {
       _ <- Task.eval(logger.info(s"method=runAsync event=start query-id=${query.id} user=${query.user.email} " +
         s"sql=${query.text.replace("\n", "-newline-").replace("\\s", "-space-")}"))
-      _ <- executionTask
+      info <- executionTask
+      _ <- Task {
+        query.catalog = info.setCatalog
+        query.schema = info.setSchema
+      }
       _ <- Task.eval(logger.info(s"method=runAsync event=end query-id=${query.id} user=${query.user.email} rows=${builder.rowCount}"))
     } yield ()
 

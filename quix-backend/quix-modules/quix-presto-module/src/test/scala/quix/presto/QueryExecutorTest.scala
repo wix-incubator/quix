@@ -14,7 +14,7 @@ import quix.api.users.User
 import quix.core.results.SingleBuilder
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
-import quix.presto.rest.{PrestoState, PrestoStateClient, PrestoStateToResults}
+import quix.presto.rest.{PrestoQueryInfo, PrestoState, PrestoStateClient, PrestoStateToResults}
 
 import scala.concurrent.duration._
 
@@ -36,6 +36,10 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     val stateWithDataRows = {
       """{"id":"20150720_141132_01041_k74p7","infoUri":"http://presto:8181/v1/query/20150720_141132_01041_k74p7","partialCancelUri":"http://172.16.210.140:8181/v1/stage/20150720_141132_01041_k74p7.0","nextUri":"http://presto:8181/v1/statement/20150720_141132_01041_k74p7/2","columns":[{"name":"Catalog","type":"varchar","typeSignature":{"rawType":"varchar","typeArguments":[],"literalArguments":[]}}],"data":[["raptor"],["system"],["jmx"],["apollo"],["events"],["sunduk"]],"stats":{"state":"RUNNING","scheduled":true,"nodes":1,"totalSplits":1,"queuedSplits":0,"runningSplits":0,"completedSplits":1,"userTimeMillis":0,"cpuTimeMillis":0,"wallTimeMillis":1,"processedRows":0,"processedBytes":0,"rootStage":{"stageId":"0","state":"RUNNING","done":false,"nodes":1,"totalSplits":1,"queuedSplits":0,"runningSplits":0,"completedSplits":1,"userTimeMillis":0,"cpuTimeMillis":0,"wallTimeMillis":1,"processedRows":6,"processedBytes":67,"subStages":[]}}}"""
     }.as[PrestoState]
+
+    val prestoQueryInfo = {
+      """{"queryId":"presto-id", "state":"FINISHED", "setCatalog":"some-catalog", "setSchema":"some-schema", "queryStats" : {"outputDataSize":"0B","processedInputDataSize":"0B", "processedInputPositions":0, "queuedTime":"91.14us", "totalPlanningTime":"304.00ns", "outputPositions":0}}""".stripMargin
+    }.as[PrestoQueryInfo]
 
     val scheduler = Scheduler.global
     val testDelay = 0.seconds
@@ -223,6 +227,22 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     "delay should be reset in case of rows in result" in new ctx {
       val delay = 10.seconds
       executor.nextDelay(delay, stateWithDataRows) must_=== executor.initialAdvanceDelay
+    }
+
+    "update active query with catalog/schema if query info has setCatalog / setSchema commands" in new ctx {
+      // mock
+      client.init(query) returns Task.now(stateWithNextUri)
+      client.advance(anyString) returns Task.now(stateWithoutNext)
+      client.info(any()) returns Task.now(prestoQueryInfo)
+      client.close(any()) returns Task.unit
+
+      // call
+      executor.runTask(query, builder).runToFuture(scheduler)
+
+      eventually {
+        query.catalog must beSome("some-catalog")
+        query.schema must beSome("some-schema")
+      }
     }
   }
 }
