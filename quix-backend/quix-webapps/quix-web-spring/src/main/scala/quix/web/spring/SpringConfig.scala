@@ -58,7 +58,7 @@ class PrestoConfiguration extends LazyLogging {
 
     val statementsApi = prestoBaseApi + "/statement"
     val healthApi = prestoBaseApi + "/cluster"
-    val queryInfoApi = prestoBaseApi + "/query"
+    val queryInfoApi = prestoBaseApi + "/query/"
 
     val defaultCatalog = env.getProperty("presto.defaultCatalog", "system")
     val defaultSchema = env.getProperty("presto.defaultSchema", "runtime")
