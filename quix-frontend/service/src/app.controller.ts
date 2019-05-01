@@ -1,6 +1,5 @@
 import {Controller, Get, Render} from '@nestjs/common';
 import {ConfigService, EnvSettings} from './config';
-import {QuixEnviorments} from 'config/utils';
 
 @Controller()
 export class AppController {
@@ -18,7 +17,7 @@ export class AppController {
         quixBackendUrl: this.settings.QuixBackendPublicUrl,
         googleClientId: this.settings.GoogleClientId,
       },
-      debug: this.configService.getEnv() !== QuixEnviorments.PROD,
+      debug: !this.configService.getEnvSettings().UseMinifiedStatics,
     };
   }
 }
