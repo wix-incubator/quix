@@ -1,10 +1,12 @@
-import {Controller, Get, Param} from '@nestjs/common';
+import {Controller, Get, Param, UseGuards} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Search} from './search';
 import {Repository} from 'typeorm';
 import {DbNote} from '../../entities';
+import {AuthGuard} from '@nestjs/passport';
 
 @Controller('/api/search')
+@UseGuards(AuthGuard())
 export class SearchController {
   private searchService: Search;
 

@@ -12,7 +12,7 @@ export const getAuthStates = (appId: string, googleClientId: string, user: User)
       resolve: {
         user() {
           return user.fetch(appId)
-            .catch(e => e.status === 403 && ssoLogin(appId).then(data => user.set(data.payload || data)));
+            .catch(e => [401, 403].indexOf(e.status) !== -1 && ssoLogin(appId).then(data => user.set(data.payload || data)));
         }
       }
     }

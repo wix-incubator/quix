@@ -1,5 +1,5 @@
 import {ConnectionOptions} from 'typeorm';
-import {EnvSettings} from './config.service';
+import {EnvSettings} from './env';
 
 type ClassConstructor = new (...args: any[]) => any;
 
@@ -17,37 +17,21 @@ export const createInMemConf = (
   };
 };
 
-export const createLocalMysqlConf = (
+export const createMysqlConf = (
   entities: ClassConstructor[] | string[],
   settings: EnvSettings,
 ): ConnectionOptions => {
   return {
     type: 'mysql',
     host: settings.DbHost,
-    port: parseInt(settings.DbPort, 10),
+    port: settings.DbPort,
     username: settings.DbUser,
     password: settings.DbPass,
     database: settings.DbName,
-    synchronize: true,
+    synchronize: settings.AutoMigrateDb,
     entities,
     logger: 'advanced-console',
     // logging: true,
-  };
-};
-
-export const createProdMysqlConf = (
-  entities: ClassConstructor[] | string[],
-  settings: EnvSettings,
-): ConnectionOptions => {
-  return {
-    type: 'mysql',
-    host: settings.DbHost,
-    port: parseInt(settings.DbPort, 10),
-    username: settings.DbUser,
-    password: settings.DbPass,
-    database: settings.DbName,
-    synchronize: false,
-    entities,
   };
 };
 

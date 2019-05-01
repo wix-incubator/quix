@@ -1,34 +1,29 @@
 /* Helper driver for event-bus tests */
 /* tslint:disable:no-non-null-assertion */
 
-import {ConfigService, ConfigModule} from 'config';
-
-import {EventSourcingModule} from './event-sourcing.module';
 import {Test, TestingModule} from '@nestjs/testing';
 import {
-  getRepositoryToken,
-  TypeOrmModule,
-  getEntityManagerToken,
   getConnectionToken,
   getCustomRepositoryToken,
+  getRepositoryToken,
+  TypeOrmModule,
 } from '@nestjs/typeorm';
+import {ConfigModule, ConfigService} from 'config';
 import {
-  DbNotebook,
-  DbNote,
   DbFileTreeNode,
   DbFolder,
+  DbNote,
+  DbNotebook,
   FileTreeRepository,
-  NoteRepository,
 } from 'entities';
-import {DbAction} from './infrastructure/action-store/entities/db-action';
-import {Repository, EntityManager, IsNull, Connection} from 'typeorm';
-import {QuixEventBus} from './quix-event-bus';
-import * as uuid from 'uuid';
-import {NotebookActions, createNotebook} from 'shared/entities/notebook';
-import {FileActions, FileType, IFilePathItem} from 'shared/entities/file';
 import {AuthModule} from 'modules/auth/auth.module';
-import {dbConf} from 'config/db-conf';
-import {} from 'shared/entities/file';
+import {FileActions, FileType, IFilePathItem} from 'shared/entities/file';
+import {createNotebook, NotebookActions} from 'shared/entities/notebook';
+import {Connection, Repository} from 'typeorm';
+import * as uuid from 'uuid';
+import {EventSourcingModule} from './event-sourcing.module';
+import {DbAction} from './infrastructure/action-store/entities/db-action';
+import {QuixEventBus} from './quix-event-bus';
 
 export class QuixEventBusDriver {
   constructor(
@@ -58,7 +53,6 @@ export class QuixEventBusDriver {
     module = await Test.createTestingModule({
       imports: [
         ConfigModule,
-        AuthModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           useFactory: async (cs: ConfigService) =>

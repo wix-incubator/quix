@@ -83,3 +83,5 @@ crashlytics-build.properties
 .DS_Store
 .vscode
 quix-frontend/service/package-lock.json
+
+.env-internal

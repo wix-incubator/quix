@@ -418,7 +418,7 @@ describe('event sourcing', () => {
       ]);
     });
 
-    fit('recursively delete a folder', async () => {
+    it('recursively delete a folder', async () => {
       const [subFolder1, createSubFolder1] = driver.createFolderAction(
         'subFolder1',
         [{id: folderId}],
