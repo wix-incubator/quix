@@ -58,7 +58,6 @@ export class QuixEventBusDriver {
           useFactory: async (cs: ConfigService) =>
             cs.getDbConnection([
               DbFileTreeNode,
-              FileTreeRepository,
               DbFolder,
               DbNote,
               DbNotebook,
@@ -76,7 +75,7 @@ export class QuixEventBusDriver {
     notebookRepo = module.get(getRepositoryToken(DbNotebook));
     noteRepo = module.get(getRepositoryToken(DbNote));
     eventsRepo = module.get(getRepositoryToken(DbAction));
-    fileTreeRepo = module.get(FileTreeRepository);
+    fileTreeRepo = module.get(getRepositoryToken(FileTreeRepository));
     folderRepo = module.get(getRepositoryToken(DbFolder));
     conn = module.get(getConnectionToken());
     configService = module.get(ConfigService);
