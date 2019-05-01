@@ -11,8 +11,8 @@ object ScalaJPrestoOps {
 
     Map(
       "x-presto-user" -> query.user.email,
-      "x-presto-catalog" -> config.catalog,
-      "x-presto-schema" -> config.schema,
+      "x-presto-catalog" -> query.catalog.getOrElse(config.catalog),
+      "x-presto-schema" -> query.schema.getOrElse(config.schema),
       "x-presto-source" -> config.source,
       "Content-Type" -> "text/plain",
       "Accept" -> "application/json",

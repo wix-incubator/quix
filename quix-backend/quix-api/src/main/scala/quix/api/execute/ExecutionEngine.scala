@@ -8,7 +8,9 @@ case class ActiveQuery(id: String,
                        numOfQueries: Int,
                        user: User,
                        var isCancelled: Boolean,
-                       var session: Map[String, Any])
+                       var session: Map[String, Any],
+                       var catalog: Option[String] = None,
+                       var schema: Option[String] = None)
 
 trait Builder[Results] {
   def start(query: ActiveQuery): Task[Unit]
