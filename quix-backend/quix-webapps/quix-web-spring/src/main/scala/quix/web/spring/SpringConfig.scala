@@ -12,6 +12,7 @@ import quix.api.db.Db
 import quix.api.execute.{AsyncQueryExecutor, Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.users.DummyUsers
 import quix.core.download.DownloadableQueriesImpl
+import quix.core.executions.SequentialExecutions
 import quix.core.utils.JsonOps
 import quix.presto._
 import quix.presto.db.{RefreshableDb, RefreshableDbConfig}
@@ -78,15 +79,13 @@ class PrestoConfiguration extends LazyLogging {
     new QueryExecutor(prestoClient)
   }
 
-  @Bean def initPrestoExecutions(executor: AsyncQueryExecutor[String, Batch]): PrestoExecutions = {
+  @Bean def initPrestoExecutions(executor: AsyncQueryExecutor[String, Batch]): SequentialExecutions[String] = {
     logger.info("event=[spring-config] bean=[PrestoExecutions]")
 
-    val execution: PrestoExecutions = new PrestoExecutions(executor)
-
-    execution
+    new SequentialExecutions[String](executor)
   }
 
-  @Bean def initPrestoQuixModule(executions: PrestoExecutions): PrestoQuixModule = {
+  @Bean def initPrestoQuixModule(executions: SequentialExecutions[String]): PrestoQuixModule = {
     logger.info(s"event=[spring-config] bean=[PrestoQuixModule]")
     new PrestoQuixModule(executions)
   }

@@ -7,13 +7,14 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
 import quix.api.users.User
+import quix.core.executions.SequentialExecutions
 import quix.core.results.SingleBuilder
 
 class PrestoExecutionsTest extends SpecWithJUnit with Mockito {
 
   class ctx extends Scope {
     val executor = new TestQueryExecutor
-    val executions = new PrestoExecutions(executor)
+    val executions = new SequentialExecutions[String](executor)
     val user = User("test")
     val builder = spy(new SingleBuilder[String])
     val builderSpy = spy(builder)
@@ -34,7 +35,7 @@ class PrestoExecutionsTest extends SpecWithJUnit with Mockito {
   "PrestoExecutions" should {
 
     "call builder.start & builder.end on every query" in new ctx {
-      executions.execute(zeroQueries, user, builder).runToFuture
+      executions.execute(oneQuery, user, builder).runToFuture
 
       there was one(builder).start(any())
       there was one(builder).end(any())
