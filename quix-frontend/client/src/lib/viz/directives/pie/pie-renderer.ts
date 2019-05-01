@@ -1,0 +1,47 @@
+import {IMeta, IFilterData} from '../../services/chart/chart-conf';
+import * as echarts from 'echarts/lib/echarts';
+import 'echarts/lib/chart/pie'
+import 'echarts/lib/component/tooltip'
+import 'echarts/lib/component/title'
+import 'echarts/lib/component/legend'
+
+export class ChartRenderer {
+  private chart = null;
+
+  constructor(private readonly container) {
+
+  }
+
+  public error(e) {
+    this.container.html(`<div class="bi-center bi-danger">${e}</div>`);
+  }
+
+  public draw(data: any[], filteredMeta: IMeta, meta: IMeta, filter: IFilterData) {
+    const width = this.container.width();
+    const height = this.container.height();
+    const size = Math.min(width, height);
+    data.map((series, i) => {
+      const slice = 100 / (data.length * 2);
+      series.radius = size / (data.length * 4)
+      series.center = [`${(slice * (2*i+1))}%`, '50%'];
+    })
+    this.chart = echarts.init(this.container.get(0));
+    this.chart.clear();
+    this.chart.setOption({
+      title: {
+        text: null
+      },
+      legend: {
+        show: data.length > 1,
+        data: data.map(series => series.name),
+        bottom: true
+      },
+      series: data
+    });
+    this.chart.resize();
+  }
+
+  public destroy() {
+    this.chart.dispose();
+  }
+}
