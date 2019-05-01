@@ -1,7 +1,13 @@
-<bi-dropdown bd-options="::{toggleOn: 'hover', hideOnClick: false, align: 'center', delay: {show: 150}, position: options.position}">
+<bi-dropdown bd-options="::{
+  toggleOn: 'hover',
+  hideOnClick: false,
+  align: 'center',
+  delay: {show: 150},
+  position: options.position
+}">
   <bi-toggle ng-transclude="toggle"></bi-toggle>
 
-  <div class="bi-tooltip-content" ng-class="::{'bt-pos-top': options.position === 'top'}">
+  <div class="bi-tooltip-content">
     <div class="bi-tooltip-backdrop"></div>
     <div ng-if="!!btText">{{::btText}}</div>
     <div ng-transclude></div>

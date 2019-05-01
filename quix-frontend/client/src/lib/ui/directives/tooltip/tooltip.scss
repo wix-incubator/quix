@@ -4,6 +4,20 @@
 bi-tooltip {
   display: inline-flex;
 
+  .bd-position--top {
+    .bi-tooltip-content {
+      margin-top: 0;
+      margin-bottom: 8px;
+
+      &:before {
+        top: initial;
+        bottom: -6px;
+        border-width: 6px 6px 0 6px;
+        border-color: #000000 transparent transparent transparent;
+      }
+    }
+  }
+
   .bi-tooltip-content {
     position: relative;
     margin-top: 8px;
@@ -25,18 +39,6 @@ bi-tooltip {
       border-width: 0 6px 6px 6px;
       border-color: transparent transparent #000000 transparent;
       opacity: .8;
-    }
-
-    &.bt-pos-top {
-      margin-top: 0;
-      margin-bottom: 8px;
-
-      &:before {
-        top: initial;
-        bottom: -6px;
-        border-width: 6px 6px 0 6px;
-        border-color: #000000 transparent transparent transparent;
-      }
     }
 
     > .bi-tooltip-backdrop {

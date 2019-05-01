@@ -6,6 +6,6 @@
     "prettier": false,
     "no-invalid-this": false,
     "no-floating-promises": false,
-    "restrict-plus-operands": {"severity": "warning"}
+    "restrict-plus-operands": false
   }
 }
