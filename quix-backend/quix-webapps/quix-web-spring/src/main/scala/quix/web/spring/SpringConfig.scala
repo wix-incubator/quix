@@ -33,16 +33,28 @@ class AuthConfig extends LazyLogging {
   @Bean def initUsers(env: Environment) = {
     logger.info("event=[spring-config] bean=[Users]")
 
-    val auth = Coeval {
-      val cookie = env.getRequiredProperty("auth.cookie")
-      val secret = env.getRequiredProperty("auth.secret")
+    val authType = Coeval(env.getRequiredProperty("auth.type"))
 
-      require(cookie.nonEmpty, "auth.cookie can't be an empty string")
-      require(secret.nonEmpty, "auth.secret can't be an empty string")
+    val auth = authType.map {
+      case "fake" =>
+        logger.info(s"event=init-users-fake")
+        DummyUsers
 
-      new JwtUsers(cookie, secret)
-    }.onErrorRecoverWith { case NonFatal(e: Exception) =>
-      logger.warn("failed to construct secureAuth, falling back to dummy user auth")
+      case "google" =>
+        logger.info(s"event=init-users-google")
+        val cookie = env.getRequiredProperty("auth.cookie")
+        val secret = env.getRequiredProperty("auth.secret")
+
+        require(cookie.nonEmpty, "auth.cookie can't be an empty string")
+        require(secret.nonEmpty, "auth.secret can't be an empty string")
+
+        new JwtUsers(cookie, secret)
+
+      case unknown =>
+        logger.warn(s"event=init-users-failure reason=unknown-auth-type auth-type=$unknown")
+        DummyUsers
+    }.onErrorRecoverWith { case NonFatal(e) =>
+      logger.warn(s"event=init-users-failure reason=exception exception=[${e.getMessage}]")
       Coeval(DummyUsers)
     }
 

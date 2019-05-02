@@ -60,7 +60,7 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
     val task = initConsumer.bracket(useConsumer)(closeConsumer)
 
     val future = task
-      .logOnError(s"event=execution-failure socket-id=${socket.getId} sql=${payload.code}")
+      .logOnError(s"event=execution-failure socket-id=${socket.getId} sql=[${payload.code.replace("\n", "-newline-")}]")
       .executeOn(io).runToFuture(io)
     executions.put(socket.getId, future)
   }

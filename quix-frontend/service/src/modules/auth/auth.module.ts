@@ -19,7 +19,7 @@ import {getEnv} from 'config/env';
 export class AuthModule {
   static create(): DynamicModule {
     const env = getEnv();
-    if (!env.FakeAuth) {
+    if (env.AuthType === 'google') {
       return {
         module: AuthModule,
         imports: [
@@ -41,7 +41,7 @@ export class AuthModule {
         controllers: [AuthController],
         providers: [AuthService, JwtStrategy],
       };
-    } else {
+    } else if (env.AuthType === 'fake') {
       return {
         module: AuthModule,
         imports: [
@@ -55,5 +55,6 @@ export class AuthModule {
         providers: [MockStrategy],
       };
     }
+    throw new Error('AuthModule:: Unkown auth type');
   }
 }

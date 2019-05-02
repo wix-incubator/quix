@@ -16,12 +16,12 @@ class ScalaJPrestoStateClient(config: PrestoConfig)
 
   override def init(query: ActiveQuery): Task[PrestoState] = {
     for {
-      _ <- Task.eval(logger.info(s"method=init query-id=${query.id}"))
+      _ <- Task.eval(logger.info(s"method=init query-id=${query.id} query-sql=[${query.text.replace("\n", "-newline-")}] statements-api=${config.statementsApi}"))
 
       state <- Task
         .eval(ScalaJPrestoOps.buildInitRequest(query, config).asString)
         .retry(2, 1.second)
-        .logOnError(s"event=init-presto-client-error query-id=${query.id}")
+        .logOnError(s"event=init-presto-client-error query-id=${query.id} query-sql=[${query.text.replace("\n", "-newline-")}]")
         .flatMap(response => readPrestoState[PrestoState](response))
     } yield state
   }
