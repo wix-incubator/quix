@@ -53,8 +53,13 @@ class AuthConfig extends LazyLogging {
 @Configuration
 class PrestoConfiguration extends LazyLogging {
 
+  def addMissingSlashIfNeeded(endpoint: String) = {
+    if (endpoint.endsWith("/")) endpoint
+    else endpoint + "/"
+  }
+
   @Bean def initPrestoConfig(env: Environment): PrestoConfig = {
-    val prestoBaseApi = env.getRequiredProperty("presto.api")
+    val prestoBaseApi = addMissingSlashIfNeeded(env.getRequiredProperty("presto.api"))
 
     val statementsApi = prestoBaseApi + "/statement"
     val healthApi = prestoBaseApi + "/cluster"
