@@ -6,6 +6,7 @@ import 'echarts/lib/chart/bar'
 import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/title'
 import 'echarts/lib/component/legend'
+import 'echarts/lib/component/dataZoom'
 
 function getChartType(filter: IFilterData, meta: IMeta) {
   if (isDimension(filter.x, meta)) {
@@ -58,17 +59,33 @@ export class ChartRenderer {
         data: data.map((series: any) => series.name),
         bottom: true
       },
+      grid: {
+        top: 10,
+        right: 10
+      },
+      dataZoom: [
+        {
+          show: true,
+          realtime: true,
+          start: 20,
+          end: 85
+        },
+        {
+          type: 'inside',
+          realtime: true,
+          start: 65,
+          end: 85
+        }
+      ],
       xAxis: {
         type: xAxisType,
         maxInterval,
-        name: filter.x,
         nameLocation: 'center',
         nameTextStyle: {
           lineHeight: 40
         }
       },
       yAxis: {
-        name: filter.y.length === 1 ? filter.y[0] : null,
         nameLocation: 'center',
         nameTextStyle: {
           lineHeight: 40
