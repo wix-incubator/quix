@@ -1,4 +1,4 @@
-import {SearchQuery, SearchTypes} from './types';
+import {SearchQuery, SearchTypes, searchTextType} from './types';
 
 const createRegExAtBeginingOrEnd = (regex: string | RegExp): RegExp[] => {
   const source = regex instanceof RegExp ? regex.source : regex;
@@ -59,13 +59,17 @@ const getSpecialOperators = (
   return [query, s];
 };
 
-const getTextFromSearchQuery = (s: string): string[] => {
+const getTextFromSearchQuery = (s: string) => {
   const result = [];
   let match = null;
 
   /* tslint:disable-next-line */
   while ((match = searchRegexMap[SearchTypes.content][0].exec(s))) {
-    result.push(match[1] || match[2]);
+    result.push(
+      match[1]
+        ? {type: searchTextType.WORD, text: match[1].replace('@', ' ')}
+        : {type: searchTextType.PHRASE, text: match[2].replace('@', ' ')},
+    );
   }
   return result;
 };
