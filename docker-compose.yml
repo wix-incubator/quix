@@ -29,6 +29,7 @@ services:
       - GOOGLE_SSO_SECRET
       - AUTH_COOKIE
       - AUTH_SECRET
+      - AUTH_TYPE
   db:
     image: "mysql:5.7"
     restart: always

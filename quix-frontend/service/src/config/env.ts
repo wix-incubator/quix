@@ -29,14 +29,14 @@ const envSettingsMap: {[K in keyof EnvSettings]: string} = {
   AuthEncKey: 'AUTH_SECRET',
   CookieAge: 'COOKIE_MAX_AGE',
   DbType: 'DB_TYPE',
-  FakeAuth: 'FAKE_AUTH',
+  AuthType: 'AUTH_TYPE',
   AutoMigrateDb: 'DB_AUTO_MIGRATE',
   UseMinifiedStatics: 'MINIFIED_STATICS',
 };
 
 const envSettingsDefaults = {
   DbType: 'mysql' as 'mysql' | 'sqlite',
-  FakeAuth: false,
+  AuthType: 'fake' as 'fake' | 'google',
   DbName: 'Quix',
   DbUser: 'root',
   DbPass: '',
@@ -67,7 +67,7 @@ const testingDefaults: EnvSettings = {
   AuthEncKey: '',
   CookieAge: 30 * 24 * 60 * 60 * 1000,
   DbType: 'sqlite',
-  FakeAuth: true,
+  AuthType: 'fake',
   AutoMigrateDb: true,
   UseMinifiedStatics: false,
 };
@@ -90,7 +90,18 @@ const transforms: {
         throw new Error('Unknown DB type.');
     }
   },
-  FakeAuth: s => (s ? !!s : undefined),
+  AuthType: s => {
+    switch (s) {
+      case 'google':
+      case 'fake':
+        return s;
+      case undefined:
+      case '':
+        return undefined;
+      default:
+        throw new Error('Unknown Auth type.');
+    }
+  },
   DbName: identity,
   DbUser: identity,
   DbPass: identity,
