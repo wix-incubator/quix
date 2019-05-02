@@ -32,10 +32,12 @@ class DownloadControllerTest extends E2EContext {
 
   @Test
   def sendSingleQuery(): Unit = {
-    executor.withResults(List(List("1")), columns = List("_col0"), queryId = "downloadable-query-id")
-    runAndDownload("select 1")
+    executor.withResults(List(List("1")), columns = List("_col0"), queryId = "query-id-1")
+    val listener = runAndDownload("select 1")
 
-    val response = getResponse("/api/download/downloadable-query-id")
+    listener.await("""{"event":"query-download","data":{"id":"query-id-1","url":"/api/download/query-id-1"}}""")
+
+    val response = getResponse("/api/download/query-id-1")
 
     assertThat(response.body, Matchers.is("\"_col0\"\n\"1\"\n"))
   }

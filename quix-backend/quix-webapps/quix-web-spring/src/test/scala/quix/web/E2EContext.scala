@@ -15,7 +15,7 @@ trait E2EContext extends StringJsonHelpersSupport {
   }
 
   def getResponse(url: String) = {
-    Http("http://localhost:8888/" + url).asString
+    Http("http://localhost:8888" + url).asString
   }
 
   def execute(sql: String, session: Map[String, String] = Map.empty) =
