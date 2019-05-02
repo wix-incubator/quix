@@ -54,7 +54,7 @@ As an alternative, you may use external MySQL database, by specifying some of th
 Quix can work in two modes, multi-user mode authenticated with [Google OAuth](https://console.developers.google.com/apis/credentials), or a single-user mode. This is controlled by the following variables:
 * AUTH_TYPE - can be `fake` or `google`. defaults to `fake` (single-user mode).
 
-If you your use google oauth, you must supply the clientId and the secret:
+If you use google oauth, you must supply the clientId and the secret:
 * GOOGLE_SSO_CLIENT_ID
 * GOOGLE_SSO_SECRET
 
