@@ -10,6 +10,7 @@ services:
       - PRESTO_API
       - AUTH_COOKIE
       - AUTH_SECRET
+      - AUTH_TYPE
   frontend:
     build: ./quix-frontend/
     ports:
