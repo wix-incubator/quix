@@ -119,6 +119,23 @@ describe('Search', () => {
     expect(badResult).toHaveLength(0);
   });
 
+  it('should get note by content, partial keywords', async () => {
+    const notebook = await createNotebook();
+    const note = await createNote(notebook.id, {
+      content: 'select someColumn from someCatalog.someTable',
+    });
+    const note2 = await createNote(notebook.id, {
+      content: 'select someColumn from someCatalog.someOtherTable',
+    });
+
+    await noteRepo.save(note2);
+    const result = await searchCtrl.doSearch(`someCa`);
+    const badResult = await searchCtrl.doSearch('randomKeyword');
+
+    expect(result).toHaveLength(2);
+    expect(badResult).toHaveLength(0);
+  });
+
   it('should get note by type', async () => {
     const notebook = await createNotebook();
     const note = await createNote(notebook.id, {

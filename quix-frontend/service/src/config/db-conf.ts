@@ -1,6 +1,8 @@
 import {ColumnOptions} from 'typeorm';
 import {getEnv} from './env';
 import {FileType} from 'shared/entities/file';
+import {ContentSearch, searchTextType} from 'modules/search/types';
+import {escape} from 'mysql';
 
 /* A comptability layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
 interface DbColumnConf {
@@ -14,7 +16,10 @@ interface DbColumnConf {
   fileTypeEnum: ColumnOptions;
   owner: ColumnOptions;
   concat: (s1: string, s2: string) => string;
-  fullTextSearch: (columnName: string, textToLookFor: string[]) => string;
+  fullTextSearch: (
+    columnName: string,
+    textToLookFor: ContentSearch[],
+  ) => string;
 }
 
 const MySqlConf: DbColumnConf = {
@@ -42,10 +47,16 @@ const MySqlConf: DbColumnConf = {
   },
   owner: {nullable: false, type: 'varchar', width: 255},
   concat: (s1, s2) => `CONCAT(${s1}, ${s2})`,
-  fullTextSearch(columnName, textToLookFor) {
-    return `MATCH(${columnName}) AGAINST ('${textToLookFor
-      .map(searchText => `"${searchText}"`)
-      .join(' ')}' IN BOOLEAN MODE)`;
+  fullTextSearch(columnName, contentSearchList) {
+    return `MATCH(${columnName}) AGAINST (${escape(
+      contentSearchList
+        .map(contentSearch =>
+          contentSearch.type === searchTextType.PHRASE
+            ? `"${contentSearch.text}"`
+            : `${contentSearch.text}*`,
+        )
+        .join(' '),
+    )} IN BOOLEAN MODE)`;
   },
 };
 
@@ -99,11 +110,10 @@ const SqliteConf: DbColumnConf = {
   fileTypeEnum: {type: 'varchar', width: 32, default: FileType.folder},
   owner: {nullable: false, type: 'varchar', width: 255},
   concat: (s1, s2) => `(${s1} || ${s2})`,
-  fullTextSearch(columnName, textToLookFor) {
-    return textToLookFor
-      .map(term => `${columnName} LIKE '%${term}%'`)
-      .join(' AND ');
+  fullTextSearch(columnName, contentSearchList) {
+    return contentSearchList
+      .map(searchItem => `${columnName} LIKE '%${searchItem.text}%'`)
+      .join(' OR ');
   },
 };
-debugger;
 export const dbConf = getEnv().DbType === 'mysql' ? MySqlConf : SqliteConf;

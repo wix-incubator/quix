@@ -9,9 +9,16 @@ export enum SearchTypes {
   noteName = 'name',
   content = 'content',
 }
-
+export enum searchTextType {
+  PHRASE,
+  WORD,
+}
+export interface ContentSearch {
+  type: searchTextType;
+  text: string;
+}
 export interface SearchQuery {
-  [SearchTypes.content]: string[];
+  [SearchTypes.content]: ContentSearch[];
   [SearchTypes.user]?: string;
   [SearchTypes.noteName]?: string;
   [SearchTypes.type]?: string;

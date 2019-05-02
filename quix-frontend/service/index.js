@@ -4,7 +4,6 @@ const tsConfig = require("./tsconfig.json");
 const tsConfigPaths = require("tsconfig-paths");
 
 const paths = mapValues(tsConfig.compilerOptions.paths, (value, key) => {
-  debugger;
   if (key.startsWith('shared')) {
     value[0] = value[0].replace('../shared', '../../shared/dist');
   } else {
@@ -12,7 +11,6 @@ const paths = mapValues(tsConfig.compilerOptions.paths, (value, key) => {
   }
   return value;
 });
-console.log(paths);
 const baseUrl = path.resolve('./', './dist');
 const cleanup = tsConfigPaths.register({
   baseUrl,

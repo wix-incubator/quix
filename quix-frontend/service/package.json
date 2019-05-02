@@ -52,6 +52,7 @@
     "@types/http-proxy-middleware": "^0.19.2",
     "@types/jest": "^23.3.13",
     "@types/lodash": "^4.14.123",
+    "@types/mysql": "^2.15.6",
     "@types/nock": "^9.3.1",
     "@types/node": "^10.12.18",
     "@types/passport-jwt": "^3.0.1",
