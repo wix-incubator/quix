@@ -1,3 +1,5 @@
+/* tslint:disable:no-non-null-assertion */
+
 import {Test, TestingModule} from '@nestjs/testing';
 import {
   getConnectionToken,
@@ -23,6 +25,7 @@ import {FoldersService} from './folders/folders.service';
 import {NotebookController} from './notebooks/notebooks.controller';
 import {NotebookService} from './notebooks/notebooks.service';
 import {NoteType} from 'shared/entities/note';
+import {WebApiModule} from './web-api.module';
 jest.setTimeout(60000);
 
 // TODO: write a driver for this test, refactor everything @aviad
@@ -60,6 +63,7 @@ describe('web-api module', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
+        WebApiModule,
         ConfigModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
@@ -73,30 +77,19 @@ describe('web-api module', () => {
             ]),
           inject: [ConfigService],
         }),
-        TypeOrmModule.forFeature([
-          DbFileTreeNode,
-          DbFolder,
-          DbNote,
-          DbNotebook,
-          DbAction,
-          FileTreeRepository,
-          NoteRepository,
-        ]),
       ],
-      providers: [FoldersService, NotebookService, NotebookController],
+      providers: [],
       exports: [],
     }).compile();
 
-    notebookRepo = module.get<Repository<DbNotebook>>(
-      getRepositoryToken(DbNotebook),
-    );
-    noteRepo = module.get(NoteRepository);
-    eventsRepo = module.get<Repository<DbAction>>(getRepositoryToken(DbAction));
-    fileTreeRepo = module.get(FileTreeRepository);
-    folderRepo = module.get<Repository<DbFolder>>(getRepositoryToken(DbFolder));
+    notebookRepo = module.get(getRepositoryToken(DbNotebook));
+    noteRepo = module.get(getRepositoryToken(NoteRepository));
+    eventsRepo = module.get(getRepositoryToken(DbAction));
+    fileTreeRepo = module.get(getRepositoryToken(FileTreeRepository));
+    folderRepo = module.get(getRepositoryToken(DbFolder));
     folderService = module.get(FoldersService);
     notebookService = module.get(NotebookService);
-    conn = module.get<Connection>(getConnectionToken());
+    conn = module.get(getConnectionToken());
     configService = module.get(ConfigService);
   });
 

@@ -1,12 +1,12 @@
-import template from './destination.html';
-import './destination.scss';
+import template from './destination-picker.html';
+import './destination-picker.scss';
 
 import {last} from 'lodash';
 import {initNgScope, createNgModel} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {Instance} from '../../lib/app';
 import {IFile, FileType} from '../../../../shared';
-import {IScope} from './destination-types';
+import {IScope} from './destination-picker-types';
 import {cache} from '../../store';
 import {
   StateManager

@@ -1,5 +1,6 @@
 import {assign, isArray} from 'lodash';
 import {createNgModel, initNgScope, inject} from '../../core';
+import {confirm} from '../../ui';
 import {IItemDef} from '../services';
 import {File, Folder} from '../services/file-explorer-models';
 import {treeToDef, defToTree} from '../services/file-explorer-tools';
@@ -8,6 +9,21 @@ import VM from './file-explorer-vm';
 
 import template from './file-explorer.html';
 import './file-explorer.scss';
+
+
+const confirmAction = (action: 'delete', context: 'folder', name: string) => {
+  return confirm({
+    title: `${action} ${context}`,
+    actionType: action === 'delete' ? 'destroy' : 'neutral',
+    yes: action,
+    icon: 'report',
+    html: `
+      The folder <b>"${name}"</b> and all it's content will be lost.
+      <br>
+      Are you sure you want to delete this ${context}?
+    `
+  });
+}
 
 function directive(params) {
   return assign({
@@ -31,7 +47,7 @@ function initScope(scope, controller: Controller, depth: number) {
       expandAllFolders: false,
       hideEmptyFolders: false,
       folderMode: 'expand', // expand|select 
-      settings: false
+      draggable: false
     }, ({orderBy, orderReversed, fileAlias}) => {
       scope.options.fileAlias = isArray(fileAlias) ? fileAlias : [fileAlias];
       scope.vm.order.setField(orderBy, orderReversed);
@@ -43,13 +59,21 @@ function initScope(scope, controller: Controller, depth: number) {
         controller.syncItem(file, 'fileCreated', type);
       },
       onFolderDelete(folder: Folder) {
-        folder.destroy();
+        const fn = () => {
+          folder.destroy();
 
-        if (folder.getParent().isEmpty()) {
-          folder.getParent().toggleOpen(false);
+          if (folder.getParent().isEmpty()) {
+            folder.getParent().toggleOpen(false);
+          }
+  
+          controller.syncItem(folder, 'folderDeleted');
+        };
+
+        if (folder.isEmpty()) {
+          fn();
+        } else {
+          confirmAction('delete', 'folder', folder.getName()).then(fn);
         }
-
-        controller.syncItem(folder, 'folderDeleted');
       },
       onFolderRename(folder: Folder) {
         scope.vm.folder.toggleEdit(folder, true);
@@ -60,16 +84,24 @@ function initScope(scope, controller: Controller, depth: number) {
     })
     .withEvents({
       onItemDrop(_, __, folder: Folder) {
-        scope.vm.dropped.item.moveTo(folder);
+        const {item}: {item: File | Folder} =  scope.vm.dropped;
 
-        if (scope.vm.dropped.item instanceof File) {
-          controller.syncItem(scope.vm.dropped.item, 'fileMoved');
-        } else {
-          controller.syncItem(scope.vm.dropped.item, 'folderMoved');
+        if (item instanceof File && !folder.getFileById(item.getId())) {
+          item.moveTo(folder);
+          controller.syncItem(item, 'fileMoved');
+        } else if (
+          item instanceof Folder
+          && folder.getId() !== item.getId()
+          && !folder.getFolderById(item.getId())
+          && !folder.getParentById(item.getId())
+          && folder.getDepth() + item.getLength() <= 3
+        ) {
+          item.moveTo(folder);
+          controller.syncItem(item, 'folderMoved');
         }
       },
-      onFolderDragStart(_, __, folder: Folder) {
-        // scope.vm.folder.toggleOpen(folder, false);
+      onDrag(item: Folder | File) {
+        return item.getName();
       },
       onFolderBlur(folder: Folder) {
         scope.vm.folder.toggleEdit(folder, false);
@@ -102,9 +134,6 @@ function initScope(scope, controller: Controller, depth: number) {
           scope.vm.folder.setCurrent(null);
           controller.clickFile(file);
         }
-      },
-      onSettingsClick(folder: Folder) {
-        controller.fireEvent(folder, 'settingsClicked');
       }
     });
 
@@ -178,7 +207,7 @@ export function fileExplorer() {
 
         initScope(scope, controller, 0);
 
-        scope.container = element.addClass(`fe-folder-mode-${scope.options.folderMode}`);
+        element.addClass(`fe-folder-mode-${scope.options.folderMode}`);
       }
     }
   });

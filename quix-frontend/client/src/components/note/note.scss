@@ -20,6 +20,8 @@ quix-note {
   }
   
   .bi-panel-header {
+    position: relative;
+
     bi-dropdown {
       bi-toggle {
         height: 37px;
@@ -29,5 +31,16 @@ quix-note {
         }
       }
     }
+
+    .quix-note-drag-indicator {
+      position: absolute;
+      top: 10px;
+      left: 0;
+      margin: 0 !important;
+    }
+  }
+
+  .bi-panel-content {
+    // max-height: 400px;
   }
 }

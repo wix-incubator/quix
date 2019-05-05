@@ -26,6 +26,8 @@ sealed case class Row(id: String, values: List[AnyRef]) extends EventData
 
 sealed case class Download(id: String, url: String) extends EventData
 
+sealed case class StartCommand[Code](code: Code, session: Map[String, String]) extends EventData
+
 object Empty extends EventData
 
 object Start {
@@ -74,5 +76,5 @@ object Pong {
 }
 
 object Download {
-  def apply(id: String, url : String): ExecutionEvent = ExecutionEvent("query-download", new Download(id, url))
+  def apply(id: String, url: String): ExecutionEvent = ExecutionEvent("query-download", new Download(id, url))
 }

@@ -33,8 +33,35 @@ export class Item {
     return this.parent;
   }
 
+  public getDepth(): number {
+    let res = 0;
+    let parent: Item = this;
+
+    // tslint:disable-next-line: no-conditional-assignment
+    while (parent = parent.getParent()) {
+      res++;
+    }
+
+    return res;
+  }
+
   public getData(): any {
     return this.data;
+  }
+
+  public getParentById(id: string): Item {
+    let res: Item;
+    let parent: Item = this;
+
+    // tslint:disable-next-line: no-conditional-assignment
+    while (parent = parent.getParent()) {
+      if (parent.getId() === id) {
+        res = res || parent;
+        break;
+      }
+    }
+
+    return res;
   }
 
   public on(name, fn, invoke?, scope?) {
@@ -194,9 +221,13 @@ export class Folder extends Item {
     return this;
   }
 
-  public moveTo(folder: Folder): File {
+  public moveTo(folder: Folder): Folder {
     folder.addFolder(this.getParent().removeFolder(this));
     return this;
+  }
+
+  public getLength(res = 1): number {
+    return Math.max(res, ...(this.folders.map(folder => folder.getLength(res + 1))));
   }
 
   public destroy() {

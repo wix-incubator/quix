@@ -5,6 +5,7 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "noErrorTruncation": true,
     "target": "es2017",
     "sourceMap": true,
     "moduleResolution": "node",
@@ -21,6 +22,7 @@
       "modules/*": ["./src/modules/*"],
       "config/*": ["./src/config/*"],
       "config": ["./src/config"],
+      "common/*": ["./src/common/*"],
       "errors": ["./src/errors"],
       "global-types": ["./src/types"],
       "utils/*": ["./src/utils/*"]

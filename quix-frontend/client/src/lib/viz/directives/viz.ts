@@ -29,7 +29,7 @@ export default () => {
         })
         .withVM({
           selected: {},
-          init() {
+          $init() {
             this.toggle(true);
 
             if (!scope.options.picker) {
@@ -42,6 +42,8 @@ export default () => {
           select(type) {
             this.type = type;
             this.selected[type] = true;
+
+            scope.type = type;
           }
         })
         .withEvents({

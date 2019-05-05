@@ -101,7 +101,15 @@ export const dom =  {
 
   escape(str) {
     return escapeHtml(str);
-  }
+  },
+
+  scrollIntoView(element, animate = false, offset = 0) {
+    const scrollParent = element.scrollParent();
+    // tslint:disable-next-line: restrict-plus-operands
+    const scrollTop = element.position().top + scrollParent.scrollTop() + offset;
+
+    scrollParent.animate({scrollTop}, animate ? 200 : 0);
+  },
 }
 
 export function stripDollars<T extends object>(data: T): Partial<T> {

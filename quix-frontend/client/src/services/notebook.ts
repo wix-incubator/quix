@@ -37,8 +37,8 @@ export const copyNotebook = async (store: Store, app: Instance, parentOrPath: IF
 
   store.dispatchAndLog([
     NotebookActions.createNotebook(newNotebook.id, newNotebook),
-    ...notes.map(({type, content, owner}) => {
-      const note = createNote(newNotebook.id, {type, content, owner} as any);
+    ...notes.map(({name: noteName, type, content, owner}) => {
+      const note = createNote(newNotebook.id, {name: noteName, type, content, owner} as any);
       return NoteActions.addNote(note.id, note);
     })
   ])
@@ -52,7 +52,11 @@ export const deleteNotebook = async (store: Store, app: Instance, notebook: INot
 }
 
 export const saveQueuedNotes = (store: Store) => {
-  const {notes} = store.getState('notebook').queue as {notes: Record<string, INote>};
+  const {notes} = store.getState('notebook.queue') as {notes: Record<string, INote>};
 
   return store.dispatchAndLog(Object.keys(notes).map(id => NoteActions.updateContent(id, notes[id].content)));
+}
+
+export const hasQueuedNotes = (store: Store) => {
+  return store.getState('notebook.queue.size') > 0;
 }

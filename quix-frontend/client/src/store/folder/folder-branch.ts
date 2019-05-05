@@ -1,4 +1,4 @@
-import {values} from 'lodash';
+import {values, reject} from 'lodash';
 import {combineReducers} from 'redux';
 import {IBranch} from '../../lib/store';
 import {Instance} from '../../lib/app';
@@ -9,7 +9,7 @@ import {
   FileActionTypes,
   clientFileReducer,
   clientFileListReducer,
-  composeReducers,
+  composeReducers
 } from '../../../../shared';
 
 import {getFolderPermissions, getDefaultPermissions, IPermissions} from '../../services';
@@ -22,7 +22,7 @@ export interface IView {
 export default (app: Instance): IBranch => register => {
   const folder = composeReducers(
     clientFileReducer,
-    (state: IFile = null, action: any) => {
+    (state: IFolder = null, action: any) => {
       switch (action.type) {
         case 'folder.set':
           return action.folder;
@@ -35,10 +35,13 @@ export default (app: Instance): IBranch => register => {
 
   const files = composeReducers(
     clientFileListReducer,
-    (state: IFolder = null, action: any) => {
+    (state: IFile[] = null, action: any) => {
       switch (action.type) {
         case 'folder.set':
           return action.folder && action.folder.files;
+        case FileActionTypes.moveFile:
+        case NotebookActionTypes.moveNotebook:
+          return state && reject(state, {id: action.id});
         default:
       }
   

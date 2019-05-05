@@ -13,7 +13,7 @@ export const FileActions = {
     id
   }),
 
-  moveFile: (id: string, newPath: IFilePathItem) => ({
+  moveFile: (id: string, newPath: IFilePathItem[]) => ({
     type: 'file.update.path' as const,
     id,
     path: newPath

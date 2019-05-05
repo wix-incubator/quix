@@ -9,9 +9,9 @@ import './picker.scss';
 function getVizTypes({values, all}: IFieldCategories, types: string[] = []): string[] {
   const res = ['table'];
 
-  // if (values.length > 0 && all.length > 1) {
-  //   res.push('chart');
-  // }
+  if (values.length > 0 && all.length > 1) {
+    res.push('chart', 'pie');
+  }
 
   return types.length ? intersection(types, res) : res;
 }

@@ -50,8 +50,10 @@
   </div>
 
   <div 
-    class="bi-app-sidebar bi-section--300 bi-c-h"
+    class="bi-app-sidebar bi-section bi-c"
     ng-if="vm.menu.current && (vm.menu.current.template || vm.menu.current.compiled)"
+    bi-resizable
+    br-options="::{minWidth: 300, handles: 'e', stateName: 'app-sidebar'}"
   >
     <div class="bi-section-header">
       <div class="bi-section-title">{{vm.menu.current.name}}</div>

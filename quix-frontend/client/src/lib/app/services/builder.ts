@@ -8,6 +8,7 @@ import Instance, {IMenuItem} from './instance';
 import PluginInstance, {IPluginComponent, IStateFactory, IPluginBranches, IStateComponentFactory, IStateComponentConfig, IUrlParamListener} from './plugin-instance';
 import {initScopeListeners} from '../utils/scope-utils';
 import {User} from './user';
+import { LocalStorage } from '../../core/srv/local-storage';
 
 export type PluginFactory<Config> = (app: PluginInstance<Config>) => any;
 
@@ -261,6 +262,8 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
 
       this.fire(`ready|${plugin.getId()}`, app, store);
     });
+
+    LocalStorage.setPrefix(`${this.id}-`);
 
     this.fire('ready', app);
 

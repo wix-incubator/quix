@@ -17,6 +17,7 @@ export class AppController {
         quixBackendUrl: this.settings.QuixBackendPublicUrl,
         googleClientId: this.settings.GoogleClientId,
       },
+      debug: !this.configService.getEnvSettings().UseMinifiedStatics,
     };
   }
 }

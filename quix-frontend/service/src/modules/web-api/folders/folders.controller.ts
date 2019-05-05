@@ -2,28 +2,28 @@ import {
   Controller,
   Get,
   Param,
-  Req,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import {FoldersService} from './folders.service';
-import {AuthService} from '../../auth/auth.service';
-import {Request} from 'express';
 import {QuixEventBus} from '../../event-sourcing/quix-event-bus';
-import {FileActions, createFolder} from '../../../../../shared/entities/file';
+import {FileActions, createFolder} from 'shared/entities/file';
 import uuid from 'uuid/v4';
+import {UserProfile, User} from 'modules/auth';
+import {AuthGuard} from '@nestjs/passport';
 
 @Controller('/api')
+@UseGuards(AuthGuard())
 export class FoldersController {
   constructor(
     private foldersService: FoldersService,
-    private authService: AuthService,
     private quixEventBus: QuixEventBus,
   ) {}
 
   @Get('files')
-  async getFullTree(@Req() req: Request) {
-    const {email} = await this.authService.getUser(req);
+  async getFullTree(@User() user: UserProfile) {
+    const {email} = user;
     let list = await this.foldersService.getFilesForUser(email);
 
     if (!list.length) {
@@ -35,8 +35,7 @@ export class FoldersController {
   }
 
   @Get('files/:id')
-  async GetSpecificFolder(@Param('id') id: string, @Req() req: Request) {
-    const {email} = await this.authService.getUser(req);
+  async GetSpecificFolder(@Param('id') id: string) {
     const folder = this.foldersService.getFolder(id);
     if (!folder) {
       throw new HttpException(`Can't find folder`, HttpStatus.NOT_FOUND);

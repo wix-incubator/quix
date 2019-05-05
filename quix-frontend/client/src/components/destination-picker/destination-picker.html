@@ -4,6 +4,7 @@
   <bi-file-explorer
     class="bi-c-h bi-grow bi-scroll"
     ng-model="vm.state.value().tree"
+    fe-options="::{folderMode: 'select'}"
     on-load="events.onFileExplorerLoad(fileExplorer)"
     on-file-click="events.onFileClick(file)"
     on-folder-click="events.onFolderClick(folder)"

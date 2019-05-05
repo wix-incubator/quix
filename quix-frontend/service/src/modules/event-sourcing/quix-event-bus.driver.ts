@@ -1,32 +1,29 @@
 /* Helper driver for event-bus tests */
-import {ConfigService, ConfigModule} from 'config';
+/* tslint:disable:no-non-null-assertion */
 
-import {EventSourcingModule} from './event-sourcing.module';
 import {Test, TestingModule} from '@nestjs/testing';
 import {
-  getRepositoryToken,
-  TypeOrmModule,
-  getEntityManagerToken,
   getConnectionToken,
   getCustomRepositoryToken,
+  getRepositoryToken,
+  TypeOrmModule,
 } from '@nestjs/typeorm';
+import {ConfigModule, ConfigService} from 'config';
 import {
-  DbNotebook,
-  DbNote,
   DbFileTreeNode,
   DbFolder,
+  DbNote,
+  DbNotebook,
   FileTreeRepository,
-  NoteRepository,
 } from 'entities';
-import {DbAction} from './infrastructure/action-store/entities/db-action';
-import {Repository, EntityManager, IsNull, Connection} from 'typeorm';
-import {QuixEventBus} from './quix-event-bus';
-import * as uuid from 'uuid';
-import {NotebookActions, createNotebook} from 'shared/entities/notebook';
-import {FileActions, FileType, IFilePathItem} from 'shared/entities/file';
 import {AuthModule} from 'modules/auth/auth.module';
-import {dbConf} from 'config/db-conf';
-import {} from 'shared/entities/file';
+import {FileActions, FileType, IFilePathItem} from 'shared/entities/file';
+import {createNotebook, NotebookActions} from 'shared/entities/notebook';
+import {Connection, Repository} from 'typeorm';
+import * as uuid from 'uuid';
+import {EventSourcingModule} from './event-sourcing.module';
+import {DbAction} from './infrastructure/action-store/entities/db-action';
+import {QuixEventBus} from './quix-event-bus';
 
 export class QuixEventBusDriver {
   constructor(
@@ -56,11 +53,10 @@ export class QuixEventBusDriver {
     module = await Test.createTestingModule({
       imports: [
         ConfigModule,
-        AuthModule,
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
-          useFactory: async (configService: ConfigService) =>
-            configService.getDbConnection([
+          useFactory: async (cs: ConfigService) =>
+            cs.getDbConnection([
               DbFileTreeNode,
               DbFolder,
               DbNote,
@@ -76,17 +72,13 @@ export class QuixEventBusDriver {
     }).compile();
 
     eventBus = module.get(QuixEventBus);
-    notebookRepo = module.get<Repository<DbNotebook>>(
-      getRepositoryToken(DbNotebook),
-    );
-    noteRepo = module.get<Repository<DbNote>>(getRepositoryToken(DbNote));
-    eventsRepo = module.get<Repository<DbAction>>(getRepositoryToken(DbAction));
-    fileTreeRepo = module.get<FileTreeRepository>(
-      getCustomRepositoryToken(FileTreeRepository),
-    );
-    folderRepo = module.get<Repository<DbFolder>>(getRepositoryToken(DbFolder));
-    conn = module.get<Connection>(getConnectionToken());
-    configService = module.get<ConfigService>(ConfigService);
+    notebookRepo = module.get(getRepositoryToken(DbNotebook));
+    noteRepo = module.get(getRepositoryToken(DbNote));
+    eventsRepo = module.get(getRepositoryToken(DbAction));
+    fileTreeRepo = module.get(getRepositoryToken(FileTreeRepository));
+    folderRepo = module.get(getRepositoryToken(DbFolder));
+    conn = module.get(getConnectionToken());
+    configService = module.get(ConfigService);
 
     return new QuixEventBusDriver(
       eventBus,
@@ -120,10 +112,16 @@ export class QuixEventBusDriver {
     );
   }
 
-  createNotebookAction(path: IFilePathItem[] = [], user = this.defaultUser) {
+  createNotebookAction(
+    path: Partial<IFilePathItem>[] = [],
+    user = this.defaultUser,
+  ) {
     const id = uuid.v4();
     const action = {
-      ...NotebookActions.createNotebook(id, createNotebook(path, {id})),
+      ...NotebookActions.createNotebook(
+        id,
+        createNotebook(path as IFilePathItem[], {id}),
+      ),
       user,
     };
     return [id, action] as const;
@@ -131,7 +129,7 @@ export class QuixEventBusDriver {
 
   createFolderAction(
     name: string,
-    path: IFilePathItem[],
+    path: {id: string}[],
     user = this.defaultUser,
   ) {
     const id = uuid.v4();
@@ -140,7 +138,7 @@ export class QuixEventBusDriver {
         id,
         type: FileType.folder,
         name,
-        path,
+        path: path as IFilePathItem[],
         isLiked: false,
         owner: '',
         dateCreated: 0,
@@ -179,30 +177,14 @@ export class QuixEventBusDriver {
     return this.noteRepo.findOne(id);
   }
 
-  async getFolderDecendents(user: string) {
-    const root = await this.fileTreeRepo.findOne(
-      {owner: user, parentId: IsNull()},
-      {relations: ['notebook', 'folder']},
-    );
+  async getUserFileTree(user: string) {
+    const q = this.fileTreeRepo
+      .createQueryBuilder('node')
+      .where('node.owner = :user', {user})
+      .leftJoinAndSelect('node.folder', 'folder')
+      .leftJoinAndSelect('node.notebook', 'notebook');
 
-    if (root) {
-      const sub = this.fileTreeRepo
-        .createQueryBuilder('root')
-        .select('root.mpath')
-        .where(`root.id = :id`)
-        .getQuery();
-
-      const q = this.fileTreeRepo
-        .createQueryBuilder('node')
-        .where('node.owner = :user', {user})
-        .andWhere(`node.mpath LIKE ${dbConf.concat(`(${sub})`, `'%'`)}`)
-        .setParameter('id', root.id)
-        .leftJoinAndSelect('node.folder', 'folder')
-        .leftJoinAndSelect('node.notebook', 'notebook');
-
-      return q.getMany();
-    }
-    return [];
+    return q.getMany();
   }
 
   clearEvents() {

@@ -18,7 +18,7 @@ Application uses the following environment variables to connect to DB:
 * DB_PORT - defaults to `3306`
 
 ### Default settings
-Default settings for DB can be found under [service/src/config/config.service.ts](./service/src/config/config.service.ts)
+Default settings for DB can be found under [service/src/config/env.ts](./service/src/config/env.ts)
 
 ### MySQL 8 considerations
 If you're using MySQL 8, you may need to run the following command on your DB:

@@ -18,16 +18,21 @@ function show(scope, element) {
 
   return inject('$timeout')(() => {
     const content = element.find('.bd-content');
-    let {top, left} = element.offset();
-    let right = 'initial';
+    let {position} = scope.options;
+
+    let {top, left, right} = element.offset();
+    right = 'initial';
     let width = 'auto';
     let minWidth = 'auto';
 
     top += element.height();
 
+    if (top + content.height() > window.innerHeight) {
+      position = 'top';
+    }
+
     switch (scope.options.align) {
       case 'right':
-        // tslint:disable-next-line: restrict-plus-operands
         right = document.body.clientWidth - (left + element.width()) as any;
         left = 'initial';
         break;
@@ -37,7 +42,7 @@ function show(scope, element) {
       default:
     }
 
-    switch (scope.options.position) {
+    switch (position) {
       case 'top':
         // tslint:disable-next-line: restrict-plus-operands
         top -= element.height() + content.height();
@@ -65,11 +70,6 @@ function show(scope, element) {
       }
     }
 
-    // tslint:disable-next-line: restrict-plus-operands
-    if (top + content.height() > window.innerHeight) {
-      top = top - element.height() - content.height();
-    }
-
     content.css({
       top,
       left,
@@ -78,6 +78,10 @@ function show(scope, element) {
       width,
       minWidth
     });
+
+    element.removeClass(['top', 'bottom', 'left', 'right'].map(pos => `bd-position--${pos}`).join(' '));
+    element.addClass(`bd-position--${position}`);
+    element.addClass(`bd-align--${scope.options.align}`);
 
     scope.vm.toggleVisible(true);
 
@@ -180,10 +184,6 @@ export default () => {
               hide(scope, mute);
             }
           });
-
-        element
-          .addClass(`bd-align-${scope.options.align}`)
-          .addClass(`bd-pos-${scope.options.position}`);
 
         scope.$watch('bdIsOpen', (isOpen, prev) => {
           if (isOpen !== prev && isOpen !== scope.vm.enabled) {

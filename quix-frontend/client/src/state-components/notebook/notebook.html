@@ -1,4 +1,4 @@
-<div class="bi-section">
+<div class="bi-section bi-grow">
   <div class="bi-section-header">
     <div>
       <div class="bi-section-title">
@@ -111,6 +111,14 @@
       class="quix-notebook-content bi-c-h bi-grow bi-scroll"
       ng-if="vm.state.is('Content')"
       data-hook="notebook-content"
+      ui-sortable="{
+        axis: 'y',
+        handle: '.quix-note-drag-handle',
+        opacity: '0.9',
+        disabled: readonly,
+        stop: events.onNoteReorder
+      }"
+      ng-model="vm.state.value().notes"
     >
       <quix-note
         class="bi-fade-in"

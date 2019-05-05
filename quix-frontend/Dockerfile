@@ -1,4 +1,4 @@
-FROM node:11
+FROM node:10
 
 COPY ./ ./
 WORKDIR /client
@@ -10,5 +10,5 @@ RUN npm install
 RUN npm run build
 
 EXPOSE 3000
-ENTRYPOINT ["npm", "start"]
+ENTRYPOINT ["npm", "run", "start:prod"]
 

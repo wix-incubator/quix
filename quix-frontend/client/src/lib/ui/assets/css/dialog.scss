@@ -25,6 +25,10 @@
 
   dialog-content {
     color: $grey--600;
+
+    .bi-dialog-icon {
+      font-size: 50px;
+    }
   }
 
   dialog-footer {

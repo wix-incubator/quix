@@ -59,7 +59,12 @@ const mocks = {
   '/api/db/explore/:schema/:catalog/:table': () => ({
     children: [{name: 'column', dataType: 'varchar'}]
   }),
-  '/api/db/autocomplete': () => [],
+  '/api/db/autocomplete': () => ({
+    catalogs: ['catalog', 'catalog2'],
+    schemas: ['schema'],
+    tables: ['table'],
+    columns: ['column'],
+  }),
 };
 
 let mockOverrides = {};

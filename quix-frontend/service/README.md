@@ -1,4 +1,3 @@
-
 ## Installation
 
 ```bash
@@ -38,19 +37,25 @@ $ npm run test:cov
 ## Configuration
 The app expects the following enviorment variables:
 ```bash
-QUIX_ENV=
 DB_NAME=
 DB_USER=
 DB_PASS=
 DB_HOST=
 DB_PORT=
-BACKEND_URL=
-GOOGLE_CLIENT_ID=
-GOOGLE_AUTH_SECRET=
+BACKEND_INTERNAL_URL=
+BACKEND_PUBLIC_URL=
+GOOGLE_SSO_CLIENT_ID=
+GOOGLE_SSO_SECRET=
 AUTH_COOKIE=
 AUTH_SECRET=
+COOKIE_MAX_AGE=
+DB_TYPE=
+AUTH_TYPE=
+DB_AUTO_MIGRATE=
+MINIFIED_STATICS=
 ```
 
-You can set those in `.env` file.
+You can set those in `.env` file. When testing, values are read from `.testenv`.
 
-For testing purposes, you have `.testenv`, which overrides any previous set value. 
+
+This app is built using ![Nest.js](https://raw.githubusercontent.com/nestjs/docs.nestjs.com/master/src/assets/logo.png).

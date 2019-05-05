@@ -6,4 +6,4 @@ export {default as quixDbSidebar} from './db-sidebar/db-sidebar';
 export {default as quixSearchResults} from './search-results/search-results';
 export {default as quixActions} from './actions/actions';
 export {default as quixTempQuery} from './temp-query/temp-query';
-export {default as quixDestination} from './destination/destination';
+export {default as quixDestinationPicker} from './destination-picker/destination-picker';

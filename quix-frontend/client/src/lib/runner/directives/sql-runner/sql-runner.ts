@@ -110,7 +110,7 @@ export default () => {
             onRunnerLoad(instance: RunnerComponentInstance) {
               runnerInstance = instance;
 
-              runnerInstance.setDataTransformer(() => editorInstance.getParams().format(scope.vm.selection || scope.model.value));
+              runnerInstance.setRequestTransformer(() => editorInstance.getParams().format(scope.vm.selection || scope.model.value));
 
               runnerInstance.setErrorTransformer((runner, query, msg) => {
                 if (isPermissionError(msg) && scope.options.promptOnPermissionError) {
@@ -162,7 +162,25 @@ export default () => {
                   if (scope.options.autoParams) {
                     completions = [
                       ...completions,
-                      ...AUTO_PARAMS.map(({name, meta}) => ({caption: name, value: params.getParser().getSerializer().serialize({match: null, key: name, type: null, value: null, isAutoParam: true, isKeyOnlyParam: false, options: null}), meta}))
+                      ...AUTO_PARAMS.map(({name, meta}) => ({
+                        caption: name,
+                        value: params.getParser().getSerializer().serialize({
+                          match: null,
+                          key: name,
+                          type: null,
+                          value: null,
+                          isAutoParam: true,
+                          isKeyOnlyParam: false,
+                          options: null
+                        }),
+                        meta,
+                        completer: {
+                          insertMatch(editor) {
+                            editor.insert(name);
+                            editorInstance.getParams().addAutoParam(name);
+                          }
+                        }
+                      }))
                     ];
                   }
 
@@ -170,7 +188,17 @@ export default () => {
                     completions = [
                       ...completions,
                       ...params.getParams().filter(({isAutoParam}) => !isAutoParam).map(({key, type, value}) => {
-                        return {caption: key, value: params.getParser().getSerializer().serialize({match: null, key, type, value, isAutoParam: false, isKeyOnlyParam: true, options: null}), meta: type};
+                        return {
+                          caption: key,
+                          value: params.getParser().getSerializer().serialize({
+                            match: null,
+                            key,
+                            type,
+                            value,
+                            isAutoParam: false,
+                            isKeyOnlyParam: true,
+                            options: null
+                          }), meta: type};
                       })
                     ];
                   }

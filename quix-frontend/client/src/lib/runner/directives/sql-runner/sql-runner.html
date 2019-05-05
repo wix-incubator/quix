@@ -32,12 +32,44 @@
   <actions bi-html="renderActions()"></actions>
 
   <run-hint>
-    <div class="bi-hint bi-align bi-s-h--x05 bi-fade-in" ng-if="vm.hint.run.enabled && !readonly">
-      <span><span class="bi-text--600">{{::getCtrlKeyName()}} + Enter</span> to run</span>
-      <span>|</span>
-      <span><span class="bi-text--600">{{::getCtrlKeyName()}} + S</span> to save</span>
-      <span>|</span>
-      <span ng-if="::options.params"><span class="bi-text--600">$</span> to insert parameters</span>
-    </div>
-  </run-hint>
+    <bi-tooltip ng-if="vm.hint.run.enabled && !readonly">
+      <bi-toggle>
+        <i class="bi-icon">keyboard</i>
+      </bi-toggle>
+
+    <table>
+      <tr>
+        <th>
+          <span class="bi-tag--sm">{{::getCtrlKeyName()}} + Enter</span>
+        </th>
+        <th>
+          Run note
+        </th>
+      </tr>
+      <tr>
+        <th>
+          <span class="bi-tag--sm">{{::getCtrlKeyName()}} + S</span>
+        </th>
+        <th>
+          Save note
+        </th>
+      </tr>
+      <tr>
+        <th>
+          <span class="bi-tag--sm">Ctrl + Space</span>
+        </th>
+        <th>
+          Toggle autocompletion
+        </th>
+      </tr>
+      <tr ng-if="::options.params">
+        <th>
+          <span class="bi-tag--sm">$</span>
+        </th>
+        <th>
+          Insert parameteres
+        </th>
+      </tr>
+    </table>
+  </bi-tooltip>
 </bi-runner>

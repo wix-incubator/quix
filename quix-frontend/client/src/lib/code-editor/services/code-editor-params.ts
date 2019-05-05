@@ -4,6 +4,7 @@ import {UndoManager} from 'brace';
 import {ParamParser, TType, IParam} from './param-parser';
 import {paramSerializerFactory} from './param-parser/param-serializers';
 import CodeEditor from './code-editor-service';
+import { AUTO_PARAM_TYPES, AUTO_PARAM_DEFAULTS } from './param-parser/param-types';
 
 export default class CodeEditorParams {
   private params: IParam[] = [];
@@ -104,6 +105,12 @@ export default class CodeEditorParams {
       this.getParams().push(this.parser.createParam(key, type, value, options));
       this.syncParams();
     }
+
+    return this;
+  }
+
+  addAutoParam(key: string): CodeEditorParams {
+    this.addParam(key, AUTO_PARAM_TYPES[key], AUTO_PARAM_DEFAULTS[key]);
 
     return this;
   }

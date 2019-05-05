@@ -20,13 +20,20 @@ export class DbInfo {
     return this.$http<any>({
       url: `/api/db/autocomplete`,
       method: 'GET'
-    }).then(data => data.data.payload || data.data).catch(e => []) as any;
+    })
+    .then(({data}) => Object.keys(data).reduce((res, meta) => {
+      data[meta].forEach((value: string) => res.push({meta, value}));
+      return res;
+    }, []))
+    .catch(e => console.log(e)) as any;
   }
 
   fetchSchema(): Promise<IDbNode[]> {
     return this.$http<any>({
       url: `/api/db/explore`,
       method: 'GET'
-    }).then(data => data.data.payload || data.data).catch(e => []) as any;
+    })
+    .then(({data}) => data)
+    .catch(e => []) as any;
   }
 }

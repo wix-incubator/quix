@@ -37,7 +37,7 @@ export const onCopy = (scope: IScope, store: Store, app: Instance) => (notebook:
   prompt({
     title: 'Copy notebook',
     yes: 'copy',
-    content: `<quix-destination ng-model="model.folder" required></quix-destination>`
+    content: `<quix-destination-picker ng-model="model.folder" required></quix-destination-picker>`
   },
     scope,
     {model: {folder: null}}
@@ -122,6 +122,14 @@ export const onNoteContentChange = (scope: IScope, store: Store, app: Instance) 
 
 export const onNoteNameChange = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
   store.dispatchAndLog(NoteActions.updateName(note.id, note.name));
+}
+
+export const onNoteReorder = (scope: IScope, store: Store, app: Instance) => (e: any, {item}: any) => {
+  const {model: note, dropindex: index} = item.sortable;
+
+  if (typeof index !== 'undefined') {
+    store.dispatchAndLog(NoteActions.reorderNote(note.id, index));
+  }
 }
 
 export const onMarkToggle = (scope: IScope, store: Store, app: Instance) => (note: INote) => {

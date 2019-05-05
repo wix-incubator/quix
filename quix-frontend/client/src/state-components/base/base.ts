@@ -5,7 +5,7 @@ import {Store} from '../../lib/store';
 import {Instance as App} from '../../lib/app';
 import {IStateComponentConfig} from '../../lib/app/services/plugin-instance';
 import {search} from '../../store/app/app-actions';
-import {openSearchResults, openTempQuery, closePopup} from '../../services';
+import {openSearchResults, openTempQuery, closePopup, hasQueuedNotes} from '../../services';
 
 export default (app: App, store: Store) => ({
   name: 'base',
@@ -18,7 +18,9 @@ export default (app: App, store: Store) => ({
   controller: (scope, params, {syncUrl}) => {
     syncUrl();
 
-    store.subscribe('app.searchText', text => text ? openSearchResults(scope) : closePopup());
+    store.subscribe('app.searchText', text => text ? openSearchResults(scope) : closePopup(), scope);
+
+    window.onbeforeunload = () => hasQueuedNotes(store) || undefined;
   },
   link: (scope) => {
     initNgScope(scope)

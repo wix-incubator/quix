@@ -32,9 +32,5 @@ bi-dropdown {
   .bd-content {
     position: fixed;
     z-index: 200;
-
-    // [ng-transclude] {
-    //   @include animation-scale(.08s);
-    // }
   }
 }

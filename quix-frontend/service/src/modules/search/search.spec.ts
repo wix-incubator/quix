@@ -3,9 +3,9 @@ import {getRepositoryToken, TypeOrmModule} from '@nestjs/typeorm';
 import 'reflect-metadata';
 import {Repository} from 'typeorm';
 import uuid from 'uuid/v4';
-import {NoteType} from '../../../../shared/entities/note';
+import {NoteType} from 'shared/entities/note';
 import {ConfigService, ConfigModule} from 'config';
-import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from '../../entities';
+import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from 'entities';
 import {SearchController} from './search.controller';
 import {SearchModule} from './search.module';
 
@@ -116,6 +116,23 @@ describe('Search', () => {
 
     expect(result[0].id).toBe(note.id);
     expect(result2[0].id).toBe(note2.id);
+    expect(badResult).toHaveLength(0);
+  });
+
+  it('should get note by content, partial keywords', async () => {
+    const notebook = await createNotebook();
+    const note = await createNote(notebook.id, {
+      content: 'select someColumn from someCatalog.someTable',
+    });
+    const note2 = await createNote(notebook.id, {
+      content: 'select someColumn from someCatalog.someOtherTable',
+    });
+
+    await noteRepo.save(note2);
+    const result = await searchCtrl.doSearch(`someCa`);
+    const badResult = await searchCtrl.doSearch('randomKeyword');
+
+    expect(result).toHaveLength(2);
     expect(badResult).toHaveLength(0);
   });
 
