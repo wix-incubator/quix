@@ -1,9 +1,8 @@
-# Quix
+# Quix [![Build Status](https://travis-ci.com/wix-incubator/quix.svg?branch=master)](https://travis-ci.com/wix-incubator/quix)
 
 > ## Disclaimer
 > :exclamation: Please note **that this is a beta version** of Quix which is still undergoing final testing before its official release.
 
-[![Build Status](https://travis-ci.com/wix-incubator/quix.svg?branch=master)](https://travis-ci.com/wix-incubator/quix)
 
 Quix is a robust easy-to-use business intelligence & data analytics tool built to handle both quick insights and massive resource-demanding queries. It features data visualization and export, user management, and organizes queries in notebooks for easy access and sharing across teams.
 
