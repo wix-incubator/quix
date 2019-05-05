@@ -4,6 +4,9 @@ import 'echarts/lib/chart/pie'
 import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/title'
 import 'echarts/lib/component/legend'
+import { default as essos } from '../theme';
+
+echarts.registerTheme('essos', essos);
 
 export class ChartRenderer {
   private chart = null;
@@ -25,7 +28,7 @@ export class ChartRenderer {
       series.radius = size / (data.length * 4)
       series.center = [`${(slice * (2*i+1))}%`, '50%'];
     })
-    this.chart = echarts.init(this.container.get(0));
+    this.chart = echarts.init(this.container.get(0), 'essos');
     this.chart.clear();
     this.chart.setOption({
       title: {

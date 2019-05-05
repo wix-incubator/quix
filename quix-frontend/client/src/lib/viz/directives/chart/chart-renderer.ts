@@ -1,12 +1,15 @@
 import {IMeta, IData, IFilterData} from '../../services/chart/chart-conf';
 import {isDimension, isDate} from '../../services/chart/chart-utils';
 import * as echarts from 'echarts/lib/echarts';
-import 'echarts/lib/chart/line'
-import 'echarts/lib/chart/bar'
-import 'echarts/lib/component/tooltip'
-import 'echarts/lib/component/title'
-import 'echarts/lib/component/legend'
-import 'echarts/lib/component/dataZoom'
+import 'echarts/lib/chart/line';
+import 'echarts/lib/chart/bar';
+import 'echarts/lib/component/tooltip';
+import 'echarts/lib/component/title';
+import 'echarts/lib/component/legend';
+import 'echarts/lib/component/dataZoom';
+import {default as essos} from '../theme';
+
+echarts.registerTheme('essos', essos);
 
 function getChartType(filter: IFilterData, meta: IMeta) {
   if (isDimension(filter.x, meta)) {
@@ -47,8 +50,7 @@ export class ChartRenderer {
 
     const maxInterval = getMaxInterval(xAxisType, data);
     data.map(series => (series as any).type = chartType);
-
-    this.chart = echarts.init(this.container.get(0));
+    this.chart = echarts.init(this.container.get(0), 'essos');
     this.chart.clear();
     this.chart.setOption({
       tooltip: {
@@ -65,7 +67,7 @@ export class ChartRenderer {
       },
       dataZoom: [
         {
-          show: true,
+          show: xAxisType !== 'category',
           realtime: true,
           start: 20,
           end: 85
