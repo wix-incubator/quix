@@ -32,10 +32,10 @@
     <div class="quix-section-controls bi-align bi-dont-shrink bi-fade-in" ng-if="vm.state.is('Result') || vm.state.after('Result')">
       <div class="bi-spread bi-grow bi-fade-in" ng-if="!vm.marked.enabled">
         <div class="bi-align bi-s-h">
-          <button 
+          <button
             class="bi-button--success"
-            ng-if="permissions.edit"
-            ng-click="events.onNoteAdd()"
+            ng-disabled="!permissions.addNote"
+            ng-click="permissions.addNote && events.onNoteAdd()"
             data-hook="notebook-add-note"
           >
             <i class="bi-icon--sm">add</i>

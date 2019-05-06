@@ -10,6 +10,11 @@ export interface IPermissions {
   bulk?: IPermissions;
 }
 
+export interface IFolderPermissions extends IPermissions{
+  addFolder?: boolean;
+  addNotebook?: boolean;
+}
+
 export interface INotebookPermissions extends IPermissions{
   addNote?: boolean;
   bulk?: INotebookPermissions & {
@@ -31,13 +36,16 @@ export const getDefaultPermissions = (): IPermissions => {
   };
 }
 
-export const getFolderPermissions = (app: Instance, folder: IFile): IPermissions => {
+export const getFolderPermissions = (app: Instance, folder: IFile): IFolderPermissions => {
   const isFolderOwner = isOwner(app, folder);
+  const isRootFolder = isRoot(folder);
 
   return {
     edit: isFolderOwner,
-    delete: isFolderOwner && !isRoot(folder),
-    rename: isFolderOwner && !isRoot(folder),
+    delete: isFolderOwner && !isRootFolder,
+    rename: isFolderOwner && !isRootFolder,
+    addFolder: isFolderOwner,
+    addNotebook: isFolderOwner,
     clone: false,
     bulk: {
       edit: false,
