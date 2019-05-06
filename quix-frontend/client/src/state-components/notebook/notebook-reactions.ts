@@ -1,13 +1,17 @@
 import {IScope} from './notebook-types';
 import {INotebook, INote} from '../../../../shared';
-import {Instance} from '../../lib/app';
 
-export function setNotebook(scope: IScope, app: Instance, notebook: INotebook) {
+export function setNotebook(scope: IScope, notebook: INotebook) {
   scope.vm.state
     .set('Result', !!notebook, {notebook})
     .then(() => {
       if (scope.vm.breadcrumbs.folders.length === 1) {
         scope.vm.breadcrumbs.folders = [...notebook.path, {id: notebook.id, name: notebook.name}];
+
+        if (!scope.permissions.edit) {
+          scope.vm.breadcrumbs.folders[0].name = `${notebook.owner}'s notebooks`;
+        }
+
         scope.vm.breadcrumbs.reload();
       }
     })

@@ -1,5 +1,5 @@
-export {addNotebook, deleteNotebook, saveQueuedNotes, hasQueuedNotes} from './notebook';
-export {addFolder, isRoot, goToFile} from './files';
+export {addNotebook, deleteNotebook, saveQueuedNotes, hasQueuedNotes, goToExamples} from './notebook';
+export {addFolder, isRoot, goToFile, goToRoot} from './files';
 export {confirmAction} from './dialog';
 export {StateManager} from './state';
 export {getRunners} from './runners';

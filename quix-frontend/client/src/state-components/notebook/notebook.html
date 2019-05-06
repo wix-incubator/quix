@@ -9,7 +9,7 @@
           quix-breadcrumbs-options="::{focusName: options.isNew}"
           on-folder-click="events.onBreadcrumbClick(file)"
           on-name-change="events.onNameChange(file)"
-          readonly="!permissions.edit"
+          readonly="!permissions.rename"
         ></bi-breadcrumbs>
       </div>
 
@@ -101,7 +101,7 @@
           Notebook is empty
         </div>
 
-        <div class="bi-empty-state-content bi-s-h--x05" ng-if="permissions.edit">
+        <div class="bi-empty-state-content bi-s-h--x05" ng-if="permissions.addNote">
           <a class="bi-link" ng-click="events.onNoteAdd()">Add note</a>
         </div>
       </div>
@@ -115,7 +115,7 @@
         axis: 'y',
         handle: '.quix-note-drag-handle',
         opacity: '0.9',
-        disabled: readonly,
+        disabled: !permissions.reorder,
         stop: events.onNoteReorder
       }"
       ng-model="vm.state.value().notes"

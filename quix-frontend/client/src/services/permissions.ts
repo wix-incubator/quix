@@ -10,6 +10,13 @@ export interface IPermissions {
   bulk?: IPermissions;
 }
 
+export interface INotebookPermissions extends IPermissions{
+  addNote?: boolean;
+  bulk?: INotebookPermissions & {
+    reorder?: boolean;
+  };
+}
+
 export const isOwner = (app: Instance, entity: Pick<IEntity, 'owner'>) => {
   return entity.owner === app.getUser().getEmail();
 }
@@ -41,18 +48,20 @@ export const getFolderPermissions = (app: Instance, folder: IFile): IPermissions
   };
 }
 
-export const getNotebookPermissions = (app: Instance, folder: IFile): IPermissions => {
+export const getNotebookPermissions = (app: Instance, folder: IFile): INotebookPermissions => {
   const isFolderOwner = isOwner(app, folder);
 
   return {
     edit: isFolderOwner,
     delete: isFolderOwner,
     rename: isFolderOwner,
+    addNote: isFolderOwner,
     copy: true,
     bulk: {
       edit: isFolderOwner,
       delete: isFolderOwner,
       rename: isFolderOwner,
+      reorder: isFolderOwner,
       copy: false
     }
   };

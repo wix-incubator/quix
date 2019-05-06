@@ -8,7 +8,7 @@ import Instance, {IMenuItem} from './instance';
 import PluginInstance, {IPluginComponent, IStateFactory, IPluginBranches, IStateComponentFactory, IStateComponentConfig, IUrlParamListener} from './plugin-instance';
 import {initScopeListeners} from '../utils/scope-utils';
 import {User} from './user';
-import { LocalStorage } from '../../core/srv/local-storage';
+import {LocalStorage} from '../../core/srv/local-storage';
 
 export type PluginFactory<Config> = (app: PluginInstance<Config>) => any;
 

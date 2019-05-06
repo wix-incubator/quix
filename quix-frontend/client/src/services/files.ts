@@ -25,8 +25,8 @@ export const deleteFolder = (store: Store, app: Instance, folder: IFolder | IFil
   return store.dispatchAndLog(FileActions.deleteFile(id)).then(() => goUp(app, folder));
 }
 
-export const isRoot = (file: Pick<IFile, 'name' | 'type' | 'path'>) => {
-  return !file.path.length && file.type === FileType.folder && file.name === 'My notebooks';
+export const isRoot = (file: Pick<IFile, 'type' | 'path'>) => {
+  return !file.path.length && file.type === FileType.folder;
 }
 
 export const fetchRootPath = (): Promise<IFilePathItem> => {
@@ -35,7 +35,7 @@ export const fetchRootPath = (): Promise<IFilePathItem> => {
     .then(file => file && {id: file.id, name: file.name});
 }
 
-export const goToFile = (app: Instance, file: Pick<IFile, 'id' | 'name' | 'type' | 'owner' | 'path'>, options: {
+export const goToFile = (app: Instance, file: Pick<IFile, 'id' | 'type' | 'owner' | 'path'>, options: {
   isNew?: boolean;
 } = {
   isNew: false
@@ -55,7 +55,7 @@ export const goToRoot = (app: Instance) => {
   });
 }
 
-export const goUp = (app: Instance, file: Pick<IFile, 'id' | 'name' | 'path' | 'owner'>) => {
+export const goUp = (app: Instance, file: Pick<IFile, 'id' | 'path' | 'owner'>) => {
   const pathItem = last(file.path);
 
   const folder = {

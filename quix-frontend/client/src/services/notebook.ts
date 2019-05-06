@@ -54,9 +54,16 @@ export const deleteNotebook = async (store: Store, app: Instance, notebook: INot
 export const saveQueuedNotes = (store: Store) => {
   const {notes} = store.getState('notebook.queue') as {notes: Record<string, INote>};
 
-  return store.dispatchAndLog(Object.keys(notes).map(id => NoteActions.updateContent(id, notes[id].content)));
+  return store.logAndDispatch(Object.keys(notes).map(id => NoteActions.updateContent(id, notes[id].content)));
 }
 
 export const hasQueuedNotes = (store: Store) => {
   return store.getState('notebook.queue.size') > 0;
+}
+
+export const goToExamples = (app: Instance) => {
+  app.getNavigator().go(`base.notebook`, {
+    id: 'examples',
+    isNew: false
+  });
 }
