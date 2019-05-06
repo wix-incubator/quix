@@ -69,7 +69,7 @@ export default (app: Instance, store: Store) => () => ({
       store.subscribe('files.files', (files: IFile[]) => {
         scope.vm.state
           .force('Result', !!files, {files})
-          .set('Content', () => files.length > 1, () => ({tree: files.filter(file => file.type === FileType.folder)}));
+          .set('Content', () => files.length > 0, () => ({tree: files.filter(file => file.type === FileType.folder)}));
       }, scope);
 
       store.subscribe('files.error', (error: any) => {

@@ -33,9 +33,9 @@ export const onDelete = (scope: IScope, store: Store, app: Instance) => (noteboo
   deleteNotebook(store, app, notebook);
 }
 
-export const onCopy = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
+export const onClone = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
   prompt({
-    title: 'Copy notebook',
+    title: 'Clone notebook',
     yes: 'copy',
     content: `<quix-destination-picker ng-model="model.folder" required></quix-destination-picker>`
   },

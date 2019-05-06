@@ -54,7 +54,7 @@
             }"
             on-like-toggle="events.onLikeToggle(context)"
             on-share="events.onShare(context)"
-            on-copy="events.onCopy(context)"
+            on-clone="events.onClone(context)"
             on-delete="events.onDelete(context)"
           ></quix-actions>
         </div>
@@ -66,7 +66,7 @@
           context="vm.marked.list"
           permissions="::permissions.bulk"
           quix-actions-options="::{bulk: true}"
-          on-copy="events.onMarkedNotesCopy(context)"
+          on-clone="events.onMarkedNotesCopy(context)"
           on-delete="events.onMarkedNotesDelete(context)"
         ></quix-actions>
 

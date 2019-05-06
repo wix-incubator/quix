@@ -17,7 +17,7 @@ export default (app: Instance, store: Store) => () => ({
     quixActionsOptions: '<',
     onLikeToggle: '&',
     onShare: '&',
-    onCopy: '&',
+    onClone: '&',
     onDelete: '&'
   },
   link: {
@@ -36,8 +36,8 @@ export default (app: Instance, store: Store) => () => ({
           onShare() {
             scope.onShare({context: scope.context});
           },
-          onCopy() {
-            scope.onCopy({context: scope.context});
+          onClone() {
+            scope.onClone({context: scope.context});
           },
           onDelete() {
             const fn = () => scope.onDelete({context: scope.context});

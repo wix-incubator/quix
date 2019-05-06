@@ -8,11 +8,11 @@
     Delete {{::type}}
   </bi-tooltip>
     
-  <bi-tooltip ng-if="::permissions.copy">
+  <bi-tooltip ng-if="::permissions.clone">
     <bi-toggle>
-      <i class="bi-action bi-icon" ng-click="events.onCopy()">file_copy</i>
+      <i class="bi-action bi-icon" ng-click="events.onClone()">file_copy</i>
     </bi-toggle>
-    Copy {{::type}}
+    Clone {{::type}}
   </bi-tooltip>
     
   <bi-tooltip ng-if="::!options.bulk">
