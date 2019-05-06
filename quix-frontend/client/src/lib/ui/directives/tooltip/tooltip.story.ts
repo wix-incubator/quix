@@ -18,7 +18,7 @@ export default app => app
           <button type="button" class="bi-button--primary">HTML tooltip</button>
         </bi-toggle>
 
-        <div class="bi-text--large">I'm big!</div>
+        <div class="bi-text--lg">I'm big!</div>
         <div>Linebreak!</div>
       </bi-tooltip>
     `);
