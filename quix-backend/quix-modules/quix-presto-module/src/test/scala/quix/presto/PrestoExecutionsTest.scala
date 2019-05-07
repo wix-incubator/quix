@@ -7,34 +7,35 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
 import quix.api.users.User
+import quix.core.executions.SequentialExecutions
 import quix.core.results.SingleBuilder
 
 class PrestoExecutionsTest extends SpecWithJUnit with Mockito {
 
   class ctx extends Scope {
     val executor = new TestQueryExecutor
-    val executions = new PrestoExecutions(executor)
+    val executions = new SequentialExecutions[String](executor)
     val user = User("test")
-    val builder = spy(new SingleBuilder)
+    val builder = spy(new SingleBuilder[String])
     val builderSpy = spy(builder)
 
     val zeroQueries: Seq[String] = Seq.empty
     val oneQuery: Seq[String] = Seq("select 1")
     val twoQueries: Seq[String] = Seq("select 1", "select 2")
 
-    def have(item: String): Matcher[SingleBuilder] = {
-      be_==(item) ^^ ((resultBuilder: SingleBuilder) => resultBuilder.build().map(_.mkString(",")).mkString)
+    def have(item: String): Matcher[SingleBuilder[String]] = {
+      be_==(item) ^^ ((resultBuilder: SingleBuilder[String]) => resultBuilder.build().map(_.mkString(",")).mkString)
     }
 
-    def haveZeroResults: Matcher[SingleBuilder] = {
-      be_==(0) ^^ ((builder: SingleBuilder) => builder.build().size)
+    def haveZeroResults: Matcher[SingleBuilder[String]] = {
+      be_==(0) ^^ ((builder: SingleBuilder[String]) => builder.build().size)
     }
   }
 
   "PrestoExecutions" should {
 
     "call builder.start & builder.end on every query" in new ctx {
-      executions.execute(zeroQueries, user, builder).runToFuture
+      executions.execute(oneQuery, user, builder).runToFuture
 
       there was one(builder).start(any())
       there was one(builder).end(any())

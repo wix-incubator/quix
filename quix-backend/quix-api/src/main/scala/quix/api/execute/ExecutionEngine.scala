@@ -3,19 +3,19 @@ package quix.api.execute
 import monix.eval.Task
 import quix.api.users.User
 
-case class ActiveQuery(id: String,
-                       var text: String,
-                       numOfQueries: Int,
-                       user: User,
-                       var isCancelled: Boolean,
-                       var session: Map[String, Any],
-                       var catalog: Option[String] = None,
-                       var schema: Option[String] = None)
+case class ActiveQuery[Code](id: String,
+                             var text: Code,
+                             numOfQueries: Int,
+                             user: User,
+                             var isCancelled: Boolean,
+                             var session: Map[String, Any],
+                             var catalog: Option[String] = None,
+                             var schema: Option[String] = None)
 
-trait Builder[Results] {
-  def start(query: ActiveQuery): Task[Unit]
+trait Builder[Code, Results] {
+  def start(query: ActiveQuery[Code]): Task[Unit]
 
-  def end(query: ActiveQuery): Task[Unit]
+  def end(query: ActiveQuery[Code]): Task[Unit]
 
   def error(queryId: String, e: Throwable): Task[Unit]
 
@@ -23,7 +23,7 @@ trait Builder[Results] {
 
   def lastError: Option[Throwable]
 
-  def startSubQuery(queryId: String, code: String, results: Results): Task[Unit]
+  def startSubQuery(queryId: String, code: Code, results: Results): Task[Unit]
 
   def addSubQuery(queryId: String, results: Results): Task[Unit]
 
@@ -33,11 +33,11 @@ trait Builder[Results] {
 }
 
 trait Executions[Code, Results] {
-  def execute(statements: Seq[Code], user: User, resultBuilder: Builder[Results]): Task[Unit]
+  def execute(statements: Seq[Code], user: User, resultBuilder: Builder[Code, Results]): Task[Unit]
 
   def kill(queryId: String, user: User): Task[Unit]
 }
 
-trait AsyncQueryExecutor[Results] {
-  def runTask(query: ActiveQuery, builder: Builder[Results]): Task[Unit]
+trait AsyncQueryExecutor[Code, Results] {
+  def runTask(query: ActiveQuery[Code], builder: Builder[Code, Results]): Task[Unit]
 }

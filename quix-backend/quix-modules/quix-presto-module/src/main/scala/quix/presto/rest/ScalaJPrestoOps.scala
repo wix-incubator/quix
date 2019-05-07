@@ -5,7 +5,7 @@ import quix.presto.PrestoConfig
 import scalaj.http.{Http, HttpRequest}
 
 object ScalaJPrestoOps {
-  def makeHeaders(query: ActiveQuery, config: PrestoConfig): Map[String, String] = {
+  def makeHeaders(query: ActiveQuery[String], config: PrestoConfig): Map[String, String] = {
     val extraValues = for ((key, value) <- query.session)
       yield key + "=" + value
 
@@ -19,7 +19,7 @@ object ScalaJPrestoOps {
       "x-presto-session" -> extraValues.mkString(", "))
   }
 
-  def buildInitRequest(query: ActiveQuery, config: PrestoConfig): HttpRequest = {
+  def buildInitRequest(query: ActiveQuery[String], config: PrestoConfig): HttpRequest = {
     Http(config.statementsApi)
       .headers(makeHeaders(query, config))
       .postData(query.text.getBytes("UTF-8"))

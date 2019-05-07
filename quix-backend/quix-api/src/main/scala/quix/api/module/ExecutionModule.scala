@@ -7,5 +7,5 @@ import quix.api.users.User
 trait ExecutionModule[Code, Results] {
   def name: String
 
-  def start(command: StartCommand[Code], id: String, user: User, builder: Builder[Results]): Task[Unit]
+  def start(command: StartCommand[Code], id: String, user: User, builder: Builder[Code, Results]): Task[Unit]
 }

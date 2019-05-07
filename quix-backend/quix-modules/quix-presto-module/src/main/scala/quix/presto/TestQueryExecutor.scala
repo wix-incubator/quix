@@ -20,11 +20,11 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
     } else None
   }
 
-  def act(query: ActiveQuery, builder: Builder[Batch]): Task[Unit] = {
+  def act(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
     val client = new PrestoStateClient {
       var index = 0
 
-      override def init(query: ActiveQuery): Task[PrestoState] = {
+      override def init(query: ActiveQuery[String]): Task[PrestoState] = {
         exception match {
           case Some(e) =>
             Task.raiseError(e)
@@ -68,10 +68,10 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
   }
 }
 
-class TestQueryExecutor extends AsyncQueryExecutor[Batch] {
+class TestQueryExecutor extends AsyncQueryExecutor[String, Batch] {
 
   val executions: mutable.Queue[SingleExecution] = mutable.Queue.empty
-  var resultBuilder: Builder[Batch] = _
+  var resultBuilder: Builder[String, Batch] = _
 
   def withException(e: Exception) = {
     executions.enqueue(new SingleExecution(exception = Some(e)))
@@ -94,7 +94,7 @@ class TestQueryExecutor extends AsyncQueryExecutor[Batch] {
     this
   }
 
-  override def runTask(query: ActiveQuery, builder: Builder[Batch]): Task[Unit] = {
+  override def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
     for {
       _ <- Task.eval(resultBuilder = builder)
       execution <- Task.eval(executions.dequeue())

@@ -14,7 +14,7 @@ import scala.concurrent.duration._
 class ScalaJPrestoStateClient(config: PrestoConfig)
   extends PrestoStateClient with StringJsonHelpersSupport with LazyLogging {
 
-  override def init(query: ActiveQuery): Task[PrestoState] = {
+  override def init(query: ActiveQuery[String]): Task[PrestoState] = {
     for {
       _ <- Task.eval(logger.info(s"method=init query-id=${query.id} query-sql=[${query.text.replace("\n", "-newline-")}] statements-api=${config.statementsApi}"))
 

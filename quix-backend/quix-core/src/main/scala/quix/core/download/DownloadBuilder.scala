@@ -6,16 +6,16 @@ import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
 
-class DownloadBuilder(delegate: Builder[Batch],
-                      downloadableQueries: DownloadableQueries[Batch, ExecutionEvent],
+class DownloadBuilder[Code](delegate: Builder[Code, Batch],
+                      downloadableQueries: DownloadableQueries[Code, Batch, ExecutionEvent],
                       consumer: Consumer[ExecutionEvent],
                       downloadConfig: DownloadConfig)
-  extends Builder[Batch] with LazyLogging {
+  extends Builder[Code, Batch] with LazyLogging {
   val sentColumns = collection.mutable.Set.empty[String]
 
-  override def start(query: ActiveQuery): Task[Unit] = delegate.start(query)
+  override def start(query: ActiveQuery[Code]): Task[Unit] = delegate.start(query)
 
-  override def end(query: ActiveQuery): Task[Unit] = {
+  override def end(query: ActiveQuery[Code]): Task[Unit] = {
     for {
       _ <- delegate.end(query)
     } yield ()
@@ -35,7 +35,7 @@ class DownloadBuilder(delegate: Builder[Batch],
 
   override def lastError: Option[Throwable] = delegate.lastError
 
-  override def startSubQuery(queryId: String, code: String, results: Batch): Task[Unit] = {
+  override def startSubQuery(queryId: String, code: Code, results: Batch): Task[Unit] = {
     val queue = new LinkedBlockingQueue[DownloadPayload](1)
     val latch = new CountDownLatch(1)
     downloadableQueries.add(DownloadableQuery(queryId, queue, isRunning = true, latch))

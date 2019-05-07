@@ -17,7 +17,7 @@ import quix.presto._
 
 import scala.util.Try
 
-class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val downloadableQueries: DownloadableQueries[Batch, ExecutionEvent])
+class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent])
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
 
   val io = Scheduler.io("presto-executor")
@@ -88,9 +88,9 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
 
   def makeResultBuilder(consumer: Consumer[ExecutionEvent], session: Map[String, String]) = {
     if (session.get("mode").contains("download")) {
-      downloadableQueries.adapt(new MultiBuilder(consumer), consumer)
+      downloadableQueries.adapt(new MultiBuilder[String](consumer), consumer)
     } else {
-      new MultiBuilder(consumer)
+      new MultiBuilder[String](consumer)
     }
   }
 }

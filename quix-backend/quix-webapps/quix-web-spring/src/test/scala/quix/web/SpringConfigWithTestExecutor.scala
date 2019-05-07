@@ -15,7 +15,7 @@ class SpringConfigWithTestExecutor {
 
   @Bean
   @Primary
-  def initQueryExecutorMock: AsyncQueryExecutor[Batch] = MockBeans.queryExecutor
+  def initQueryExecutorMock: AsyncQueryExecutor[String, Batch] = MockBeans.queryExecutor
 
   @Bean
   @Primary

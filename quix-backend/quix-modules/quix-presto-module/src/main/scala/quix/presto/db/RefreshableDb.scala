@@ -16,7 +16,7 @@ import scala.concurrent.duration._
 case class RefreshableDbConfig(firstEmptyStateTimeout: FiniteDuration,
                                requestTimeout: FiniteDuration)
 
-class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Batch],
+class RefreshableDb(val queryExecutor: AsyncQueryExecutor[String, Batch],
                     val config: RefreshableDbConfig,
                     val state: DbState = new DbState())
   extends Db with Chores with LazyLogging {
@@ -79,7 +79,7 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[Batch],
 
   def executeFor[T](sql: String, resultMapper: List[String] => T) = {
     val query = ActiveQuery(UUID.randomUUID().toString, sql, 1, user, false, Map.empty)
-    val resultBuilder = new SingleBuilder
+    val resultBuilder = new SingleBuilder[String]
     for {
       _ <- queryExecutor.runTask(query, resultBuilder)
       results <- Task.eval(resultBuilder.build())

@@ -14,7 +14,7 @@ sealed case class SubQueryStart(id: String) extends EventData
 
 sealed case class SubQueryFields(id: String, fields: List[String]) extends EventData
 
-sealed case class SubQueryDetails(id: String, code: String) extends EventData
+sealed case class SubQueryDetails[Code](id: String, code: Code) extends EventData
 
 sealed case class SubQueryEnd(id: String) extends EventData
 
@@ -44,7 +44,7 @@ object SubQueryStart {
 }
 
 object SubQueryDetails {
-  def apply(id: String, code: String): ExecutionEvent = ExecutionEvent("query-details", new SubQueryDetails(id, code))
+  def apply[Code](id: String, code: Code): ExecutionEvent = ExecutionEvent("query-details", new SubQueryDetails(id, code))
 }
 
 object SubQueryEnd {

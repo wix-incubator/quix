@@ -12,6 +12,7 @@ import quix.api.db.Db
 import quix.api.execute.{AsyncQueryExecutor, Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.users.DummyUsers
 import quix.core.download.DownloadableQueriesImpl
+import quix.core.executions.SequentialExecutions
 import quix.core.utils.JsonOps
 import quix.presto._
 import quix.presto.db.{RefreshableDb, RefreshableDbConfig}
@@ -88,27 +89,25 @@ class PrestoConfiguration extends LazyLogging {
     config
   }
 
-  @Bean def initQueryExecutor(config: PrestoConfig): AsyncQueryExecutor[Batch] = {
+  @Bean def initQueryExecutor(config: PrestoConfig): AsyncQueryExecutor[String, Batch] = {
     logger.info("event=[spring-config] bean=[QueryExecutor]")
 
     val prestoClient = new ScalaJPrestoStateClient(config)
     new QueryExecutor(prestoClient)
   }
 
-  @Bean def initPrestoExecutions(executor: AsyncQueryExecutor[Batch]): PrestoExecutions = {
+  @Bean def initPrestoExecutions(executor: AsyncQueryExecutor[String, Batch]): SequentialExecutions[String] = {
     logger.info("event=[spring-config] bean=[PrestoExecutions]")
 
-    val execution: PrestoExecutions = new PrestoExecutions(executor)
-
-    execution
+    new SequentialExecutions[String](executor)
   }
 
-  @Bean def initPrestoQuixModule(executions: PrestoExecutions): PrestoQuixModule = {
+  @Bean def initPrestoQuixModule(executions: SequentialExecutions[String]): PrestoQuixModule = {
     logger.info(s"event=[spring-config] bean=[PrestoQuixModule]")
     new PrestoQuixModule(executions)
   }
 
-  @Bean def initDownloadableQueries: DownloadableQueries[Batch, ExecutionEvent] = {
+  @Bean def initDownloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent] = {
     logger.info(s"event=[spring-config] bean=[DownloadableQueries]")
     new DownloadableQueriesImpl
   }
@@ -123,7 +122,7 @@ class Controllers extends LazyLogging {
     new DbController(db, config.requestTimeout)
   }
 
-  @Bean def initDownloadController(downloadableQueries: DownloadableQueries[Batch, ExecutionEvent]): DownloadController = {
+  @Bean def initDownloadController(downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]): DownloadController = {
     logger.info("event=[spring-config] bean=[DownloadController]")
     new DownloadController(downloadableQueries)
   }
@@ -143,7 +142,7 @@ class DbConfig extends LazyLogging {
     RefreshableDbConfig(firstEmptyStateDelay.millis, requestTimeout.millis)
   }
 
-  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[Batch], config: RefreshableDbConfig): Db = {
+  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[String, Batch], config: RefreshableDbConfig): Db = {
     val initialDelay = env.getProperty("db.refresh.initialDelayInMinutes", classOf[Long], 1L)
     val delay = env.getProperty("db.refresh.delayInMinutes", classOf[Long], 15L)
 
