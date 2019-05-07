@@ -1,4 +1,5 @@
-import * as Runners from '../../services/runners';
+import {Runner} from '../../lib/runner';
+import {INotebook, INote} from '../../../../shared';
 
 export const search = (searchText: string, origin: 'user' | 'machine' = 'machine') => ({
   type: 'app.setSearchText',
@@ -6,22 +7,17 @@ export const search = (searchText: string, origin: 'user' | 'machine' = 'machine
   origin
 });
 
-export const addRunner = (id: string, runner: string, origin: 'user' | 'machine' = 'machine') => {
-  Runners.addRunner(id, runner);
+export const addRunner = (id: string, runner: Runner, note: INote, notebook: INotebook, origin: 'user' | 'machine' = 'machine') => ({
+  type: 'app.addRunner',
+  id,
+  origin,
+  runner,
+  note,
+  notebook
+})
 
-  return {
-    type: 'app.addRunner',
-    id,
-    origin
-  };
-};
-
-export const removeRunner = (id: string, origin: 'user' | 'machine' = 'machine') => {
-  Runners.removeRunner(id);
-
-  return {
-    type: 'app.removeRunner',
-    id,
-    origin
-  };
-};
+export const removeRunner = (id: string, origin: 'user' | 'machine' = 'machine') => ({
+  type: 'app.removeRunner',
+  id,
+  origin
+});

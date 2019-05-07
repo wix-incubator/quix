@@ -4,7 +4,7 @@ import StoreLogger, {ServerFrameworkType} from './store-logger';
 import * as Redux from 'redux';
 const {scope: scopeUtils} = utils;
 
-export type IBranch = (fn: (reducer, ...middleware) => void) => void;
+export type IBranch<T = any> = (fn: (reducer: Redux.Reducer<T>, ...middleware: Redux.Middleware[]) => void) => void;
 export type ReduxStore<S> = Redux.Store<S>;
 export interface IBranches {
   [key: string]: IBranch;

@@ -141,7 +141,7 @@ export const onUnmarkAll = (scope: IScope, store: Store, app: Instance) => () =>
 };
 
 export const onRunnerCreated = (scope: IScope, store: Store) => (note, runner) => {
-  store.dispatch(addRunner(note.id, runner));
+  store.dispatch(addRunner(note.id, runner, note, scope.notebook));
 };
 
 export const onRunnerDestroyed = (scope: IScope, store: Store) => (note) => {

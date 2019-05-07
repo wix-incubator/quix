@@ -11,7 +11,7 @@ import './lib/file-explorer';
 
 (window as any).UrlPattern = UrlPattern;  // expose for e2e tests
 
-const {googleClientId, staticsBaseUrl, ...config} = (window as any).quixConfig;
+const {googleClientId, staticsBaseUrl, ...config} = window.quixConfig;
 
 create<{
   quixBackendUrl?: string;
