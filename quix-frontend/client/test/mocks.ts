@@ -36,7 +36,14 @@ const mocks = {
   '/api/search/none': () => [],
   '/api/search/:text': ({text}) => {
     const res = [createMockNote('1'), createMockNote('2'), createMockNote('3')];
-    res.forEach(note => note.content = `select 1 as ${text}`);
+    res.forEach(note => note.content = `SELECT
+    date_trunc('year', shipdate) as ${text}
+    , shipmode
+    , sum(quantity) quantity
+FROM $schema.lineitem
+GROUP BY 1, 2
+ORDER BY 1
+`);
     return res;
   },
   '/api/db/explore': () => [{

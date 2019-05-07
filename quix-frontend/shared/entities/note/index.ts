@@ -1,4 +1,4 @@
 export {NoteActions, NoteActionTypes} from './actions';
-export {INote, PrestoNote, NativeNote, NoteType, BaseNote} from './types';
+export {INote, IPrestoNote, INativeNote, NoteType, IBaseNote} from './types';
 export {noteReducer, clientNoteReducer, noteListReducer, clientNoteListReducer} from './reducer'
 export {createNote} from './note'

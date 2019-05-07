@@ -5,21 +5,21 @@ export enum NoteType {
   NATIVE = 'native'
 }
 
-export interface BaseNote extends IEntity {
+export interface IBaseNote extends IEntity {
   notebookId: string;
   type: NoteType;
   content: any;
   rank?: number; //TODO: TEMP, SHOULD BE REMOVED @aviad
 }
 
-export interface PrestoNote extends BaseNote {
+export interface IPrestoNote extends IBaseNote {
   type: NoteType.PRESTO;
   content: string;
 }
 
-export interface NativeNote extends BaseNote {
+export interface INativeNote extends IBaseNote {
   type: NoteType.NATIVE;
   content: {queries: string[]};
 }
 
-export type INote = NativeNote | PrestoNote;
+export type INote = INativeNote | IPrestoNote;

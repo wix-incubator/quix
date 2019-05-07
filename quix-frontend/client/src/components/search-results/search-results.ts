@@ -7,11 +7,11 @@ import hljs from 'highlight.js';
 import {initNgScope, inject} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {Instance} from '../../lib/app';
-import {INote} from '../../../../shared';
+import {INote, IPrestoNote} from '../../../../shared';
 import {IScope} from './search-results-types';
 import * as Resources from '../../services/resources';
 import * as AppActions from '../../store/app/app-actions';
-import {StateManager} from '../../services';
+import {StateManager, extractLinesAroundMatch} from '../../services';
 
 enum States {
   Initial,
@@ -40,17 +40,24 @@ export default (app: Instance, store: Store) => () => ({
         });
 
       scope.renderNoteContent = (note: INote) => ({
-        html: inject('$compile')(`<div ng-bind-html="html | biHighlight:vm.state.value().text"></div>`)(assign(scope.$new(), {
+        html: inject('$compile')(`
+          <div ng-bind-html="html | biHighlight:vm.state.value().text"></div>
+        `)(assign(scope.$new(), {
           html: hljs.highlight('sql', note.content).value
         }))
       });
 
       let searchId = 1;
       const search = debounce((text: any, sId: number) => {
-        Resources.search(text).then(notes => {
+        Resources.search(text).then((notes: IPrestoNote[]) => {
           if (sId === searchId) {
             scope.vm.state
-              .force('Result', true, {notes})
+              .force('Result', true, {
+                notes: notes.map<INote>(note => ({
+                  ...note,
+                  content: extractLinesAroundMatch(note.content, text)
+                }))
+              })
               .set('Content', !!notes.length);
           }
         });

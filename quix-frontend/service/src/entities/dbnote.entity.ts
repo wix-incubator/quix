@@ -10,12 +10,12 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
 } from 'typeorm';
-import {INote, NoteType, BaseNote} from 'shared/entities/note';
+import {INote, NoteType, IBaseNote} from 'shared/entities/note';
 import {DbNotebook} from './dbnotebook.entity';
 import {dbConf} from '../config/db-conf';
 
 @Entity()
-export class DbNote implements BaseNote {
+export class DbNote implements IBaseNote {
   @PrimaryColumn(dbConf.idColumn)
   id!: string;
 

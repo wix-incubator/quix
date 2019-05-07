@@ -33,6 +33,8 @@ export {
 
 export {
   INote,
+  IPrestoNote,
+  INativeNote,
   NoteActions,
   NoteActionTypes,
   createNote,
