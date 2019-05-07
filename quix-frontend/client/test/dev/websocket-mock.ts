@@ -29,7 +29,6 @@ export const setupMockWs = (app: express.Express) => {
   const router = express.Router();
   router.ws('/sql', (ws, req) => {
     ws.on('message', async (msg) => {
-      debugger;
       const payload: {data: {code: string}; event: string} = JSON.parse(msg.toString());
       const match = payload.data.code.match(/timeout=(\d+)/)
       const timeout = match && match[1] ? parseInt(match[1], 10) : 0;

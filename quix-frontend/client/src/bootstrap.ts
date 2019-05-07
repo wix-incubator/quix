@@ -4,7 +4,7 @@ import {INotebook, INote} from '../../shared';
 export const setupNotifications = () => {
   browserNotificationsManager.register({
     name: 'runnerFinished',
-    icon: 'assets/ic_check_circle_black_36dp_2x.png',
+    icon: 'assets/notification_success.png',
     title: 'Quix: Run Finished',
     onlyWhenHidden: true,
     body: (note: INote, notebook: INotebook) => {
@@ -20,7 +20,7 @@ export const setupNotifications = () => {
 
   browserNotificationsManager.register({
     name: 'runnerError',
-    icon: 'assets/ic_error_outline_black_36dp_2x.png',
+    icon: 'assets/notification_error.png',
     title: 'Quix: Error',
     onlyWhenHidden: true,
     body: (note: INote, notebook: INotebook) => {

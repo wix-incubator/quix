@@ -5,7 +5,7 @@ import http from 'http';
 import {renderVM} from './vm';
 import {mock, reset} from '../mocks';
 import expressWs from 'express-ws';
-import {setupMockWs} from './web-socketmock';
+import {setupMockWs} from './websocket-mock';
 
 export function start(port = process.env.PORT || 3000) {
   const app = express();

@@ -26,7 +26,7 @@ class BrowserNotificationsManager {
     });
   }
 
-  private _fixUrl(url: string) {
+  private fixUrl(url: string) {
     return this.$window.quixConfig.staticsBaseUrl + url;
   }
 
@@ -47,7 +47,7 @@ class BrowserNotificationsManager {
       } else {
         body = template.body;
       }
-      const notification = new this.Notification(template.title, {body, icon: this._fixUrl(template.icon)});
+      const notification = new this.Notification(template.title, {body, icon: this.fixUrl(template.icon)});
       if (template.onClick) {
         notification.onclick = template.onClick.bind(notification, this.$window);
       }
