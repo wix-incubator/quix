@@ -1,6 +1,5 @@
 import './lib/ui/bootstrap';
 import './app.scss';
-
 import create from './lib/app';
 import * as components from './components';
 import * as stateComponents from './state-components';
@@ -8,10 +7,11 @@ import {branches, initCache} from './store';
 import UrlPattern from 'url-pattern';
 import {config as runnerConfig} from './lib/runner';
 import './lib/file-explorer';
+import {setupNotifications} from './bootstrap';
 
 (window as any).UrlPattern = UrlPattern;  // expose for e2e tests
 
-const {googleClientId, staticsBaseUrl, ...config} = (window as any).quixConfig;
+const {googleClientId, staticsBaseUrl, ...config} = window.quixConfig;
 
 create<{
   quixBackendUrl?: string;
@@ -39,6 +39,7 @@ create<{
       runnerConfig.set({prestoUrl: app.getConfig().quixBackendUrl});
 
       app.getModule().controller('app', ['$scope', scope => scope.app = app] as any);
+      setupNotifications();
     });
   })
   .build();

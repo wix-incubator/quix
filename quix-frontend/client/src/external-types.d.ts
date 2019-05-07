@@ -10,3 +10,11 @@ declare module NodeJS {
 }
 
 interface DedicatedWorkerGlobalScope {}
+
+interface Window {
+  quixConfig: {
+    googleClientId: string;
+    staticsBaseUrl: string;
+    quixBackendUrl: string;
+  }
+}
