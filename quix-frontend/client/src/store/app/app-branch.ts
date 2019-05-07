@@ -29,8 +29,6 @@ export default (app: Instance): IBranch<IApp> => register => {
     switch (action.type) {
       case 'app.setSearchText':
         return {...state, searchText: action.searchText};
-      case 'app.addRunner':
-      case 'app.removeRunner':
       default:
     }
 
