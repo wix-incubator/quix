@@ -32,8 +32,6 @@ export default (app: App, store: Store) => ({
       scope.queue = queue;
       scope.view = view;
       scope.permissions = permissions;
-
-      console.log(permissions);
     }, scope);
 
     store.subscribe('notebook.notebook.name', name => {
