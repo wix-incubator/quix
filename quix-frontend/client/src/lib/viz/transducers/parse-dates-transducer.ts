@@ -11,7 +11,7 @@ export class ParseDates {
   }
 
   '@@transducer/step'(res, input: IInputItem) {
-    this.fields.forEach(field => input[field] = BiDate.moment(input[field]).valueOf());
+    this.fields.forEach(field => input[field] = BiDate.moment.utc(input[field]).valueOf());
 
     this.xform['@@transducer/step'](res, input);
 

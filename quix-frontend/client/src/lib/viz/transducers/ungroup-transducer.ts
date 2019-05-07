@@ -31,7 +31,6 @@ export class Ungroup {
         if (this.conf.aggType === 'sum') {
           this.inputCache[key][value] += input[value];
         } else if (this.conf.aggType === 'avg') {
-          // tslint:disable-next-line: restrict-plus-operands
           this.inputCache[key][value] = ((this.inputCache[key][value] * this.indexCache[key]) + input[value]) / (this.indexCache[key] + 1);
         }
       });

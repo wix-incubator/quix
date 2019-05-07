@@ -247,7 +247,7 @@ export default {
     'axisTick': {
       'show': false,
       'lineStyle': {
-        'color': '#333'
+        'color': '#aaaaaa'
       }
     },
     'axisLabel': {
@@ -284,7 +284,7 @@ export default {
     'axisTick': {
       'show': false,
       'lineStyle': {
-        'color': '#333'
+        'color': '#aaaaaa'
       }
     },
     'axisLabel': {
@@ -321,7 +321,7 @@ export default {
     'axisTick': {
       'show': false,
       'lineStyle': {
-        'color': '#333'
+        'color': '#aaaaaa'
       }
     },
     'axisLabel': {
@@ -358,7 +358,7 @@ export default {
     'axisTick': {
       'show': false,
       'lineStyle': {
-        'color': '#333'
+        'color': '#aaaaaa'
       }
     },
     'axisLabel': {

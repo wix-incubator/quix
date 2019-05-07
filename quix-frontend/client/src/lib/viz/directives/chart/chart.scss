@@ -6,10 +6,6 @@ bi-viz-chart {
   flex-direction: column;
   flex-grow: 1;
 
-  .bvc-container {
-    margin-left: -16px;
-  }
-
   [bi-maximizable] {
     position: absolute;
     top: 0;

@@ -27,7 +27,7 @@ const mocks = {
     createMockFile({id: '101'})
   ], {id}),
   '/api/notebook/:id': ({id}) => createMockNotebook([
-    createMockNote(id, {id: '1001'}),
+    createMockNote(id, {id: '1001', content: 'do success'}),
     createMockNote(id, {id: '1002'}),
     createMockNote(id, {id: '1003'}),
     createMockNote(id, {id: '1004'}),

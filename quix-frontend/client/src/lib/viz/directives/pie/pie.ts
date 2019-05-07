@@ -75,7 +75,7 @@ export default () => {
               loadAsync(scope, element);
             }
           })
-          .withState(scope.$state || 'chart', `${scope.statePrefix}chart`, {});
+          .withState(scope.$state || 'pie', `${scope.statePrefix}pie`, {});
 
         if (!scope.vm.maximize.enabled) {
           loadAsync(scope, element);
