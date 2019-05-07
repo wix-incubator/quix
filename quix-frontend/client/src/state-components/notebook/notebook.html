@@ -115,7 +115,7 @@
         axis: 'y',
         handle: '.quix-note-drag-handle',
         opacity: '0.9',
-        disabled: !permissions.reorder,
+        disabled: !permissions.bulk.reorder,
         stop: events.onNoteReorder
       }"
       ng-model="vm.state.value().notes"

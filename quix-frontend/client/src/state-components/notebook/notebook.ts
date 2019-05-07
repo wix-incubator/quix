@@ -32,6 +32,8 @@ export default (app: App, store: Store) => ({
       scope.queue = queue;
       scope.view = view;
       scope.permissions = permissions;
+
+      console.log(permissions);
     }, scope);
 
     store.subscribe('notebook.notebook.name', name => {
@@ -46,8 +48,6 @@ export default (app: App, store: Store) => ({
 
     store.subscribe('app.runners', () => {
       scope.runners = getRunners();
-
-      console.log(scope.runners);
     }, scope);
   },
   link: scope => {
