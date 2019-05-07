@@ -46,6 +46,8 @@ export default (app: App, store: Store) => ({
 
     store.subscribe('app.runners', () => {
       scope.runners = getRunners();
+
+      console.log(scope.runners);
     }, scope);
   },
   link: scope => {

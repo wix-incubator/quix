@@ -6,6 +6,16 @@ import {INotebook, INote} from '../../../shared/dist';
 
 const runners = new Map();
 
+const computeFinishState = (runner: Runner) => {
+  const status = runner.getState().getStatus();
+  if (status.error) {
+    return 'error';
+  } if (status.killed) {
+    return 'killed';
+  }
+  return 'finished';
+}
+
 export const addRunner = (id: string, runner: Runner, note: INote, notebook: INotebook) => {
   runner.on('finish', (r: Runner) => {
     const status = computeFinishState(r);
@@ -27,13 +37,3 @@ export const getRunner = (id: string) => {
 }
 
 export const getRunners = () => fromPairs([...runners.entries()]);
-
-const computeFinishState = (runner: Runner) => {
-  const status = runner.getState().getStatus();
-  if (status.error) {
-    return 'error';
-  } if (status.killed) {
-    return 'killed';
-  }
-  return 'finished';
-}
