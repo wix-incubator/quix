@@ -20,11 +20,7 @@
     </div>
 
     <div class="bi-dont-shrink">
-      <div class="quix-meta-text bi-align bi-s-h bi-text--sm bi-fade-in" ng-if="vm.state.is('Result') || vm.state.after('Result')">
-        <div>Created <span>{{::vm.state.value().notebook.dateCreated | biRelativeDate}}</span></div>
-        <div class="bi-section-header-spr"></div>
-        <div>Updated <span>{{vm.state.value().notebook.dateUpdated | biRelativeDate}}</span></div>
-      </div>
+      <quix-meta entity="vm.state.value().notebook" ng-if="vm.state.is('Result') || vm.state.after('Result')"></quix-meta>
     </div>
   </div>
 

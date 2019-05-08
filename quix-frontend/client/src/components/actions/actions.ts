@@ -26,6 +26,7 @@ export default (app: Instance, store: Store) => () => ({
         .withVM({})
         .withOptions('quixActionsOptions', {
           reverse: false,
+          compact: false,
           bulk: false,
           confirmOnDelete: true
         }, true)

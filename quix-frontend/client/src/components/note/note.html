@@ -38,31 +38,19 @@
     </div>
 
     <div class="quix-note-drag-handle bi-hover-parent bi-justify-right" bf-toggle>
-      <div class="quix-meta-text bi-align bi-s-h bi-text--sm bi-hover-target">
-        <div>Created <span>{{::note.dateCreated | biRelativeDate}}</span></div>
-        <div>|</div>
-        <div>Updated <span>{{note.dateUpdated | biRelativeDate}}</span></div>
+      <div class="quix-meta-text bi-align bi-s-h" ng-class="{'bi-hover-target': bf.fold}">
+        <quix-meta entity="note"></quix-meta>
+
+        <quix-actions
+          type="note"
+          context="note"
+          permissions="::permissions"
+          quix-actions-options="{reverse: true, compact: true}"
+          on-share="events.onShare(context)"
+          on-clone="events.onClone(context)"
+          on-delete="events.onDelete(context)"
+        ></quix-actions>
       </div>
-    </div>
-
-    <div class="bi-dont-shrink">
-      <bi-dropdown bd-options="::{align: 'right'}">
-        <bi-toggle>
-          <i class="bi-action bi-icon">more_vert</i>
-        </bi-toggle>
-
-        <ul class="bi-dropdown-menu">
-          <li class="bi-align bi-s-h" ng-click="events.onShare()">
-            <i class="bi-icon">share</i>
-            <span>Share note</span>
-          </li>
-          <li class="bi-dropdown-separator"></li>
-          <li class="bi-align bi-s-h" ng-if="::permissions.delete" ng-click="events.onDelete()">
-            <i class="bi-icon bi-danger">delete</i>
-            <span>Delete note</span>
-          </li>
-        </ul>
-      </bi-dropdown>
     </div>
   </div>
 

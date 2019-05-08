@@ -36,11 +36,7 @@
             <span class="bi-text--sm">{{::note.owner}}</span>
           </div>
 
-          <div class="quix-meta-text bi-align bi-s-h bi-text--sm">
-            <div>Created <span>{{::note.dateCreated | biRelativeDate}}</span></div>
-            <div>|</div>
-            <div>Updated <span>{{note.dateUpdated | biRelativeDate}}</span></div>
-          </div>
+          <quix-meta entity="::note"></quix-meta>
         </div>
 
         <div class="bi-panel--grey bi-dont-shrink">

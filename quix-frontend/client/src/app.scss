@@ -33,10 +33,6 @@ quix-breadcrumbs {
   background-color: $blue-grey--700;
 }
 
-.quix-meta-text {
-  color: $grey--500;
-}
-
 .quix-popup {
   display: none !important;
 
@@ -89,8 +85,10 @@ quix-breadcrumbs {
 .bi-section,
 .bi-section--300 {
   .bi-section-header {
-    .quix-meta-text {
-      color: $grey--400;
+    quix-meta {
+      .bi-muted {
+        color: $grey--400 !important;
+      }
     }
   }
 

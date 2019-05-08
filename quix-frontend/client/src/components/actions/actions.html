@@ -1,7 +1,22 @@
-<div class="bi-align bi-s-h--x2" ng-class="{'quix-actions-reverse': options.reverse}">
+<div 
+  class="bi-align"
+  ng-class="::{
+    'quix-actions-reverse': options.reverse,
+    'quix-actions-compact': options.compact,
+    'bi-s-h--x2': !options.compact,
+    'bi-s-h': options.compact
+  }"
+>
   <bi-tooltip ng-if="permissions.delete">
     <bi-toggle>
-      <i class="bi-action bi-icon" ng-click="events.onDelete()">
+      <i 
+        class="bi-action"
+        ng-class="::{
+          'bi-icon': !options.compact,
+          'bi-icon--sm': options.compact
+        }"
+        ng-click="events.onDelete()"
+      >
         {{::options.bulk ? 'delete_sweep' : 'delete'}}
       </i>
     </bi-toggle>
@@ -10,14 +25,28 @@
     
   <bi-tooltip ng-if="::permissions.clone">
     <bi-toggle>
-      <i class="bi-action bi-icon" ng-click="events.onClone()">file_copy</i>
+      <i 
+        class="bi-action"
+        ng-class="::{
+          'bi-icon': !options.compact,
+          'bi-icon--sm': options.compact
+        }"
+        ng-click="events.onClone()"
+      >file_copy</i>
     </bi-toggle>
     Clone {{::type}}
   </bi-tooltip>
     
   <bi-tooltip ng-if="::!options.bulk">
     <bi-toggle>
-      <i class="bi-action bi-icon" ng-click="events.onShare()">share</i>
+      <i
+        class="bi-action"
+        ng-class="::{
+          'bi-icon': !options.compact,
+          'bi-icon--sm': options.compact
+        }"
+        ng-click="events.onShare()"
+      >share</i>
     </bi-toggle>
     Share {{::type}}
   </bi-tooltip>
@@ -25,8 +54,12 @@
   <!-- <bi-tooltip ng-if="::!options.bulk">
     <bi-toggle>
       <i
-        class="bi-action bi-icon"
-        ng-class="{'bi-danger': context.isLiked}"
+        class="bi-action"
+        ng-class="::{
+          'bi-icon': !options.compact,
+          'bi-icon--sm': options.compact,
+          'bi-danger': context.isLiked
+        }"
         ng-click="events.onLikeToggle()"
       >{{context.isLiked ? 'favorite' :'favorite_border'}}</i>
     </bi-toggle>

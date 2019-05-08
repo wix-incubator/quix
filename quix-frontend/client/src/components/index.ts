@@ -7,3 +7,4 @@ export {default as quixSearchResults} from './search-results/search-results';
 export {default as quixActions} from './actions/actions';
 export {default as quixTempQuery} from './temp-query/temp-query';
 export {default as quixDestinationPicker} from './destination-picker/destination-picker';
+export {default as quixMeta} from './meta/meta';

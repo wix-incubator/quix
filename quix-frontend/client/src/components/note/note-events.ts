@@ -1,7 +1,9 @@
 import {Store} from '../../lib/store';
+import {INote} from '../../../../shared';
 import {IScope} from './note-types';
 import {confirmAction} from '../../services';
 import {Instance} from '../../lib/app';
+
 
 export const onFoldToggle = (scope: IScope, store: Store) => () => {
   scope.options.focusEditor = true;
@@ -19,12 +21,12 @@ export const onContentChange = (scope: IScope, store: Store) => () => {
   scope.onContentChange({note: scope.note});
 };
 
-export const onShare = (scope: IScope, store: Store) => () => {
-  scope.onShare({note: scope.note});
+export const onShare = (scope: IScope, store: Store) => (note: INote) => {
+  scope.onShare({note});
 };
 
-export const onDelete = (scope: IScope, store: Store) => () => {
-  confirmAction('delete', 'note').then(() =>  scope.onDelete({note: scope.note}));
+export const onDelete = (scope: IScope, store: Store) => (note: INote) => {
+  confirmAction('delete', 'note').then(() =>  scope.onDelete({note}));
 };
 
 export const onSave = (scope: IScope, store: Store) => () => {

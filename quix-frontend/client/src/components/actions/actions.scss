@@ -11,5 +11,13 @@ quix-actions {
         margin-right: 20px !important;
       }
     }
+
+    &.quix-actions-compact {
+      > * {
+        &:not(:first-child) {
+          margin-right: 10px !important;
+        }
+      }
+    }
   }
 }
