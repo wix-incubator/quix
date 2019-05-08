@@ -61,7 +61,7 @@
         <span class="bi-text--sm">Start time</span>
         <div class="bi-r-i bi-align bi-s-h--x05">
           <i class="bi-icon--xs">access_time</i>
-          <b class="bi-text--sm">{{vm.result.current.startTime | biDate:'HH:ss'}}</b>
+          <b class="bi-text--sm">{{vm.result.current.startTime | biDate:'HH:mm'}}</b>
         </div>
       </div>
 
@@ -88,7 +88,10 @@
   </div>
 </div>
 
-<div class="br-result bi-c-h bi-dont-shrink bi-dont-grow" ng-class="{'br-result-with-tabs': vm.tabs.isEnabled()}" ng-if="vm.result.enabled">
+<div 
+  class="br-result bi-c-h bi-dont-shrink bi-dont-grow"
+  ng-class="{'br-result-with-tabs': vm.tabs.isEnabled()}" ng-if="vm.result.enabled"
+>
   <div
     class="bi-dont-shrink bi-fade-in"
     ng-if="vm.result.queries.get(query).enabled"
