@@ -1,12 +1,17 @@
-<div class="bi-c-h bi-align bi-center bi-grow bi-fade-in" ng-if="vm.state.is('Initial')">
-  <div class="quix-empty-state bi-empty-state--loading">
+<div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.before('Content')">
+  <div class="quix-empty-state bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
     <div class="bi-empty-state-content">Loading DB...</div>
   </div>
-</div>
 
-<div class="bi-c-h bi-align bi-center bi-grow bi-fade-in" ng-if="vm.state.is('Result')">
-  <div class="quix-empty-state bi-empty-state">
+  <div class="quix-empty-state bi-empty-state bi-fade-in" ng-if="vm.state.is('Result')">
     <div class="bi-empty-state-header">Database is empty</div>
+  </div>
+
+  <div class="quix-empty-state bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="files-sidebar-error">
+    <div class="bi-empty-state-icon bi-danger">
+      <i class="bi-icon bi-danger">error_outline</i>
+    </div>
+    <div class="bi-empty-state-header bi-danger">{{::vm.state.value().error.message}}</div>
   </div>
 </div>
 

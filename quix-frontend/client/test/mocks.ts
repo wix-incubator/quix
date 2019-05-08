@@ -18,6 +18,7 @@ const mocks = {
   // '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],
   '/api/files/404': () => [404, {message: 'Folder not found'}],
   '/api/notebook/404': () => [404, {message: 'Notebook not found'}],
+  // '/api/files': () => [500, {message: 'Failed to fetch files'}],
   '/api/files': () => createMockFiles([
     createMockFolder({id: '10'}),
     createMockFile({id: '11'}),
@@ -27,8 +28,8 @@ const mocks = {
     createMockFile({id: '101'})
   ], {id}),
   '/api/notebook/:id': ({id}) => createMockNotebook([
-    createMockNote(id, {id: '1001', content: 'do success'}),
-    createMockNote(id, {id: '1002'}),
+    createMockNote(id, {id: '1001', name: 'Runnable (success)', content: 'do success'}),
+    createMockNote(id, {id: '1002', name: 'Runnable (error)', content: 'do error'}),
     createMockNote(id, {id: '1003'}),
     createMockNote(id, {id: '1004'}),
     createMockNote(id, {id: '1005'}),
@@ -46,6 +47,7 @@ ORDER BY 1
 `);
     return res;
   },
+  // '/api/db/explore': () => [500, {message: 'Failed to fetch DB tree'}],
   '/api/db/explore': () => [{
     name: 'catalog',
     type: 'catalog',

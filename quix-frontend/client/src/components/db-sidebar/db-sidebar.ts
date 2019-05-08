@@ -57,13 +57,17 @@ export default (app: Instance, store: Store) => () => ({
       }
 
       cache.db.get();
-      store.subscribe('db', (db) => {
+      store.subscribe('db.db', (db) => {
         const isInitial = scope.vm.state.is('Initial');
 
         scope.vm.state
           .force('Result', !!db, {db})
           .set('Content', !!db)
           .set('Visible', !isInitial);
+      }, scope);
+
+      store.subscribe('db.error', (error: any) => {
+        scope.vm.state.force('Error', !!error, {error});
       }, scope);
     }
   }
