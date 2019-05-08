@@ -1,31 +1,37 @@
 import {IFile} from '../../../../shared';
 
 export const initTableFields = scope => {
-  return [{
-    name: 'mark',
-    title: ' ',
-    sort: false,
-    filter(_, file, index, compile) {
-      return compile(`
-        <span class="quix-checkbox" ng-click="$event.stopPropagation()">
-          <i
-            class="bi-action bi-icon bi-fade-in checked"
-            ng-if="vm.marked.map[file.id]"
-            ng-click="$event.stopPropagation(); events.onMarkToggle(file)"
-          >
-            check_box_outline
-          </i>
-          <i
-            class="bi-action bi-icon bi-fade-in"
-            ng-if="!vm.marked.map[file.id]"
-            ng-click="$event.stopPropagation(); events.onMarkToggle(file)"
-          >
-            check_box_outline_blank
-          </i>
-        </span>  
-      `, {file}, scope);
-    }
-  },{
+  const fields = [];
+
+  if (scope.permissions.edit) {
+    fields.push({
+      name: 'mark',
+      title: ' ',
+      sort: false,
+      filter(_, file, index, compile) {
+        return compile(`
+          <span class="quix-checkbox" ng-click="$event.stopPropagation()">
+            <i
+              class="bi-action bi-icon bi-fade-in checked"
+              ng-if="vm.marked.map[file.id]"
+              ng-click="$event.stopPropagation(); events.onMarkToggle(file)"
+            >
+              check_box_outline
+            </i>
+            <i
+              class="bi-action bi-icon bi-fade-in"
+              ng-if="!vm.marked.map[file.id]"
+              ng-click="$event.stopPropagation(); events.onMarkToggle(file)"
+            >
+              check_box_outline_blank
+            </i>
+          </span>  
+        `, {file}, scope);
+      }
+    });
+  }
+
+  return [...fields, ...[{
     name: 'name',
     sort(_, file) {
       return `${file.type === 'folder' ? 0 : 1}${file.name}`;
@@ -82,5 +88,5 @@ export const initTableFields = scope => {
   //     `, {file}, scope);
   //   }
   // }
-];
+]];
 };

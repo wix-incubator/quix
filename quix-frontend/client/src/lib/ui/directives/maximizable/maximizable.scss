@@ -19,7 +19,7 @@
     padding: 15px;
     background: $white;
     border-radius: 3px;
-    z-index: 101;
+    z-index: 201;
 
     + .bm-backdrop {
       display: block;
@@ -43,6 +43,6 @@
     bottom: 0;
     background-color: $black;
     opacity: .5;
-    z-index: 100;
+    z-index: 200;
   }
 }

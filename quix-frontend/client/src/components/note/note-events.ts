@@ -1,7 +1,6 @@
 import {Store} from '../../lib/store';
 import {INote} from '../../../../shared';
 import {IScope} from './note-types';
-import {confirmAction} from '../../services';
 import {Instance} from '../../lib/app';
 
 
@@ -26,7 +25,7 @@ export const onShare = (scope: IScope, store: Store) => (note: INote) => {
 };
 
 export const onDelete = (scope: IScope, store: Store) => (note: INote) => {
-  confirmAction('delete', 'note').then(() =>  scope.onDelete({note}));
+  scope.onDelete({note});
 };
 
 export const onSave = (scope: IScope, store: Store) => () => {

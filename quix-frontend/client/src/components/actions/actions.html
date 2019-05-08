@@ -15,7 +15,7 @@
           'bi-icon': !options.compact,
           'bi-icon--sm': options.compact
         }"
-        ng-click="events.onDelete()"
+        ng-click="$event.stopPropagation(); events.onDelete()"
       >
         {{::options.bulk ? 'delete_sweep' : 'delete'}}
       </i>
@@ -31,7 +31,7 @@
           'bi-icon': !options.compact,
           'bi-icon--sm': options.compact
         }"
-        ng-click="events.onClone()"
+        ng-click="$event.stopPropagation(); events.onClone()"
       >file_copy</i>
     </bi-toggle>
     Clone {{::type}}
@@ -45,7 +45,7 @@
           'bi-icon': !options.compact,
           'bi-icon--sm': options.compact
         }"
-        ng-click="events.onShare()"
+        ng-click="$event.stopPropagation(); events.onShare()"
       >share</i>
     </bi-toggle>
     Share {{::type}}
@@ -60,7 +60,7 @@
           'bi-icon--sm': options.compact,
           'bi-danger': context.isLiked
         }"
-        ng-click="events.onLikeToggle()"
+        ng-click="$event.stopPropagation(); events.onLikeToggle()"
       >{{context.isLiked ? 'favorite' :'favorite_border'}}</i>
     </bi-toggle>
     Add {{::type}} to favorites
