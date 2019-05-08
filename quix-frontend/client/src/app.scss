@@ -72,6 +72,7 @@ quix-breadcrumbs {
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 1px 1px 10px $grey--500;
+  z-index: 100;
 
   &:before {
     @extend %icon;
