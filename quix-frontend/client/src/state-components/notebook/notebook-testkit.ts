@@ -1,9 +1,9 @@
-import {TestkitPage} from '../../../test/e2e/driver';
+import {Testkit} from '../../../test/e2e/driver';
 import {NoteTestkit} from '../../components/note/note-testkit';
 import {BreadcrumbsTestkit} from '../../components/breadcrumbs/breadcrumbs-testkit';
 
 export class NotebookTestkit {
-  constructor (private readonly page: TestkitPage) {}
+  constructor (private readonly page: Testkit) {}
 
   async getBreadcrumbsTestkit() {
     return new BreadcrumbsTestkit(await this.page.query.$('quix-breadcrumbs'));

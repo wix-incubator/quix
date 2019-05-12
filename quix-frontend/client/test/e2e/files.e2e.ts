@@ -148,4 +148,96 @@ describe('Files ::', () => {
 
     expect(await driver.url.matches('/files/')).to.be.true;
   });
+
+  describe('Permissions ::', () => {
+    describe('Name ::', () => {
+      it('should allow to edit name if user is owner', async () => {
+        const folder = createMockFolderPayload([]);
+
+        await driver.mock.http(`/api/files/:id`, folder);
+        await driver.goto('/files/1');
+
+        const breadcrumbsTestkit = await testkit.getBreadcrumbsTestkit();
+
+        expect(await breadcrumbsTestkit.isFileNameEditable()).to.be.true;
+      });
+
+      it('should not allow to edit name if user is not owner', async () => {
+        const folder = createMockFolderPayload([], {owner: 'readonly@quix.com'});
+
+        await driver.mock.http(`/api/files/:id`, folder);
+        await driver.goto('/files/1');
+
+        const breadcrumbsTestkit = await testkit.getBreadcrumbsTestkit();
+
+        expect(await breadcrumbsTestkit.isFileNameEditable()).to.be.false;
+      });
+    });
+
+    describe('Add folder | Add notebook ::', () => {
+      it('should enable "Add folder" and "Add notebook" buttons if user is owner', async () => {
+        const folder = createMockFolderPayload([]);
+
+        await driver.mock.http(`/api/files/:id`, folder);
+        await driver.goto('/files/1');
+
+        expect(await testkit.isAddFolderEnabled()).to.be.true;
+        expect(await testkit.isAddNotebookEnabled()).to.be.true;
+      });
+
+      it('should disable "Add folder" and "Add notebook" buttons if user is not owner', async () => {
+        const folder = createMockFolderPayload([], {owner: 'readonly@quix.com'});
+
+        await driver.mock.http(`/api/files/:id`, folder);
+        await driver.goto('/files/1');
+
+        expect(await testkit.isAddFolderEnabled()).to.be.false;
+        expect(await testkit.isAddNotebookEnabled()).to.be.false;
+      });
+    });
+
+    describe('Delete ::', () => {
+      it('should enable the delete action if user is owner', async () => {
+        const folder = createMockFolderPayload([]);
+
+        await driver.mock.http(`/api/files/:id`, folder);
+        await driver.goto('/files/1');
+
+        const actionsTestkit = await testkit.getActionsTestkit();
+
+        expect(await actionsTestkit.isDeleteEnabled()).to.be.true;
+      });
+
+      it('should disable the delete action if user is not owner', async () => {
+        const folder = createMockFolderPayload([], {owner: 'readonly@quix.com'});
+
+        await driver.mock.http(`/api/files/:id`, folder);
+        await driver.goto('/files/1');
+
+        const actionsTestkit = await testkit.getActionsTestkit();
+
+        expect(await actionsTestkit.isDeleteEnabled()).to.be.false;
+      });
+    });
+
+    describe('Bulk select ::', () => {
+      it('should enable bulk selection if user is owner', async () => {
+        const folder = createMockFolderPayload([createMockFile()]);
+
+        await driver.mock.http(`/api/files/:id`, folder);
+        await driver.goto('/files/1');
+
+        expect(await testkit.isBulkSelectEnabled()).to.be.true;
+      });
+
+      it('should disable bulk selection if user is owner', async () => {
+        const folder = createMockFolderPayload([createMockFile()], {owner: 'readonly@quix.com'});
+
+        await driver.mock.http(`/api/files/:id`, folder);
+        await driver.goto('/files/1');
+
+        expect(await testkit.isBulkSelectEnabled()).to.be.false;
+      });
+    });
+  });
 });

@@ -1,7 +1,7 @@
-import {TestkitPage} from '../../../test/e2e/driver';
+import {Testkit} from '../../../test/e2e/driver';
 
 export class HomeTestkit {
-  constructor (private readonly page: TestkitPage) {}
+  constructor (private readonly page: Testkit) {}
 
   async hasNotebooksAction() {
     return (await this.page.query.hook('home-notebooks')) !== null;

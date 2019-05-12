@@ -7,6 +7,6 @@ export class NoteTestkit extends ComponentTestkit {
   }
 
   async isNameFocused() {
-    return (await this.hook('note-name', ':focus')) !== null;
+    return (await this.query.hook('note-name', ':focus')) !== null;
   }
 }

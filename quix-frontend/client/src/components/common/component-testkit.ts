@@ -1,17 +1,11 @@
-import {ElementHandle} from 'puppeteer';
+import {Testkit} from '../../../test/e2e/driver';
 
-export class ComponentTestkit {
-  constructor(private readonly element: ElementHandle) {
+export class ComponentTestkit extends Testkit {
+  constructor(element: any) {
+    super(element);
+
     if (!element) {
       throw new Error('Got null element');
     }
-  }
-
-  protected async hook(hook: string, pseudoClass: string = '') {
-    return this.element.$(`[data-hook="${hook}"]${pseudoClass}`);
-  }
-
-  protected async hooks(hook: string, pseudoClass: string = '') {
-    return this.element.$$(`[data-hook="${hook}"]${pseudoClass}`);
   }
 }

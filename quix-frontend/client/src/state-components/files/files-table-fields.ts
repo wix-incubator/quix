@@ -10,7 +10,7 @@ export const initTableFields = scope => {
       sort: false,
       filter(_, file, index, compile) {
         return compile(`
-          <span class="quix-checkbox" ng-click="$event.stopPropagation()">
+          <span class="quix-checkbox" ng-click="$event.stopPropagation()" data-hook="files-mark-column">
             <i
               class="bi-action bi-icon bi-fade-in checked"
               ng-if="vm.marked.map[file.id]"
