@@ -17,7 +17,7 @@ function initEditor(scope, element, container, text) {
   const editor = new CodeEditor(scope, container, text, scope.options);
 
   editor
-    .on('change', value => safeApply(scope, () => scope.model = value))
+    .on('change', value => !scope.readonly && safeApply(scope, () => scope.model = value))
     .on('validToggle', valid => {
       container.parent().removeClass('bce-valid bce-invalid');
       container.parent().addClass({true: 'bce-valid', false: 'bce-invalid'}[valid]);
