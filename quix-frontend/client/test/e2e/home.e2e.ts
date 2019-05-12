@@ -11,7 +11,7 @@ describe('Home ::', () => {
     await driver.init();
     await driver.goto('/home');
 
-    testkit = new HomeTestkit(driver.getTestkitPage());
+    testkit = driver.createTestkit(HomeTestkit);
   });
 
   it('should navigate to notebooks state', async () => {
@@ -20,18 +20,22 @@ describe('Home ::', () => {
     expect(await driver.url.matches('/files/')).to.be.true;
   });
 
+  it('should navigate to examples notebook', async () => {
+    await testkit.clickExamples();
+
+    expect(await driver.url.matches('/notebook/examples')).to.be.true;
+  });
+
   it('should create a notebook and navigate to it', async () => {
-    await driver.goto('/home');
     await testkit.clickAddNotebook();
 
     expect(await driver.url.matches('/notebook/:id')).to.be.true;
   });
 
   it('should focus the newly created notebook name', async () => {
-    await driver.goto('/home');
     await testkit.clickAddNotebook();
 
-    const notebookTestkit = new NotebookTestkit(driver.getTestkitPage());
+    const notebookTestkit = driver.createTestkit(NotebookTestkit);
     const breadcrumbsTestkit = await notebookTestkit.getBreadcrumbsTestkit();
 
     expect(await breadcrumbsTestkit.numOfFiles()).to.equal(2);

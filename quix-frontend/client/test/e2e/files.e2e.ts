@@ -10,7 +10,7 @@ describe('Files ::', () => {
     driver = new Driver();
     await driver.init();
 
-    testkit = new FilesTestkit(driver.getTestkitPage());
+    testkit = driver.createTestkit(FilesTestkit);
   });
 
   it('should display error state when failed to fetch files', async () => {

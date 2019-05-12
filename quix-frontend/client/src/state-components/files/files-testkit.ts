@@ -10,54 +10,52 @@ const enum Hooks {
   AddNotebook = 'files-add-notebook',
 }
 
-export class FilesTestkit {
-  constructor (private readonly page: Testkit) {}
-
+export class FilesTestkit extends Testkit {
   async getBreadcrumbsTestkit() {
-    return new BreadcrumbsTestkit(await this.page.query.$('quix-breadcrumbs'));
+    return new BreadcrumbsTestkit(await this.query.$('quix-breadcrumbs'));
   }
 
   async getActionsTestkit() {
-    return new ActionsTestkit(await this.page.query.$('quix-actions'));
+    return new ActionsTestkit(await this.query.$('quix-actions'));
   }
 
   async hasEmptyState() {
-    return (await this.page.query.hook(Hooks.Empty)) !== null;
+    return (await this.query.hook(Hooks.Empty)) !== null;
   }
 
   async hasErrorState() {
-    return (await this.page.query.hook(Hooks.Error)) !== null;
+    return (await this.query.hook(Hooks.Error)) !== null;
   }
 
   async hasContent() {
-    return (await this.page.query.hook(Hooks.Content)) !== null;
+    return (await this.query.hook(Hooks.Content)) !== null;
   }
 
   async clickAddFolder() {
-    return this.page.click.hook(Hooks.AddFolder);
+    return this.click.hook(Hooks.AddFolder);
   }
 
   async clickAddNotebook() {
-    return this.page.click.hook(Hooks.AddNotebook);
+    return this.click.hook(Hooks.AddNotebook);
   }
 
   async clickFile(index) {
-    return this.page.click.attr('bi-tbl-row', `:nth-child(${index})`);
+    return this.click.attr('bi-tbl-row', `:nth-child(${index})`);
   }
 
   async numOfFiles() {
-    return (await this.page.query.attrs('bi-tbl-row')).length;
+    return (await this.query.attrs('bi-tbl-row')).length;
   }
 
   async isAddFolderEnabled() {
-    return this.page.evaluate.hook(Hooks.AddFolder, el => !el.hasAttribute('disabled'));
+    return this.evaluate.hook(Hooks.AddFolder, el => !el.hasAttribute('disabled'));
   }
 
   async isAddNotebookEnabled() {
-    return this.page.evaluate.hook(Hooks.AddNotebook, el => !el.hasAttribute('disabled'));
+    return this.evaluate.hook(Hooks.AddNotebook, el => !el.hasAttribute('disabled'));
   }
 
   async isBulkSelectEnabled() {
-    return this.page.evaluate.attr('bi-tbl-row', el => el.querySelector('[data-hook="files-mark-column"]') !== null);
+    return this.evaluate.attr('bi-tbl-row', el => el.querySelector('[data-hook="files-mark-column"]') !== null);
   }
 }

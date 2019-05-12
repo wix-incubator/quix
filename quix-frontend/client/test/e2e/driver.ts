@@ -1,4 +1,4 @@
-import {Browser, Page} from 'puppeteer';
+import {Browser, Page, ElementHandle} from 'puppeteer';
 import {baseURL} from './e2e-common';
 import fetch from 'node-fetch';
 
@@ -64,8 +64,8 @@ export class Driver {
     return this.page.goto(`${baseURL}/#${state}`);
   }
 
-  getTestkitPage() {
-    return new Testkit(this.page);
+  createTestkit(TestkitCtor) {
+    return new TestkitCtor(this.page);
   }
 }
 
@@ -205,13 +205,13 @@ export class Testkit {
   public click: Click;
   public evaluate: Evaluate;
 
-  constructor(page: Page) {
-    if (!page) {
+  constructor(pageOrElement: Page | ElementHandle) {
+    if (!pageOrElement) {
       throw new Error('Got null page or element');
     }
 
-    this.query = new Query(page);
-    this.click = new Click(page);
-    this.evaluate = new Evaluate(page);
+    this.query = new Query(pageOrElement as Page);
+    this.click = new Click(pageOrElement as Page);
+    this.evaluate = new Evaluate(pageOrElement as Page);
   }
 }

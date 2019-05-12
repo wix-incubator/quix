@@ -1,10 +1,6 @@
 import {Testkit} from '../../../test/e2e/driver';
 
 export class BreadcrumbsTestkit extends Testkit {
-  constructor(element: any) {
-    super(element);
-  }
-
   async numOfFiles() {
     return (await this.query.hooks('file-name')).length;
   }

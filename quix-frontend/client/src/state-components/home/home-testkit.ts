@@ -1,21 +1,23 @@
 import {Testkit} from '../../../test/e2e/driver';
 
-export class HomeTestkit {
-  constructor (private readonly page: Testkit) {}
-
+export class HomeTestkit extends Testkit {
   async hasNotebooksAction() {
-    return (await this.page.query.hook('home-notebooks')) !== null;
+    return (await this.query.hook('home-notebooks')) !== null;
   }
 
   async hasAddNotebookAction() {
-    return (await this.page.query.hook('home-add-notebook')) !== null;
+    return (await this.query.hook('home-add-notebook')) !== null;
   }
 
   async clickNotebooks() {
-    return this.page.click.hook('home-notebooks');
+    return this.click.hook('home-notebooks');
+  }
+
+  async clickExamples() {
+    return this.click.hook('home-examples');
   }
 
   async clickAddNotebook() {
-    return this.page.click.hook('home-add-notebook');
+    return this.click.hook('home-add-notebook');
   }
 }

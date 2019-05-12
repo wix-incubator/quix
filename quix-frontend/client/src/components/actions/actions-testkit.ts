@@ -5,10 +5,6 @@ const enum Hooks {
 }
 
 export class ActionsTestkit extends Testkit {
-  constructor(element: any) {
-    super(element);
-  }
-
   async isDeleteEnabled() {
     return (await this.query.hook(Hooks.Delete)) !== null;
   }

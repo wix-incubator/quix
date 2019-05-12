@@ -10,7 +10,7 @@ describe('Notebook ::', () => {
     driver = new Driver();
     await driver.init();
 
-    testkit = new NotebookTestkit(driver.getTestkitPage());
+    testkit = driver.createTestkit(NotebookTestkit);
   });
 
   it('should display error state when notebook is not found', async () => {
