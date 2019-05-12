@@ -140,7 +140,7 @@ describe('Files ::', () => {
     expect(await testkit.numOfFiles()).to.equal(1);
   });
 
-  it.skip('should create a notebook in a root folder and navigate to it', async () => {
+  it('should create a notebook in a root folder and navigate to it', async () => {
     await gotoEditableRootFolder([]);
 
     await testkit.clickAddNotebook();
@@ -151,7 +151,7 @@ describe('Files ::', () => {
     expect(await driver.url.matches('/notebook/:id')).to.be.true;
   });
 
-  it.skip('should create a notebook in a folder and navigate to it', async () => {
+  it('should create a notebook in a folder and navigate to it', async () => {
     await gotoEditableFolder([]);
 
     await testkit.clickAddNotebook();
