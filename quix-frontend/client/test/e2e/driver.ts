@@ -206,6 +206,10 @@ export class Testkit {
   public evaluate: Evaluate;
 
   constructor(page: Page) {
+    if (!page) {
+      throw new Error('Got null page or element');
+    }
+
     this.query = new Query(page);
     this.click = new Click(page);
     this.evaluate = new Evaluate(page);

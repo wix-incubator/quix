@@ -1,12 +1,11 @@
-import {ComponentTestkit} from '../common/component-testkit'
-import {ElementHandle} from 'puppeteer';
+import {Testkit} from '../../../test/e2e/driver';
 
 const enum Hooks {
   Delete = 'actions-delete',
 }
 
-export class ActionsTestkit extends ComponentTestkit {
-  constructor(element: ElementHandle) {
+export class ActionsTestkit extends Testkit {
+  constructor(element: any) {
     super(element);
   }
 
