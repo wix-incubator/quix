@@ -6,30 +6,6 @@
   @include section($grey--100);
 }
 
-.bi-section--green {
-  @include section($grey--100, $light-green--300);
-}
-
-.bi-section--orange {
-  @include section($grey--100, $orange--200);
-}
-
-.bi-section--blue {
-  @include section($grey--100, $blue--300);
-}
-
 .bi-section--300 {
   @include section-static($grey--100, 300px);
-}
-
-.bi-section--300-green {
-  @include section-static($grey--100, 300px, $light-green--300);
-}
-
-.bi-section--300-orange {
-  @include section-static($grey--100, 300px, $orange--200);
-}
-
-.bi-section--300-blue {
-  @include section-static($grey--100, 300px, $blue--300);
 }

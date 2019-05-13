@@ -1,12 +1,21 @@
 @import './def/colors.def';
 @import './def/button.def';
+@import './def/flex.def';
 
 .bi-button {
-  @include button($grey--200, $grey--800);
+  @include button($grey--200, $grey--700);
+}
+
+.bi-button--sm {
+  @include button-size(22px, 8px, 10px);
 }
 
 .bi-button--primary {
-  @include button($light-blue--500);
+  @include button($primary);
+}
+
+.bi-button--secondary {
+  @include button($secondary);
 }
 
 .bi-button--success {
@@ -19,4 +28,15 @@
 
 .bi-button--danger {
   @include button($danger);
+}
+
+.bi-button-group {
+  @include flex();
+
+  border-radius: 3px;
+  overflow: hidden;
+
+  button {
+    border-radius: 0;
+  }
 }

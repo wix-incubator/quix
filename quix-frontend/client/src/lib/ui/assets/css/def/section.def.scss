@@ -8,6 +8,7 @@
 @import 'border.def';
 @import 'label.def';
 
+$section-padding: $default-space * 1.5;
 $section-header-class: '.bi-section-header';
 $section-content-class: '.bi-section-content';
 $section-title-class: '.bi-section-title';
@@ -17,42 +18,22 @@ $section-separator-class: '.bi-section-header-spr';
   @include flex(column);
 
   > #{$section-header-class} {
-    @include header(46px, $blue-grey--800, $white);
+    @include header(46px, transparent, $default-text-color, $section-padding);
     @include border(right);
-    @include border(bottom);
-    @include action-color__deep(800);
-    @include label-color__deep(800);
+    // @include action-color__deep(800);
+    // @include label-color__deep(800);
 
     #{$section-title-class} {
       @include header-title(16px);
-      letter-spacing: 2px;
+      letter-spacing: 1px;
     }
 
     #{$section-separator-class} {
       @include header-separator($blue-grey--800);
     }
-  }
 
-  > #{$section-header-class}--white {
-    @include header(50px, $white, $default-text-color, 20px);
-
-    border-bottom: 1px solid $grey--300;
-
-    > * {
-      @include space-h__inner(20px);
-
-      height: 50px;
-    }
-
-    .bi-border--right,
-    .bi-border--left {
-      height: 50px;
-      border-color: $grey--200;
-    }
-
-    #{$section-title-class} {
-      @include header-title(16px);
-      letter-spacing: 2px;
+    & + #{$section-content-class} {
+      padding-top: 5px;
     }
   }
 
@@ -65,21 +46,17 @@ $section-separator-class: '.bi-section-header-spr';
 }
 
 // Full-height, full-width section with scrollable content
-@mixin section($content-bg-color, $accent: $grey--300) {
+@mixin section($content-bg-color) {
   @extend %section;
 
-  > #{$section-header-class} {
-    border-bottom: 4px solid $accent;
-  }
-
   > #{$section-content-class} {
-    @include content($content-bg-color);
+    @include content($content-bg-color, $section-padding);
   }
 }
 
 // Full-height, fixed-width section with scrollable content
-@mixin section-static($content-bg-color, $width, $accent: $grey--300) {
-  @include section($content-bg-color, $accent);
+@mixin section-static($content-bg-color, $width) {
+  @include section($content-bg-color);
 
   width: $width;
   flex: 0 0 $width;

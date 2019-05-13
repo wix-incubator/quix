@@ -3,10 +3,9 @@
 @import '../border.def';
 
 %app-header {
-  @include header(54px, $white);
-  @include border(bottom);
+  @include header(54px, $white, $color: $default-text-color, $space: $default-space);
 
-  padding-left: 5px;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .05);
 
   .bi-app-logo,
   .bi-app-user-logo {

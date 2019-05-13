@@ -24,12 +24,12 @@
     </div>
   </div>
 
-  <div class="bi-section-content bi-c-h bi-s-v--x15">
+  <div class="bi-section-content bi-c-h bi-s-v--x2">
     <div class="quix-section-controls bi-align bi-dont-shrink bi-fade-in" ng-if="vm.state.is('Result') || vm.state.after('Result')">
       <div class="bi-spread bi-grow bi-fade-in" ng-if="!vm.marked.enabled">
         <div class="bi-align bi-s-h">
           <button
-            class="bi-button--success"
+            class="bi-button--primary"
             ng-disabled="!permissions.addNote"
             ng-click="permissions.addNote && events.onNoteAdd()"
             data-hook="notebook-add-note"
@@ -104,7 +104,7 @@
     </div>
 
     <div 
-      class="quix-notebook-content bi-c-h bi-grow bi-scroll"
+      class="quix-notebook-content bi-c-h bi-s-v--x15 bi-grow bi-scroll"
       ng-if="vm.state.is('Content')"
       data-hook="notebook-content"
       ui-sortable="{

@@ -7,19 +7,23 @@
     <div class="bce-params-inner bi-c-h bi-s-v--x15 bi-fade-in" ng-show="vm.params.visible">
       <bi-editable ng-model="vm.param.model" on-change="events.onParamAdd()" be-options="::{saveText: 'Add'}">
         <div class="bi-spread">
-          <i class="bi-action bi-icon" ng-if="!be.edit" ng-click="events.onParamsToggle()">menu</i>
+          <i 
+            class="bi-action bi-icon"
+            ng-if="!be.edit"
+            ng-click="events.onParamsToggle()"
+          >menu</i>
 
           <div class="bi-center" ng-show="::!readonly" be-controls>
-            <div class="bi-r bi-s-h--x05">
-              <i class="bce-custom-param-toggle bi-action--btn bi-success bi-text--sm bi-align">
+            <div class="bi-r bi-s-h">
+              <button class="bce-custom-param-toggle bi-button bi-button--sm bi-secondary bi-align">
                 <i class="bi-icon--sm">add</i>
                 <span>Custom param</span>
-              </i>
+              </button>
 
-              <i class="bce-auto-param-toggle bi-action--btn bi-success bi-text--sm bi-align">
+              <button class="bce-auto-param-toggle bi-button bi-button--sm bi-secondary bi-align">
                 <i class="bi-icon--sm">add</i>
                 <span>Auto param</span>
-              </i>
+              </button>
             </div>
           </div>
 

@@ -2,6 +2,7 @@
 @import 'morph.def';
 
 %action {
+  transition: color .2s;
   position: relative;
   font-style: normal;
   white-space: nowrap;
@@ -19,13 +20,17 @@
   }
 }
 
-@mixin action($color, $hover-color) {
+@mixin action($color, $hover-color: $primary) {
   @extend %action;
 
   color: $color;
 
   &:hover:not([disabled='disabled']) {
     color: $hover-color;
+  }
+
+  &.bi-action--toggled {
+    color: $primary;
   }
 
   &.bi-action-loader {
@@ -40,11 +45,11 @@
 }
 
 @mixin action-dark() {
-  @include action($grey--600, darken($grey--600, 15));
+  @include action($grey--600);
 }
 
 @mixin action-light() {
-  @include action($grey--400, lighten($grey--400, 15));
+  @include action($grey--400);
 }
 
 @mixin action-color__deep($bg-intensity) {

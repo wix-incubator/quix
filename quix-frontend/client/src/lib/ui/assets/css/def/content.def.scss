@@ -1,11 +1,7 @@
 @import 'defaults.def';
 
-%content {
-  padding: 12px;
-}
 
-@mixin content($bg-color) {
-  @extend %content;
-
+@mixin content($bg-color, $padding: 12px) {
+  padding: $padding;
   background-color: $bg-color;
 }

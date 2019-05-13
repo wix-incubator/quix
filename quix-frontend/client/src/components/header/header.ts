@@ -4,7 +4,7 @@ import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {Instance} from '../../lib/app';
 import {IScope} from './header-types';
-import * as AppActions from "../../store/app/app-actions";
+import * as AppActions from '../../store/app/app-actions';
 
 export default (app: Instance, store: Store) => () => ({
   restrict: 'E',

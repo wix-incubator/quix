@@ -16,11 +16,11 @@ $panel-title-class: '.bi-panel-title';
 @mixin panel($header-bg-color: $white, $content-bg-color: $white, $border-color: $default-border-color) {
   @extend %panel;
 
-  @include border(null, $border-color);
+  // @include border(null, $border-color);
 
   > #{$panel-header-class} {
-    @include header(38px, $header-bg-color);
-    @include border(bottom, $border-color);
+    @include header(44px, $header-bg-color);
+    // @include border(bottom, $border-color);
 
     padding: 0 15px !important;
 

@@ -2,12 +2,6 @@
 @import './lib/ui/assets/css/def/defaults.def';
 @import './lib/ui/assets/css/def/icon.def';
 
-quix-breadcrumbs {
-  .bi-action {
-    color: $white !important;
-  }
-}
-
 .quix-checkbox {
   display: block;
   width: 23px;
@@ -85,14 +79,6 @@ quix-breadcrumbs {
 
 .bi-section,
 .bi-section--300 {
-  .bi-section-header {
-    quix-meta {
-      .bi-muted {
-        color: $grey--400 !important;
-      }
-    }
-  }
-
   .bi-section-content {
     .quix-empty-state {
       margin-top: -60px;
