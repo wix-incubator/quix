@@ -9,46 +9,11 @@
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
 
-    <properties>
-        <scala.library.version>2.12.7</scala.library.version>
-        <scala.dependencies.version>2.12</scala.dependencies.version>
-        <monix.version>3.0.0-RC2</monix.version>
-        <jackson.version>2.9.8</jackson.version>
-        <presto.version>306</presto.version>
-        <scalaj.version>2.4.1</scalaj.version>
-        <scala.logging.version>3.9.2</scala.logging.version>
-        <logback.classic.version>1.2.3</logback.classic.version>
-        <specs2.version>4.5.1</specs2.version>
-    </properties>
-
     <modules>
         <module>quix-api</module>
         <module>quix-core</module>
         <module>quix-modules/quix-presto-module</module>
         <module>quix-webapps/quix-web-spring</module>
     </modules>
-
-    <build>
-        <sourceDirectory>src/main/scala</sourceDirectory>
-        <testSourceDirectory>src/test/scala</testSourceDirectory>
-        <plugins>
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <version>4.0.1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <scalaVersion>${scala.library.version}</scalaVersion>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

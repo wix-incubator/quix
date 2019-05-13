@@ -3,13 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <groupId>quix</groupId>
     <artifactId>quix-api</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
-    <parent>
-        <artifactId>quix</artifactId>
-        <groupId>quix</groupId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
+    <properties>
+        <scala.library.version>2.12.7</scala.library.version>
+        <scala.dependencies.version>2.12</scala.dependencies.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -21,7 +22,7 @@
         <dependency>
             <groupId>io.monix</groupId>
             <artifactId>monix-reactive_${scala.dependencies.version}</artifactId>
-            <version>${monix.version}</version>
+            <version>3.0.0-RC2</version>
         </dependency>
 
     </dependencies>

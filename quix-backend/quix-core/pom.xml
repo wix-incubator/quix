@@ -3,13 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <groupId>quix</groupId>
     <artifactId>quix-core</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
 
-    <parent>
-        <artifactId>quix</artifactId>
-        <groupId>quix</groupId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
+    <properties>
+        <scala.library.version>2.12.7</scala.library.version>
+        <scala.dependencies.version>2.12</scala.dependencies.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -21,7 +22,7 @@
         <!-- https://mvnrepository.com/artifact/com.github.blemale/scaffeine -->
         <dependency>
             <groupId>com.github.blemale</groupId>
-            <artifactId>scaffeine_2.12</artifactId>
+            <artifactId>scaffeine_${scala.dependencies.version}</artifactId>
             <version>2.6.0</version>
         </dependency>
 
@@ -29,28 +30,28 @@
         <dependency>
             <groupId>com.typesafe.scala-logging</groupId>
             <artifactId>scala-logging_${scala.dependencies.version}</artifactId>
-            <version>${scala.logging.version}</version>
+            <version>3.9.2</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
+            <version>2.9.8</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-scala -->
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-scala_${scala.dependencies.version}</artifactId>
-            <version>${jackson.version}</version>
+            <version>2.9.8</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jdk8 -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jdk8</artifactId>
-            <version>${jackson.version}</version>
+            <version>2.9.8</version>
         </dependency>
 
 
@@ -60,25 +61,27 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
-        <!-- tests -->
+        <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2-core_2.12</artifactId>
-            <version>4.2.0</version>
+            <artifactId>specs2-core_${scala.dependencies.version}</artifactId>
+            <version>4.5.1</version>
             <scope>test</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.specs2/specs2-junit -->
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2-junit_2.12</artifactId>
-            <version>4.2.0</version>
+            <artifactId>specs2-junit_${scala.dependencies.version}</artifactId>
+            <version>4.5.1</version>
             <scope>test</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.specs2/specs2-mock -->
         <dependency>
             <groupId>org.specs2</groupId>
-            <artifactId>specs2-mock_2.12</artifactId>
-            <version>4.2.0</version>
+            <artifactId>specs2-mock_${scala.dependencies.version}</artifactId>
+            <version>4.5.1</version>
             <scope>test</scope>
         </dependency>
 
