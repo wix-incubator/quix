@@ -2,7 +2,7 @@ FROM openjdk:8-jdk-alpine
 
 VOLUME /tmp
 
-ARG JAR_FILE=/quix-webapps/quix-web-spring/target/quix-web-spring-2.1.0.RELEASE.jar
+ARG JAR_FILE=target/quix-web-spring-2.1.0.RELEASE.jar
 
 COPY ${JAR_FILE} app.jar
 
