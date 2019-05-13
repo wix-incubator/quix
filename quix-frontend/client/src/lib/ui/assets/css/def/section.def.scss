@@ -49,6 +49,8 @@ $section-separator-class: '.bi-section-header-spr';
 @mixin section($content-bg-color) {
   @extend %section;
 
+  background-color: $content-bg-color;
+
   > #{$section-content-class} {
     @include content($content-bg-color, $section-padding);
   }
