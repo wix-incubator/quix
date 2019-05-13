@@ -1,6 +1,6 @@
 import {inject, utils} from '../../../core';
 
-const OFFSET = -25;
+const OFFSET = -10;
 
 export default () => {
   return {
