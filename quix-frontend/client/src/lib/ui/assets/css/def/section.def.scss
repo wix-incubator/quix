@@ -18,7 +18,7 @@ $section-separator-class: '.bi-section-header-spr';
   @include flex(column);
 
   > #{$section-header-class} {
-    @include header(46px, transparent, $default-text-color, $section-padding);
+    @include header(50px, transparent, $default-text-color, $section-padding);
     @include border(right);
     // @include action-color__deep(800);
     // @include label-color__deep(800);
@@ -33,7 +33,7 @@ $section-separator-class: '.bi-section-header-spr';
     }
 
     & + #{$section-content-class} {
-      padding-top: 5px;
+      padding-top: 0px;
     }
   }
 

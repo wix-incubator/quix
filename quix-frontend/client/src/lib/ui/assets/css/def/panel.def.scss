@@ -3,13 +3,14 @@
 @import 'border.def';
 @import 'header.def';
 @import 'content.def';
+@import 'space.def';
 
 $panel-header-class: '.bi-panel-header';
 $panel-content-class: '.bi-panel-content';
 $panel-title-class: '.bi-panel-title';
 
 %panel {
-  box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
 }
 
 /// Simple panel (header + content)
@@ -31,6 +32,7 @@ $panel-title-class: '.bi-panel-title';
 
   > #{$panel-content-class} {
     @include content($content-bg-color);
-    padding: 15px !important;
+
+    padding: $default-space * 1.5 !important;
   }
 }
