@@ -102,7 +102,7 @@
                 <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>4.0.1</version>
+                <version>3.3.2</version>
                 <executions>
                     <execution>
                         <goals>
