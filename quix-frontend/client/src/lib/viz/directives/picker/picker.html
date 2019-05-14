@@ -1,7 +1,7 @@
 <div class="bi-c bi-s-v">
   <span
     class="bi-action"
-    ng-class="{'bi-warning': type === vm.selected}"
+    ng-class="{'bi-action--toggled': type === vm.selected}"
     ng-repeat="type in ::vm.types"
     ng-click="events.onSelect(type)"
     title="{{::type}}"

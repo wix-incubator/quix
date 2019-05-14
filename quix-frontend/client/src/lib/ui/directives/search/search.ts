@@ -22,6 +22,7 @@ export default function directive() {
           .formatWith(text => ({text}))
           .parseWith(({text}) => text)
           .feedBack(false)
+          .watchWith(({text}) => element.toggleClass('bs-has-text', !!text))
           .watchDeep(true);
 
         initNgScope(scope)
@@ -41,6 +42,8 @@ export default function directive() {
             }
           });
 
+        element.on('mouseenter', '.bi-input', () => element.addClass('bs-hovered'));
+        element.on('mouseleave', '.bi-input', () => element.removeClass('bs-hovered'));
         element.on('focus', '.bi-input', () => element.addClass('bs-focused'));
         element.on('blur', '.bi-input', () => element.removeClass('bs-focused'));
       }

@@ -1,15 +1,12 @@
 @import 'colors.def';
 @import 'defaults.def';
 @import 'header.def';
-@import 'space.def';
 @import 'content.def';
-@import 'action.def';
-@import 'icon.def';
-@import 'border.def';
-@import 'label.def';
+@import 'flex.def';
 
 $section-padding: $default-space * 1.5;
 $section-header-class: '.bi-section-header';
+$section-controls-class: '.bi-section-controls';
 $section-content-class: '.bi-section-content';
 $section-title-class: '.bi-section-title';
 $section-separator-class: '.bi-section-header-spr';
@@ -19,9 +16,6 @@ $section-separator-class: '.bi-section-header-spr';
 
   > #{$section-header-class} {
     @include header(50px, transparent, $default-text-color, $section-padding);
-    @include border(right);
-    // @include action-color__deep(800);
-    // @include label-color__deep(800);
 
     #{$section-title-class} {
       @include header-title(16px);
@@ -29,30 +23,48 @@ $section-separator-class: '.bi-section-header-spr';
     }
 
     #{$section-separator-class} {
-      @include header-separator($blue-grey--800);
+      @include header-separator($grey--200);
     }
 
-    & + #{$section-content-class} {
-      padding-top: 0px;
+    & + #{$section-content-class},
+    & + #{$section-content-class}--center
+    & + #{$section-content-class}--list {
+      padding-top: 10px;
     }
   }
 
-  > #{$section-content-class} {
-    @include border(right);
+  > #{$section-controls-class} {
+    @include header(30px, transparent, $default-text-color, $section-padding);
 
+    margin-bottom: $section-padding;
+  }
+
+  > #{$section-content-class},
+  > #{$section-content-class}--center,
+  > #{$section-content-class}--list {
     flex: 1;
     overflow: auto;
+  }
+
+  > #{$section-content-class}--center {
+    @include flex(column, center, center);
+  }
+
+  > #{$section-content-class}--list {
+    padding-bottom: 400px !important;
   }
 }
 
 // Full-height, full-width section with scrollable content
-@mixin section($content-bg-color) {
+@mixin section($bg-color) {
   @extend %section;
 
-  background-color: $content-bg-color;
+  background-color: $bg-color;
 
-  > #{$section-content-class} {
-    @include content($content-bg-color, $section-padding);
+  > #{$section-content-class},
+  > #{$section-content-class}--center,
+  > #{$section-content-class}--list {
+    @include content($bg-color, $section-padding);
   }
 }
 

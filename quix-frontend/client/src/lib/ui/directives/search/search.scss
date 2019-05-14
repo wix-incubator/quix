@@ -32,18 +32,27 @@ bi-search {
 
   .bs-close {
     right: 5px;
+
+    .bi-icon {
+      color: $primary !important;
+    }
   }
 
   .bs-context {
-    // top: 7px;
     left: 6px;
   }
 
-  &.bs-focused {
-    &.bi-search--borderless {
-      .bs-search {
-        color: $primary !important;
-      }
+  &.bs-focused,
+  &.bs-hovered
+  &.bs-has-text {
+    .bs-search {
+      color: $primary !important;
+    }
+  }
+
+  &.bs-has-text {
+    .bi-input {
+      border-color: $blue--300 !important;
     }
   }
 

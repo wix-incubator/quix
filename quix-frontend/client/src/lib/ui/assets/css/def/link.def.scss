@@ -1,16 +1,17 @@
 @import './flex.def';
 @import './icon.def';
+@import './colors.def';
 
 %link {
   @include flex-inline(row, center);
 
-  color: #428bca;
+  color: $primary;
   text-decoration: none !important;
   cursor: pointer;
 
 
   &:hover {
-    color: darken(#428bca, 8);
+    color: darken($primary, 8);
   }
 
   &[target="_blank"] {

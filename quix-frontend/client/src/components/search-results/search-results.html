@@ -1,4 +1,4 @@
-<div class="bi-section bi-grow bi-s-v--x05">
+<div class="bi-section bi-grow">
   <div class="bi-section-header">
     <div class="bi-section-title">
       <i class="bi-icon">search</i>
@@ -10,7 +10,7 @@
     </div>
   </div>
 
-  <div class="bi-section-content bi-c-h" ng-if="vm.state.before('Content')">
+  <div class="bi-section-content--center" ng-if="vm.state.before('Content')">
     <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.is('Initial')">
       <div class="quix-empty-state bi-empty-state--loading bi-fade-in">
         <div class="bi-empty-state-content">Searching...</div>
@@ -24,23 +24,25 @@
     </div>
   </div>
 
-  <div class="bi-section-content bi-fade-in" ng-if="vm.state.is('Content')">
-    <div class="bi-c bi-s-v--x3">
+  <div class="bi-section-content--list bi-fade-in" ng-if="vm.state.is('Content')">
+    <div class="bi-c bi-s-v--x15">
       <div 
-        class="bi-c bi-dont-shrink bi-s-v--x05"
+        class="bi-c bi-dont-shrink"
         ng-repeat="note in vm.state.value().notes track by note.id"
       >
-        <div class="bi-spread bi-align">
-          <div class="bi-align bi-s-h--x05 bi-muted">
-            <span class="bi-link bi-text--md" ng-click="events.onNoteClick(note)">{{::note.name}}</span>
-            <span class="bi-text--sm">{{::note.owner}}</span>
-          </div>
-
-          <quix-meta entity="::note"></quix-meta>
-        </div>
-
         <div class="bi-panel bi-dont-shrink">
-          <pre class="hljs" bi-html="::renderNoteContent(note)"></pre>
+          <div class="bi-panel-header">
+            <div class="bi-align bi-s-h--x05">
+              <a class="bi-panel-title bi-link" ng-click="events.onNoteClick(note)">{{::note.name}}</a>
+              <span class="bi-text--sm bi-muted">{{::note.owner}}</span>
+            </div>
+
+            <quix-meta entity="::note"></quix-meta>
+          </div>
+          
+          <div class="bi-panel-content">
+            <pre class="hljs" bi-html="::renderNoteContent(note)"></pre>
+          </div>
         </div>
       </div>
     </div>  

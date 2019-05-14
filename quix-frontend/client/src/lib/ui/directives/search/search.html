@@ -7,7 +7,10 @@
 
 <input
   class="bi-input bi-grow"
-  ng-class="{'bs-has-context-icon': !!options.contextIcon}"
+  ng-class="{
+    'bs-has-context-icon': !!options.contextIcon,
+    'bs-has-text': !!model.text
+  }"
   ng-model="model.text"
   ng-minlength="minLength"
   ng-keypress="events.onKeypress($event)"

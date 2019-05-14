@@ -1,6 +1,9 @@
 @import '../../lib/ui//assets/css/def/colors.def';
 
 quix-note {
+  display: flex;
+  flex-direction: column;
+
   [bf-toggle] {
     width: 100%;
     height: 100%;

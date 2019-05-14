@@ -5,6 +5,7 @@
 @import 'content.def';
 @import 'space.def';
 
+$pannel-padding: $default-space * 1.5;
 $panel-header-class: '.bi-panel-header';
 $panel-content-class: '.bi-panel-content';
 $panel-title-class: '.bi-panel-title';
@@ -17,22 +18,19 @@ $panel-title-class: '.bi-panel-title';
 @mixin panel($header-bg-color: $white, $content-bg-color: $white, $border-color: $default-border-color) {
   @extend %panel;
 
-  // @include border(null, $border-color);
-
   > #{$panel-header-class} {
-    @include header(44px, $header-bg-color);
-    // @include border(bottom, $border-color);
-
-    padding: 0 15px !important;
+    @include header(44px, $header-bg-color, $default-text-color, $pannel-padding);
 
     #{$panel-title-class} {
       @include header-title();
     }
+
+    & + #{$panel-content-class} {
+      padding-top: 10px;
+    }
   }
 
   > #{$panel-content-class} {
-    @include content($content-bg-color);
-
-    padding: $default-space * 1.5 !important;
+    @include content($content-bg-color, $pannel-padding);
   }
 }

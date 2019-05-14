@@ -3,6 +3,8 @@
 @import '../../assets/css/def/icon.def';
 
 [contenteditable] {
+  transition-duration: .15s;
+  transition-property: color, padding, border-color;
   position: relative;
   display: inline-block;
   padding: 6px 0 4px;
@@ -18,10 +20,8 @@
     cursor: pointer;
 
     &:focus {
-      transition-duration: .1s;
-      transition-property: color, padding;
       padding: 6px 10px 4px;
-      border-color: $default-border-color;
+      border-color: $primary;
       background-color: $white;
       color: $default-text-color;
       outline: none;
@@ -49,12 +49,14 @@
 
     &:hover:after {
       display: inline;
-      opacity: .6;
+      color: $primary;
+      opacity: 1;
     }
 
     &:focus:after {
       display: inline;
-      opacity: .8;
+      color: $primary;
+      opacity: 1;
     }
   }
 }

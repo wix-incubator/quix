@@ -22,11 +22,6 @@
   }
 }
 
-.quix-round-icon {
-  border-radius: 100px;
-  background-color: $blue-grey--700;
-}
-
 .quix-popup {
   display: none !important;
 
@@ -62,7 +57,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: $red--300;
+  background-color: $primary;
   border-radius: 50%;
   cursor: pointer;
   box-shadow: 1px 1px 10px $grey--500;
@@ -82,10 +77,6 @@
   .bi-section-content {
     .quix-empty-state {
       margin-top: -60px;
-    }
-
-    .quix-section-controls {
-      height: 30px;
     }
   }
 }
