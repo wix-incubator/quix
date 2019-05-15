@@ -6,9 +6,8 @@ RUN npm install
 WORKDIR /shared
 RUN npm install
 WORKDIR /service
-RUN npm install
-RUN npm run build
+RUN npm install && npm run build && npm install -g pm2 && (rm -f .env || true)
 
 EXPOSE 3000
-ENTRYPOINT ["npm", "run", "start:prod"]
+ENTRYPOINT ["pm2-runtime", "index.js"]
 

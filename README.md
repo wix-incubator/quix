@@ -59,7 +59,7 @@ Note that you need to specify full URL, including protocol, port and API version
 ##### DB
 Quix also uses MySQL to store notebooks and other application data. Location of this data is specified by `DB_VOLUME_PATH`. <br />
 As an alternative, you can use an external MySQL database, by specifying some of the following variables:
-* DB_NAME - defaults to `Quix`, must exist
+* DB_NAME - defaults to `quix`, must exist
 * DB_USER - defaults to `root`
 * DB_PASS - defaults to empty password
 * DB_HOST - defaults to `db`

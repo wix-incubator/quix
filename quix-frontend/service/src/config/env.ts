@@ -73,6 +73,15 @@ const testingDefaults: EnvSettings = {
 };
 
 const identity = <T>(x: T) => x;
+const numberParse = (s: string | undefined) =>
+  s ? parseInt(s, 10) : undefined;
+const booleanParse = (s: string | undefined) =>
+  s !== undefined
+    ? s.toLowerCase() === 'false' || s === ''
+      ? false
+      : true
+    : undefined;
+
 const transforms: {
   [K in keyof EnvSettings]: (
     s: string | undefined,
@@ -106,16 +115,16 @@ const transforms: {
   DbUser: identity,
   DbPass: identity,
   DbHost: identity,
-  DbPort: s => (s ? parseInt(s, 10) : undefined),
+  DbPort: numberParse,
   QuixBackendInternalUrl: identity,
   QuixBackendPublicUrl: identity,
   GoogleClientId: identity,
   GoogleAuthSecret: identity,
   AuthCookieName: identity,
   AuthEncKey: identity,
-  CookieAge: s => (s ? parseInt(s, 10) : undefined),
-  AutoMigrateDb: s => (s ? !!s : undefined),
-  UseMinifiedStatics: s => (s ? !!s : undefined),
+  CookieAge: numberParse,
+  AutoMigrateDb: booleanParse,
+  UseMinifiedStatics: booleanParse,
 };
 
 let env: EnvSettings;

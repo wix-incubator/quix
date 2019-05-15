@@ -36,7 +36,7 @@ services:
     restart: always
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_DATABASE: "Quix"
+      MYSQL_DATABASE: "quix"
     volumes:
       - "db_volume:$DB_VOLUME_PATH"
   presto:

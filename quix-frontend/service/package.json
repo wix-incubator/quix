@@ -6,8 +6,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc -b && npm run update-statics",
-    "start": "ts-node --files -r tsconfig-paths/register build-scripts/start.ts",
-    "update-statics": "ts-node build-scripts/update-statics.ts",
+    "start": "ts-node --files -r tsconfig-paths/register scripts/start.ts",
+    "update-statics": "ts-node scripts/update-statics.ts",
     "start:dev": "nodemon",
     "start:debug": "nodemon --config nodemon-debug.json",
     "start:prod": "node index.js",
