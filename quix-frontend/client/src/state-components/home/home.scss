@@ -15,15 +15,5 @@ quix-home {
     > *:not(:last-child) {
       margin-right: 50px;
     }
-
-    &:hover {
-      .bi-icon {
-        color: $primary;
-      }
-    }
-
-    .bi-icon {
-      color: $grey--500 !important;
-    }
   }
 }
