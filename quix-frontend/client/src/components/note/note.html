@@ -7,25 +7,27 @@
       <i class="bi-action bi-icon--sm">drag_indicator</i>
     </span>
 
-    <div>      
-      <span class="quix-checkbox" ng-if="::permissions.edit" data-hook="note-select">
-        <i
-          class="bi-action bi-icon bi-fade-in checked"
-          ng-if="marked"
-          ng-click="$event.stopPropagation(); events.onMarkToggle()"
-        >
-          check_box_outline
-        </i>
-        <i
-          class="bi-action bi-icon bi-fade-in"
-          ng-if="!marked"
-          ng-click="$event.stopPropagation(); events.onMarkToggle()"
-        >
-          check_box_outline_blank
-        </i>
-      </span>
-
-      <span class="bi-label--sm">{{::note.type}}</span>
+    <div>
+      <div class="bi-align bi-s-h">
+        <span class="quix-checkbox" ng-if="::permissions.edit" data-hook="note-select">
+          <i
+            class="bi-action bi-icon bi-fade-in checked"
+            ng-if="marked"
+            ng-click="$event.stopPropagation(); events.onMarkToggle()"
+          >
+            check_box_outline
+          </i>
+          <i
+            class="bi-action bi-icon bi-fade-in"
+            ng-if="!marked"
+            ng-click="$event.stopPropagation(); events.onMarkToggle()"
+          >
+            check_box_outline_blank
+          </i>
+        </span>
+  
+        <span class="bi-label--sm">{{::note.type}}</span>
+      </div>
 
       <span
         class="bi-panel-title bi-dont-shrink"
