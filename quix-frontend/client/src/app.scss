@@ -80,10 +80,8 @@
 }
 
 .bi-section {
-  .bi-section-content--center {
-    .quix-empty-state {
-      margin-top: -60px;
-    }
+  .quix-empty-state {
+    margin-top: -60px;
   }
 }
 
@@ -113,15 +111,6 @@ bi-tbl.bi-table--nav {
 
   .name-column {
     padding-left: 0;
-  }
-}
-
-.bi-empty-state {
-  .bi-empty-state-icon {
-    .bi-icon {
-      font-size: 80px;
-      color: $grey--500;
-    }
   }
 }
 

@@ -11,7 +11,9 @@
   }
 
   .bi-empty-state-icon {
-    font-size: 60px;
+    .bi-icon {
+      font-size: 80px;
+    }
   }
 
   .bi-empty-state-header {
@@ -19,7 +21,6 @@
     margin-bottom: 0;
     font-size: 18px;
     font-weight: 300;
-    color: darken($muted, 10);
   }
 
   .bi-empty-state-header + .bi-empty-state-content {
@@ -31,7 +32,6 @@
     margin-bottom: 0;
     font-size: 13px;
     font-weight: 400;
-    color: lighten($muted, 10);
   }
 }
 
