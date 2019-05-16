@@ -32,7 +32,7 @@
   align-self: center;
 }
 
-@mixin header($height, $bg-color: transparent, $color: $default-text-color, $space: $default-space) {
+@mixin header($height, $space: $default-space * 1.5) {
   @extend %header;
 
   padding: 0 $space;
@@ -42,6 +42,4 @@
   }
 
   height: $height;
-  background-color: $bg-color;
-  color: $color;
 }

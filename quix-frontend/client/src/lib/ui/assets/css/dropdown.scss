@@ -1,11 +1,6 @@
 @import './def/dropdown.def';
 @import './def/icon.def';
 
-.bi-dropdown-content {
-  @extend %dropdown-content;
-}
-
 .bi-dropdown-menu {
   @extend %dropdown-menu;
-  @include icon__deep(18px, $grey--600, 7px);
 }

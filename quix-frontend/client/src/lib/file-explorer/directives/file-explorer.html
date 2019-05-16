@@ -5,11 +5,14 @@
     ng-class="{'fe-folder--open': vm.folder.isOpen(folder)}"
   >
     <div
-      class="bi-spread fe-item {{::'fe-item-depth-' + depth}}"
-      ng-class="{active: vm.folder.isActive(folder)}"
+      class="bi-spread fe-item bi-hover bi-muted {{::'fe-item-depth-' + depth}}"
+      ng-class="{'bi-active': vm.folder.isActive(folder)}"
       drop="::!readonly"
       jqyoui-droppable="{onDrop: 'events.onItemDrop(folder)'}"
-      jqyoui-options="{accept: '.fe-item, .fe-item-name', greedy: true}"
+      jqyoui-options="{
+        accept: '.fe-item, .fe-item-name',
+        greedy: true
+      }"
       ng-model="vm.dropped.item"
     >
       <div class="bi-align">
@@ -51,7 +54,7 @@
       </div>
 
       <bi-dropdown bd-options="::{align: 'right'}" ng-if="::vm.folder.hasMenu(folder)">
-        <bi-toggle>
+        <bi-toggle class="bi-align">
           <i class="bi-action bi-icon">more_vert</i>
         </bi-toggle>
 
@@ -83,8 +86,9 @@
   </li>
 
   <li
+    class="bi-hover bi-muted"
     ng-repeat="file in model.getFiles() | orderBy:vm.order.field track by file.getId()"
-    ng-class="{active: vm.file.isActive(file)}"
+    ng-class="{'bi-active': vm.file.isActive(file)}"
     ng-click="events.onFileClick(file)"
   >
     <div

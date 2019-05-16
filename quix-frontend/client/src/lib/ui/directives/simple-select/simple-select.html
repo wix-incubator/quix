@@ -28,7 +28,7 @@
     </li>
 
     <li
-      ng-class="{selected: model === item}"
+      ng-class="{'bi-active': model === item}"
       ng-repeat="item in items | orderBy: renderItemText"
       ng-click="events.onSelectItem(item)"
       bi-html="renderItemHtml(item)"

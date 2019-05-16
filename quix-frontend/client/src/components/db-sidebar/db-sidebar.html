@@ -26,7 +26,7 @@
     permissions="getFolderPermissions(folder)"
     readonly="true"
   > 
-    <folder-icon class="bi-icon--xs bi-muted">
+    <folder-icon class="bi-icon--xs">
       {{::{
         catalog: 'book',
         schema: 'storage',
@@ -34,7 +34,7 @@
       }[folder.nodeType]}}
     </folder-icon>
 
-    <file-icon class="bi-text--sm bi-muted">
+    <file-icon class="bi-text--sm">
      {{file.nodeType}}
     </file-icon>
 

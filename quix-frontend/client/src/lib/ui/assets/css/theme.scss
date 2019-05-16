@@ -1,0 +1,19 @@
+@import './def/colors.def';
+@import './def/theme.def';
+
+
+.bi-theme--lighter {
+  @include theme('lighter');
+}
+
+.bi-theme--light {
+  @include theme('light');
+}
+
+.bi-theme--dark {
+  @include theme('dark');
+}
+
+.bi-theme--darker {
+  @include theme('darker');
+}

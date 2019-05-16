@@ -39,10 +39,7 @@ export const initTableFields = scope => {
     filter(_, file: IFile, index, compile) {
       return compile(`
         <div class="bi-align bi-s-h">
-          <i 
-            class="bi-icon" 
-            ng-class="::file.type === 'folder' ? 'bi-warning' : 'bi-muted'"
-          >{{::file.type === 'folder' ? 'folder' : 'insert_drive_file'}}</i>
+          <i class="bi-icon bi-muted">{{::file.type === 'folder' ? 'folder' : 'insert_drive_file'}}</i>
 
           <span ng-if="!vm.get(file).isNew">{{::file.name}}</span>
           

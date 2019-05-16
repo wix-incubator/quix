@@ -2,7 +2,7 @@
   <div
     class="bi-tab bi-align bi-center"
     ng-repeat="tab in ::vm.tabs.all"
-    ng-class="{active: tab.name === vm.tabs.current}"
+    ng-class="{'bi-active': tab.name === vm.tabs.current}"
     ng-click="events.onTabClick(tab.name)"
     data-hook="h-bt-button2"
   >

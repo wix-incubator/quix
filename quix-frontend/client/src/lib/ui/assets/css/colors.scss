@@ -1,7 +1,54 @@
 @import './def/colors.def';
+@import './def/state.def';
 
-.bi-muted {
-  color: $muted !important;
+.bi-theme--light {
+  .bi-disabled {
+    @include disabled('light');
+  }
+
+  .bi-muted {
+    @include muted('light');
+  }
+
+  .bi-theme--lighter {
+    .bi-disabled {
+      @include disabled('lighter');
+    }
+
+    .bi-muted {
+      @include muted('lighter');
+    }
+  }
+}
+
+.bi-theme--lighter {
+  .bi-disabled {
+    @include disabled('lighter');
+  }
+
+  .bi-muted {
+    @include muted('lighter');
+  }
+}
+
+.bi-theme--dark {
+  .bi-disabled {
+    @include disabled('dark');
+  }
+
+  .bi-muted {
+    @include muted('dark');
+  }
+}
+
+.bi-theme--darker {
+  .bi-disabled {
+    @include disabled('darker');
+  }
+
+  .bi-muted {
+    @include muted('darker');
+  }
 }
 
 .bi-primary {

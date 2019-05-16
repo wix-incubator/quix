@@ -5,21 +5,22 @@
 @import 'content.def';
 @import 'space.def';
 
-$pannel-padding: $default-space * 1.5;
 $panel-header-class: '.bi-panel-header';
 $panel-content-class: '.bi-panel-content';
 $panel-title-class: '.bi-panel-title';
 
 %panel {
+  border-radius: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, .05);
+  overflow: hidden;
 }
 
 /// Simple panel (header + content)
-@mixin panel($header-bg-color: $white, $content-bg-color: $white, $border-color: $default-border-color) {
+@mixin panel() {
   @extend %panel;
 
   > #{$panel-header-class} {
-    @include header(44px, $header-bg-color, $default-text-color, $pannel-padding);
+    @include header(44px);
 
     #{$panel-title-class} {
       @include header-title();
@@ -31,6 +32,6 @@ $panel-title-class: '.bi-panel-title';
   }
 
   > #{$panel-content-class} {
-    @include content($content-bg-color, $pannel-padding);
+    @include content();
   }
 }

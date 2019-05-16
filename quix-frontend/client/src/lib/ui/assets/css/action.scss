@@ -2,56 +2,32 @@
 @import './def/action.def';
 @import './def/button.def';
 
-.bi-action {
-  @include action-dark();
-}
-
-.bi-action--btn {
-  @extend %action;
-
-  display: inline-block;
-  padding: 0 10px;
-  border: 1px solid;
-  border-radius: 50px;
-  font-size: 11px;
-  line-height: 2em;
-
-  &.bi-primary {
-    @include button-color($primary);
+.bi-theme--light {
+  .bi-action {
+    @include action('light');
   }
 
-  &.bi-success {
-    @include button-color($success);
-  }
-
-  &.bi-warning {
-    @include button-color($warning);
-  }
-
-  &.bi-danger {
-    @include button-color($danger);
+  .bi-theme--lighter {
+    .bi-action {
+      @include action('lighter');
+    }
   }
 }
 
-.bi-action--rnd {
-  @extend %action;
+.bi-theme--lighter {
+  .bi-action {
+    @include action('lighter');
+  }
+}
 
-  transition: box-shadow, .2s;
-  display: inline-block;
-  padding: .3em;
-  border: 1px solid $grey--300;
-  border-radius: 100px;
-  color: $white;
-  background-color: lighten($success, 8);
-  border-color: darken($success, 4);
-  text-shadow: 0 1px 0 $grey--500;
-  box-shadow: 0 1px 2px $grey--200;
+.bi-theme--dark {
+  .bi-action {
+    @include action('dark');
+  }
+}
 
-  &:hover:not([disabled='disabled']) {
-    color: $white;
-    background-color: lighten($success, 2);
-    border-color: darken($success, 10);
-    text-shadow: 0 1px 0 $grey--600;
-    box-shadow: 0 1px 2px $grey--400;
+.bi-theme--darker {
+  .bi-action {
+    @include action('darker');
   }
 }

@@ -29,7 +29,7 @@
 
     <span ng-if="!vm.runner.enabled && vm.result.enabled">
       <i
-        class="br-download-action bi-action--rnd bi-icon--sm bi-fade-in"
+        class="br-download-action bi-button--success bi-icon--sm bi-fade-in"
         ng-if="!vm.result.current.error"
         ng-csv="::actions.getCsvRows()"
         csv-header="::actions.getCsvFields()"
@@ -41,7 +41,7 @@
       >file_download</i>
 
       <i
-        class="br-download-action bi-action--rnd bi-icon--sm"
+        class="br-download-action bi-button bi-icon--sm"
         ng-if="vm.result.current.error"
         title="Download CSV"
         disabled="disabled"
@@ -77,7 +77,7 @@
   <div class="br-tabs bi-r bi-fade-in" ng-if="vm.tabs.isEnabled()">
     <div
       class="br-tab bi-fade-in"
-      ng-class="{active: query.getId() === vm.result.current.getId()}"
+      ng-class="{'bi-active': query.getId() === vm.result.current.getId()}"
       ng-repeat="query in runner.getQueries()"
       ng-click="events.onSelectQuery(query)"
     >{{::query.getTitle()}}</div>

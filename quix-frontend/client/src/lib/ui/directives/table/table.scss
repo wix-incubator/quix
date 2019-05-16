@@ -24,7 +24,7 @@ bi-tbl {
     padding-top: 36px;
 
     > div {
-      border-top: 2px solid $default-border-color;
+      border-top: 2px solid $grey--300;
       overflow: auto;
     }
 
@@ -55,7 +55,7 @@ bi-tbl {
       tr {
         cursor: pointer;
 
-        &.selected {
+        &.bi-active {
           background-color: $grey--100 !important;
         }
 
@@ -85,7 +85,6 @@ bi-tbl {
       display: flex;
       flex-direction: column;
       flex-grow: 1;
-      background-color: $white;
     }
 
     table > thead,
@@ -124,6 +123,10 @@ bi-tbl {
       > tr {
         &:nth-child(even) {
           background-color: $grey--100;
+        }
+
+        &:nth-child(odd) {
+          background-color: $white;
         }
 
         &:last-child {

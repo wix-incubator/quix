@@ -50,7 +50,6 @@
   @extend %button;
   @include button-color($bgColor, $color);
   @include button-size();
-  @include icon__deep(16px, $color);
 
   &:active:not([disabled='disabled']) {
     box-shadow: inset 1px 3px 8px darken($bgColor, 15), 1px 1px 1px $white;

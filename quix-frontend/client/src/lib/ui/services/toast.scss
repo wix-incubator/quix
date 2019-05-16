@@ -12,6 +12,4 @@
   background-color: darken($grey--800, 7);
   border-radius: 3px;
   box-shadow: $default-box-shadow;
-
-  @include action-color__deep(900);
 }

@@ -32,6 +32,7 @@ bi-search {
 
   .bs-close {
     right: 5px;
+    margin-top: -14px;
 
     .bi-icon {
       color: $primary !important;
@@ -68,13 +69,14 @@ bi-search {
     }
 
     .bs-context {
-      // top: 10px;
       left: 12px;
     }
 
-    .bs-search,
+    .bs-search {
+      right: 14px;
+    }
+
     .bs-close {
-      // top: 10px;
       right: 12px;
     }
   }
@@ -104,7 +106,6 @@ bi-search {
 
     .bs-search,
     .bs-close {
-      // top: 10px;
       right: 0;
     }
   }

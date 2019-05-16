@@ -25,21 +25,17 @@ quix-note {
   .bi-panel-header {
     position: relative;
 
-    bi-dropdown {
-      bi-toggle {
-        height: 37px;
-
-        i {
-          line-height: 38px !important;
-        }
-      }
-    }
-
     .quix-note-drag-indicator {
       position: absolute;
-      top: 14px;
-      left: 0;
+      top: 11px;
+      left: -2px;
       margin: 0 !important;
+
+      .bi-action {
+        &:hover {
+          background-color: transparent !important;
+        }
+      }
     }
   }
 }

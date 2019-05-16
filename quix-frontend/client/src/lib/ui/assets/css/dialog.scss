@@ -8,10 +8,11 @@
   min-height: 150px;
   padding: $padding;
   border: none;
-  border-radius: 3px;
+  border-radius: 4px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
 
   dialog-title,
+  dialog-subtitle,
   dialog-content {
     display: block;
   }
@@ -21,6 +22,11 @@
     font-size: 22px;
     font-weight: 300;
     text-transform: uppercase;
+  }
+
+  dialog-subtitle {
+    margin: -26px 0 40px 0;
+    color: $muted;
   }
 
   dialog-content {

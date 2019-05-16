@@ -13,6 +13,7 @@ export interface IDialog extends ng.IPromise<any> {
 export interface IDialogOptions {
   html: string;
   title?: string;
+  subTitle?: string;
   icon?: string;
   showCloseAction?: boolean;
   onConfirm?(scope): any;
@@ -61,6 +62,7 @@ function showDialog(scope, htmlOrOptions: string | IDialogOptions) {
       html:  `
         <dialog>
           <dialog-title>${htmlOrOptions.title}</dialog-title>
+          ${htmlOrOptions.subTitle ? `<dialog-subtitle>${htmlOrOptions.subTitle}</dialog-subtitle>` : ''}
           <dialog-content>
             <div class="bi-align bi-s-h">
               ${htmlOrOptions.icon ? `

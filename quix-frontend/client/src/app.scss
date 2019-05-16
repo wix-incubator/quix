@@ -2,11 +2,18 @@
 @import './lib/ui/assets/css/def/defaults.def';
 @import './lib/ui/assets/css/def/icon.def';
 
+.quix-content {
+  box-shadow: inset 0 1px 6px rgba(0, 0, 0, .05);
+}
+
 .quix-checkbox {
   display: block;
-  width: 23px;
   line-height: 0;
-  overflow: hidden;
+
+  .bi-action {
+    width: 30px;
+    overflow: hidden;
+  }
 
   i {
     transition: color, .1s;
@@ -72,9 +79,8 @@
   }
 }
 
-.bi-section,
-.bi-section--300 {
-  .bi-section-content {
+.bi-section {
+  .bi-section-content--center {
     .quix-empty-state {
       margin-top: -60px;
     }
@@ -100,9 +106,8 @@ bi-tbl.bi-table--nav {
     padding: 0;
 
     .quix-checkbox {
-      width: 42px;
-      margin-top: 1px;
-      padding: 8px;
+      width: 30px;
+      margin: 6px;
     }
   }
 

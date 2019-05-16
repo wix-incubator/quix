@@ -1,5 +1,8 @@
 @import '../../assets/css/def/colors.def';
+@import '../../assets/css/def/defaults.def';
 
 bi-breadcrumbs {
-
+  .bi-link {
+    color: $default-text-color;
+  }
 }

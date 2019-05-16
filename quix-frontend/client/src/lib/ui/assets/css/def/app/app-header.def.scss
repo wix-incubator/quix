@@ -3,18 +3,13 @@
 @import '../border.def';
 
 %app-header {
-  @include header(54px, $white, $color: $default-text-color, $space: $default-space);
-
-  box-shadow: 0 1px 6px rgba(0, 0, 0, .05);
+  @include header(54px);
 
   .bi-app-logo,
   .bi-app-user-logo {
-    @include border(null);
-
     width: 36px;
     height: 36px;
     border-radius: 100px;
-    background-color: $grey--100;
   }
 
   .bi-app-title {

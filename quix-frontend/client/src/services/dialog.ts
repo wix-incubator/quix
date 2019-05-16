@@ -10,9 +10,20 @@ export const confirmAction = (action: 'delete', context: 'notebook' | 'note' | '
   });
 }
 
-export const prompt = ({title, yes, content}, scope?, locals?) => {
+export const prompt = ({
+  title,
+  subTitle,
+  yes,
+  content
+}: {
+  title: string;
+  subTitle?: string;
+  yes: string;
+  content: string;
+}, scope?, locals?) => {
   return confirmDialog({
     title,
+    subTitle,
     actionType: 'neutral',
     yes,
     html: `<form name="form">${content}</form>`

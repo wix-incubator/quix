@@ -1,5 +1,6 @@
 @import '../../assets/css/def/icon.def';
 @import '../../assets/css/def/animations.def';
+@import '../../assets/css/def/defaults.def';
 
 bi-dropdown {
   position: relative;
@@ -31,6 +32,7 @@ bi-dropdown {
 
   .bd-content {
     position: fixed;
+    border-radius: 3px;
     z-index: 200;
   }
 }

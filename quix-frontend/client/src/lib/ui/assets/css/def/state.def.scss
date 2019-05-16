@@ -1,0 +1,68 @@
+@import 'colors.def';
+
+@mixin disabled($theme) {
+  &.bi-disabled,
+  &[disabled='disabled'] {
+    @if ($theme == 'lighter') {
+      color: $lighter-disabled-color !important;
+    } @else if ($theme == 'light') {
+      color: $light-disabled-color !important;
+    } @else if ($theme == 'dark') {
+      color: $dark-disabled-color !important;
+    } @else {
+      color: $darker-disabled-color !important;
+    }
+
+    cursor: default;
+  }
+}
+
+@mixin muted($theme) {
+  @if ($theme == 'lighter') {
+    color: $lighter-muted-color;
+  } @else if ($theme == 'light') {
+    color: $light-muted-color;
+  } @else if ($theme == 'dark') {
+    color: $dark-muted-color;
+  } @else {
+    color: $darker-muted-color;
+  }
+}
+
+@mixin active($theme, $color: null) {
+  &.bi-active {
+    @if ($theme == 'lighter') {
+      background-color: $lighter-active-bg;
+      color: $color or $lighter-color;
+    } @else if ($theme == 'light') {
+      background-color: $light-active-bg;
+      color: $color or $light-color;
+    } @else if ($theme == 'dark') {
+      background-color: $dark-active-bg;
+      color: $color or $dark-color;
+    } @else {
+      background-color: $darker-active-bg;
+      color: $color or $darker-color;
+    }
+  }
+}
+
+@mixin hover($theme, $color: null) {
+  transition: color .2s, background-color .2s;
+
+  &:hover:not([disabled='disabled']) {
+    @if ($theme == 'lighter') {
+      background-color: $lighter-hover-bg;
+      color: $color or $lighter-color;
+    } @else if ($theme == 'light') {
+      background-color: $light-hover-bg;
+      color: $color or $light-color;
+    } @else if ($theme == 'dark') {
+      background-color: $dark-hover-bg;
+      color: $color or $dark-color;
+    } @else {
+      background-color: $darker-hover-bg;
+      color: $color or $darker-color;
+    }
+  }
+}

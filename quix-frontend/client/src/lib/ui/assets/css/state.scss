@@ -1,0 +1,74 @@
+@import 'def/state.def';
+
+// default
+.bi-muted {
+  @include muted('lighter');
+}
+
+.bi-active {
+  @include active('lighter');
+}
+
+.bi-hover {
+  @include hover('lighter');
+}
+
+// lighter
+.bi-theme--lighter {
+  .bi-muted {
+    @include muted('lighter');
+  }
+  
+  .bi-active {
+    @include active('lighter');
+  }
+  
+  .bi-hover {
+    @include hover('lighter');
+  }
+}
+
+// light
+.bi-theme--light {
+  .bi-muted {
+    @include muted('light');
+  }
+  
+  .bi-active {
+    @include active('light');
+  }
+  
+  .bi-hover {
+    @include hover('light');
+  }
+}
+
+// dark
+.bi-theme--dark {
+  .bi-muted {
+    @include muted('dark');
+  }
+  
+  .bi-active {
+    @include active('dark');
+  }
+  
+  .bi-hover {
+    @include hover('dark');
+  }
+}
+
+//  darker
+.bi-theme--darker {
+  .bi-muted {
+    @include muted('darker');
+  }
+  
+  .bi-active {
+    @include active('darker');
+  }
+  
+  .bi-hover {
+    @include hover('darker');
+  }
+}

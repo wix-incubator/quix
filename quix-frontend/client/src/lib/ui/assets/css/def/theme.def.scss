@@ -1,0 +1,17 @@
+@import 'colors.def';
+
+@mixin theme($theme) {
+  @if ($theme == 'lighter') {
+    background-color: $lighter-bg;
+    color: $lighter-color;
+  } @else if ($theme == 'light') {
+    background-color: $light-bg;
+    color: $light-color;
+  } @else if ($theme == 'dark') {
+    background-color: $dark-bg;
+    color: $dark-color;
+  } @else {
+    background-color: $darker-bg;
+    color: $darker-color;
+  }
+}

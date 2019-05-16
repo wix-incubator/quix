@@ -1,4 +1,5 @@
 @import 'colors.def';
+@import 'state.def';
 
 %icon {
   display: inline-block;
@@ -16,25 +17,8 @@
   -webkit-font-smoothing: antialiased;
 }
 
-@mixin icon__deep($size: 24px, $color: $default-text-color, $margin-right: null) {
-  .bi-icon {
-    font-size: $size;
-    color: $color;
-
-    @if ($margin-right) {
-      margin-right: $margin-right;
-    }
-  }
-}
-
-@mixin icon-color__deep($bg-intensity) {
-  .bi-icon,
-  .bi-icon--sm,
-  .bi-icon--xs {
-    @if $bg-intensity <= 400 {
-      color: darken($grey--600, 15);
-    } @else {
-      color: lighten($grey--400, 15)
-    }
-  }
+@mixin icon($theme) {
+  @extend %icon;
+  @include disabled($theme);
+  @include muted($theme);
 }

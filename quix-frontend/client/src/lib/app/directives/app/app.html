@@ -1,4 +1,4 @@
-<div class="bi-app-header bi-fade-in">
+<div class="bi-app-header bi-fade-in bi-theme--lighter">
   <div 
     class="bi-app-title bi-pointer"
     ng-click="events.onTitleClick()"
@@ -42,12 +42,17 @@
 </div>
 
 <div class="bi-r-h">
-  <div class="bi-app-menu bi-dont-shrink bi-fade-in" ng-if="::app.getMenuItems().length">
+  <div class="bi-app-menu bi-theme--darker bi-dont-shrink bi-fade-in" ng-if="::app.getMenuItems().length">
     <ul>
-      <li ng-repeat="item in ::app.getMenuItems()">
+    <ul>
+      <li
+        class="bi-muted bi-hover"
+        ng-class="{'bi-active': item === vm.menu.current}"
+        ng-repeat="item in ::app.getMenuItems()"
+      >
         <i
           class="bi-action bi-icon"
-          ng-class="{'bi-white': item === vm.menu.current}"
+          ng-class="{'bi-active': item === vm.menu.current}"
           ng-click="events.onMenuItemToggle(item)"
           title="{{::item.name}}"
           role="button"
@@ -58,7 +63,7 @@
   </div>
 
   <div 
-    class="bi-app-sidebar bi-section bi-c"
+    class="bi-app-sidebar bi-theme--dark bi-section bi-c"
     ng-if="vm.menu.current && (vm.menu.current.template || vm.menu.current.compiled)"
     bi-resizable
     br-options="::{minWidth: 300, handles: 'e', stateName: 'app-sidebar'}"

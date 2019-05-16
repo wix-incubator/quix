@@ -4,7 +4,6 @@
 @import 'content.def';
 @import 'flex.def';
 
-$section-padding: $default-space * 1.5;
 $section-header-class: '.bi-section-header';
 $section-controls-class: '.bi-section-controls';
 $section-content-class: '.bi-section-content';
@@ -15,7 +14,7 @@ $section-separator-class: '.bi-section-header-spr';
   @include flex(column);
 
   > #{$section-header-class} {
-    @include header(50px, transparent, $default-text-color, $section-padding);
+    @include header(50px);
 
     #{$section-title-class} {
       @include header-title(16px);
@@ -25,18 +24,12 @@ $section-separator-class: '.bi-section-header-spr';
     #{$section-separator-class} {
       @include header-separator($grey--200);
     }
-
-    & + #{$section-content-class},
-    & + #{$section-content-class}--center
-    & + #{$section-content-class}--list {
-      padding-top: 10px;
-    }
   }
 
   > #{$section-controls-class} {
-    @include header(30px, transparent, $default-text-color, $section-padding);
+    @include header(30px);
 
-    margin-bottom: $section-padding;
+    margin-bottom: $default-space * 1.5;
   }
 
   > #{$section-content-class},
@@ -53,18 +46,30 @@ $section-separator-class: '.bi-section-header-spr';
   > #{$section-content-class}--list {
     padding-bottom: 400px !important;
   }
+
+  &.bi-theme--dark {
+    > #{$section-header-class} {
+      color: $grey--200;
+    }
+
+    > #{$section-content-class},
+    > #{$section-content-class}--center,
+    > #{$section-content-class}--list {
+      background-color: $blue-grey--800;
+    }
+  }
 }
 
 // Full-height, full-width section with scrollable content
 @mixin section($bg-color) {
   @extend %section;
 
-  background-color: $bg-color;
+  // background-color: $bg-color;
 
   > #{$section-content-class},
   > #{$section-content-class}--center,
   > #{$section-content-class}--list {
-    @include content($bg-color, $section-padding);
+    @include content();
   }
 }
 

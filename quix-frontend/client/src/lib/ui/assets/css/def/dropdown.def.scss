@@ -3,13 +3,13 @@
 @import 'border.def';
 @import 'flex.def';
 @import 'icon.def';
+@import 'state.def';
 
 %dropdown-content {
-  @include border();
-
-  display: inline-block;
+  display: block;
   padding: 5px 10px;
-  background-color: $white;
+  border: 1px solid $grey--200;
+  border-radius: 3px;
   box-shadow: $default-box-shadow;
   overflow-y: auto;
 }
@@ -23,35 +23,34 @@
 
   > li {
     @include flex(row, center);
+    @include hover('lighter');
+    @include disabled('lighter');
 
     position: relative;
     padding: 7px 20px;
-    color: $black;
     white-space: nowrap;
     cursor: pointer;
 
-    &:hover:not([disabled]) {
-      background-color: $grey--50;
-    }
+    &:not([disabled='disabled']) {
+      &.bi-active {
+        &:before {
+          @extend %icon;
 
-    &.selected:not([disabled='disabled']) {
-      font-weight: bold;
+          position: absolute;
+          content: 'check';
+          left: 5px;
+          color: $primary;
+          font-size: 14px !important;
+        }
+      }
 
-      &:before {
-        @extend %icon;
-
-        position: absolute;
-        content: 'check';
-        left: 5px;
-        color: $primary;
-        font-size: 14px !important;
+      .bi-icon {
+        @include muted('lighter');
       }
     }
 
-    &[disabled],
-    &[disabled] > * {
-      color: $grey--500 !important;
-      cursor: default !important;
+    .bi-icon {
+      font-size: 18px;
     }
   }
 

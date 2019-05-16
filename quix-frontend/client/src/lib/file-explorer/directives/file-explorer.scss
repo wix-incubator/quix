@@ -1,19 +1,21 @@
 @import '../../ui/assets/css/def/colors.def';
 
+$item-height: 35px;
+
 bi-file-explorer,
 bi-file-explorer-inner {
-  $hover-color: $grey--200;
-
   position: relative;
   display: block;
+
+  bi-dropdown {
+    bi-toggle {
+      height: $item-height;
+    }
+  }
 
   > ul > li {
     user-select: none;
     cursor: default !important;
-
-    .fe-menu-icon {
-      line-height: 33px;
-    }
   }
 
   ul.fe-folders {
@@ -35,25 +37,6 @@ bi-file-explorer-inner {
       }
 
       > .fe-item {
-        &:hover,
-        &.active,
-        &.ui-droppable-hover {
-          background-color: $hover-color;
-        }
-
-        &.active {
-          .fe-item-name {
-            font-weight: bold;
-          }
-        }
-
-        &.ui-draggable-dragging {
-          .fe-toggle,
-          .fe-menu-icon {
-            visibility: hidden;
-          }
-        }
-
         @for $i from 0 through 3 {
           &.fe-item-depth-#{$i} {
             padding-left: $i * 12px + 4px;
@@ -64,38 +47,19 @@ bi-file-explorer-inner {
   }
   
   &.fe-folder-mode-select {
-    ul.fe-files {
-      > li {
-        &:hover {
-          border-color: darken($hover-color, 30);
-        }
+    ul.fe-files > li,
+    ul.fe-folders > li > .fe-item {
+      transition: border-color .2s;
+      border-left: 2px solid transparent;
 
-        &.active {
-          background-color: transparent !important;
-          border-color: $primary !important;
-          font-weight: bold;
-  
-          .fe-icon {
-            color: $primary;
-          }
-        }
+      &:hover,
+      &.bi-active {
+        border-color: $primary;
       }
     }
   }
 
   ul.fe-files {
-    > li {
-      border-left: 4px solid transparent;
-
-      &:hover {
-        background-color: $hover-color;
-      }
-
-      &.ui-draggable-dragging {
-        border: 0;
-      }
-    }
-
     .fe-item {
       margin-left: 11px;
 
@@ -105,19 +69,10 @@ bi-file-explorer-inner {
         }
       }
 
-      a {
-        color: #e1e1e1;
-        text-decoration: none;
-      }
-
-      > span {
+     > span {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-      }
-
-      bi-file-explorer-transclude {
-        padding: 0 7px;
       }
     }
   }
@@ -125,7 +80,7 @@ bi-file-explorer-inner {
 
 .fe-item {
   padding-right: 5px;
-  height: 35px;
+  height: $item-height;
 
   > div {
     flex-grow: 1;
@@ -143,7 +98,6 @@ bi-file-explorer-inner {
   .fe-icon {
     margin-right: 4px;
     font-size: 18px;
-    color: $grey--600;
     vertical-align: text-bottom;
   }
 }

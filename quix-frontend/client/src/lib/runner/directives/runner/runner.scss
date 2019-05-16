@@ -32,8 +32,8 @@ bi-runner {
 
   .br-download-action {
     width: 30px;
-    height: 30px;
-    padding: 6px;
+    padding: 7px;
+    border-radius: 30px;
   }
 
   .br-tabs {
@@ -54,7 +54,7 @@ bi-runner {
       text-overflow: ellipsis;
       cursor: pointer;
 
-      &.active {
+      &.bi-active {
         color: $black;
         background-color: $white;
         border-bottom: $white;

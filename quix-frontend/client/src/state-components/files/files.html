@@ -101,11 +101,11 @@
     </div>
   </div>
 
-  <div class="bi-section-content bi-c-h">
-    <div class="bi-panel bi-c-h bi-fade-in" ng-if="vm.state.is('Content')" data-hook="files-content">
+  <div class="bi-section-content bi-c-h" ng-if="vm.state.is('Content')">
+    <div class="bi-panel bi-c-h bi-fade-in bi-theme--lighter" data-hook="files-content">
       <div class="bi-panel-content bi-c-h">
         <bi-tbl
-          class="bi-table--nav bi-c-h bi-grow bi-fade-in"
+          class="bi-table--nav bi-c-h bi-grow"
           fields="vm.fields"
           rows="vm.state.value().files"
           bt-options="::{stickyHeader: true, trackBy: 'id'}"

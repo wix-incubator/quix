@@ -3,18 +3,6 @@
 @import './def/panel.def';
 @import './def/action.def';
 
-@mixin bi-panel($header-bg-intensity, $header-bg-color, $content-bg-color, $border-color) {
-  @include panel($header-bg-color, $content-bg-color, $border-color);
-
-  #{$panel-header-class} {
-    @include action-color__deep($header-bg-intensity);
-  }
-}
-
 .bi-panel {
-  @include bi-panel(0, $white, $white, $default-border-color);
-}
-
-.bi-panel--grey {
-  @include bi-panel(300, $grey--200, $grey--50, $grey--300);
+  @include panel();
 }

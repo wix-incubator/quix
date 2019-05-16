@@ -7,7 +7,6 @@
   height: 300px;
   flex-direction: column;
   flex-basis: 300px;
-  background-color: $white;
   border-radius: 8px;
   align-items: center;
   justify-content: center;
@@ -17,7 +16,7 @@
     box-shadow: $default-box-shadow;
 
     i {
-      color: $primary !important;
+      color: $primary;
     }
   }
 
@@ -29,8 +28,7 @@
   i {
     transition: color .3s;
     margin: -10px 0 20px 0;
-    font-size: 140px;
-    color: $grey--500;
+    font-size: 140px !important;
   }
 
   span {

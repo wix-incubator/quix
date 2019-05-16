@@ -31,7 +31,7 @@ const openPopup = (html: string, scope, locals: Record<any, any> = {}) => {
 
   const element = inject('$compile')(`
     <div 
-      class="quix-popup bi-c-h"
+      class="quix-popup bi-c-h bi-theme--lighter"
       bi-maximizable="true"
       bm-options="::{offIcon: 'close'}"
       on-load="events.onLoad(instance)"

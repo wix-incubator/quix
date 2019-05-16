@@ -1,12 +1,12 @@
 <div class="bi-c bi-s-v">
-  <span
-    class="bi-action"
-    ng-class="{'bi-action--toggled': type === vm.selected}"
+  <i
+    class="bi-action bi-icon"
+    ng-class="{'bi-active': type === vm.selected}"
     ng-repeat="type in ::vm.types"
     ng-click="events.onSelect(type)"
     title="{{::type}}"
   >
-    <i class="bi-icon" >{{::{
+    {{::{
       table: 'table_chart',
       pie: 'pie_chart',
       chart: 'show_chart',
@@ -15,6 +15,6 @@
       sankey: 'sort',
       funnel: 'view_column',
       plan: 'info'
-    }[type]}}</i>
-  </span>
+    }[type]}}
+  </i>
 </div>

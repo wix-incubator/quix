@@ -4,6 +4,10 @@
 bi-tooltip {
   display: inline-flex;
 
+  .bd-content {
+    background-color: transparent !important;
+  }
+
   .bd-position--top {
     .bi-tooltip-content {
       margin-top: 0;
@@ -20,7 +24,7 @@ bi-tooltip {
 
   .bi-tooltip-content {
     position: relative;
-    margin-top: 8px;
+    margin-top: 16px;
     padding: 8px 14px;
     color: $white;
     font-size: 11px;
@@ -47,8 +51,8 @@ bi-tooltip {
       left: 0;
       right: 0;
       bottom: 0;
-      border-radius: 3px;
       background-color: $black;
+      border-radius: 3px;
       opacity: .8;
     }
 

@@ -1,8 +1,9 @@
 <div class="bi-align bi-s-h">
   <div class="bi-align bi-s-h" ng-repeat="item in collection">
     <i class="bi-icon--sm bi-muted" ng-if="$index > 0">keyboard_arrow_right</i>
+
     <span
-      ng-class="{'bi-action': $index < collection.length - 1}"
+      ng-class="{'bi-link': $index < collection.length - 1}"
       bi-html="renderItem(item, $index)"
       ng-click="$index < collection.length - 1 && events.onItemClick(item)"
     ></span>

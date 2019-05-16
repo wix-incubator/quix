@@ -5,13 +5,4 @@ quix-destination-picker {
   width: 500px;
   height: 300px;
   flex-direction: column;
-
-  bi-file-explorer {
-    padding: 12px;
-    background-color: $grey--50;
-
-    > * {
-      margin: 0 -12px;
-    }
-  }
 }

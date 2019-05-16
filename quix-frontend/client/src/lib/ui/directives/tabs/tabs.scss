@@ -14,7 +14,7 @@ bi-tabs-router {
       padding: 0 15px;
       cursor: pointer;
 
-      &.active {
+      &.bi-active {
         > * {
           color: $grey--800 !important;
         }
@@ -27,7 +27,7 @@ bi-tabs-router {
       height: 36px;
       border: 1px solid transparent;
 
-      &.active {
+      &.bi-active {
         border-color: $grey--300;
         border-top: 2px solid $warning;
         border-bottom-color: $grey--50;
@@ -57,7 +57,7 @@ bi-tabs-router {
       border-bottom: 2px solid transparent;
 
       &:hover,
-      &.active {
+      &.bi-active {
         border-bottom: 2px solid $warning;
       }
     }

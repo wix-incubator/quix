@@ -105,7 +105,7 @@ export default class Controller {
 
     if (!this.$transclude.isSlotFilled('folderIcon')) {
       html = inject('$compile')(`
-        <i class="fe-icon bi-icon bi-warning">folder</i>
+        <i class="fe-icon bi-icon">folder</i>
       `)(assign(scope.$new(), {folder}));
     } else {
       html = this.$transclude((_, s) => s.folder = itemToDef(folder), null, 'folderIcon');
@@ -140,18 +140,16 @@ export default class Controller {
             ng-disabled="::!events.onFileCreate"
             ng-click="events.onFileCreate && events.onFileCreate(type, folder)"
           >
-            <i class="bi-icon bi-success">note_add</i>
+            <i class="bi-icon">note_add</i>
             <span>New {{::type}}</span>
           </li>
-
-          <li class="bi-dropdown-separator"></li>
 
           <li 
             class="bi-align bi-space-h"
             ng-disabled="::!events.onFolderCreate"
             ng-click="events.onFolderCreate && events.onFolderCreate(folder)"
           >
-            <i class="bi-icon bi-warning">create_new_folder</i>
+            <i class="bi-icon">create_new_folder</i>
             <span>New folder</span>
           </li>
 
@@ -171,7 +169,7 @@ export default class Controller {
             ng-disabled="::!events.onFolderDelete || !vm.folder.canDelete(folder)"
             ng-click="events.onFolderDelete && vm.folder.canDelete(folder) && events.onFolderDelete(folder)"
           >
-            <i class="bi-icon bi-danger">delete</i>
+            <i class="bi-icon">delete</i>
             <span>Delete</span>
           </li>
         </ul>
