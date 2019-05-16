@@ -1,43 +1,5 @@
 /* your custom css */
 
-@import url("http://static.parastorage.com/services/third-party/fonts/Helvetica/fontFace.css") media-types;
-
-.nav-footer, .nav-footer div {
-    background: #ffffff;
-    border-top-color: #202020;
-    color: rgba(0, 0, 0, 0.6);
-}
-
-.projectTitle > small {
-}
-
-.fixedHeaderContainer header .headerTitleWithLogo {
-    font-family: Helvetica;
-    font-stretch: wider;
-    font-size: 35pt;
-    font-weight: lighter;
-    color: #ffffff;
-}
-
-.fixedHeaderContainer {
-    min-height: 50px;
-}
-.projectTitle {
-    color: #000000;
-    font-size: 250%;
-    line-height: 1em;
-}
-
-.nav-footer .sitemap h5, h4, h3, h2, h1 {
-    color: #000000;
-    text-decoration: strong;
- } 
-
-.nav-footer .sitemap a {
-   color: #fc3559;
-   text-decoration: none;
-}
-
 @media only screen and (min-device-width: 360px) and (max-device-width: 736px) {
 }
 
@@ -51,9 +13,4 @@
 }
 
 @media only screen and (min-width: 1500px) {
-}
-
-.nav-footer .sitemap a:hover, .nav-footer .sitemap a:focus {
-    color: #494e57;
-    font-weight: bold;
 }

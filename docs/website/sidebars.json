@@ -1,20 +1,10 @@
 {
-  "discover": {
-      "Getting Started": ["discover/getting_started", "discover/getting_started_step_1","discover/getting_started_step_2", "discover/getting_started_step_3", "discover/getting_started_step_4", "discover/getting_started_step_5"],
-      "Installation": ["discover/install", "discover/install_step_1", "discover/install_step_2", "discover/install_step_3", "discover/install_step_4", "discover/install_step_5"],
-      "Configuration": ["discover/config", "discover/config_step_1", "discover/config_step_2", "discover/config_step_3", "discover/config_step_4", "discover/config_step_5"],
-      "Deployment": ["discover/deploy", "discover/deploy_step_1", "discover/deploy_step_2", "discover/deploy_step_3", "discover/deploy_step_4", "discover/deploy_step_5"]
-    },
-  "use":{
-    "Basic Use": ["basic_use/intro","basic_use/graphs","basic_use/notebooks","basic_use/scheduled_jobs"],
-    "Advanced Use": ["advanced_use/roles_n_use_cases","advanced_use/for_qa","advanced_use/for_dev","advanced_use/for_ba","advanced_use/for_pm", "advanced_use/for_support"]
+  "docs": {
+    "Docusaurus": ["doc1"],
+    "First Category": ["doc2"],
+    "Second Category": ["doc3"]
   },
-  "develop":{
-    "Customization and Development": ["doc6"],
-    "API Reference": ["doc10"],
-    "Troubleshooting": ["doc7"]
-  },
-  "other": {
-    "Other": ["formatting","doc8", "doc9"]
+  "docs-other": {
+    "First Category": ["doc4", "doc5"]
   }
 }

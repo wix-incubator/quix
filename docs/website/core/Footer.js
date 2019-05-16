@@ -58,8 +58,9 @@ class Footer extends React.Component {
               rel="noreferrer noopener">
               Stack Overflow
             </a>
+            <a href="https://discordapp.com/">Project Chat</a>
             <a
-              href="https://twitter.com/WixEng"
+              href="https://twitter.com/"
               target="_blank"
               rel="noreferrer noopener">
               Twitter
@@ -67,11 +68,11 @@ class Footer extends React.Component {
           </div>
           <div>
             <h5>More</h5>
-            <a href="https://github.com/wix/quix">GitHub</a>
+            <a href={`${this.props.config.baseUrl}blog`}>Blog</a>
+            <a href="https://github.com/">GitHub</a>
             <a
               className="github-button"
               href={this.props.config.repoUrl}
-              data-size="large" data-show-count="true"
               data-icon="octicon-star"
               data-count-href="/facebook/docusaurus/stargazers"
               data-show-count="true"
