@@ -1,5 +1,5 @@
-<div ng-show="vm.visible">
-  <table ng-if="vm.enabled" class="bi-table bi-fade-in">
+<div class="bi-fade-in" ng-show="vm.visible">
+  <table ng-if="vm.enabled" class="bi-table">
     <thead
       ng-if="::options.dynamicFields"
       bi-tbl-header
@@ -17,6 +17,7 @@
       bi-table-header-options="::options"
       on-order-change="events.onOrderChange()"
     ></thead>
+
     <tbody ng-class="{'bi-tbl-fade-out': vm.loading}"></tbody>
   </table>
 
