@@ -1,12 +1,12 @@
 $grey--50: #FAFAFA;
 $grey--100: #F5F5F5;
-$grey--200: #EEEEEE;
-$grey--300: #E0E0E0;
-$grey--400: #BDBDBD;
-$grey--500: #9E9E9E;
-$grey--600: #757575;
-$grey--700: #616161;
-$grey--800: #424242;
+$grey--200: #ebebec;
+$grey--300: #d7d8da;
+$grey--400: #b8babe;
+$grey--500: #9a9da2;
+$grey--600: #686b73;
+$grey--700: #494e57;
+$grey--800: #353a44;
 $grey--900: #1d242f;
 
 $blue-grey--50: #ECEFF1;
@@ -59,22 +59,22 @@ $lighter-muted-color: $grey--600;
 $lighter-disabled-color: $grey--400;
 
 $light-bg: $grey--100;
-$light-hover-bg: $grey--200;
-$light-active-bg: $grey--200;
+$light-hover-bg: $grey--300;
+$light-active-bg: $grey--300;
 $light-color: $grey--900;
 $light-muted-color: $grey--600;
 $light-disabled-color: $grey--600;
 
-$dark-bg: $blue-grey--800;
-$dark-hover-bg: #3B404A;
-$dark-active-bg: #3B404A;
+$dark-bg: $grey--800;
+$dark-hover-bg: lighten($dark-bg, 2);
+$dark-active-bg: lighten($dark-bg, 2);
 $dark-color: $grey--200;
 $dark-muted-color: $grey--500;
 $dark-disabled-color: $grey--500;
 
-$darker-bg: #1d242f;
-$darker-hover-bg: $blue-grey--800;
-$darker-active-bg: $blue-grey--800;
-$darker-color: $grey--300;
+$darker-bg: $grey--900;
+$darker-hover-bg: $grey--800;
+$darker-active-bg: $grey--800;
+$darker-color: $grey--200;
 $darker-muted-color: $grey--500;
 $darker-disabled-color: $grey--500;

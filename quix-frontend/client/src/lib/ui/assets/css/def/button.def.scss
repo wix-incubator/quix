@@ -30,7 +30,7 @@
   }
 }
 
-@mixin button-color($bgColor: $blue-grey--200, $color: $white) {
+@mixin button-color($bgColor: $grey--200, $color: $white) {
   border: none;
   background-color: $bgColor;
   color: $color !important;
@@ -46,7 +46,7 @@
   font-size: $font-size;
 }
 
-@mixin button($bgColor: $blue-grey--200, $color: $white) {
+@mixin button($bgColor: $grey--200, $color: $white) {
   @extend %button;
   @include button-color($bgColor, $color);
   @include button-size();

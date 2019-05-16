@@ -3,9 +3,8 @@
 @import '../border.def';
 
 %app-header {
-  @include header(54px);
+  @include header(54px, 12px);
 
-  .bi-app-logo,
   .bi-app-user-logo {
     width: 36px;
     height: 36px;
@@ -16,5 +15,10 @@
     @include header-title(22px, 200);
 
     font-family: bi-ui;
+
+    .bi-app-logo {
+      width: 24px;
+      margin-right: 8px;
+    }
   }
 }

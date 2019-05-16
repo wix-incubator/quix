@@ -30,7 +30,7 @@
   }
 }
 
-@mixin alert($icon: 'wb_incandescent', $iconColor: $warning, $bgColor: $blue-grey--50) {
+@mixin alert($icon: 'wb_incandescent', $iconColor: $warning, $bgColor: $grey--50) {
   @extend %alert;
 
   color: darken($bgColor, 50) !important;
