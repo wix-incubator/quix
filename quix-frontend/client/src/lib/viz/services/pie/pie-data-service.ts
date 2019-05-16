@@ -35,6 +35,7 @@ export class ChartData extends VizData<IInputItem, IMeta, IData, IFilterData> {
 
         res[serieIndexes[key]].data.push({ name: item[filter.x], value: item[yField]});
       });
+
       return res;
     }, []);
 

@@ -10,7 +10,7 @@ function getVizTypes({values, all}: IFieldCategories, types: string[] = []): str
   const res = ['table'];
 
   if (values.length > 0 && all.length > 1) {
-    res.push('chart', 'pie');
+    res.push('chart');
   }
 
   return types.length ? intersection(types, res) : res;

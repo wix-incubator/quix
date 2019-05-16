@@ -8,7 +8,7 @@ import { default as essos } from '../theme';
 
 echarts.registerTheme('essos', essos);
 
-export class ChartRenderer {
+export class PieRenderer {
   private chart = null;
 
   constructor(private readonly container) {
@@ -22,14 +22,9 @@ export class ChartRenderer {
   public draw(data: any[], filteredMeta: IMeta, meta: IMeta, filter: IFilterData) {
     const size = Math.min(this.container.width(),  this.container.height());
 
-    data.forEach((series, i) => {
-      const slice = 100 / (data.length * 2);
-      series.radius = size / (data.length * 4)
-      series.center = [`${(slice * (2 * i + 1))}%`, '50%'];
-    })
-
     this.chart = echarts.init(this.container.get(0), 'essos');
     this.chart.clear();
+
     this.chart.setOption({
       title: {
         text: null
@@ -39,7 +34,21 @@ export class ChartRenderer {
         data: data.map(series => series.name),
         bottom: true
       },
-      series: data
+      series: data.map((series, i) => {
+        const slice = 100 / (data.length * 2);
+
+        return {
+          ...series,
+          type: 'pie',
+          radius: size / (data.length * 4),
+          center: [`${(slice * (2 * i + 1))}%`, '50%'],
+          animationType: 'scale',
+          animationEasing: 'elasticOut',
+          animationDelay() {
+            return Math.random() * 200;
+          },
+        }
+      })
     });
 
     this.chart.resize();

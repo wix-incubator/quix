@@ -5,16 +5,16 @@
   on-load="events.onMaximizableLoad(instance)"
 >
   <div class="bi-r bi-s-h--x2">
-    <bi-viz-chart-filter
+    <bi-viz-pie-filter
       class="bi-scroll"
       ng-if="::options.filter"
       ng-model="viz.getFilter().data"
       meta="viz.getFilter().meta"
       on-change="events.onFilterChange()"
-    ></bi-viz-chart-filter>
+    ></bi-viz-pie-filter>
 
     <div class="bvp-content bi-c bi-grow">
-      <div class="bvp-container bi-c bi-grow" data-hook="bvc-container"></div>
+      <div class="bvp-container bi-c bi-grow" data-hook="bvp-container"></div>
     </div>
   </div>
 </div>

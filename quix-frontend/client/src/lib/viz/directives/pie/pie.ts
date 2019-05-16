@@ -1,7 +1,7 @@
 import { initNgScope, inject } from '../../../core';
-import {ChartRenderer} from './pie-renderer';
+import {PieRenderer} from './pie-renderer';
 import {IInputItem} from '../../services/viz-conf';
-import {ChartViz} from '../../services/pie/pie-viz-service';
+import {ChartViz} from '../../services/chart/chart-viz-service';
 
 import template from './pie.html';
 import './pie.scss';
@@ -19,7 +19,7 @@ export interface IScope extends angular.IScope {
 }
 
 function createRenderer(scope: IScope, element) {
-  return new ChartRenderer(element.find('.bvp-container'));
+  return new PieRenderer(element.find('.bvp-container'));
 }
 
 function load(scope: IScope, element) {
