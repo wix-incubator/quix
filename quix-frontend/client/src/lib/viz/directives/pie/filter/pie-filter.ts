@@ -1,4 +1,4 @@
-import {initNgScope, createNgModel} from '@wix/bi-core';
+import {initNgScope, createNgModel} from '../../../../core';
 import {IFilterData, IFilterMeta} from '../../../services/chart/chart-conf';
 
 import * as template from './pie-filter.html';
@@ -14,7 +14,6 @@ export interface IScope {
 }
 
 export default () => {
-  console.log(1)
   return {
     restrict: 'E',
     template,
