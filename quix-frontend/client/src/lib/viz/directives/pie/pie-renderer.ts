@@ -20,14 +20,14 @@ export class ChartRenderer {
   }
 
   public draw(data: any[], filteredMeta: IMeta, meta: IMeta, filter: IFilterData) {
-    const width = this.container.width();
-    const height = this.container.height();
-    const size = Math.min(width, height);
-    data.map((series, i) => {
+    const size = Math.min(this.container.width(),  this.container.height());
+
+    data.forEach((series, i) => {
       const slice = 100 / (data.length * 2);
       series.radius = size / (data.length * 4)
-      series.center = [`${(slice * (2*i+1))}%`, '50%'];
+      series.center = [`${(slice * (2 * i + 1))}%`, '50%'];
     })
+
     this.chart = echarts.init(this.container.get(0), 'essos');
     this.chart.clear();
     this.chart.setOption({
@@ -41,6 +41,7 @@ export class ChartRenderer {
       },
       series: data
     });
+
     this.chart.resize();
   }
 

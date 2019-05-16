@@ -26,6 +26,12 @@
   .bi-hover {
     @include hover('lighter');
   }
+
+    .bi-theme--lighter {
+    .bi-action {
+      @include action('lighter');
+    }
+  }
 }
 
 // light
@@ -40,6 +46,20 @@
   
   .bi-hover {
     @include hover('light');
+  }
+
+  .bi-theme--lighter {
+    .bi-muted {
+      @include muted('lighter');
+    }
+    
+    .bi-active {
+      @include active('lighter');
+    }
+    
+    .bi-hover {
+      @include hover('lighter');
+    }
   }
 }
 

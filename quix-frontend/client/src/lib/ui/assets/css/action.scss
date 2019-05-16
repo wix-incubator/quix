@@ -2,6 +2,12 @@
 @import './def/action.def';
 @import './def/button.def';
 
+.bi-theme--lighter {
+  .bi-action {
+    @include action('lighter');
+  }
+}
+
 .bi-theme--light {
   .bi-action {
     @include action('light');
@@ -11,12 +17,6 @@
     .bi-action {
       @include action('lighter');
     }
-  }
-}
-
-.bi-theme--lighter {
-  .bi-action {
-    @include action('lighter');
   }
 }
 

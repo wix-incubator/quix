@@ -31,7 +31,7 @@
             helper: 'clone',
             distance: 5,
             scroll: true,
-            appendTo: 'body',
+            appendTo: 'parent',
             containment: options.draggable ? 'window' : vm.container
           }"
           ng-model="folder"
@@ -99,7 +99,7 @@
         helper: 'clone',
         distance: 5,
         scroll: true,
-        appendTo: 'body',
+        appendTo: 'parent',
         containment: options.draggable ? 'window' : vm.container
       }"
       ng-model="file"
