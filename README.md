@@ -5,25 +5,25 @@
 
 Quix is an easy-to-use [Presto](https://github.com/prestosql/presto)-based notebook manager and a business intelligence and analytics tool. It provides a shared space for your company's BI insights
 
+## Features
+### Notebook/notes management
+- Organize queries in notebooks
+- Organize notebooks in folders
+
 ![](docs/screens/management.gif)
 
-## What can I do with it?
+### Run presto queries
+![](docs/screens/presto.gif)
 
-Quix is flexible enough to be used in an array of applications on any scale. It can serve as a:
+### Visualize results
+![](docs/screens/chart.gif)
 
-- Shared space for your company's BI insights
-- Single point of truth for all team members on public or proprietary data
-- Tool to generate visuals (like charts) based on your data
-- A handy way to store and share insights based on query results
+### Explore the database
+![](docs/screens/db.gif)
 
-## Core features
+### Search accross all users
+![](docs/screens/search.gif)
 
-* Presto notes
-* Notebooks
-* Folders
-* DB-tree
-* Smart Editor
-<!-- TODO Full text search -->
 
 ## Requirements
 * [Docker](https://www.docker.com/products) (engine, enterprise or desktop edition, whichever works for you)
@@ -84,7 +84,7 @@ Running quix with `docker-compose` should "just work", but when deploying quix, 
 
 ## Architecture
 
-![](docs/architecture.png)
+![](docs/screens/architecture.png)
 
 Quix consists of three main elements:
 
