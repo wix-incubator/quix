@@ -33,8 +33,8 @@ Quix is an intuitive notebook manager based on [Presto](https://github.com/prest
 ![](docs/screens/search.gif)
 
 
-## Installation and configuration
-See [instructions](docs/docs/installation.md)
+## Installation
+See [installation](docs/docs/installation.md)
 
 ## Architecture
 See [architecture](docs/docs/architecture.md)
