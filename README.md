@@ -3,7 +3,7 @@
 > :exclamation: Please note **that this is a beta version** of Quix which is still undergoing final testing before its official release.
 
 
-Quix is an intuitive notebook manager based on [Presto](https://github.com/prestosql/presto) and shared space for your company's BI insights.
+Quix is an intuitive notebook manager based on [Presto](https://github.com/prestosql/presto) and a shared space for your company's BI insights.
 
 ## Features
 - User management via Google Sign-In
