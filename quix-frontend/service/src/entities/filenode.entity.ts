@@ -29,7 +29,7 @@ export class DbFileTreeNode {
   id!: string;
 
   @Index()
-  @Column(dbConf.owner)
+  @Column(dbConf.shortTextField)
   owner!: string;
 
   @UpdateDateColumn(dbConf.dateUpdated)

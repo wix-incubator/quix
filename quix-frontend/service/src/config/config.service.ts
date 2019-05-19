@@ -12,7 +12,7 @@ export abstract class ConfigService {
   constructor() {
     this.env = getEnv();
     /* tslint:disable-next-line */
-    console.log(`****** Current Enviorment:: DbType:${this.env.DbType}/AuthType:${!this.env.AuthType} ******`);
+    console.log(`****** Current Enviorment:: DbType:${this.env.DbType}/AuthType:${this.env.AuthType} ******`);
   }
 
   getEnvSettings(): EnvSettings {

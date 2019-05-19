@@ -2,15 +2,17 @@ import {Strategy as BaseStrategy} from 'passport-strategy';
 import {Request} from 'express';
 import {UserProfile} from './types';
 import {PassportStrategy} from '@nestjs/passport';
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {ConfigService} from 'config';
 
 const defaultUser: UserProfile = {
   email: 'user@quix.com',
   id: '1',
+  name: 'Default User',
 };
 
 class PassportFakeStrategy extends BaseStrategy {
+  private readonly logger = new Logger(PassportFakeStrategy.name);
   public name: string = 'fake';
   private cookieName: string;
   constructor(options: {cookieName: string}) {
@@ -19,17 +21,20 @@ class PassportFakeStrategy extends BaseStrategy {
   }
 
   authenticate(req: Request) {
-    if (req.cookies[this.cookieName]) {
+    const cookies = req.cookies || {};
+    if (cookies[this.cookieName]) {
       try {
         const user = JSON.parse(
-          Buffer.from(req.cookies[this.cookieName], 'base64').toString(),
+          Buffer.from(cookies[this.cookieName], 'base64').toString(),
         );
 
         this.success(user);
       } catch (e) {
+        this.logger.verbose(`Can't parse cookie, using default user.`);
         this.success(defaultUser);
       }
     }
+    this.logger.verbose('No cookie, using default user.');
     this.success(defaultUser);
   }
 }

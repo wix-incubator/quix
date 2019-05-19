@@ -13,7 +13,7 @@ export class DbAction<T = IEventData, N extends string = string>
   @Column(dbConf.json)
   data!: T;
 
-  @Column(dbConf.tinytext)
+  @Column(dbConf.shortTextField)
   user?: string;
 
   @Index()

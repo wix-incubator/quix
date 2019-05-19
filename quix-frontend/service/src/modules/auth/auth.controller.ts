@@ -5,24 +5,25 @@ import {Response} from 'express';
 import {AuthService} from './auth.service';
 import {UserProfile} from './types';
 import {User} from './user-decorator';
+import {UsersService} from './users.service';
 
-class BaseAuthController {
-  @Get('user')
-  @UseGuards(AuthGuard())
-  async getUser(@User() user: UserProfile) {
-    return user;
-  }
-}
 @Controller('/api/')
-export class AuthController extends BaseAuthController {
+export class AuthController {
   private readonly logger = new Logger(AuthController.name);
   private readonly envSettings: EnvSettings;
   constructor(
-    private authService: AuthService,
-    private configService: ConfigService,
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+    private readonly userService: UsersService,
   ) {
-    super();
     this.envSettings = this.configService.getEnvSettings();
+  }
+
+  @Get('user')
+  @UseGuards(AuthGuard())
+  async getUser(@User() user: UserProfile) {
+    await this.userService.doUserLogin(user);
+    return user;
   }
 
   @Get('authenticate')
@@ -34,6 +35,7 @@ export class AuthController extends BaseAuthController {
         response.cookie(this.envSettings.AuthCookieName, token, {
           maxAge: this.envSettings.CookieAge,
         });
+        await this.userService.doUserLogin(up);
         response.json(up);
         return;
       }
@@ -44,6 +46,3 @@ export class AuthController extends BaseAuthController {
     }
   }
 }
-
-@Controller('/api/')
-export class FakeAuthController extends BaseAuthController {}

@@ -20,10 +20,10 @@ export class DbNotebook implements INotebook {
   @PrimaryColumn(dbConf.idColumn)
   id!: string;
 
-  @Column(dbConf.tinytext)
+  @Column(dbConf.shortTextField)
   name!: string;
 
-  @Column(dbConf.tinytext)
+  @Column(dbConf.shortTextField)
   owner!: string;
 
   @UpdateDateColumn(dbConf.dateUpdated)
