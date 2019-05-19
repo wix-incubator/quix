@@ -11,7 +11,7 @@ Quix is an intuitive notebook manager based on [Presto](https://github.com/prest
   - Manage queries (notes) in notebooks
   - Manage notebooks in nested folders
 - [Run](#Run) Presto queries 
-- [Explore DB](#Explore) - use the DB tree to quickly explore your data sources
+- [Explore DB](#Explore) - use the DB tree to explore your data sources
 - [Visualize](#Visualize) - quickly plot time and bar series (more visualizations to follow)
 - Search all queries accross all users
 - Share folders, notebook and notes
