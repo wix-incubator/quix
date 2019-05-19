@@ -10,9 +10,13 @@ import {InjectRepository} from '@nestjs/typeorm';
 export class SearchService implements ISearch {
   constructor(@InjectRepository(DbNote) private repo: Repository<DbNote>) {}
 
-  async search(content: string): Promise<DbNote[]> {
+  async search(
+    content: string,
+    total = 50,
+    offset = 0,
+  ): Promise<[DbNote[], number]> {
     if (!content) {
-      return [];
+      return [[], 0];
     }
 
     const searchQuery = parse(content);
@@ -45,12 +49,15 @@ export class SearchService implements ISearch {
 
       const whereSql = where.join(' AND ');
 
-      q = q.where(whereSql, whereArgs);
+      q = q
+        .take(total)
+        .skip(offset)
+        .where(whereSql, whereArgs);
 
-      const results = await q.getMany();
+      const results = await q.getManyAndCount();
       return results;
     }
 
-    return [];
+    return [[], 0];
   }
 }

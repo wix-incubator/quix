@@ -34,7 +34,6 @@ class PassportFakeStrategy extends BaseStrategy {
         this.success(defaultUser);
       }
     }
-    this.logger.verbose('No cookie, using default user.');
     this.success(defaultUser);
   }
 }
