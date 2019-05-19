@@ -60,7 +60,7 @@ function showDialog(scope, htmlOrOptions: string | IDialogOptions) {
     options = {
       ...htmlOrOptions,
       html:  `
-        <dialog>
+        <dialog class="bi-theme--lighter">
           <dialog-title class="bi-align bi-s-h">
             ${htmlOrOptions.icon ? `
             <i
@@ -70,7 +70,7 @@ function showDialog(scope, htmlOrOptions: string | IDialogOptions) {
           ` : ''}
             <span>${htmlOrOptions.title}</span>
           </dialog-title>
-          ${htmlOrOptions.subTitle ? `<dialog-subtitle>${htmlOrOptions.subTitle}</dialog-subtitle>` : ''}
+          ${htmlOrOptions.subTitle ? `<dialog-subtitle class="bi-muted">${htmlOrOptions.subTitle}</dialog-subtitle>` : ''}
           <dialog-content>
             <div class="bi-align bi-s-h">
               <div>${htmlOrOptions.html}</div>

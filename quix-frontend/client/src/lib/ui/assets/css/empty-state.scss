@@ -24,31 +24,36 @@
 }
 
 .bi-theme--lighter {
-  .bi-empty-state {
+  .bi-empty-state,
+  .bi-empty-state--loading {
     @include muted('lighter');
   }
 }
 
 .bi-theme--light {
-  .bi-empty-state {
+  .bi-empty-state,
+  .bi-empty-state--loading {
     @include muted('light');
   }
 
   .bi-theme--lighter {
-    .bi-empty-state {
+    .bi-empty-state,
+    .bi-empty-state--loading {
       @include muted('lighter');
     }
   }
 }
 
 .bi-theme--dark {
-  .bi-empty-state {
+  .bi-empty-state,
+  .bi-empty-state--loading {
     @include muted('dark');
   }
 }
 
 .bi-theme--darker {
-  .bi-empty-state {
+  .bi-empty-state,
+  .bi-empty-state--loading {
     @include muted('darker');
   }
 }
