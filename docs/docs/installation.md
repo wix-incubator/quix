@@ -2,7 +2,7 @@
 * [Docker](https://www.docker.com/products)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
-**N.B.** Quix relies on [Presto](https://prestosql.io/), which is included with the Docker container in this repository, but for the **demo purposes** only. To work with real data, it must be accessible via a Presto API URL (more on this in [Configuring](#Configuration)).
+**N.B.** Quix relies on [Presto](https://prestosql.io/), which is included with the Docker container in this repository, but for the **demo purposes** only. To work with real data, it must be accessible via a Presto API URL (more on this in [Configuration](#Configuration)).
 
 ## Setup and running
 Run Docker Compose:
