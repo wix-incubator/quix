@@ -40,7 +40,7 @@ bi-tbl {
       }
 
       tr:first-child td {
-        border-top: 0;
+        border-top: 1px solid transparent;
       }
     }
   }
@@ -77,14 +77,15 @@ bi-tbl {
     $header-height: 32px;
 
     padding-top: $header-height !important;
-    background-color: $grey--100;
-    border: 1px solid $default-border-color;
+    background-color: $grey--200;
+    border: 1px solid $grey--300;
     overflow: hidden;
 
     > div {
       display: flex;
       flex-direction: column;
       flex-grow: 1;
+      border-top: 2px solid $grey--300;
       background-color: $white;
     }
 
@@ -104,8 +105,10 @@ bi-tbl {
         &:not(:first-child) > .bi-table-th-content > span {
           margin-left: -8px;
           padding-left: 8px;
-          border-left: 1px solid $default-border-color !important;
+          border-left: 1px solid $grey--300 !important;
         }
+
+        border-bottom: none;
       }
 
       .bi-table-th-content {
@@ -123,7 +126,7 @@ bi-tbl {
     table > tbody {
       > tr {
         &:nth-child(even) {
-          background-color: $grey--50;
+          background-color: $grey--100;
         }
 
         &:nth-child(odd) {
@@ -131,15 +134,16 @@ bi-tbl {
         }
 
         &:last-child {
-          border-bottom: 1px solid $default-border-color;
+          border-bottom: 1px solid $grey--300;
         }
 
         > td {
           padding: 5px 8px !important;
+          border-top: 1px solid $grey--300;
           font-size: 12px;
 
           &:not(:first-child) {
-            border-left: 1px solid $default-border-color;
+            border-left: 1px solid $grey--300;
           }
 
           a:visited {
