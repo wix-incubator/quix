@@ -3,9 +3,12 @@ import {Repository} from 'typeorm';
 import {DbNote} from '../../entities';
 import {isValidQuery, parse} from './parser';
 import {ISearch} from './types';
+import {Injectable} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
 
-export class Search implements ISearch {
-  constructor(private repo: Repository<DbNote>) {}
+@Injectable()
+export class SearchService implements ISearch {
+  constructor(@InjectRepository(DbNote) private repo: Repository<DbNote>) {}
 
   async search(content: string): Promise<DbNote[]> {
     if (!content) {

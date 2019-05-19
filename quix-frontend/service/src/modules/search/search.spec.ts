@@ -6,12 +6,12 @@ import uuid from 'uuid/v4';
 import {NoteType} from 'shared/entities/note';
 import {ConfigService, ConfigModule} from 'config';
 import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from 'entities';
-import {SearchController} from './search.controller';
 import {SearchModule} from './search.module';
+import {SearchService} from './search';
 
 describe('Search', () => {
   let module: TestingModule;
-  let searchCtrl: SearchController;
+  let searchService: SearchService;
   let noteRepo: Repository<DbNote>;
   let notebookRepo: Repository<DbNotebook>;
   const defaultUser = 'foo@wix.com';
@@ -37,7 +37,7 @@ describe('Search', () => {
       exports: [],
     }).compile();
 
-    searchCtrl = module.get(SearchController);
+    searchService = module.get(SearchService);
     noteRepo = module.get(getRepositoryToken(DbNote));
     notebookRepo = module.get(getRepositoryToken(DbNotebook));
   });
@@ -85,7 +85,7 @@ describe('Search', () => {
   };
 
   it('should return empty array for empty content', async () => {
-    const result = await searchCtrl.doSearch('');
+    const result = await searchService.search('');
     expect(result).toHaveLength(0);
   });
 
@@ -93,8 +93,8 @@ describe('Search', () => {
     const notebook = await createNotebook();
     const note = await createNote(notebook.id);
 
-    const result = await searchCtrl.doSearch(`user:${defaultUser}`);
-    const badResult = await searchCtrl.doSearch('user: foo@wix.com');
+    const result = await searchService.search(`user:${defaultUser}`);
+    const badResult = await searchService.search('user: foo@wix.com');
 
     expect(result[0].id).toBe(note.id);
     expect(badResult).toHaveLength(0);
@@ -110,9 +110,9 @@ describe('Search', () => {
     });
 
     await noteRepo.save(note2);
-    const result = await searchCtrl.doSearch(`someTable`);
-    const result2 = await searchCtrl.doSearch(`someOtherTable`);
-    const badResult = await searchCtrl.doSearch('randomKeyword');
+    const result = await searchService.search(`someTable`);
+    const result2 = await searchService.search(`someOtherTable`);
+    const badResult = await searchService.search('randomKeyword');
 
     expect(result[0].id).toBe(note.id);
     expect(result2[0].id).toBe(note2.id);
@@ -129,8 +129,8 @@ describe('Search', () => {
     });
 
     await noteRepo.save(note2);
-    const result = await searchCtrl.doSearch(`someCa`);
-    const badResult = await searchCtrl.doSearch('randomKeyword');
+    const result = await searchService.search(`someCa`);
+    const badResult = await searchService.search('randomKeyword');
 
     expect(result).toHaveLength(2);
     expect(badResult).toHaveLength(0);
@@ -145,7 +145,7 @@ describe('Search', () => {
       type: NoteType.PRESTO,
     });
 
-    const result = await searchCtrl.doSearch('type:presto');
+    const result = await searchService.search('type:presto');
 
     expect(result).toMatchObject([expect.objectContaining({id: note2.id})]);
   });
@@ -164,7 +164,7 @@ describe('Search', () => {
       owner: secondUser,
       type: 'python' as any,
     });
-    const result = await searchCtrl.doSearch(`user:${secondUser} type:python`);
+    const result = await searchService.search(`user:${secondUser} type:python`);
 
     expect(result).toMatchObject([expect.objectContaining({id: note3.id})]);
   });
@@ -178,8 +178,8 @@ describe('Search', () => {
       content: 'select col1, col2, col3 from foo where col2 = 1',
     });
 
-    const result = await searchCtrl.doSearch(`col1 = 1`);
-    const fullResult = await searchCtrl.doSearch(`"col1 = 1"`);
+    const result = await searchService.search(`col1 = 1`);
+    const fullResult = await searchService.search(`"col1 = 1"`);
 
     expect(result).toHaveLength(2);
     expect(fullResult).toMatchObject([expect.objectContaining({id: note.id})]);

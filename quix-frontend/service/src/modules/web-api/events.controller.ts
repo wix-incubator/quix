@@ -1,7 +1,7 @@
 import {Body, Controller, Post, UsePipes, UseGuards} from '@nestjs/common';
 import {DefaultAction} from 'shared/entities/common/common-types';
-import {BaseActionValidation} from './base-action-validation';
-import {QuixEventBus} from './quix-event-bus';
+import {BaseActionValidation} from '../event-sourcing/base-action-validation';
+import {QuixEventBus} from '../event-sourcing/quix-event-bus';
 import {User, UserProfile} from 'modules/auth';
 import {AuthGuard} from '@nestjs/passport';
 
