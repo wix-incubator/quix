@@ -23,7 +23,7 @@ To access Quix, navigate to:
 `http://localhost:3000`
 
 ## Configuration
-Most of the configuration you'll need is done in the [.env](../../.env) configuration file. By default, Quix works with a demo Presto instance that runs inside Docker Compose. To work with your real Presto DB, change the `PRESTO_API` URL.
+Most of the configuration you'll need is done in the [.env](../../.env) configuration file.
 
 #### Presto
 By default, Quix works with demo Presto instance that runs inside Docker Compose. <br />

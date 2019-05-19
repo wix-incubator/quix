@@ -151,7 +151,7 @@ class Index extends React.Component {
             content: 'Via Google Sign-In',
             image: `${baseUrl}img/undraw_react.svg`,
             imageAlign: 'top',
-            title: 'User management',
+            title: 'Multi-ser web application',
           },
           {
             content: 'Manage queries (notes) in notebooks and notebooks in nested folders',
@@ -184,7 +184,7 @@ class Index extends React.Component {
             title: 'Search',
           },
           {
-            content: 'Search all queries accross all users',
+            content: 'Share folders, notebooks and notes',
             image: `${baseUrl}img/undraw_operating_system.svg`,
             imageAlign: 'top',
             title: 'Share',
