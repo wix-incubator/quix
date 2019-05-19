@@ -145,7 +145,7 @@ class Index extends React.Component {
     );
 
     const MainFeatures = () => (
-      <Block layout="fourColumn">
+      <Block layout="threeColumn">
         {[
           {
             content: 'Via Google Sign-In',
@@ -154,30 +154,30 @@ class Index extends React.Component {
             title: 'Multi-user web application',
           },
           {
-            content: 'Manage queries (notes) in notebooks and notebooks in nested folders',
+            content: 'Manage your notebooks in nested folders',
             image: `${baseUrl}img/undraw_folder.svg`,
             imageAlign: 'top',
             title: 'Organize',
           },
           {
-            content: 'Run Presto queries',
+            content: 'Run Presto notes',
             image: `${baseUrl}img/undraw_media_player.svg`,
             imageAlign: 'top',
             title: 'Run',
-          },
-          {
-            content: 'Use the DB tree to quickly explore your data sources',
-            image: `${baseUrl}img/undraw_operating_system.svg`,
-            imageAlign: 'top',
-            title: 'Explore',
           },
         ]}
       </Block>
     );
 
     const MoreFeatures = () => (
-      <Block layout="threeColumn">
+      <Block layout="fourColumn">
         {[
+          {
+            content: 'Use the DB tree to quickly explore your data sources',
+            image: `${baseUrl}img/undraw_operating_system.svg`,
+            imageAlign: 'top',
+            title: 'Explore',
+          },
           {
             content: 'Quickly plot time and bar series (more visualizations to follow)',
             image: `${baseUrl}img/undraw_operating_system.svg`,
