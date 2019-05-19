@@ -148,16 +148,46 @@ class Index extends React.Component {
       <Block layout="fourColumn">
         {[
           {
-            content: 'This is the content of my feature',
+            content: 'Via Google Sign-In',
             image: `${baseUrl}img/undraw_react.svg`,
             imageAlign: 'top',
-            title: 'Feature One',
+            title: 'User management',
           },
           {
-            content: 'The content of my second feature',
+            content: 'Manage queries (notes) in notebooks and notebooks in nested folders',
             image: `${baseUrl}img/undraw_operating_system.svg`,
             imageAlign: 'top',
-            title: 'Feature Two',
+            title: 'Organize',
+          },
+          {
+            content: 'Run Presto queries',
+            image: `${baseUrl}img/undraw_operating_system.svg`,
+            imageAlign: 'top',
+            title: 'Run',
+          },
+          {
+            content: 'Use the DB tree to quickly explore your data sources',
+            image: `${baseUrl}img/undraw_operating_system.svg`,
+            imageAlign: 'top',
+            title: 'Explore',
+          },
+          {
+            content: 'Quickly plot time and bar series (more visualizations to follow)',
+            image: `${baseUrl}img/undraw_operating_system.svg`,
+            imageAlign: 'top',
+            title: 'Visualize',
+          },
+          {
+            content: 'Search all queries accross all users',
+            image: `${baseUrl}img/undraw_operating_system.svg`,
+            imageAlign: 'top',
+            title: 'Search',
+          },
+          {
+            content: 'Search all queries accross all users',
+            image: `${baseUrl}img/undraw_operating_system.svg`,
+            imageAlign: 'top',
+            title: 'Share',
           },
         ]}
       </Block>

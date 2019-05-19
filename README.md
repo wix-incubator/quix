@@ -6,15 +6,15 @@
 Quix is an intuitive notebook manager based on [Presto](https://github.com/prestosql/presto) and a shared space for your company's BI insights.
 
 ## Features
-- User management via Google Sign-In
-- Notebook/notes [management](#Organize)
-  - Organize queries (notes) in notebooks
-  - Organize notebooks in nested folders
-- Presto queries [execution](#Run)
-- DB exploration - use the DB tree to quickly [explore](#Explore) your data sources
-- Visualization - quickly [plot](#Visualize) time and bar series (more visualizations to follow)
+- Multi-user web application (via Google Sign-In)
+- [Organize](#Organize)
+  - Manage queries (notes) in notebooks
+  - Manage notebooks in nested folders
+- [Run](#Run) Presto queries 
+- [Explore DB](#Explore) - use the DB tree to quickly explore your data sources
+- [Visualize](#Visualize) - quickly plot time and bar series (more visualizations to follow)
 - Search all queries accross all users
-- Shareable folders, notebook and notes
+- Share folders, notebook and notes
 
 
 #### Organize
