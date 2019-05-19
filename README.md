@@ -26,7 +26,7 @@ Quix is an easy-to-use [Presto](https://github.com/prestosql/presto)-based noteb
 
 
 ## Installation and configuration
-See detailed [instructions](docs/installation.md)
+See detailed [instructions](docs/docs/installation.md)
 
 ## Architecture
 
