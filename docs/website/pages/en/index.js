@@ -144,24 +144,24 @@ class Index extends React.Component {
       </Block>
     );
 
-    const Features = () => (
+    const MainFeatures = () => (
       <Block layout="fourColumn">
         {[
           {
             content: 'Via Google Sign-In',
-            image: `${baseUrl}img/undraw_react.svg`,
+            image: `${baseUrl}img/undraw_profile_pic.svg`,
             imageAlign: 'top',
             title: 'Multi-user web application',
           },
           {
             content: 'Manage queries (notes) in notebooks and notebooks in nested folders',
-            image: `${baseUrl}img/undraw_operating_system.svg`,
+            image: `${baseUrl}img/undraw_folder.svg`,
             imageAlign: 'top',
             title: 'Organize',
           },
           {
             content: 'Run Presto queries',
-            image: `${baseUrl}img/undraw_operating_system.svg`,
+            image: `${baseUrl}img/undraw_media_player.svg`,
             imageAlign: 'top',
             title: 'Run',
           },
@@ -171,6 +171,13 @@ class Index extends React.Component {
             imageAlign: 'top',
             title: 'Explore',
           },
+        ]}
+      </Block>
+    );
+
+    const MoreFeatures = () => (
+      <Block layout="threeColumn">
+        {[
           {
             content: 'Quickly plot time and bar series (more visualizations to follow)',
             image: `${baseUrl}img/undraw_operating_system.svg`,
@@ -226,7 +233,8 @@ class Index extends React.Component {
       <div>
         <HomeSplash siteConfig={siteConfig} language={language} />
         <div className="mainContainer">
-          <Features />
+          <MainFeatures />
+          <MoreFeatures />
           <FeatureCallout />
           <LearnHow />
           <TryOut />
