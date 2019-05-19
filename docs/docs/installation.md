@@ -1,11 +1,11 @@
 ## Requirements
-* [Docker](https://www.docker.com/products) (engine, enterprise or desktop edition, whichever works for you)
+* [Docker](https://www.docker.com/products)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
-**N.B.** Quix relies on [Presto](https://prestosql.io/), which is included with the Docker container in this repository, but for the **demo purposes** only. To work with real data, it must be accessible via a Presto API URL (more on this in [Configuring](#Configuring)).
+**N.B.** Quix relies on [Presto](https://prestosql.io/), which is included with the Docker container in this repository, but for the **demo purposes** only. To work with real data, it must be accessible via a Presto API URL (more on this in [Configuring](#Configuration)).
 
 ## Setup and running
-All you need to do is to run Docker Compose:
+Run Docker Compose:
 
 ```
 docker-compose up
@@ -13,11 +13,11 @@ docker-compose up
 
 The initial run of the `docker-compose up` command will take care of all the dependencies, like MySQL, Presto, Maven, etc, will install all necessary Quix components and create a web-accessible Quix instance.
 
-To then access Quix, in your browser navigate to:
+To access Quix, navigate to:
 `http://localhost:3000`
 
 ## Configuration
-Most of the configuration you'll need is done in the [.env](./.env) configuration file. By default, Quix works with a demo Presto instance that runs inside Docker Compose. To work with your real Presto DB, change the `PRESTO_API` URL.
+Most of the configuration you'll need is done in the [.env](../../.env) configuration file. By default, Quix works with a demo Presto instance that runs inside Docker Compose. To work with your real Presto DB, change the `PRESTO_API` URL.
 
 #### Presto
 By default, Quix works with demo Presto instance that runs inside Docker Compose. <br />
