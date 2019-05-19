@@ -14,7 +14,7 @@
   dialog-title,
   dialog-subtitle,
   dialog-content {
-    display: block;
+    display: flex;
   }
 
   dialog-title {
@@ -22,19 +22,14 @@
     font-size: 22px;
     font-weight: 300;
     text-transform: uppercase;
+
+    .bi-dialog-icon {
+      font-size: 34px;
+    }
   }
 
   dialog-subtitle {
     margin: -26px 0 40px 0;
-    color: $muted;
-  }
-
-  dialog-content {
-    color: $grey--600;
-
-    .bi-dialog-icon {
-      font-size: 50px;
-    }
   }
 
   dialog-footer {

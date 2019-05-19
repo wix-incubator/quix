@@ -24,7 +24,7 @@ bi-tbl {
     padding-top: 36px;
 
     > div {
-      border-top: 2px solid $grey--300;
+      border-top: 2px solid $default-border-color;
       overflow: auto;
     }
 
@@ -40,7 +40,7 @@ bi-tbl {
       }
 
       tr:first-child td {
-        border-top: 0;
+        border-top: 1px solid transparent;
       }
     }
   }
@@ -85,6 +85,8 @@ bi-tbl {
       display: flex;
       flex-direction: column;
       flex-grow: 1;
+      border-top: 2px solid $grey--300;
+      background-color: $white;
     }
 
     table > thead,
@@ -105,6 +107,8 @@ bi-tbl {
           padding-left: 8px;
           border-left: 1px solid $grey--300 !important;
         }
+
+        border-bottom: none;
       }
 
       .bi-table-th-content {
@@ -130,13 +134,13 @@ bi-tbl {
         }
 
         &:last-child {
-          border-bottom: 0;
+          border-bottom: 1px solid $grey--300;
         }
 
         > td {
           padding: 5px 8px !important;
-          font-size: 12px;
           border-top: 1px solid $grey--300;
+          font-size: 12px;
 
           &:not(:first-child) {
             border-left: 1px solid $grey--300;

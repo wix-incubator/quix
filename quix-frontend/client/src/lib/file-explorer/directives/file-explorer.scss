@@ -16,6 +16,29 @@ bi-file-explorer-inner {
   > ul > li {
     user-select: none;
     cursor: default !important;
+
+    .fe-item {
+      padding-right: 5px;
+      height: $item-height;
+    
+      > div {
+        flex-grow: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }    
+
+    .fe-item-name {
+      .fe-icon-container {
+        line-height: 0;
+      }
+    
+      .fe-icon {
+        margin-right: 4px;
+        font-size: 18px;
+        vertical-align: text-bottom;
+      }
+    }
   }
 
   ul.fe-folders {
@@ -61,11 +84,9 @@ bi-file-explorer-inner {
 
   ul.fe-files {
     .fe-item {
-      margin-left: 11px;
-
       @for $i from 0 through 3 {
         &.fe-item-depth-#{$i} {
-          padding-left: $i * 11px + 10px;
+          padding-left: $i * 12px + 29px;
         }
       }
 
@@ -75,29 +96,5 @@ bi-file-explorer-inner {
         text-overflow: ellipsis;
       }
     }
-  }
-}
-
-.fe-item {
-  padding-right: 5px;
-  height: $item-height;
-
-  > div {
-    flex-grow: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
-/* The rule is global because it needs to be applied during dragging */
-.fe-item-name {
-  .fe-icon-container {
-    line-height: 0;
-  }
-
-  .fe-icon {
-    margin-right: 4px;
-    font-size: 18px;
-    vertical-align: text-bottom;
   }
 }

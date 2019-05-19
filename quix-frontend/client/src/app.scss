@@ -59,15 +59,14 @@
   right: 15px;
   bottom: 15px;
   display: flex;
-  width: 60px;
-  height: 60px;
+  width: 60px !important;
+  height: 60px !important;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: $primary;
-  border-radius: 50%;
+  border-radius: 50% !important;
   cursor: pointer;
-  box-shadow: 1px 1px 10px $grey--500;
   z-index: 100;
 
   &:before {
@@ -80,10 +79,8 @@
 }
 
 .bi-section {
-  .bi-section-content--center {
-    .quix-empty-state {
-      margin-top: -60px;
-    }
+  .quix-empty-state {
+    margin-top: -60px;
   }
 }
 
@@ -113,15 +110,6 @@ bi-tbl.bi-table--nav {
 
   .name-column {
     padding-left: 0;
-  }
-}
-
-.bi-empty-state {
-  .bi-empty-state-icon {
-    .bi-icon {
-      font-size: 80px;
-      color: $grey--500;
-    }
   }
 }
 
