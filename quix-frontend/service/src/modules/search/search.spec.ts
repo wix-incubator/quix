@@ -14,6 +14,7 @@ import {range} from 'lodash';
 const chance = new Chance();
 
 describe('Search', () => {
+  jest.setTimeout(60000);
   let module: TestingModule;
   let searchService: SearchService;
   let noteRepo: Repository<DbNote>;
@@ -92,7 +93,9 @@ describe('Search', () => {
     const {id: notebookId} = await createNotebook();
     return Promise.all(
       range(count).map(() => {
-        return createNote(notebookId, {content: baseString + chance.paragraph});
+        return createNote(notebookId, {
+          content: baseString + chance.paragraph(),
+        });
       }),
     );
   };
@@ -230,21 +233,24 @@ describe('Search', () => {
 
       let offset = 0;
       const count = 5;
+      let pagesFetched = 0;
       while (notes.length) {
         const [returnedNotes, totalCount] = await searchService.search(
           'searchStringFoo',
           count,
           offset,
         );
+        pagesFetched++;
         expect(totalCount).toBe(20);
         expect(returnedNotes).toHaveLength(count);
 
         offset += count;
 
         notes = notes.filter(
-          note => !!returnedNotes.find(n => n.id === note.id),
+          note => !returnedNotes.find(n => n.id === note.id),
         );
       }
+      expect(pagesFetched).toBe(4);
     });
   });
 

@@ -61,7 +61,7 @@ describe('AppController (e2e)', () => {
     });
   });
 
-  fdescribe('users table', () => {
+  describe('users table', () => {
     const up: UserProfile = {
       email: 'testing@quix.com',
       id: '11',
