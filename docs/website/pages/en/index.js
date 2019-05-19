@@ -116,20 +116,6 @@ class Index extends React.Component {
       </Block>
     );
 
-    const Description = () => (
-      <Block background="dark">
-        {[
-          {
-            content:
-              'This is another description of how this project is useful',
-            image: `${baseUrl}img/undraw_note_list.svg`,
-            imageAlign: 'right',
-            title: 'Description',
-          },
-        ]}
-      </Block>
-    );
-
     const LearnHow = () => (
       <Block background="light">
         {[
@@ -173,7 +159,7 @@ class Index extends React.Component {
       <Block layout="fourColumn">
         {[
           {
-            content: 'Use the DB tree to quickly explore your data sources',
+            content: 'Use the DB tree to explore your data sources',
             image: `${baseUrl}img/undraw_operating_system.svg`,
             imageAlign: 'top',
             title: 'Explore',
@@ -238,7 +224,6 @@ class Index extends React.Component {
           <FeatureCallout />
           <LearnHow />
           <TryOut />
-          <Description />
           <Showcase />
         </div>
       </div>
