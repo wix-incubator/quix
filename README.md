@@ -1,6 +1,5 @@
 # Quix [![Build Status](https://travis-ci.com/wix/quix.svg?branch=master)](https://travis-ci.com/wix/quix)
 
-> ### Disclaimer
 > :exclamation: Please note **that this is a beta version** of Quix which is still undergoing final testing before its official release.
 
 
