@@ -10,7 +10,7 @@ sidebar_label: Installation
 
 **N.B.** Quix relies on [Presto](https://prestosql.io/), which is included with the Docker container in this repository, but for the **demo purposes** only. To work with real data, it must be accessible via a Presto API URL (more on this in [Configuration](#Configuration)).
 
-## Setup and running
+## Running
 Run Docker Compose:
 
 ```
@@ -26,12 +26,13 @@ To access Quix, navigate to:
 Most of the configuration you'll need is done in the [.env](../../.env) configuration file.
 
 #### Presto
-By default, Quix works with demo Presto instance that runs inside Docker Compose. <br />
+By default, Quix works with demo Presto instance that runs inside Docker Compose.  
 To work with your real Presto DB, change `PRESTO_API` URL.
+
 Note that you need to specify full URL, including protocol, port and API version. For example: `http://presto.my.domain:8181/v1`
 
 #### DB
-Quix also uses MySQL to store notebooks and other application data. Location of this data is specified by `DB_VOLUME_PATH`. <br />
+Quix also uses MySQL to store notebooks and other application data. Location of this data is specified by `DB_VOLUME_PATH`.  
 As an alternative, you can use an external MySQL database, by specifying some of the following variables:
 * DB_NAME - defaults to `quix`, must exist
 * DB_USER - defaults to `root`
