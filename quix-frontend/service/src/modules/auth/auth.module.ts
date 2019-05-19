@@ -1,20 +1,38 @@
 import {Module, Provider, DynamicModule} from '@nestjs/common';
 import {ConfigModule} from 'config/config.module';
-import {AuthService} from './auth.service';
+import {AuthService, GoogleAuthService, FakeAuthService} from './auth.service';
 import {JwtModule} from '@nestjs/jwt';
 import {ConfigService} from 'config';
 import {PassportModule} from '@nestjs/passport';
 import {JwtStrategy} from './jwt-strategy';
 import {MockStrategy} from './mock-strategy';
-import {AuthController, FakeAuthController} from './auth.controller';
+import {AuthController} from './auth.controller';
 import {getEnv} from 'config/env';
+import {UsersService} from './users.service';
+import {TypeOrmModule} from '@nestjs/typeorm';
+import {DbUser} from 'entities';
+import {EventSourcingModule} from 'modules/event-sourcing/event-sourcing.module';
+
+const googleAuthServiceProvider = {
+  provide: AuthService,
+  useClass: GoogleAuthService,
+};
+
+const fakeAuthServiceProvider = {
+  provide: AuthService,
+  useClass: FakeAuthService,
+};
 
 // TODO: Try to build the dynamic module using configService instead of env.
 @Module({
-  imports: [ConfigModule],
-  controllers: [],
-  providers: [],
-  exports: [PassportModule],
+  imports: [
+    ConfigModule,
+    TypeOrmModule.forFeature([DbUser]),
+    EventSourcingModule,
+  ],
+  controllers: [AuthController],
+  providers: [UsersService],
+  exports: [PassportModule, UsersService],
 })
 export class AuthModule {
   static create(): DynamicModule {
@@ -38,8 +56,7 @@ export class AuthModule {
             }),
           }),
         ],
-        controllers: [AuthController],
-        providers: [AuthService, JwtStrategy],
+        providers: [googleAuthServiceProvider, JwtStrategy],
       };
     } else if (env.AuthType === 'fake') {
       return {
@@ -51,8 +68,7 @@ export class AuthModule {
             }),
           }),
         ],
-        controllers: [FakeAuthController],
-        providers: [MockStrategy],
+        providers: [fakeAuthServiceProvider, MockStrategy],
       };
     }
     throw new Error('AuthModule:: Unkown auth type');

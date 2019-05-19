@@ -26,13 +26,13 @@ export class DbNote implements IBaseNote {
   @Column(dbConf.noteContent)
   textContent!: string;
 
-  @Column(dbConf.tinytext)
+  @Column(dbConf.shortTextField)
   type!: NoteType;
 
-  @Column(dbConf.tinytext)
+  @Column(dbConf.shortTextField)
   name!: string;
 
-  @Column(dbConf.tinytext)
+  @Column(dbConf.shortTextField)
   owner!: string;
 
   @UpdateDateColumn(dbConf.dateUpdated)

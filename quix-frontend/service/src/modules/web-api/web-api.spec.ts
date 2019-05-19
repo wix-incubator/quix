@@ -19,6 +19,7 @@ import {
   DbNotebook,
   NoteRepository,
   FileTreeRepository,
+  DbUser,
 } from 'entities';
 import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action';
 import {FoldersService} from './folders/folders.service';
@@ -74,6 +75,7 @@ describe('web-api module', () => {
               DbNote,
               DbNotebook,
               DbAction,
+              DbUser,
             ]),
           inject: [ConfigService],
         }),

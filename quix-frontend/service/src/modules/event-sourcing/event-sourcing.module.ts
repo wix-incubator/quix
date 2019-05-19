@@ -15,13 +15,10 @@ import {DbAction} from './infrastructure/action-store/entities/db-action';
 import {NotePlugin} from './plugins/note-plugin';
 import {NotebookPlugin} from './plugins/notebook-plugin';
 import {FileTreePlugin} from './plugins/file-tree-plugin';
-import {AuthModule} from '../auth/auth.module';
 import {PassportModule} from '@nestjs/passport';
-import {EventsController} from './events.controller';
 
 @Module({
   imports: [
-    AuthModule.create(),
     TypeOrmModule.forFeature([
       DbFileTreeNode,
       DbFolder,
@@ -34,7 +31,7 @@ import {EventsController} from './events.controller';
     ConfigModule,
     PassportModule,
   ],
-  controllers: [EventsController],
+  controllers: [],
   providers: [
     QuixEventBus,
     DbActionStore,

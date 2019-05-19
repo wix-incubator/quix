@@ -7,14 +7,14 @@ import {escape} from 'mysql';
 /* A comptability layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
 interface DbColumnConf {
   json: ColumnOptions;
-  tinytext: ColumnOptions;
+  shortTextField: ColumnOptions;
   noteContent: ColumnOptions;
   dateUpdated: ColumnOptions;
   dateCreated: ColumnOptions;
   idColumn: ColumnOptions;
   eventsTimestamp: ColumnOptions;
   fileTypeEnum: ColumnOptions;
-  owner: ColumnOptions;
+  userAvatar: ColumnOptions;
   concat: (s1: string, s2: string) => string;
   fullTextSearch: (
     columnName: string,
@@ -24,7 +24,7 @@ interface DbColumnConf {
 
 const MySqlConf: DbColumnConf = {
   json: {type: 'json'},
-  tinytext: {type: 'tinytext'},
+  shortTextField: {type: 'varchar', length: 64},
   noteContent: {type: 'mediumtext', nullable: true},
   dateUpdated: {
     transformer: {from: (d: Date) => d.valueOf(), to: () => undefined},
@@ -39,13 +39,13 @@ const MySqlConf: DbColumnConf = {
     precision: 4,
     default: () => 'CURRENT_TIMESTAMP(4)',
   },
-  idColumn: {nullable: false, unique: true, type: 'varchar', width: 36},
+  idColumn: {nullable: false, unique: true, type: 'varchar', length: 36},
   fileTypeEnum: {
     type: 'enum',
     enum: FileType,
     default: FileType.folder,
   },
-  owner: {nullable: false, type: 'varchar', width: 255},
+  userAvatar: {nullable: true, type: 'varchar', length: 255},
   concat: (s1, s2) => `CONCAT(${s1}, ${s2})`,
   fullTextSearch(columnName, contentSearchList) {
     return `MATCH(${columnName}) AGAINST (${escape(
@@ -62,7 +62,7 @@ const MySqlConf: DbColumnConf = {
 
 const SqliteConf: DbColumnConf = {
   json: {type: 'simple-json'},
-  tinytext: {type: 'varchar', width: 255},
+  shortTextField: {type: 'varchar', length: 64},
   noteContent: {type: 'text', nullable: true},
   dateUpdated: {
     type: 'integer',
@@ -106,9 +106,9 @@ const SqliteConf: DbColumnConf = {
       to: (d?: Date) => d && d.valueOf(),
     },
   },
-  idColumn: {nullable: false, unique: true, type: 'varchar', width: 36},
-  fileTypeEnum: {type: 'varchar', width: 32, default: FileType.folder},
-  owner: {nullable: false, type: 'varchar', width: 255},
+  idColumn: {nullable: false, unique: true, type: 'varchar', length: 36},
+  fileTypeEnum: {type: 'varchar', length: 32, default: FileType.folder},
+  userAvatar: {nullable: true, type: 'varchar', length: 255},
   concat: (s1, s2) => `(${s1} || ${s2})`,
   fullTextSearch(columnName, contentSearchList) {
     return contentSearchList

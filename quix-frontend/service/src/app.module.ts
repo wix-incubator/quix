@@ -6,7 +6,7 @@ import {AuthModule} from './modules/auth/auth.module';
 import {EventSourcingModule} from './modules/event-sourcing/event-sourcing.module';
 import {WebApiModule} from './modules/web-api/web-api.module';
 import {ConfigService, ConfigModule} from './config';
-import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from './entities';
+import {DbFileTreeNode, DbFolder, DbNote, DbNotebook, DbUser} from './entities';
 import {DbAction} from './modules/event-sourcing/infrastructure/action-store/entities/db-action';
 import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
 
@@ -21,6 +21,7 @@ import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
           DbNote,
           DbNotebook,
           DbAction,
+          DbUser,
         ]),
       inject: [ConfigService],
     }),
