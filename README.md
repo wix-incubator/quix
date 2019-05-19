@@ -12,6 +12,7 @@ Quix is a multi-user, easy-to-use notebook manager. By utilizing [Presto](https:
 - [DB explorer](#Explore) - use the DB tree to explore your data sources
 - Search - all queries are searchable accross all users
 - Shareable folders, notebooks and notes
+- Live syntax validation
 
 
 #### Organize
