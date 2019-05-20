@@ -46,6 +46,12 @@ bi-code-editor {
       margin-right: 15px;
     }
 
+    .bce-auto-param-list {
+      .bi-dropdown-menu {
+        box-shadow: none;
+      }
+    }
+
     &.bce-params--closed {
       min-width: 0;
     }
