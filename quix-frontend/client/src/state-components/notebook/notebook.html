@@ -13,10 +13,7 @@
         ></bi-breadcrumbs>
       </div>
 
-      <span class="bi-align bi-s-h bi-fade-in" ng-if="vm.view.hasChanges">
-        <span class="bi-section-header-spr"></span>
-        <i class="bi-action bi-icon bi-secondary" ng-click="events.onSave()">save</i>
-      </span>
+      <i class="bi-action bi-icon bi-secondary" ng-if="vm.view.hasChanges" ng-click="events.onSave()">save</i>
     </div>
 
     <div class="bi-dont-shrink">
