@@ -1,4 +1,10 @@
-![](../screens/architecture.png)
+---
+id: architecture
+title: Architecture
+sidebar_label: Architecture
+---
+
+![](assets/architecture.png)
 
 Quix consists of three main elements:
 

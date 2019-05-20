@@ -63,7 +63,8 @@ class HomeSplash extends React.Component {
         <div className="inner">
           <ProjectTitle siteConfig={siteConfig} />
           <PromoSection>
-            <Button href={docUrl('installation.html')}>Get Started</Button>
+            <Button href={docUrl('about')}>Introduction</Button>
+            <Button href={docUrl('installation')}>Get Started</Button>
           </PromoSection>
         </div>
       </SplashContainer>
@@ -74,7 +75,10 @@ class HomeSplash extends React.Component {
 class Index extends React.Component {
   render() {
     const {config: siteConfig, language = ''} = this.props;
-    const {baseUrl} = siteConfig;
+    const {baseUrl, docsUrl} = siteConfig;
+    const docsPart = `${docsUrl ? `${docsUrl}/` : ''}`;
+    const langPart = `${language ? `${language}/` : ''}`;
+    const docUrl = (doc, hash) => `${baseUrl}${docsPart}${langPart}${doc}${hash ? `#${hash}` : ''}`;
 
     const Block = props => (
       <Container
@@ -113,13 +117,13 @@ class Index extends React.Component {
             title: 'Multi-user web app',
           },
           {
-            content: 'Organize your notebooks in folders',
+            content: `<a href="${docUrl('about', 'organize')}">Organize</a> your notebooks in folders`,
             image: `${baseUrl}img/undraw_folder.svg`,
             imageAlign: 'top',
             title: 'Organize queries',
           },
           {
-            content: 'Harness the power of <a href="https://github.com/prestosql/presto" target="_blank">Presto</a>',
+            content: `<a href="${docUrl('about', 'execute')}">Harness</a> the power of <a href="https://github.com/prestosql/presto" target="_blank">Presto</a>`,
             image: `${baseUrl}img/undraw_media_player.svg`,
             imageAlign: 'top',
             title: 'Execute queries',
@@ -132,13 +136,13 @@ class Index extends React.Component {
       <Block layout="fourColumn">
         {[
           {
-            content: 'Use the DB tree to explore your data sources',
+            content: `Use the DB tree to <a href="${docUrl('about', 'explore')}">explore</a> your data sources`,
             image: `${baseUrl}img/undraw_server_status.svg`,
             imageAlign: 'top',
             title: 'Explore',
           },
           {
-            content: 'Quickly plot time and bar series <br> (more visualizations to follow)',
+            content: `Quickly <a href="${docUrl('about', 'visualize')}">plot</a> time and bar series <br> (more visualizations to follow)`,
             image: `${baseUrl}img/undraw_visual_data.svg`,
             imageAlign: 'top',
             title: 'Visualize',

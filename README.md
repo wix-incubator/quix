@@ -15,19 +15,19 @@ See the [Documentation](https://wix.github.io/quix/docs/installation) for instal
 
 
 #### Organize
-![](docs/screens/management.gif)
+![](documentation/docs/assets/management.gif)
 
 #### Execute
-![](docs/screens/presto.gif)
+![](documentation/docs/assets/presto.gif)
 
 #### Visualize
-![](docs/screens/chart.gif)
+![](documentation/docs/assets/chart.gif)
 
 #### Explore
-![](docs/screens/db.gif)
+![](documentation/docs/assets/db.gif)
 
 #### Search
-![](docs/screens/search.gif)
+![](documentation/docs/assets/search.gif)
 
 ## License
 MIT

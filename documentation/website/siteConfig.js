@@ -39,7 +39,7 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     {doc: 'installation', label: 'Docs'},
-    // {page: 'help', label: 'Help'},
+    {href: 'https://github.com/wix/quix', label: 'GitHub'},
     // {blog: true, label: 'Blog'},
   ],
 

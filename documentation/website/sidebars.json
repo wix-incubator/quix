@@ -1,5 +1,6 @@
 {
   "docs": {
+    "Introduction": ["about", "architecture"],
     "Getting Started": ["installation"]
   }
 }

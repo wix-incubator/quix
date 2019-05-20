@@ -5,24 +5,13 @@
     "previous": "Previous",
     "tagline": "A Presto-based notebook manager",
     "docs": {
+      "about": {
+        "title": "About",
+        "sidebar_label": "About"
+      },
       "architecture": {
-        "title": "architecture"
-      },
-      "doc1": {
-        "title": "Latin-ish",
-        "sidebar_label": "Example Page"
-      },
-      "doc2": {
-        "title": "document number 2"
-      },
-      "doc3": {
-        "title": "This is document number 3"
-      },
-      "doc4": {
-        "title": "Other Document"
-      },
-      "doc5": {
-        "title": "Fifth Document"
+        "title": "Architecture",
+        "sidebar_label": "Architecture"
       },
       "installation": {
         "title": "Installation",
@@ -30,9 +19,11 @@
       }
     },
     "links": {
-      "Docs": "Docs"
+      "Docs": "Docs",
+      "GitHub": "GitHub"
     },
     "categories": {
+      "Introduction": "Introduction",
       "Getting Started": "Getting Started"
     }
   },
