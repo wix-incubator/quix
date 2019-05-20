@@ -8,80 +8,62 @@
 const React = require('react');
 
 const CompLibrary = require('../../core/CompLibrary.js');
-const MarkdownBlock = CompLibrary.MarkdownBlock; /* Used to read markdown */
+
 const Container = CompLibrary.Container;
 const GridBlock = CompLibrary.GridBlock;
 
-const siteConfig = require(process.cwd() + '/siteConfig.js');
-
-function imgUrl(img) {
-  return siteConfig.baseUrl + 'img/' + img;
-}
-
-function docUrl(doc, language) {
-  return siteConfig.baseUrl + 'docs/' + (language ? language + '/' : '') + doc;
-}
-
-function pageUrl(page, language) {
-  return siteConfig.baseUrl + (language ? language + '/' : '') + page;
-}
-
-class Button extends React.Component {
+class HomeSplash extends React.Component {
   render() {
-    return (
+    const {siteConfig, language = ''} = this.props;
+    const {baseUrl, docsUrl} = siteConfig;
+    const docsPart = `${docsUrl ? `${docsUrl}/` : ''}`;
+    const langPart = `${language ? `${language}/` : ''}`;
+    const docUrl = doc => `${baseUrl}${docsPart}${langPart}${doc}`;
+
+    const SplashContainer = props => (
+      <div className="homeContainer">
+        <div className="homeSplashFade">
+          <div className="wrapper homeWrapper">{props.children}</div>
+        </div>
+      </div>
+    );
+
+    const Logo = props => (
+      <div className="projectLogo">
+        <img src={props.img_src} alt="Project Logo" />
+      </div>
+    );
+
+    const ProjectTitle = () => (
+      <h2 className="projectTitle">
+        {siteConfig.title}
+        <small>{siteConfig.tagline}</small>
+      </h2>
+    );
+
+    const PromoSection = props => (
+      <div className="section promoSection">
+        <div className="promoRow">
+          <div className="pluginRowBlock">{props.children}</div>
+        </div>
+      </div>
+    );
+
+    const Button = props => (
       <div className="pluginWrapper buttonWrapper">
-        <a className="button" href={this.props.href} target={this.props.target}>
-          {this.props.children}
+        <a className="button" href={props.href} target={props.target}>
+          {props.children}
         </a>
       </div>
     );
-  }
-}
 
-Button.defaultProps = {
-  target: '_self',
-};
-
-const SplashContainer = props => (
-  <div className="homeContainer">
-    <div className="homeSplashFade">
-      <div className="wrapper homeWrapper">{props.children}</div>
-    </div>
-  </div>
-);
-
-const Logo = props => (
-  <div className="projectLogo">
-    <img src={props.img_src} />
-  </div>
-);
-
-const ProjectTitle = props => (
-  <h2 className="projectTitle">
-    {siteConfig.title_splash}
-    <small>{siteConfig.tagline}</small>
-  </h2>
-);
-
-const PromoSection = props => (
-  <div className="section promoSection">
-    <div className="promoRow">
-      <div className="pluginRowBlock">{props.children}</div>
-    </div>
-  </div>
-);
-
-class HomeSplash extends React.Component {
-  render() {
-    let language = this.props.language || '';
     return (
       <SplashContainer>
+        <Logo img_src={`${baseUrl}img/chart.gif`} />
         <div className="inner">
-          <ProjectTitle />
+          <ProjectTitle siteConfig={siteConfig} />
           <PromoSection>
-            <Button href="#try">Try It Out</Button>
-            <Button href={docUrl('getting_started.html', language)}>Get Started</Button>
-            <Button href={docUrl('advanced_use/roles_and_use_cases.html', language)}>Advanced Use</Button>
+            <Button href={docUrl('installation.html')}>Get Started</Button>
           </PromoSection>
         </div>
       </SplashContainer>
@@ -89,130 +71,129 @@ class HomeSplash extends React.Component {
   }
 }
 
-const Block = props => (
-  <Container
-    padding={['bottom', 'top']}
-    id={props.id}
-    background={props.background}>
-    <GridBlock align="center" contents={props.children} layout={props.layout} />
-  </Container>
-);
-
-const Features = props => (
-  <Block layout="threeColumn">
-    {[
-      {
-        content: 'Plain text. Simple markdown.',
-        image: imgUrl('wix.png'),
-        imageAlign: 'top',
-        title: 'Easy editing',
-      },
-      {
-        content: 'Treat documentation as code. Use version control, issue tracking, reviews, and automated tests, using the same infrastructure and tools you use for development. ',
-        image: imgUrl('github.png'),
-        imageAlign: 'top',
-        title: 'Docs-as-code',
-      },
-      {
-        content: 'With GitHub flavoured markdown, get a 100% working preview of your doc files online in github.',
-        image: imgUrl('wix.png'),
-        imageAlign: 'top',
-        title: 'Tidy preview',
-      },
-    ]}
-  </Block>
-);
-
-const FeatureCallout = props => (
-  <div
-    className="productShowcaseSection paddingBottom"
-    style={{textAlign: 'center'}}>
-    <h2>Feature Callout</h2>
-    <MarkdownBlock>These are features of this project</MarkdownBlock>
-  </div>
-);
-
-const LearnHow = props => (
-  <Block background="light">
-    {[
-      {
-        content: 'Talk about learning how to use this',
-        image: imgUrl('wix.png'),
-        imageAlign: 'right',
-        title: 'Learn Now',
-      },
-    ]}
-  </Block>
-);
-
-const TryOut = props => (
-  <Block id="try">
-    {[
-      {
-        content: 'Talk about trying this out',
-        image: imgUrl('wix.png'),
-        imageAlign: 'left',
-        title: 'Try it Out',
-      },
-    ]}
-  </Block>
-);
-
-const Description = props => (
-  <Block background="dark">
-    {[
-      {
-        content: 'This is another description of how this project is useful',
-        image: imgUrl('docusaurus.svg'),
-        imageAlign: 'right',
-        title: 'Description',
-      },
-    ]}
-  </Block>
-);
-
-const Showcase = props => {
-  if ((siteConfig.users || []).length === 0) {
-    return null;
-  }
-  const showcase = siteConfig.users
-    .filter(user => {
-      return user.pinned;
-    })
-    .map((user, i) => {
-      return (
-        <a href={user.infoLink} key={i}>
-          <img src={user.image} alt={user.caption} title={user.caption} />
-        </a>
-      );
-    });
-
-  return (
-    <div className="productShowcaseSection paddingBottom">
-      <h2>{"Who's Using This?"}</h2>
-      <p>This project is used by all these people</p>
-      <div className="logos">{showcase}</div>
-      <div className="more-users">
-        <a className="button" href={pageUrl('users.html', props.language)}>
-          More {siteConfig.title} Users
-        </a>
-      </div>
-    </div>
-  );
-};
-
 class Index extends React.Component {
   render() {
-    let language = this.props.language || '';
+    const {config: siteConfig, language = ''} = this.props;
+    const {baseUrl} = siteConfig;
+
+    const Block = props => (
+      <Container
+        padding={['bottom', 'top']}
+        id={props.id}
+        background={props.background}>
+        <GridBlock
+          align="center"
+          contents={props.children}
+          layout={props.layout}
+        />
+      </Container>
+    );
+
+    const LearnHow = () => (
+      <Block background="light">
+        {[
+          {
+            content:
+              'Each new Docusaurus project has **randomly-generated** theme colors.',
+            image: `${baseUrl}img/undraw_youtube_tutorial.svg`,
+            imageAlign: 'right',
+            title: 'Randomly Generated Theme Colors',
+          },
+        ]}
+      </Block>
+    );
+
+    const MainFeatures = () => (
+      <Block layout="threeColumn" background="light">
+        {[
+          {
+            content: 'Via Google Sign-In',
+            image: `${baseUrl}img/undraw_team.svg`,
+            imageAlign: 'top',
+            title: 'Multi-user web app',
+          },
+          {
+            content: 'Manage your notebooks in folders',
+            image: `${baseUrl}img/undraw_folder.svg`,
+            imageAlign: 'top',
+            title: 'Organize queries',
+          },
+          {
+            content: 'Harness the power of <a href="https://github.com/prestosql/presto" target="_blank">Presto</a>',
+            image: `${baseUrl}img/undraw_media_player.svg`,
+            imageAlign: 'top',
+            title: 'Execute queries',
+          },
+        ]}
+      </Block>
+    );
+
+    const MoreFeatures = () => (
+      <Block layout="fourColumn">
+        {[
+          {
+            content: 'Use the DB tree to explore your data sources',
+            image: `${baseUrl}img/undraw_server_status.svg`,
+            imageAlign: 'top',
+            title: 'Explore',
+          },
+          {
+            content: 'Quickly plot time and bar series <br> (more visualizations to follow)',
+            image: `${baseUrl}img/undraw_visual_data.svg`,
+            imageAlign: 'top',
+            title: 'Visualize',
+          },
+          {
+            content: 'Search queries accross all users',
+            image: `${baseUrl}img/undraw_search.svg`,
+            imageAlign: 'top',
+            title: 'Search',
+          },
+          {
+            content: 'Share folders, notebooks and notes',
+            image: `${baseUrl}img/undraw_live_collaboration.svg`,
+            imageAlign: 'top',
+            title: 'Share',
+          },
+        ]}
+      </Block>
+    );
+
+    const Showcase = () => {
+      if ((siteConfig.users || []).length === 0) {
+        return null;
+      }
+
+      const showcase = siteConfig.users
+        .filter(user => user.pinned)
+        .map(user => (
+          <a href={user.infoLink} key={user.infoLink}>
+            <img src={user.image} alt={user.caption} title={user.caption} />
+          </a>
+        ));
+
+      const pageUrl = page => baseUrl + (language ? `${language}/` : '') + page;
+
+      return (
+        <div className="productShowcaseSection paddingBottom">
+          <h2>Who is Using This?</h2>
+          <p>This project is used by all these people</p>
+          <div className="logos">{showcase}</div>
+          <div className="more-users">
+            <a className="button" href={pageUrl('users.html')}>
+              More {siteConfig.title} Users
+            </a>
+          </div>
+        </div>
+      );
+    };
 
     return (
       <div>
-        <HomeSplash language={language} />
+        <HomeSplash siteConfig={siteConfig} language={language} />
         <div className="mainContainer">
-          <Features />
-          <FeatureCallout />
-          <LearnHow />
-          <TryOut />
+          <MainFeatures />
+          <MoreFeatures />
         </div>
       </div>
     );
