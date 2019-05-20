@@ -9,8 +9,8 @@ export const setupNotifications = () => {
     onlyWhenHidden: true,
     body: (note: INote, notebook: INotebook) => {
       return notebook ?
-        `Note \'${note.name}\' on notebook \'${notebook.name}\' finished successfully.` :
-        `Note \'${note.name}\' finished successfully.`;
+        `Note "${note.name}" on notebook "${notebook.name}" finished successfully.` :
+        `Note "${note.name}" finished successfully.`;
     },
     onClick(window) {
       window.focus();
@@ -25,10 +25,10 @@ export const setupNotifications = () => {
     onlyWhenHidden: true,
     body: (note: INote, notebook: INotebook) => {
       return notebook ?
-        `Note \'${note.name}\' on notebook \'${notebook.name}\' has encountered an error.` :
-        `Note \'${note.name}\' has encountered an error.`;
+        `Note "${note.name}" on notebook "${notebook.name}" has encountered an error.` :
+        `Note "${note.name}" has encountered an error.`;
     },
-    onClick(window) {
+    onClick() {
       this.close();
     }
   });
