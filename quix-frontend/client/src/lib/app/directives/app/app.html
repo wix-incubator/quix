@@ -19,7 +19,7 @@
         </bi-toggle>
 
         <ul class="bi-dropdown-menu bi-r">
-          <li 
+          <li
             ng-repeat="menuApp in ::vm.apps"
             ng-click="events.onAppClick(menuApp)"
             role="button"
@@ -46,14 +46,14 @@
     <ul>
     <ul>
       <li
-        class="bi-muted bi-hover"
+        class="bi-muted bi-hover bi-pointer"
         ng-class="{'bi-active': item === vm.menu.current}"
+        ng-click="events.onMenuItemToggle(item)"
         ng-repeat="item in ::app.getMenuItems()"
       >
         <i
           class="bi-action bi-icon"
           ng-class="{'bi-active': item === vm.menu.current}"
-          ng-click="events.onMenuItemToggle(item)"
           title="{{::item.name}}"
           role="button"
           data-hook="app-menu-{{::item.name}}"
