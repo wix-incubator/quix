@@ -21,6 +21,7 @@ export default (app: Instance, store: Store) => () => ({
     onContentChange: '&',
     onNameChange: '&',
     onShare: '&',
+    onClone: '&',
     onDelete: '&',
     onMarkToggle: '&',
     onSave: '&',

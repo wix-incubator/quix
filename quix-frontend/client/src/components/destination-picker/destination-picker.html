@@ -2,7 +2,7 @@
   <bi-file-explorer
     class="bi-c-h bi-grow bi-scroll"
     ng-model="vm.state.value().tree"
-    fe-options="::{folderMode: 'select'}"
+    fe-options="::{folderMode: 'select', expandRootFolder: true}"
     on-load="events.onFileExplorerLoad(fileExplorer)"
     on-file-click="events.onFileClick(file)"
     on-folder-click="events.onFolderClick(folder)"
@@ -12,7 +12,7 @@
 
 <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.before('Content')">
   <div class="bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
-    <div class="bi-empty-state-content">Loading folders...</div>
+    <div class="bi-empty-state-content">Loading {{::context}}s...</div>
   </div>
 
   <div class="bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="files-sidebar-error">
@@ -31,7 +31,7 @@
       <i class="bi-icon">note_add</i>
     </div>
     <div class="bi-empty-state-header">
-      You don't have any folders...
+      You don't have any {{::context}}s...
     </div>
   </div>
 </div>

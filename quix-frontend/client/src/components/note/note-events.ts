@@ -24,6 +24,10 @@ export const onShare = (scope: IScope, store: Store) => (note: INote) => {
   scope.onShare({note});
 };
 
+export const onClone = (scope: IScope, store: Store) => (note: INote) => {
+  scope.onClone({note});
+};
+
 export const onDelete = (scope: IScope, store: Store) => (note: INote) => {
   scope.onDelete({note});
 };

@@ -7,11 +7,8 @@ import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem, cr
 import {FileType} from '../../../../shared/entities/file';
 import {IScope} from './notebook-types';
 import {setNotebook, setNote, queueNote, toggleMark, unmarkAll} from '../../store/notebook/notebook-actions';
-import {saveQueuedNotes, deleteNotebook} from '../../services';
+import {saveQueuedNotes, deleteNotebook, copyNotebook, goToFile, goToRoot, prompt, copyNote} from '../../services';
 import {removeRunner, addRunner} from '../../store/app/app-actions';
-import {prompt} from '../../services/dialog';
-import {goToFile, goToRoot} from '../../services/files';
-import { copyNotebook } from '../../services/notebook';
 
 export const onBreadcrumbClick = (scope: IScope, store: Store, app: Instance) => (file: IFilePathItem) => {
   const {notebook: {owner, path}} = scope.vm.state.value();
@@ -38,7 +35,7 @@ export const onClone = (scope: IScope, store: Store, app: Instance) => (notebook
     title: 'Clone notebook',
     subTitle: 'Choose destintation folder',
     yes: 'clone',
-    content: `<quix-destination-picker ng-model="model.folder" required></quix-destination-picker>`
+    content: `<quix-destination-picker ng-model="model.folder" context="folder" required></quix-destination-picker>`
   },
     scope,
     {model: {folder: null}}
@@ -100,6 +97,19 @@ export const onNoteAdd = (scope: IScope, store: Store, app: Instance) => () => {
   
   const vm = scope.vm.notes.get(note);
   vm.focusName = true;
+}
+
+export const onNoteClone = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
+  prompt({
+    title: 'Clone note',
+    subTitle: 'Choose destintation notebook',
+    yes: 'clone',
+    content: `<quix-destination-picker ng-model="model.notebook" context="notebook" required></quix-destination-picker>`
+  },
+    scope,
+    {model: {notebook: null}}
+  )
+  .then(({model: {notebook}}) => copyNote(store, app, notebook, note));
 }
 
 export const onNoteShare = (scope: IScope, store: Store, app: Instance) => (note: INote) => {

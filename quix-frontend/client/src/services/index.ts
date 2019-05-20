@@ -1,6 +1,6 @@
-export {addNotebook, deleteNotebook, saveQueuedNotes, hasQueuedNotes, goToExamples} from './notebook';
+export {addNotebook, deleteNotebook, saveQueuedNotes, hasQueuedNotes, goToExamples, copyNotebook, copyNote} from './notebook';
 export {addFolder, deleteFolder, isRoot, goToFile, goToRoot} from './files';
-export {confirmAction} from './dialog';
+export {confirmAction, prompt} from './dialog';
 export {StateManager} from './state';
 export {getRunners} from './runners';
 export {closePopup, openTempQuery, openSearchResults} from './popup';

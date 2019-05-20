@@ -118,7 +118,7 @@
       class="bi-fade-in"
       ng-repeat="note in vm.state.value().notes track by note.id"
       note="::note"
-      permissions="::permissions.bulk"
+      permissions="::permissions.note"
       quix-note-options="{
         fold: vm.notes.get(note).fold === null || vm.notes.get(note).fold,
         focusName: vm.notes.get(note).focusName
@@ -128,6 +128,7 @@
       on-content-change="events.onNoteContentChange(note)"
       on-name-change="events.onNoteNameChange(note)"
       on-share="events.onNoteShare(note)"
+      on-clone="events.onNoteClone(note)"
       on-delete="events.onNoteDelete(note)"
       on-mark-toggle="events.onMarkToggle(note)"
       on-save="events.onNoteSave()"

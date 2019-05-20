@@ -41,14 +41,17 @@ export const fetchRootPath = (): Promise<IFilePathItem> => {
 
 export const goToFile = (app: Instance, file: Pick<IFile, 'id' | 'type' | 'owner' | 'path'>, options: {
   isNew?: boolean;
+  note?: string;
 } = {
-  isNew: false
+  isNew: false,
+  note: null
 }) => {
   const id = isRoot(file) && isOwner(app, file) ? null : file.id;
 
   app.getNavigator().go(`base.${file && file.type === FileType.notebook ? 'notebook' : 'files'}`, {
     id,
-    isNew: options.isNew
+    isNew: options.isNew,
+    note: options.note
   });
 }
 

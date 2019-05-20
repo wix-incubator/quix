@@ -17,6 +17,7 @@ export interface IFolderPermissions extends IPermissions{
 
 export interface INotebookPermissions extends IPermissions{
   addNote?: boolean;
+  note?: IPermissions;
   bulk?: INotebookPermissions & {
     reorder?: boolean;
   };
@@ -65,12 +66,16 @@ export const getNotebookPermissions = (app: Instance, folder: IFile): INotebookP
     rename: isFolderOwner,
     addNote: isFolderOwner,
     clone: true,
-    bulk: {
+    note: {
       edit: isFolderOwner,
       delete: isFolderOwner,
       rename: isFolderOwner,
+      clone: true
+    },
+    bulk: {
+      delete: isFolderOwner,
       reorder: isFolderOwner,
       clone: false
-    }
+    },
   };
 }

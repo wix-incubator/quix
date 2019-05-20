@@ -24,8 +24,8 @@ const listenToNavChange = (scope: IScope, app: Instance, fileExplorer) => {
   .listen(['base.files', 'base.notebook'], 'success', ({id}: {id: string}) => {
     const files = scope.vm.state.value().files;
     let file = files.find(f => f.id === id);
-    
-    if (file && file.type === FileType.notebook) {
+
+    if (file && scope.context === 'folder' && file.type === FileType.notebook) {
       id = last<any>(file.path).id;
       file = files.find(f => f.id === id);
     }
@@ -42,7 +42,9 @@ export default (app: Instance, store: Store) => () => ({
   restrict: 'E',
   template,
   require: 'ngModel',
-  scope: {},
+  scope: {
+    context: '@'
+  },
   link: {
     async pre(scope: IScope, element, attr, ngModel) {
       createNgModel(scope, ngModel);
@@ -58,10 +60,10 @@ export default (app: Instance, store: Store) => () => ({
             listenToNavChange(scope, app, fileExplorer);
           },
           onFileClick(file) {
-            scope.model = file;
+            scope.model = scope.context === 'notebook' ? file : null;
           }, 
           onFolderClick(folder) {
-            scope.model = folder;
+            scope.model = scope.context === 'folder' ? folder : null;
           }
         });
 
@@ -69,7 +71,9 @@ export default (app: Instance, store: Store) => () => ({
       store.subscribe('files.files', (files: IFile[]) => {
         scope.vm.state
           .force('Result', !!files, {files})
-          .set('Content', () => files.length > 0, () => ({tree: files.filter(file => file.type === FileType.folder)}));
+          .set('Content', () => files.length > 0, () => ({
+            tree: scope.context === 'folder' ? files.filter(file => file.type === FileType.folder) : files
+          }));
       }, scope);
 
       store.subscribe('files.error', (error: any) => {
