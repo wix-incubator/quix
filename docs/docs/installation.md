@@ -1,8 +1,8 @@
----
+<!-- ---
 id: installation
 title: Installation
 sidebar_label: Installation
----
+--- -->
 
 ## Requirements
 * [Docker](https://www.docker.com/products)
