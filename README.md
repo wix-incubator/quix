@@ -29,12 +29,5 @@ See the [Documentaion](https://wix.github.io/quix/docs/installation) for install
 #### Search
 ![](docs/screens/search.gif)
 
-
-## Installation
-See [installation](docs/docs/installation.md)
-
-## Architecture
-See [architecture](docs/docs/architecture.md)
-
 ## License
 MIT
