@@ -15,6 +15,22 @@ export class SearchController {
   constructor(private searchService: SearchService) {}
 
   @Get('/:term')
+  async doSearch(@Param('term') query: string) {
+    const [notes, totalNotesInSearch] = await this.searchService.search(
+      query,
+      1000,
+    );
+    return notes;
+  }
+}
+
+/* use this when client side is ready */
+// @Controller('/api/search')
+// @UseGuards(AuthGuard())
+export class SearchControllerWithPagination {
+  constructor(private searchService: SearchService) {}
+
+  @Get('/:term')
   async doSearch(
     @Param('term') query: string,
     @Query('offset', new ParseIntPipe()) offset: number,
