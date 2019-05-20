@@ -72,7 +72,7 @@ const siteConfig = {
   */
 
   // This copyright info is used in /core/Footer.js and blog RSS/Atom feeds.
-  copyright: ``,
+  copyright: `© ${new Date().getFullYear()} Wix.com, Inc`,
 
   highlight: {
     // Highlight.js theme to use for syntax highlighting in code blocks.

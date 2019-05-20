@@ -113,7 +113,7 @@ class Index extends React.Component {
             title: 'Multi-user web app',
           },
           {
-            content: 'Manage your notebooks in folders',
+            content: 'Organize your notebooks in folders',
             image: `${baseUrl}img/undraw_folder.svg`,
             imageAlign: 'top',
             title: 'Organize queries',
