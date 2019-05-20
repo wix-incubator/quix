@@ -26,8 +26,8 @@ const siteConfig = {
   // url: 'https://your-docusaurus-test-site.com', // Your website URL
   baseUrl: '/quix/', // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
-  //   url: 'https://facebook.github.io',
-  //   baseUrl: '/test-site/',
+  url: 'https://wix.github.io',
+  baseUrl: '/quix/',
 
   // Used for publishing and more
   projectName: 'quix',
