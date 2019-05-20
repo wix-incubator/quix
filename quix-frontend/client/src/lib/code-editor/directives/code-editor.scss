@@ -18,23 +18,19 @@ bi-code-editor {
 
           .bce-param-handle,
           .bce-param-remove {
-            transition: opacity .3s;
-            opacity: 0;
+            padding: 0;
+
+            &:hover {
+              background: none;
+            }
           }
 
           .bce-param-handle {
-            margin: 19px 0px 0 -4px
+            margin: 19px 1px 0 -5px;
           }
 
           .bce-param-remove {
-            margin: 20px 0 0 1px;
-          }
-
-          &:hover {
-            .bce-param-remove,
-            .bce-param-handle {
-              opacity: 1;
-            }
+            margin: 20px 1px 0 4px;
           }
         }
       }

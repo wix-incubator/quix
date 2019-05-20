@@ -14,7 +14,7 @@
           >menu</i>
 
           <div class="bi-center" ng-show="::!readonly" be-controls>
-            <div class="bi-r bi-s-h">
+            <div class="bi-r bi-s-h--x05">
               <button class="bce-custom-param-toggle bi-button bi-button--sm bi-secondary bi-align">
                 <i class="bi-icon--sm">add</i>
                 <span>Custom param</span>
@@ -30,7 +30,7 @@
           <div class="bi-align bi-s-h--x15">
             <bi-tooltip ng-if="!be.edit && vm.params.all.length" bt-text="Share with parameters">
               <bi-toggle>
-                <i class="bi-action bi-icon" ng-click="events.onShareClick()">share</i>
+                <i class="bi-action bi-icon--sm" ng-click="events.onShareClick()">share</i>
               </bi-toggle>
             </bi-tooltip>
           </div>
@@ -86,8 +86,8 @@
           ng-model="vm.params.all"
         >
           <div class="bi-form-row bi-dont-shrink" ng-repeat="param in vm.params.all">
-            <div class="bi-spread">
-              <i class="bce-param-handle bi-action bi-icon--sm" ng-if="!readonly">drag_indicator</i>
+            <div class="bi-spread bi-hover-parent">
+              <i class="bce-param-handle bi-action bi-icon--sm bi-hover-target" ng-if="!readonly">drag_indicator</i>
 
               <div class="bi-grow">
                 <div class="bi-form-label bi-spread">
@@ -98,7 +98,11 @@
                 <div class="bi-form-input bi-r" bi-html="renderParam(param)"></div>
               </div>
 
-              <i class="bce-param-remove bi-action bi-icon--sm bi-danger" ng-if="::!readonly" ng-click="events.onParamRemove(param)">close</i>
+              <i 
+                class="bce-param-remove bi-action bi-icon--sm bi-danger bi-hover-target"
+                ng-if="::!readonly"
+                ng-click="events.onParamRemove(param)"
+              >close</i>
             </div>
           </div>
         </div>
