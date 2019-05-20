@@ -33,7 +33,7 @@ export default (app: App, store: Store) => ({
     }, scope);
 
     store.subscribe('folder.folder.name', (name: string) => {
-      setTitle(() => [name]);
+       setTitle(() => params.id ? [name] : [app.getTitle(), 'My notebooks']);
     }, scope);
 
     store.subscribe('folder.error', error => {
