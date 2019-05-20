@@ -44,6 +44,7 @@ function initScope(scope, controller: Controller, depth: number) {
       fileAlias: 'file',
       orderBy: 'name', // name|dateCreated|dateUpdated
       orderReversed: false,
+      expandRootFolder: false,
       expandAllFolders: false,
       hideEmptyFolders: false,
       folderMode: 'expand', // expand|select 
@@ -201,6 +202,10 @@ export function fileExplorer() {
             scope.vm.init({controller, item: model, options: scope.options});
           })
           .then(() => {
+            if (scope.options.expandRootFolder && scope.model.getFolders().length === 1) {
+              scope.model.getFolders()[0].toggleOpen();
+            }
+
             scope.onLoad({fileExplorer: controller.getInstance()});
           })
           .feedBack(false);
