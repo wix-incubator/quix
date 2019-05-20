@@ -23,7 +23,7 @@ To access Quix, navigate to:
 `http://localhost:3000`
 
 ## Configuration
-Most of the configuration you'll need is done in the [.env](../../.env) configuration file.
+Most of the configuration you'll need is done in the [.env](https://github.com/wix/quix/blob/master/.env) configuration file.
 
 #### Presto
 By default, Quix works with demo Presto instance that runs inside Docker Compose.  
