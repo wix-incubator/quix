@@ -1,7 +1,29 @@
 @import '../../lib/ui/assets/css/def/colors.def';
+@import '../../lib/ui/assets/css/def/state.def';
+@import '../../lib/ui/assets/css/def/border.def';
 
 quix-header {
-  margin-left: 5%;
+  height: 100%;
+  margin-left: 10%;
+
+  .quix-header-menu {
+    .bi-action {
+      @include hover('lighter', $primary);
+      @include active('lighter', $primary);
+      @include border('bottom');
+
+      font-size: 14px;
+      border-color: transparent;
+      border-width: 2px;
+      border-radius: 0;
+      background-color: transparent !important;
+
+      &:hover,
+      &.bi-active {
+        border-color: currentColor;
+      }
+    }
+  }
 
   bi-search.bi-search--rnd {
     position: fixed;

@@ -10,6 +10,7 @@ bi-app {
     [ng-transclude="header"] {
       header {
         display: block;
+        height: 54px;
       }
     }
 

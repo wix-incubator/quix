@@ -3,7 +3,7 @@
     <th ng-repeat="field in fields">
       <div class="bi-table-th-placeholder">
         <span class="bi-align" ng-if="::!!order && field.sort !== false" href ng-click="setOrder(field)">
-          <span class="bi-icon--sm">unfold_more</span>
+          <span class="bi-tbl-sort-icon bi-icon--sm">unfold_more</span>
           <span class="bi-text--600">{{::formatField(field)}}</span>
         </span>
 
@@ -12,7 +12,7 @@
 
       <div class="bi-table-th-content bi-text--ui">
         <span class="bi-align bi-pointer" ng-if="!!order && field.sort !== false" href ng-click="setOrder(field)">
-          <span class="bi-icon--sm" ng-class="{'bi-primary': order.field === field}">
+          <span class="bi-tbl-sort-icon bi-icon--sm" ng-class="{'bi-primary': order.field === field}">
             {{order.field !== field ? 'unfold_more' : order.field === field && !order.reverse ? 'arrow_drop_up' : 'arrow_drop_down'}}
           </span>
           <span class="bi-text--600">{{::formatField(field)}}</span>

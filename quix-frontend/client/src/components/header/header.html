@@ -1,8 +1,16 @@
-<div class="bi-align bi-s-h--x2">
+<div class="quix-header-menu bi-align bi-s-h--x2 bi-text--ui">
   <!-- <span class="bi-action bi-align bi-s-h--x05" ng-click="events.onFavoritesClick()">
     <i class="bi-icon--xs">favorite_border</i>
     <span class="bi-text--600">Favorites</span>
   </span> -->
+  <span 
+    class="bi-action bi-align bi-s-h--x05"
+    ng-class="{'bi-active': vm.currentState === item.targetState}"
+    ng-repeat="item in ::vm.navItems"
+    ng-click="events.onNavItemClick(item)"
+  >
+    <span>{{::item.title}}</span>
+  </span>
 </div>
 
 <bi-search 

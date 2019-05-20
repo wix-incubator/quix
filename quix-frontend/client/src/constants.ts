@@ -9,3 +9,12 @@ export const ExamplesNotebook = {
   name: 'Examples',
   owner: 'Quix'
 };
+
+export const HeaderNavItems = [{
+  title: 'Notebooks',
+  targetState: 'files',
+  activeStates: ['files', 'notebook'],
+}, {
+  title: 'Users',
+  targetState: 'users'
+}];

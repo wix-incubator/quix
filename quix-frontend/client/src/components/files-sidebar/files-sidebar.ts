@@ -36,11 +36,11 @@ const listenToEvents = (scope, app: Instance, store: Store, fileExplorer) => {
 
 const listenToNavChange = (scope: IScope, app: Instance, fileExplorer) => {
   app.getNavigator()
-  .listen(['base.files', 'base.notebook'], 'success', ({id}: {id: string}) => {
-    const file = scope.vm.state.value().files.find(f => f.id === id);
-    return file && fileExplorer.setActive(file);
-  }, scope)
-  .otherwise(() => fileExplorer.clearActive());
+    .listen(['base.files', 'base.notebook'], 'success', ({id}: {id: string}) => {
+      const file = scope.vm.state.value().files.find(f => f.id === id);
+      return file && fileExplorer.setActive(file);
+    }, scope)
+    .otherwise(() => fileExplorer.clearActive());
 }
 
 export default (app: Instance, store: Store) => () => ({

@@ -8,9 +8,12 @@ import {default as db} from './db/db-branch';
 import {default as dbCache} from './db/db-cache';
 import {default as folder} from './folder/folder-branch';
 import {default as folderCache} from './folder/folder-cache';
+import {default as users} from './users/users-branch';
+import {default as usersCache} from './users/users-cache';
 
 export const branches = {
   app,
+  users,
   notebook,
   files,
   db,
@@ -20,6 +23,7 @@ export const branches = {
 export let cache = null;
 export const initCache = (store: Store) => {
   cache = {
+    users: usersCache(store),
     notebook: notebookCache(store),
     files: foldersCache(store),
     db: dbCache(store),

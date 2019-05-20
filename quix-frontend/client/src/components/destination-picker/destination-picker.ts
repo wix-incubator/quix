@@ -21,21 +21,21 @@ enum States {
 
 const listenToNavChange = (scope: IScope, app: Instance, fileExplorer) => {
   app.getNavigator()
-  .listen(['base.files', 'base.notebook'], 'success', ({id}: {id: string}) => {
-    const files = scope.vm.state.value().files;
-    let file = files.find(f => f.id === id);
+    .listen(['base.files', 'base.notebook'], 'success', ({id}: {id: string}) => {
+      const files = scope.vm.state.value().files;
+      let file = files.find(f => f.id === id);
 
-    if (file && scope.context === 'folder' && file.type === FileType.notebook) {
-      id = last<any>(file.path).id;
-      file = files.find(f => f.id === id);
+      if (file && scope.context === 'folder' && file.type === FileType.notebook) {
+        id = last<any>(file.path).id;
+        file = files.find(f => f.id === id);
+      }
+
+    if (file) {
+      fileExplorer.setActive(file);
+      scope.model = file;
     }
-
-   if (file) {
-     fileExplorer.setActive(file);
-     scope.model = file;
-   }
-  }, scope)
-  .otherwise(() => fileExplorer.clearActive());
+    }, scope)
+    .otherwise(() => fileExplorer.clearActive());
 }
 
 export default (app: Instance, store: Store) => () => ({

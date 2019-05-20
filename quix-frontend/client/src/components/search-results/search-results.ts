@@ -35,7 +35,7 @@ export default (app: Instance, store: Store) => () => ({
         })
         .withEvents({
           onNoteClick(note: INote) {
-            app.getNavigator().go('base.notebook', {id: note.notebookId, note: note.id});
+            app.go('base.notebook', {id: note.notebookId, note: note.id});
           }
         });
 

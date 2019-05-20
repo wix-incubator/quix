@@ -10,7 +10,7 @@
   </head>
   <body class="bi-c" ng-controller="app">
     <bi-app app="app">
-      <header class="bi-c-h bi-grow">
+      <header class="bi-align bi-grow">
         <quix-header class="bi-align"><quix-header>
       </header>
     </bi-app>

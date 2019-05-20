@@ -48,7 +48,7 @@ export const goToFile = (app: Instance, file: Pick<IFile, 'id' | 'type' | 'owner
 }) => {
   const id = isRoot(file) && isOwner(app, file) ? null : file.id;
 
-  app.getNavigator().go(`base.${file && file.type === FileType.notebook ? 'notebook' : 'files'}`, {
+  app.go(`base.${file && file.type === FileType.notebook ? 'notebook' : 'files'}`, {
     id,
     isNew: options.isNew,
     note: options.note
@@ -56,7 +56,7 @@ export const goToFile = (app: Instance, file: Pick<IFile, 'id' | 'type' | 'owner
 }
 
 export const goToRoot = (app: Instance) => {
-  app.getNavigator().go(`base.files`, {
+  app.go(`base.files`, {
     id: null,
     isNew: false
   });
