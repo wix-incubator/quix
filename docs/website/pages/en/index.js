@@ -107,7 +107,7 @@ class Index extends React.Component {
       <Block layout="threeColumn" background="light">
         {[
           {
-            content: 'Via Google Sign-In',
+            content: 'Via Google OAuth',
             image: `${baseUrl}img/undraw_team.svg`,
             imageAlign: 'top',
             title: 'Multi-user web app',
