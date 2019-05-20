@@ -8,8 +8,13 @@ import {ConfigService, ConfigModule} from 'config';
 import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from 'entities';
 import {SearchModule} from './search.module';
 import {SearchService} from './search';
+import {Chance} from 'chance';
+import {range} from 'lodash';
+
+const chance = new Chance();
 
 describe('Search', () => {
+  jest.setTimeout(60000);
   let module: TestingModule;
   let searchService: SearchService;
   let noteRepo: Repository<DbNote>;
@@ -84,8 +89,19 @@ describe('Search', () => {
     return noteRepo.save(note);
   };
 
+  const createRandomNotes = async (baseString = '', count = 5) => {
+    const {id: notebookId} = await createNotebook();
+    return Promise.all(
+      range(count).map(() => {
+        return createNote(notebookId, {
+          content: baseString + chance.paragraph(),
+        });
+      }),
+    );
+  };
+
   it('should return empty array for empty content', async () => {
-    const result = await searchService.search('');
+    const [result] = await searchService.search('');
     expect(result).toHaveLength(0);
   });
 
@@ -93,8 +109,8 @@ describe('Search', () => {
     const notebook = await createNotebook();
     const note = await createNote(notebook.id);
 
-    const result = await searchService.search(`user:${defaultUser}`);
-    const badResult = await searchService.search('user: foo@wix.com');
+    const [result] = await searchService.search(`user:${defaultUser}`);
+    const [badResult] = await searchService.search('user: foo@wix.com');
 
     expect(result[0].id).toBe(note.id);
     expect(badResult).toHaveLength(0);
@@ -110,9 +126,9 @@ describe('Search', () => {
     });
 
     await noteRepo.save(note2);
-    const result = await searchService.search(`someTable`);
-    const result2 = await searchService.search(`someOtherTable`);
-    const badResult = await searchService.search('randomKeyword');
+    const [result] = await searchService.search(`someTable`);
+    const [result2] = await searchService.search(`someOtherTable`);
+    const [badResult] = await searchService.search('randomKeyword');
 
     expect(result[0].id).toBe(note.id);
     expect(result2[0].id).toBe(note2.id);
@@ -129,11 +145,12 @@ describe('Search', () => {
     });
 
     await noteRepo.save(note2);
-    const result = await searchService.search(`someCa`);
+    const [notes, length] = await searchService.search(`someCa`);
     const badResult = await searchService.search('randomKeyword');
+    const [badNotes, badLength] = badResult;
 
-    expect(result).toHaveLength(2);
-    expect(badResult).toHaveLength(0);
+    expect(length).toBe(2);
+    expect(badLength).toBe(0);
   });
 
   it('should get note by type', async () => {
@@ -145,7 +162,7 @@ describe('Search', () => {
       type: NoteType.PRESTO,
     });
 
-    const result = await searchService.search('type:presto');
+    const [result] = await searchService.search('type:presto');
 
     expect(result).toMatchObject([expect.objectContaining({id: note2.id})]);
   });
@@ -164,7 +181,9 @@ describe('Search', () => {
       owner: secondUser,
       type: 'python' as any,
     });
-    const result = await searchService.search(`user:${secondUser} type:python`);
+    const [result] = await searchService.search(
+      `user:${secondUser} type:python`,
+    );
 
     expect(result).toMatchObject([expect.objectContaining({id: note3.id})]);
   });
@@ -178,11 +197,61 @@ describe('Search', () => {
       content: 'select col1, col2, col3 from foo where col2 = 1',
     });
 
-    const result = await searchService.search(`col1 = 1`);
-    const fullResult = await searchService.search(`"col1 = 1"`);
+    const [result] = await searchService.search(`col1 = 1`);
+    const [fullResult] = await searchService.search(`"col1 = 1"`);
 
     expect(result).toHaveLength(2);
     expect(fullResult).toMatchObject([expect.objectContaining({id: note.id})]);
+  });
+
+  describe('pagination', () => {
+    it('should return correct number of results', async () => {
+      await createRandomNotes('searchStringFoo', 20);
+      await createRandomNotes('searchStringBar', 10);
+
+      const [_, count] = await searchService.search('searchStringFoo', 5, 0);
+      expect(count).toBe(20);
+      const [__, count2] = await searchService.search('searchStringBar', 5, 0);
+      expect(count2).toBe(10);
+    });
+
+    it('should handle request outside of range', async () => {
+      await createRandomNotes('searchStringFoo', 20);
+      await createRandomNotes('searchStringBar', 10);
+
+      const [notes, count] = await searchService.search(
+        'searchStringFoo',
+        5,
+        20,
+      );
+      expect(notes).toHaveLength(0);
+    });
+
+    it('should return pages correctly', async () => {
+      let notes = await createRandomNotes('searchStringFoo', 20);
+      await createRandomNotes('searchStringBar', 10);
+
+      let offset = 0;
+      const count = 5;
+      let pagesFetched = 0;
+      while (notes.length) {
+        const [returnedNotes, totalCount] = await searchService.search(
+          'searchStringFoo',
+          count,
+          offset,
+        );
+        pagesFetched++;
+        expect(totalCount).toBe(20);
+        expect(returnedNotes).toHaveLength(count);
+
+        offset += count;
+
+        notes = notes.filter(
+          note => !returnedNotes.find(n => n.id === note.id),
+        );
+      }
+      expect(pagesFetched).toBe(4);
+    });
   });
 
   afterAll(() => {
