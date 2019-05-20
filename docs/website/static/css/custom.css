@@ -15,6 +15,37 @@
 @media only screen and (min-width: 1500px) {
 }
 
+.homeContainer {
+  text-align: unset;
+}
+
+.homeContainer .homeWrapper {
+  padding: 2em 100px;
+}
+
+.homeContainer .homeWrapper .projectLogo {
+  padding: 20px 100px 0;
+}
+
+.promoSection .promoRow .pluginRowBlock {
+  justify-content: unset;
+}
+
 .imageAlignTop .blockImage {
+  position: relative;
+  display: block;
   max-width: 60%;
+}
+
+.imageAlignTop .blockImage:after {
+  content: '';
+  display: block;
+  padding-bottom: 100%;
+}
+
+.imageAlignTop .blockImage img {
+  transform: translate(0, -50%);
+  position: absolute;
+  top: 50%;
+  left: 0;
 }

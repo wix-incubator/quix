@@ -25,13 +25,12 @@
         "title": "Fifth Document"
       },
       "installation": {
-        "title": "installation"
+        "title": "Installation",
+        "sidebar_label": "Installation"
       }
     },
     "links": {
-      "Docs": "Docs",
-      "Help": "Help",
-      "Blog": "Blog"
+      "Docs": "Docs"
     },
     "categories": {
       "Getting Started": "Getting Started"

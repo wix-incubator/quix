@@ -9,7 +9,6 @@ const React = require('react');
 
 const CompLibrary = require('../../core/CompLibrary.js');
 
-const MarkdownBlock = CompLibrary.MarkdownBlock; /* Used to read markdown */
 const Container = CompLibrary.Container;
 const GridBlock = CompLibrary.GridBlock;
 
@@ -60,11 +59,10 @@ class HomeSplash extends React.Component {
 
     return (
       <SplashContainer>
-        <Logo img_src={`${baseUrl}img/undraw_monitor.svg`} />
+        <Logo img_src={`${baseUrl}img/chart.gif`} />
         <div className="inner">
           <ProjectTitle siteConfig={siteConfig} />
           <PromoSection>
-            <Button href="#try">Try It Out</Button>
             <Button href={docUrl('installation.html')}>Get Started</Button>
           </PromoSection>
         </div>
@@ -91,31 +89,6 @@ class Index extends React.Component {
       </Container>
     );
 
-    const FeatureCallout = () => (
-      <div
-        className="productShowcaseSection paddingBottom"
-        style={{textAlign: 'center'}}>
-        <h2>Feature Callout</h2>
-        <MarkdownBlock>These are features of this project</MarkdownBlock>
-      </div>
-    );
-
-    const TryOut = () => (
-      <Block id="try">
-        {[
-          {
-            content:
-              'To make your landing page more attractive, use illustrations! Check out ' +
-              '[**unDraw**](https://undraw.co/) which provides you with customizable illustrations which are free to use. ' +
-              'The illustrations you see on this page are from unDraw.',
-            image: `${baseUrl}img/undraw_code_review.svg`,
-            imageAlign: 'left',
-            title: 'Wonderful SVG Illustrations',
-          },
-        ]}
-      </Block>
-    );
-
     const LearnHow = () => (
       <Block background="light">
         {[
@@ -131,25 +104,25 @@ class Index extends React.Component {
     );
 
     const MainFeatures = () => (
-      <Block layout="threeColumn">
+      <Block layout="threeColumn" background="light">
         {[
           {
             content: 'Via Google Sign-In',
-            image: `${baseUrl}img/undraw_profile_pic.svg`,
+            image: `${baseUrl}img/undraw_team.svg`,
             imageAlign: 'top',
-            title: 'Multi-user web application',
+            title: 'Multi-user web app',
           },
           {
-            content: 'Manage your notebooks in nested folders',
+            content: 'Manage your notebooks in folders',
             image: `${baseUrl}img/undraw_folder.svg`,
             imageAlign: 'top',
-            title: 'Organize',
+            title: 'Organize queries',
           },
           {
-            content: 'Run Presto notes',
+            content: 'Harness the power of <a href="https://github.com/prestosql/presto" target="_blank">Presto</a>',
             image: `${baseUrl}img/undraw_media_player.svg`,
             imageAlign: 'top',
-            title: 'Run',
+            title: 'Execute queries',
           },
         ]}
       </Block>
@@ -160,25 +133,25 @@ class Index extends React.Component {
         {[
           {
             content: 'Use the DB tree to explore your data sources',
-            image: `${baseUrl}img/undraw_operating_system.svg`,
+            image: `${baseUrl}img/undraw_server_status.svg`,
             imageAlign: 'top',
             title: 'Explore',
           },
           {
-            content: 'Quickly plot time and bar series (more visualizations to follow)',
-            image: `${baseUrl}img/undraw_operating_system.svg`,
+            content: 'Quickly plot time and bar series <br> (more visualizations to follow)',
+            image: `${baseUrl}img/undraw_visual_data.svg`,
             imageAlign: 'top',
             title: 'Visualize',
           },
           {
-            content: 'Search all queries accross all users',
-            image: `${baseUrl}img/undraw_operating_system.svg`,
+            content: 'Search queries accross all users',
+            image: `${baseUrl}img/undraw_search.svg`,
             imageAlign: 'top',
             title: 'Search',
           },
           {
             content: 'Share folders, notebooks and notes',
-            image: `${baseUrl}img/undraw_operating_system.svg`,
+            image: `${baseUrl}img/undraw_live_collaboration.svg`,
             imageAlign: 'top',
             title: 'Share',
           },
@@ -221,10 +194,6 @@ class Index extends React.Component {
         <div className="mainContainer">
           <MainFeatures />
           <MoreFeatures />
-          <FeatureCallout />
-          <LearnHow />
-          <TryOut />
-          <Showcase />
         </div>
       </div>
     );
