@@ -29,6 +29,8 @@ bi-file-explorer-inner {
     }    
 
     .fe-item-name {
+      height: $item-height;
+
       .fe-icon-container {
         line-height: 0;
       }
