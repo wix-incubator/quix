@@ -1,8 +1,5 @@
 # Quix [![Build Status](https://travis-ci.com/wix/quix.svg?branch=master)](https://travis-ci.com/wix/quix)
 
-> :exclamation: Please note **that this is a beta version** of Quix which is still undergoing final testing before its official release.
-
-
 Quix is a multi-user, easy-to-use notebook manager. By utilizing [Presto](https://github.com/prestosql/presto) it provides unified access to multiple data sources and effectively acts as a shared space for your company's BI insights and know-how.
 
 ## Features
