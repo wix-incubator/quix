@@ -10,6 +10,7 @@ import {cache} from '../../store';
 import {
   addNotebook,
   addFolder,
+  deleteFolder,
   isRoot,
   getFolderPermissions,
   StateManager,
@@ -27,7 +28,7 @@ const listenToEvents = (scope, app: Instance, store: Store, fileExplorer) => {
   fileExplorer
     .on('fileCreated', ({id, path}) => addNotebook(store, app, path, {id}), false, scope)
     .on('fileMoved', ({id, path}) => store.dispatchAndLog(NotebookActions.moveNotebook(id, path)), false, scope)
-    .on('folderDeleted', ({id}) => store.dispatchAndLog(FileActions.deleteFile(id)), false, scope)
+    .on('folderDeleted', (folder) => deleteFolder(store, app, folder), false, scope)
     .on('folderCreated', ({id, path}) => addFolder(store, app, path, {id}), false, scope)
     .on('folderRenamed', ({id, name}) => store.dispatchAndLog(FileActions.updateName(id, name)), false, scope)
     .on('folderMoved', ({id, path}) => store.dispatchAndLog(FileActions.moveFile(id, path)), false, scope);

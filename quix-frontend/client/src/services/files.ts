@@ -22,7 +22,11 @@ export const addFolder = async (store: Store, app: Instance, parentOrPath: IFold
 export const deleteFolder = (store: Store, app: Instance, folder: IFolder | IFile) => {
   const {id} = folder;
 
-  return store.dispatchAndLog(FileActions.deleteFile(id)).then(() => goUp(app, folder));
+  return store.dispatchAndLog(FileActions.deleteFile(id)).then(() => {
+    if (store.getState('folder.folder')) {
+      goUp(app, folder);
+    }
+  });
 }
 
 export const isRoot = (file: Pick<IFile, 'type' | 'path'>) => {
