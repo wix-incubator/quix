@@ -10,17 +10,17 @@ quix-header {
     .bi-action {
       @include hover('lighter', $primary);
       @include active('lighter', $primary);
-      @include border('bottom');
+
 
       font-size: 14px;
-      border-color: transparent;
-      border-width: 2px;
       border-radius: 0;
+      border-top: 2px solid transparent;
+      border-bottom: 2px solid transparent;
       background-color: transparent !important;
 
       &:hover,
       &.bi-active {
-        border-color: currentColor;
+        border-bottom-color: currentColor;
       }
     }
   }
