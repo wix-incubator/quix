@@ -32,6 +32,9 @@ object PlainPrestoSqlSupport {
   def splitToStatements(multipleStatements: String) = {
     val splitter = new StatementSplitter(multipleStatements, Set(";").asJava)
 
-    splitter.getCompleteStatements.asScala.map(_.statement()).toList ++ List(splitter.getPartialStatement).filterNot(_.isEmpty)
+    val completeStatements = splitter.getCompleteStatements.asScala.map(_.statement()).toList
+    val partialStatements = List(splitter.getPartialStatement).filterNot(_.trim.isEmpty)
+
+    completeStatements ++ partialStatements
   }
 }
