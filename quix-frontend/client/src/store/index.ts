@@ -34,8 +34,10 @@ export const initCache = (store: Store) => {
 
 export const waitForEntity = (store: Store, id: string, entity: string) => new Promise<IEntity>((resolve, reject) => {
   const unsubscribe = store.subscribe(`${entity}`, state => {
-    if ((state[entity] && state[entity].id === id) || state.error) {
-      unsubscribe();
+    if ((state[entity] && (!id || state[entity].id === id)) || state.error) {
+      if (unsubscribe) {
+        unsubscribe();
+      }
 
       return state[entity] ? resolve(state[entity]) : reject(state.error);
     }
