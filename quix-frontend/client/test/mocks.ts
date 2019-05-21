@@ -1,5 +1,6 @@
 import UrlPattern from 'url-pattern';
 import {
+  IUser,
   IFile,
   INotebook,
   INote,
@@ -9,7 +10,7 @@ import {
   createFolder,
   createFile,
   createNote,
-  createFolderPayload
+  createFolderPayload,
 } from '../../shared';
 
 const mocks = {
@@ -88,6 +89,10 @@ ORDER BY 1
 };
 
 let mockOverrides = {};
+
+export const createMockUser = (props: Partial<IUser> = {}) => {
+  return createUser(props);
+}
 
 export const createMockRootFolder = (props: Partial<IFile> = {}) => {
   return createFolder([], {id: '1', name: 'My notebooks', owner: 'local@quix.com', ...props});
