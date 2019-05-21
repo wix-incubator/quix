@@ -12,6 +12,7 @@ import {IScope} from './search-results-types';
 import * as Resources from '../../services/resources';
 import * as AppActions from '../../store/app/app-actions';
 import {StateManager, extractLinesAroundMatch} from '../../services';
+import {paramSerializerFactory} from '../../lib/code-editor';
 
 enum States {
   Initial,
@@ -26,6 +27,8 @@ export default (app: Instance, store: Store) => () => ({
   scope: {},
   link: {
     async pre(scope: IScope) {
+      const serializer = paramSerializerFactory('sql');
+
       initNgScope(scope)
         .withVM({
           text: null,
@@ -55,7 +58,7 @@ export default (app: Instance, store: Store) => () => ({
               .force('Result', true, {
                 notes: notes.map<INote>(note => ({
                   ...note,
-                  content: extractLinesAroundMatch(note.content, text)
+                  content: extractLinesAroundMatch(serializer.removeEmbed(note.content), text)
                 }))
               })
               .set('Content', !!notes.length);

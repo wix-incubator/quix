@@ -74,9 +74,9 @@ export class ParamParser {
 
     if (!embeded) {
       return params.length ? replacer(text, text, `${this.serializer.embed(text, params)}${text}`) : text;
-    } 
-      return replacer(text, embeded, params.length ? this.serializer.embed(text, params) : '');
-    
+    }
+
+    return replacer(text, embeded, params.length ? this.serializer.embed(text, params) : '');  
   }
 
   /**********************************************

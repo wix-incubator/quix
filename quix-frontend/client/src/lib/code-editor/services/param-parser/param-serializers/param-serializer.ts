@@ -61,4 +61,11 @@ export abstract class ParamSerializer {
   public params(text: string): Iterable<ITokenizedParam> {
     return Array.from(this.parse(text)).map(param => this.transform(this.tokenize(this.convert(param))));
   }
+
+  /**
+   * Params iterator
+   */
+  public removeEmbed(text: string): string {
+    return text.replace(this.extract(text), '');
+  }
 }
