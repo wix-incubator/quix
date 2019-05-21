@@ -1,0 +1,48 @@
+version: '3'
+services:
+  backend:
+    image: wixquix/quix-backend:release-0.2.1
+    ports:
+      - "8081:8081"
+    depends_on:
+      - presto
+    environment:
+      - PRESTO_API
+      - AUTH_COOKIE
+      - AUTH_SECRET
+      - AUTH_TYPE
+  frontend:
+    image: wixquix/quix-fronend:release-0.2.1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - db
+    environment:
+      - DB_NAME
+      - DB_USER
+      - DB_PASS
+      - DB_HOST
+      - DB_PORT
+      - BACKEND_INTERNAL_URL
+      - BACKEND_PUBLIC_URL
+      - GOOGLE_SSO_CLIENT_ID
+      - GOOGLE_SSO_SECRET
+      - AUTH_COOKIE
+      - AUTH_SECRET
+      - AUTH_TYPE
+  db:
+    image: "mysql:5.7"
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "quix"
+    volumes:
+      - "db_volume:$DB_VOLUME_PATH"
+  presto:
+    image: "starburstdata/presto"
+    ports:
+      - "8181:8080"
+
+volumes:
+  db_volume:

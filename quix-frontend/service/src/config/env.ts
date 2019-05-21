@@ -37,7 +37,7 @@ const envSettingsMap: {[K in keyof EnvSettings]: string} = {
 const envSettingsDefaults = {
   DbType: 'mysql' as 'mysql' | 'sqlite',
   AuthType: 'fake' as 'fake' | 'google',
-  DbName: 'Quix',
+  DbName: 'quix',
   DbUser: 'root',
   DbPass: '',
   DbHost: 'db',
