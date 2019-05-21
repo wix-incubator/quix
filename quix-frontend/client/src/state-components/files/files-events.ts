@@ -21,7 +21,11 @@ export const onChildNameChange = (scope: IScope, store: Store, app: Instance) =>
 };
 
 export const onDelete = (scope: IScope, store: Store, app: Instance) => (folder: IFile) => {
-  deleteFolder(store, app, folder);
+  deleteFolder(store, app, folder)
+   .then(() => toast.showToast({
+      text: `Deleted folder "${folder.name}"`,
+      type: 'success'
+    }, 3000));
 };
 
 export const onShare = (scope: IScope, store: Store, app: Instance) => (folder: IFile) => {
@@ -79,8 +83,11 @@ export const onUnmarkAll = (scope: IScope, store: Store, app: Instance) => () =>
 
 export const onMarkedDelete = (scope: IScope, store: Store, app: Instance) => (files: IFile[]) => {
   store.dispatchAndLog(files.map(file => file.type === 'folder' ? 
-    FileActions.deleteFile(file.id) 
-    : NotebookActions.deleteNotebook(file.id)));
+    FileActions.deleteFile(file.id) : NotebookActions.deleteNotebook(file.id)))
+    .then(() => toast.showToast({
+      text: `Deleted ${files.length} items`,
+      type: 'success'
+    }, 3000));
 }
 
 export const $onDestroy = (scope: IScope, store: Store, app: Instance) => () => {

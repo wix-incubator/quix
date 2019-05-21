@@ -1,6 +1,7 @@
 import template from './actions.html';
 import './actions.scss';
 
+import {isArray} from 'lodash';
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {Instance} from '../../lib/app';
@@ -27,8 +28,9 @@ export default (app: Instance, store: Store) => () => ({
         .withOptions('quixActionsOptions', {
           reverse: false,
           compact: false,
-          bulk: false,
-          confirmOnDelete: true
+          customText: '',
+          confirmOnDelete: true,
+          bulk: isArray(scope.context),
         }, true)
         .withEvents({
           onLikeToggle() {
@@ -46,7 +48,7 @@ export default (app: Instance, store: Store) => () => ({
             if (!scope.options.confirmOnDelete) {
               fn();
             } else {
-              confirmAction('delete', scope.type, scope.options.bulk).then(fn);
+              confirmAction('delete', scope.type, scope.context, scope.options.customText).then(fn);
             }
           }
         });

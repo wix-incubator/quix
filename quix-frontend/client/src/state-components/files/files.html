@@ -40,10 +40,9 @@
 
       <div class="bi-align bi-s-h bi-fade-in" ng-if="vm.marked.enabled">
         <quix-actions 
-          type="items"
+          type="item"
           context="vm.marked.list"
           permissions="::permissions.bulk"
-          quix-actions-options="::{bulk: true}"
           on-delete="events.onMarkedDelete(context)"
         ></quix-actions>
   

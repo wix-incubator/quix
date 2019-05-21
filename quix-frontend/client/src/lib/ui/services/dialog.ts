@@ -38,7 +38,7 @@ function createScope(deferred, scope?, locals?) {
         scope.dialogResolving = true;
 
         res
-          .then(() => deferred.resolve(scope), e => scope.dialogError = e)
+          .then(r => deferred.resolve(r, scope), e => scope.dialogError = e)
           .finally(() => scope.dialogResolving = false);
       } else {
         deferred.resolve(scope);

@@ -1,6 +1,6 @@
 import {assign, isArray} from 'lodash';
-import {createNgModel, initNgScope, inject} from '../../core';
-import {confirm} from '../../ui';
+import {createNgModel, initNgScope, inject, utils} from '../../core';
+import {confirm, toast} from '../../ui';
 import {IItemDef} from '../services';
 import {File, Folder} from '../services/file-explorer-models';
 import {treeToDef, defToTree} from '../services/file-explorer-tools';
@@ -17,11 +17,7 @@ const confirmAction = (action: 'delete', context: 'folder', name: string) => {
     actionType: action === 'delete' ? 'destroy' : 'neutral',
     yes: action,
     icon: 'report',
-    html: `
-      The folder <b>"${name}"</b> and all it's content will be lost.
-      <br>
-      Are you sure you want to delete this ${context}?
-    `
+    html: `Are you sure you want to delete the ${utils.dom.escape(context)} <b>"${utils.dom.escape(name)}"</b> ?`
   });
 }
 
@@ -68,6 +64,11 @@ function initScope(scope, controller: Controller, depth: number) {
           }
   
           controller.syncItem(folder, 'folderDeleted');
+
+          toast.showToast({
+            text: `Deleted folder "${folder.getName()}"`,
+            type: 'success'
+          }, 3000);
         };
 
         if (folder.isEmpty()) {

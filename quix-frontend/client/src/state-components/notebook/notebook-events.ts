@@ -27,7 +27,11 @@ export const onNameChange = (scope: IScope, store: Store, app: Instance) => (fil
 }
 
 export const onDelete = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
-  deleteNotebook(store, app, notebook);
+  deleteNotebook(store, app, notebook)
+    .then(() => toast.showToast({
+      text: `Deleted notebook "${notebook.name}"`,
+      type: 'success'
+    }, 3000));
 }
 
 export const onClone = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
@@ -40,10 +44,11 @@ export const onClone = (scope: IScope, store: Store, app: Instance) => (notebook
       ...notebook,
       notes: scope.vm.state.value().notes
     })
-  },
-    scope,
-    {model: {folder: null}}
-  );
+  }, scope, {model: {folder: null}})
+  .then(res => toast.showToast({
+    text: `Cloned notebook as "${res.name}"`,
+    type: 'success'
+  }, 3000));
 }
 
 export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
@@ -53,10 +58,6 @@ export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook
     text: 'Copied notebook url to clipboard',
     type: 'success'
   }, 3000);
-}
-
-export const onMarkedNotesDelete = (scope: IScope, store: Store, app: Instance) => (notes: INote[]) => {
-  store.dispatchAndLog(notes.map(note => NoteActions.deleteNote(note.id)));
 }
 
 export const onLikeToggle = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
@@ -100,10 +101,11 @@ export const onNoteClone = (scope: IScope, store: Store, app: Instance) => (note
     yes: 'clone',
     content: `<quix-destination-picker ng-model="model.notebook" context="notebook" required></quix-destination-picker>`,
     onConfirm: ({model: {notebook}}) => copyNote(store, app, notebook, note)
-  },
-    scope,
-    {model: {notebook: null}}
-  );
+  }, scope, {model: {notebook: null}})
+  .then((res) => toast.showToast({
+    text: `Cloned note as "${res.name}"`,
+    type: 'success'
+  }, 3000));
 }
 
 export const onNoteShare = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
@@ -118,7 +120,11 @@ export const onNoteShare = (scope: IScope, store: Store, app: Instance) => (note
 }
 
 export const onNoteDelete = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
-  store.dispatchAndLog(NoteActions.deleteNote(note.id));
+  store.dispatchAndLog(NoteActions.deleteNote(note.id))
+    .then(() => toast.showToast({
+      text: `Deleted note "${note.name}"`,
+      type: 'success'
+    }, 3000));
 }
 
 export const onNoteContentChange = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
@@ -140,6 +146,15 @@ export const onNoteReorder = (scope: IScope, store: Store, app: Instance) => (e:
 export const onMarkToggle = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
   store.dispatch(toggleMark(note));
 };
+
+
+export const onMarkedNotesDelete = (scope: IScope, store: Store, app: Instance) => (notes: INote[]) => {
+  store.dispatchAndLog(notes.map(note => NoteActions.deleteNote(note.id)))
+    .then(() => toast.showToast({
+      text: `Deleted ${notes.length} notes`,
+      type: 'success'
+    }, 3000));
+}
 
 export const onUnmarkAll = (scope: IScope, store: Store, app: Instance) => () => {
   store.dispatch(unmarkAll());

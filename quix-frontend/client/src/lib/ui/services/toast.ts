@@ -1,11 +1,10 @@
 import {last} from 'lodash';
-import angular from 'angular';
 import {inject, utils} from '../../core';
 
 import './toast.scss';
 
 enum Icons {
-  success = 'check_circle_outline',
+  success = 'check',
   error = 'error_outline',
 }
 
@@ -38,7 +37,7 @@ function show(scope, text, type, okText, cancelText) {
   scope.cancelText = cancelText;
   scope.iconClass = IconClass[type];
 
-  const toast = angular.element(`
+  const element = inject('$compile')(`
     <div class="bi-toast bi-align bi-s-h--x3 bi-fade-in">
       <span class="bi-align bi-s-h">
         <span class="bi-icon {{::iconClass}}" ng-if="type">{{::type}}</span>
@@ -50,9 +49,8 @@ function show(scope, text, type, okText, cancelText) {
         <span class="bi-action bi-label" ng-if="cancelText" ng-click="cancel()">{{::cancelText}}</span>
       </span>
     </div>
-  `);
+  `)(scope);
 
-  const element = inject('$compile')(toast)(scope);
   instances.push({scope, element});
 
   inject('$timeout')(() => element.appendTo(window.document.body));

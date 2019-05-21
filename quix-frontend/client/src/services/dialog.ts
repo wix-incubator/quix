@@ -1,12 +1,25 @@
+import {isArray} from 'lodash';
 import {confirm as confirmDialog} from '../lib/ui';
+import {utils} from '../lib/core';
 
-export const confirmAction = (action: 'delete', context: 'notebook' | 'note' | 'folder', list = false) => {
+export const confirmAction = (
+    action: 'delete',
+    type: 'notebook' | 'note' | 'folder',
+    context: any,
+    customText = ''
+  ) => {
   return confirmDialog({
-    title: `${action} ${context}`,
+    title: `${action} ${type}`,
     actionType: action === 'delete' ? 'destroy' : 'neutral',
     icon: action === 'delete' ? 'report' : null,
     yes: action,
-    html: `Are you sure you want to delete ${list ? 'the selected' : 'this'} ${context}?`
+    html: `
+      Are you sure you want to delete ${isArray(context) ? 
+        `the <b>(${context.length})</b> selected ${utils.dom.escape(type)}s` 
+        : `the ${utils.dom.escape(type)} <b>"${utils.dom.escape(context.name)}</b>"`}
+
+      ${customText ? `(${utils.dom.escape(customText)})` : ''} ?
+    `
   });
 }
 

@@ -35,14 +35,15 @@ export const copyNotebook = async (store: Store, app: Instance, parentOrPath: IF
     owner: app.getUser().getEmail()
   });
 
-  store.dispatchAndLog([
+  return store.dispatchAndLog([
     NotebookActions.createNotebook(newNotebook.id, newNotebook),
     ...notes.map(({name: noteName, type, content, owner}) => {
       const note = createNote(newNotebook.id, {name: noteName, type, content, owner} as any);
       return NoteActions.addNote(note.id, note);
     })
   ])
-  .then(() => goToFile(app, {...newNotebook, type: FileType.notebook}, {isNew: false}));
+  .then(() => goToFile(app, {...newNotebook, type: FileType.notebook}, {isNew: false}))
+  .then(() => newNotebook);
 }
 
 export const copyNote = async (store: Store, app: Instance, targetNotebook: INotebook, sourceNote: INote) => {
@@ -55,8 +56,9 @@ export const copyNote = async (store: Store, app: Instance, targetNotebook: INot
     owner: app.getUser().getEmail()
   });
 
-  store.dispatchAndLog([NoteActions.addNote(newNote.id, newNote)])
-    .then(() => goToFile(app, {...targetNotebook, type: FileType.notebook}, {isNew: false, note: newNote.id}));
+  return store.dispatchAndLog([NoteActions.addNote(newNote.id, newNote)])
+    .then(() => goToFile(app, {...targetNotebook, type: FileType.notebook}, {isNew: false, note: newNote.id}))
+    .then(() => newNote);
 }
 
 export const deleteNotebook = async (store: Store, app: Instance, notebook: INotebook) => {

@@ -3,7 +3,7 @@
 import * as _ from 'lodash';
 import jquery from 'jquery';
 import * as Uuid from 'uuid';
-import * as escapeHtml from 'escape-html';
+import escapeHtml from 'escape-html';
 
 export function isPromise(obj: any): boolean {
   return (obj && typeof obj.then === 'function');
