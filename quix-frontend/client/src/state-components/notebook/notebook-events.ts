@@ -35,15 +35,15 @@ export const onClone = (scope: IScope, store: Store, app: Instance) => (notebook
     title: 'Clone notebook',
     subTitle: 'Choose destintation folder',
     yes: 'clone',
-    content: `<quix-destination-picker ng-model="model.folder" context="folder" required></quix-destination-picker>`
+    content: `<quix-destination-picker ng-model="model.folder" context="folder" required></quix-destination-picker>`,
+    onConfirm: ({model: {folder}}) => copyNotebook(store, app, folder, {
+      ...notebook,
+      notes: scope.vm.state.value().notes
+    })
   },
     scope,
     {model: {folder: null}}
-  )
-  .then(({model: {folder}}) => copyNotebook(store, app, folder, {
-    ...notebook,
-    notes: scope.vm.state.value().notes
-  }));
+  );
 }
 
 export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
@@ -57,12 +57,6 @@ export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook
 
 export const onMarkedNotesDelete = (scope: IScope, store: Store, app: Instance) => (notes: INote[]) => {
   store.dispatchAndLog(notes.map(note => NoteActions.deleteNote(note.id)));
-}
-
-export const onMarkedNotesCopy = (scope: IScope, store: Store, app: Instance) => () => {
-    prompt({title: 'Copy notes', yes: 'copy', content: `
-    Coming soon...
-  `}, scope);
 }
 
 export const onLikeToggle = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
@@ -104,12 +98,12 @@ export const onNoteClone = (scope: IScope, store: Store, app: Instance) => (note
     title: 'Clone note',
     subTitle: 'Choose destintation notebook',
     yes: 'clone',
-    content: `<quix-destination-picker ng-model="model.notebook" context="notebook" required></quix-destination-picker>`
+    content: `<quix-destination-picker ng-model="model.notebook" context="notebook" required></quix-destination-picker>`,
+    onConfirm: ({model: {notebook}}) => copyNote(store, app, notebook, note)
   },
     scope,
     {model: {notebook: null}}
-  )
-  .then(({model: {notebook}}) => copyNote(store, app, notebook, note));
+  );
 }
 
 export const onNoteShare = (scope: IScope, store: Store, app: Instance) => (note: INote) => {

@@ -19,8 +19,8 @@ export const HeaderMenu = [{
   title: 'My notebooks',
   targetState: 'files',
   activeStates: ['files', 'notebook'],
-  condition: (app: Instance, store: Store, state: string) => 
-    waitForEntity(store, state === 'files' ? 'folder' : 'notebook').then(entity => isOwner(app, entity))
+  condition: (app: Instance, store: Store, state: string, id: string) => 
+    waitForEntity(store, id, state === 'files' ? 'folder' : 'notebook').then(entity => isOwner(app, entity))
 }, {
   title: 'Users',
   targetState: 'users',

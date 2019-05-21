@@ -32,12 +32,12 @@ export const initCache = (store: Store) => {
   };
 };
 
-export const waitForEntity = (store: Store, entity: string) => new Promise<IEntity>((resolve, reject) => {
+export const waitForEntity = (store: Store, id: string, entity: string) => new Promise<IEntity>((resolve, reject) => {
   const unsubscribe = store.subscribe(`${entity}`, state => {
-    if (state[entity] || state.error) {
+    if ((state[entity] && state[entity].id === id) || state.error) {
       unsubscribe();
 
       return state[entity] ? resolve(state[entity]) : reject(state.error);
     }
   });
-})
+});

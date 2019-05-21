@@ -14,18 +14,21 @@ export const prompt = ({
   title,
   subTitle,
   yes,
-  content
+  content,
+  onConfirm
 }: {
   title: string;
   subTitle?: string;
   yes: string;
   content: string;
+  onConfirm?(scope: any): any;
 }, scope?, locals?) => {
   return confirmDialog({
     title,
     subTitle,
     actionType: 'neutral',
     yes,
-    html: `<form name="form">${content}</form>`
+    html: `<form name="form">${content}</form>`,
+    onConfirm
   }, scope, locals);
 }

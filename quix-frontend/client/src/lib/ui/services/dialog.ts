@@ -31,7 +31,7 @@ function createScope(deferred, scope?, locals?) {
       deferred.reject();
     },
     resolve() {
-      const res = this.onConfirm();
+      const res = this.onConfirm(scope);
 
       if (res && res.then) {
         scope.dialogError = null;

@@ -18,7 +18,7 @@ const listenToNavChange = (scope: IScope, app: Instance, store: Store) => {
         return (item.targetState === state || (item.activeStates && item.activeStates.indexOf(state) !== -1));
       });
 
-      const procede = await (menuItem && (!menuItem.condition || menuItem.condition(app, store, state)));
+      const procede = await (menuItem && (!menuItem.condition || menuItem.condition(app, store, state, params.id)));
 
       scope.vm.currentState = procede ? menuItem.targetState : null;
     }, scope)
