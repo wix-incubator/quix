@@ -20,8 +20,9 @@ create<{
   title: 'Quix'
 }, {
   auth: {googleClientId},
+  statePrefix: 'base',
   defaultUrl: '/home',
-  homeState: 'base.home',
+  homeState: 'home',
   logoUrl: `${staticsBaseUrl}assets/logo.png`
 }, ['bi.app', 'bi.runner', 'bi.fileExplorer'])
   .config(config)

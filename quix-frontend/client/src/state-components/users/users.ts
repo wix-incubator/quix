@@ -13,7 +13,7 @@ import * as Scope from './users-scope';
 import * as Events from './users-events';
 
 export default (app: App, store: Store) => ({
-  name: 'base.users',
+  name: 'users',
   template,
   url: {},
   scope: Scope,

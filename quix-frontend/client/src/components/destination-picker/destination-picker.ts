@@ -21,7 +21,7 @@ enum States {
 
 const listenToNavChange = (scope: IScope, app: Instance, fileExplorer) => {
   app.getNavigator()
-    .listen(['base.files', 'base.notebook'], 'success', ({id}: {id: string}) => {
+    .listen(['files', 'notebook'], 'success', ({id}: {id: string}) => {
       const files = scope.vm.state.value().files;
       let file = files.find(f => f.id === id);
 

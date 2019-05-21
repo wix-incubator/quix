@@ -15,7 +15,7 @@ import * as Scope from './notebook-scope';
 import * as Events from './notebook-events';
 
 export default (app: App, store: Store) => ({
-  name: 'base.notebook:id',
+  name: 'notebook:id',
   template,
   url: Url,
   scope: Scope,

@@ -8,7 +8,7 @@ import {search} from '../../store/app/app-actions';
 import {openSearchResults, openTempQuery, closePopup, hasQueuedNotes} from '../../services';
 
 export default (app: App, store: Store) => ({
-  name: 'base',
+  name: '',
   abstract: true,
   template,
   url: {

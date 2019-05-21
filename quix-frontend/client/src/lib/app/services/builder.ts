@@ -43,13 +43,18 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
   private readonly title: string;
   private conf: Config;
 
-  constructor(private readonly id: string | {id: string; title: string}, private readonly ngApp: angular.IModule, private readonly options: {
-    statePrefix?: string;
-    defaultUrl?: string;
-    auth?: {googleClientId: string};
-    homeState?: string;
-    logoUrl?: string;
-  }, private ngmodules = []) {
+  constructor(
+    private readonly id: string | {id: string; title: string},
+    private readonly ngApp: angular.IModule,
+    private readonly options: {
+      statePrefix?: string;
+      defaultUrl?: string;
+      auth?: {googleClientId: string};
+      homeState?: string;
+      logoUrl?: string;
+    }, 
+    private ngmodules = []
+  ) {
     super();
 
     this.user = new User();
@@ -111,7 +116,6 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
   /**
    * Registers a state component
    *
-   * @param name      state component name
    * @param config    state component config
    */
   stateComponent(config: IStateComponentConfig, app: Instance, store: Store): Builder<Config> {
@@ -123,7 +127,7 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
 
     const [fullStateName, paramName] = config.name.split(':');
     const stateName = last(fullStateName.split('.'));
-    const componentName = `${app.getId()}-${paramCase(stateName)}`;
+    const componentName = [app.getId(), paramCase(stateName)].filter(x => !!x).join('-');
 
     this.state({
       name: fullStateName,

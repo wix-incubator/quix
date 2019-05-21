@@ -15,6 +15,7 @@ export type INavigatorCallback = (params: any, stateName: string) => any;
 
 export default class Navigator extends srv.eventEmitter.EventEmitter {
   private states = [];
+  private prefix;
 
   constructor(private readonly options: {
     statePrefix: string;
@@ -26,8 +27,11 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
   }
 
   init(appId: string, user: User, ngApp: IModule) {
+    this.prefix = this.options.statePrefix;
+
     if (this.options.auth) {
       this.states = getAuthStates(appId, this.options.auth.googleClientId, user);
+      this.prefix = `auth.${this.prefix}`;
     }
 
     ngApp.config([
@@ -63,19 +67,19 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
   }
 
   getStatePrefix() {
-    return this.options.statePrefix;
+    return this.prefix;
   }
 
   state(name, options) {
-    this.states.push({name: `${this.options.statePrefix}${name}`, options});
+    this.states.push({name: `${this.prefix}${name ? `.${name}` : ''}`, options});
   }
 
   go(state: string, params?: Object, options: {reload: boolean | string} = {reload: false}): PromiseLike<any> {
     if (typeof options.reload === 'string') {
-      options.reload = `${this.options.statePrefix}${options.reload}`;
+      options.reload = `${this.prefix}.${options.reload}`;
     }
 
-    return inject('$state').go(`${this.options.statePrefix}${state}`, params, options);
+    return inject('$state').go(`${this.prefix}.${state}`, params, options);
   }
 
   getUrl(state?: string, params?: Object): string {
@@ -85,7 +89,7 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
   }
 
   goHome() {
-    return inject('$state').go(`${this.options.statePrefix}${this.options.homeState}`);
+    return inject('$state').go(`${this.prefix}.${this.options.homeState}`);
   }
 
   listen(state: string | string[], type: TEventType, fn: INavigatorCallback, scope?) {
@@ -94,7 +98,7 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
     let otherwise: INavigatorCallback = null;
 
     this.on(eventName, (stateName = '', params = {}) => {
-      stateName = stateName.replace(this.getStatePrefix(), '');
+      stateName = stateName.replace(`${this.getStatePrefix()}.`, '');
       if (states.some(s => stateName.indexOf(s) >= 0)) {
         fn(params, stateName);
       } else if (otherwise) {

@@ -14,7 +14,7 @@ import * as Scope from './files-scope';
 import * as Events from './files-events';
 
 export default (app: App, store: Store) => ({
-  name: 'base.files:id',
+  name: 'files:id',
   template,
   url: {},
   scope: Scope,

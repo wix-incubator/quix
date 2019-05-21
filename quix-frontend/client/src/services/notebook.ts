@@ -76,7 +76,7 @@ export const hasQueuedNotes = (store: Store) => {
 }
 
 export const goToExamples = (app: Instance) => {
-  app.go(`base.notebook`, {
+  app.go('notebook', {
     id: 'examples',
     isNew: false
   });

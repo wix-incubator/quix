@@ -8,7 +8,7 @@ import {Instance as App} from '../../lib/app';
 import {addNotebook, goToExamples, goToRoot} from '../../services';
 
 export default (app: App, store: Store) => ({
-  name: 'base.home',
+  name: 'home',
   template,
   url: {},
   scope: {},

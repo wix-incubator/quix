@@ -35,7 +35,7 @@ export default (app: Instance, store: Store) => () => ({
         })
         .withEvents({
           onNoteClick(note: INote) {
-            app.go('base.notebook', {id: note.notebookId, note: note.id});
+            app.go('notebook', {id: note.notebookId, note: note.id});
           }
         });
 

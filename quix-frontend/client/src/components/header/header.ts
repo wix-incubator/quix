@@ -9,13 +9,11 @@ import * as AppActions from '../../store/app/app-actions';
 
 const listenToNavChange = (scope: IScope, app: Instance, store: Store) => {
   const states = HeaderMenu.reduce((res, item) => {
-    return [...res, ...(item.activeStates || [item.targetState]).map(state => `base.${state}`)];
+    return [...res, ...(item.activeStates || [item.targetState])];
   }, []);
 
   app.getNavigator()
     .listen(states, 'success', async (params, state) => {
-      state = state.replace('base.', '');
-
       const menuItem = HeaderMenu.find(item => {
         return (item.targetState === state || (item.activeStates && item.activeStates.indexOf(state) !== -1));
       });
@@ -44,7 +42,7 @@ export default (app: Instance, store: Store) => () => ({
             store.dispatch(AppActions.search(scope.vm.searchText || null, 'user'));
           },
           onNavItemClick(item) {
-            app.go(`base.${item.targetState}`);
+            app.go(item.targetState);
           }
         });
 
