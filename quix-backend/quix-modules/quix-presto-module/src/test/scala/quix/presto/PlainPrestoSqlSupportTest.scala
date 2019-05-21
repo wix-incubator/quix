@@ -1,9 +1,9 @@
 package quix.presto
 
-import org.specs2.mutable.Specification
+import org.specs2.mutable.Spec
 import quix.presto.PlainPrestoSqlSupport.{splitToStatements => split}
 
-class PlainPrestoSqlSupportTest extends Specification {
+class PlainPrestoSqlSupportTest extends Spec {
 
   "PlainPrestoSqlSupport.splitToStatements" should {
     "handle single line statements" in {
@@ -22,6 +22,10 @@ class PlainPrestoSqlSupportTest extends Specification {
       val newlines = List.fill(10)("\n").mkString
       val sql = "select 1;" + newlines + "select 2"
       split(sql) must contain("select 1", "select 2")
+    }
+
+    "handle empty strings" in {
+      split("       \n\n\n\n\n") must beEmpty
     }
 
   }
