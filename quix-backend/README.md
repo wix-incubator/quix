@@ -14,14 +14,6 @@ The default build will download all dependencies inside the Docker container. Th
 docker build -t quix-backend .
 ```
 
-#### Fat JAR
-You can also build fat JAR with maven and dockerize it:
-```
-mvn -T 8 clean install && docker build -f ./Dockerfile.fat -t quix-backend .
-```
-
-This option requires Maven to be installed locally, but is faster, since it utilizes Maven cache.
-
 ### Running
 Provide a mandatory config values to docker
 ```
