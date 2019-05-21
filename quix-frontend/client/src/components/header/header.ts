@@ -4,18 +4,25 @@ import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {Instance} from '../../lib/app';
 import {IScope} from './header-types';
-import {HeaderNavItems} from '../../constants';
+import {HeaderMenu} from '../../config';
 import * as AppActions from '../../store/app/app-actions';
 
-const listenToNavChange = (scope: IScope, app: Instance) => {
-  const states = HeaderNavItems.reduce((res, item) => {
+const listenToNavChange = (scope: IScope, app: Instance, store: Store) => {
+  const states = HeaderMenu.reduce((res, item) => {
     return [...res, ...(item.activeStates || [item.targetState]).map(state => `base.${state}`)];
   }, []);
 
   app.getNavigator()
-    .listen(states, 'success', (params, state) => {
+    .listen(states, 'success', async (params, state) => {
       state = state.replace('base.', '');
-      scope.vm.currentState = HeaderNavItems.find(item => item.targetState === state || (item.activeStates && item.activeStates.indexOf(state) !== -1)).targetState;
+
+      const menuItem = HeaderMenu.find(item => {
+        return (item.targetState === state || (item.activeStates && item.activeStates.indexOf(state) !== -1));
+      });
+
+      const procede = await (menuItem && (!menuItem.condition || menuItem.condition(app, store, state)));
+
+      scope.vm.currentState = procede ? menuItem.targetState : null;
     }, scope)
     .otherwise(() => scope.vm.currentState = null);
 }
@@ -30,7 +37,7 @@ export default (app: Instance, store: Store) => () => ({
         .withVM({
           searchText: null,
           currentState: null,
-          navItems: HeaderNavItems
+          navItems: HeaderMenu
         })
         .withEvents({
           onSearch() {
@@ -41,7 +48,7 @@ export default (app: Instance, store: Store) => () => ({
           }
         });
 
-      listenToNavChange(scope, app);
+      listenToNavChange(scope, app, store);
 
       store.subscribe('app.searchText', text => scope.vm.searchText = text, scope);
     }

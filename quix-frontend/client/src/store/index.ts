@@ -10,6 +10,7 @@ import {default as folder} from './folder/folder-branch';
 import {default as folderCache} from './folder/folder-cache';
 import {default as users} from './users/users-branch';
 import {default as usersCache} from './users/users-cache';
+import {IEntity} from '../../../shared';
 
 export const branches = {
   app,
@@ -30,3 +31,13 @@ export const initCache = (store: Store) => {
     folder: folderCache(store),
   };
 };
+
+export const waitForEntity = (store: Store, entity: string) => new Promise<IEntity>((resolve, reject) => {
+  const unsubscribe = store.subscribe(`${entity}`, state => {
+    if (state[entity] || state.error) {
+      unsubscribe();
+
+      return state[entity] ? resolve(state[entity]) : reject(state.error);
+    }
+  });
+})

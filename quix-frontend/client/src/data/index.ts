@@ -1,2 +1,2 @@
-export {default as examplesNotebook} from './examples-notebook';
-export {default as quixFolder} from './quix-folder';
+export {default as createExamplesNotebook} from './examples-notebook';
+export {default as createQuixFolder} from './quix-folder';

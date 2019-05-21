@@ -1,7 +1,7 @@
 import {createFolderPayload, createFile, } from '../../../shared';
-import {QuixFolder, ExamplesNotebook} from '../constants';
+import {QuixFolder, ExamplesNotebook} from '../config';
 
-export default createFolderPayload([], {
+export default () => createFolderPayload([], {
   ...QuixFolder,
   files: [createFile([{
     id: QuixFolder.id,
