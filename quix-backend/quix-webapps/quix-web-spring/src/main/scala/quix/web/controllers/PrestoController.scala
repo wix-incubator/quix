@@ -117,7 +117,6 @@ object Start extends StringJsonHelpersSupport {
       val command = payload.as[StartCommand[String]]
 
       assert(command.code != null)
-      assert(command.code.nonEmpty)
 
       command.copy(session = Option(command.session).getOrElse(Map.empty))
     }.toOption
