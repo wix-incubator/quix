@@ -10,7 +10,7 @@ import {
   NoteRepository,
   DbUser,
 } from 'entities';
-import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action';
+import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action.entity';
 import {FoldersController} from './folders/folders.controller';
 import {FoldersService} from './folders/folders.service';
 import {NotebookController} from './notebooks/notebooks.controller';

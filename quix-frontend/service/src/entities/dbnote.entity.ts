@@ -14,12 +14,12 @@ import {INote, NoteType, IBaseNote} from 'shared/entities/note';
 import {DbNotebook} from './dbnotebook.entity';
 import {dbConf} from '../config/db-conf';
 
-@Entity()
+@Entity({name: 'notes'})
 export class DbNote implements IBaseNote {
   @PrimaryColumn(dbConf.idColumn)
   id!: string;
 
-  @Column(dbConf.json)
+  @Column({...dbConf.json, name: 'json_content'})
   jsonContent!: any;
 
   @Index({fulltext: true})
@@ -32,6 +32,7 @@ export class DbNote implements IBaseNote {
   @Column(dbConf.shortTextField)
   name!: string;
 
+  @Index()
   @Column(dbConf.shortTextField)
   owner!: string;
 

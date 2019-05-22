@@ -11,7 +11,7 @@ import {
 } from 'entities';
 import {QuixEventBus} from './quix-event-bus';
 import {DbActionStore} from './infrastructure/action-store';
-import {DbAction} from './infrastructure/action-store/entities/db-action';
+import {DbAction} from './infrastructure/action-store/entities/db-action.entity';
 import {NotePlugin} from './plugins/note-plugin';
 import {NotebookPlugin} from './plugins/notebook-plugin';
 import {FileTreePlugin} from './plugins/file-tree-plugin';

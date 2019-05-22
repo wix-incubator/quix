@@ -22,7 +22,7 @@ import {createNotebook, NotebookActions} from 'shared/entities/notebook';
 import {Connection, Repository} from 'typeorm';
 import * as uuid from 'uuid';
 import {EventSourcingModule} from './event-sourcing.module';
-import {DbAction} from './infrastructure/action-store/entities/db-action';
+import {DbAction} from './infrastructure/action-store/entities/db-action.entity';
 import {QuixEventBus} from './quix-event-bus';
 
 export class QuixEventBusDriver {
