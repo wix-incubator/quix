@@ -78,7 +78,7 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[String, Batch],
   }
 
   def executeFor[T](sql: String, resultMapper: List[String] => T) = {
-    val query = ActiveQuery(UUID.randomUUID().toString, sql, 1, user, false, Map.empty)
+    val query = ActiveQuery(UUID.randomUUID().toString, Seq(sql), user)
     val resultBuilder = new SingleBuilder[String]
     for {
       _ <- queryExecutor.runTask(query, resultBuilder)

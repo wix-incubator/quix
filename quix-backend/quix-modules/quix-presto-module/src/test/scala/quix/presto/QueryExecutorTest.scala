@@ -24,7 +24,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     val client = mock[PrestoStateClient]
     val builder = spy(new SingleBuilder[String])
     val queryId = UUID.randomUUID().toString
-    val query = ActiveQuery(queryId, "select 1", 1, User("user@quix"), false, Map.empty)
+    val query = ActiveQuery(queryId, Seq("select 1"), User("user@quix"))
     val stateWithoutNext = {
       s"""{"id":"presto-id","infoUri":"info-uri","stats":{"state":"PLANNING","scheduled":false,"totalSplits":0,"queuedSplits":0,"runningSplits":0,"completedSplits":456}}"""
     }.as[PrestoState]

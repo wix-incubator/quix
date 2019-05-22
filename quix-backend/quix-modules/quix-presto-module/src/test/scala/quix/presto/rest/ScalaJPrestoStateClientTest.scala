@@ -23,7 +23,7 @@ class ScalaJPrestoStateClientTest extends SpecWithJUnit with MustMatchers with S
     val config = PrestoConfig("statements", "health", "queryInfo", "default-schema", "default-catalog", "default-source")
     val client = new ScalaJPrestoStateClient(config)
     val queryId = UUID.randomUUID().toString
-    val query = ActiveQuery(queryId, "select 1", 1, User("user@quix"), false, Map.empty)
+    val query = ActiveQuery(queryId, Seq("select 1"), User("user@quix"))
     val advanceUri = "localhost/1"
 
     val stateJson = s"""{"id":"presto-id","infoUri":"info-uri","nextUri":"next-uri","stats":{"state":"RUNNING","scheduled":false,"totalSplits":0,"queuedSplits":0,"runningSplits":0,"completedSplits":123}}"""

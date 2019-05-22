@@ -20,43 +20,39 @@ class SequentialExecutions[Code](val executor: AsyncQueryExecutor[Code, Batch])
       .build[String, ActiveQuery[Code]]()
 
   def execute(statements: Seq[Code], user: User, resultBuilder: Builder[Code, Batch]): Task[Unit] = {
-    if (statements.isEmpty) {
-      Task.unit
-    } else {
-      val activeQuery = ActiveQuery[Code](UUID.randomUUID().toString, statements.head, statements.size, user, isCancelled = false, session = Map.empty)
+    val activeQuery = ActiveQuery[Code](UUID.randomUUID().toString, statements, user)
 
-      val loop = for {
-        _ <- Task.eval(queries.put(activeQuery.id, activeQuery))
-        _ <- resultBuilder.start(activeQuery)
-        _ <- makeLoop(activeQuery, statements, resultBuilder)
+    val loop = for {
+      _ <- Task.eval(queries.put(activeQuery.id, activeQuery))
+      _ <- resultBuilder.start(activeQuery)
+      _ <- makeLoop(activeQuery, resultBuilder)
+    } yield ()
+
+    loop.doOnFinish { _ =>
+      for {
+        _ <- Task.eval(queries.invalidate(activeQuery.id))
+        _ <- resultBuilder.end(activeQuery)
       } yield ()
-
-      loop.doOnFinish { _ =>
-        for {
-          _ <- Task.eval(queries.invalidate(activeQuery.id))
-          _ <- resultBuilder.end(activeQuery)
-        } yield ()
-      }
     }
   }
 
-  def makeLoop(activeQuery: ActiveQuery[Code], sqls: Seq[Code], builder: Builder[Code, Batch]): Task[Unit] = {
+  def makeLoop(query: ActiveQuery[Code], builder: Builder[Code, Batch]): Task[Unit] = {
     Task.eval(builder.lastError).flatMap {
       case None =>
-        sqls match {
-          case sql :: tail =>
+        query.statements.lift(query.current) match {
+          case Some(_) =>
             for {
-              _ <- Task.eval {
-                activeQuery.text = sql
+              _ <- executor.runTask(query, builder)
+              _ <- Task {
+                query.current = query.current + 1
               }
-              _ <- executor.runTask(activeQuery, builder)
-              _ <- makeLoop(activeQuery, tail, builder)
+              _ <- makeLoop(query, builder)
             } yield ()
-          case _ =>
+          case None =>
             Task.unit
         }
-
-      case Some(error) => Task.raiseError(error)
+      case Some(error) =>
+        Task.raiseError(error)
     }
   }
 

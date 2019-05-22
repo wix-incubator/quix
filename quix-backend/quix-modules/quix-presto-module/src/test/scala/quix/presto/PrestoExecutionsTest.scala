@@ -34,6 +34,13 @@ class PrestoExecutionsTest extends SpecWithJUnit with Mockito {
 
   "PrestoExecutions" should {
 
+    "call builder.start & builder.end on zero queries" in new ctx {
+      executions.execute(zeroQueries, user, builder).runToFuture
+
+      there was one(builder).start(any())
+      there was one(builder).end(any())
+    }
+
     "call builder.start & builder.end on every query" in new ctx {
       executions.execute(oneQuery, user, builder).runToFuture
 

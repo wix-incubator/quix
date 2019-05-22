@@ -13,7 +13,7 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
   var lastError: Option[Throwable] = None
 
   override def start(query: ActiveQuery[Code]) = {
-    consumer.write(Start(query.id, query.numOfQueries))
+    consumer.write(Start(query.id, query.statements.size))
   }
 
   override def end(query: ActiveQuery[Code]) = {

@@ -14,7 +14,7 @@ class MultiBuilderTest extends SpecWithJUnit {
   class ctx extends Scope {
     val consumer = new TestConsumer[ExecutionEvent]
     val builder = new MultiBuilder[String](consumer)
-    val query = ActiveQuery[String]("id", "text", 1, User("test"), isCancelled = false, Map.empty)
+    val query = ActiveQuery[String]("id", Seq("text"), User("test"))
   }
 
   "MultiBuilder.start" should {
@@ -22,7 +22,7 @@ class MultiBuilderTest extends SpecWithJUnit {
       builder.start(query).runToFuture(Scheduler.global)
 
       eventually {
-        consumer.payloads must contain(Start(query.id, query.numOfQueries))
+        consumer.payloads must contain(Start(query.id, query.statements.size))
       }
     }
   }
