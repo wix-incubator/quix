@@ -18,7 +18,7 @@ import quix.presto._
 import quix.presto.db.{RefreshableDb, RefreshableDbConfig}
 import quix.presto.rest.ScalaJPrestoStateClient
 import quix.web.auth.JwtUsers
-import quix.web.controllers.{DbController, DownloadController}
+import quix.web.controllers.{DbController, DownloadController, HealthController}
 
 import scala.util.control.NonFatal
 
@@ -125,6 +125,11 @@ class Controllers extends LazyLogging {
   @Bean def initDownloadController(downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]): DownloadController = {
     logger.info("event=[spring-config] bean=[DownloadController]")
     new DownloadController(downloadableQueries)
+  }
+
+  @Bean def initHealthController() = {
+    logger.info("event=[spring-config] bean=[HealthController]")
+    new HealthController
   }
 }
 
