@@ -70,7 +70,7 @@ const MySqlConf: DbColumnConf = {
 };
 
 const SqliteConf: DbColumnConf = {
-  json: {type: 'simple-json'},
+  json: {type: 'simple-json', nullable: true},
   shortTextField: {type: 'varchar', length: 64},
   noteContent: {type: 'text', nullable: true},
   dateUpdated: {
