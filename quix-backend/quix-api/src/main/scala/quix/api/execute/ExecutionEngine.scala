@@ -3,14 +3,17 @@ package quix.api.execute
 import monix.eval.Task
 import quix.api.users.User
 
+
 case class ActiveQuery[Code](id: String,
-                             var text: Code,
-                             numOfQueries: Int,
+                             statements: Seq[Code],
                              user: User,
-                             var isCancelled: Boolean,
-                             var session: Map[String, Any],
+                             var current: Int = 0,
+                             var isCancelled: Boolean = false,
+                             var session: Map[String, Any] = Map.empty,
                              var catalog: Option[String] = None,
-                             var schema: Option[String] = None)
+                             var schema: Option[String] = None) {
+  def text = statements(current)
+}
 
 trait Builder[Code, Results] {
   def start(query: ActiveQuery[Code]): Task[Unit]

@@ -14,7 +14,7 @@ class ScalaJPrestoOpsTest extends SpecWithJUnit with MustMatchers {
   class ctx extends Scope {
     var factory = ScalaJPrestoOps
     val queryId = UUID.randomUUID().toString
-    val query = ActiveQuery(queryId, "select 1", 1, User("user@quix"), false, Map.empty)
+    val query = ActiveQuery(queryId, Seq("select 1"), User("user@quix"))
     val config = PrestoConfig("statements", "health", "queryInfo", "default-schema", "default-catalog", "default-source")
   }
 

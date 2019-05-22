@@ -41,6 +41,6 @@ object TryPresto extends LazyLogging {
 
   def activeQuery(text: String): ActiveQuery[String] = {
     val id = UUID.randomUUID().toString
-    ActiveQuery(id, text, 1, User(id = "user", email = "user@quix"), false, Map.empty)
+    ActiveQuery(id, Seq(text), User(id = "user", email = "user@quix"))
   }
 }
