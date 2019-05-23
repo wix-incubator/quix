@@ -70,7 +70,7 @@ const initResults = (text: string, notes: IPrestoNote[]) => {
 const search = ((currentSearchId = 1) => debounce((scope: IScope, text: string, page: number) => {
   const searchId = ++currentSearchId;
 
-  return Resources.search(text, page - 1, Search.ResultsPerPage)
+  return Resources.search(text, (page - 1) * Search.ResultsPerPage, Search.ResultsPerPage)
     .then(({notes, count}: {notes: IPrestoNote[]; count: number}) => {
       if (searchId === currentSearchId) {
         scope.vm.state
@@ -80,7 +80,7 @@ const search = ((currentSearchId = 1) => debounce((scope: IScope, text: string, 
           })
           .set('Content', !!notes.length);
 
-        initPagination(scope, scope.vm.state.value().totalResults, scope.vm.state.value().page);
+        initPagination(scope, scope.vm.state.value().totalResults, scope.vm.state.value().currentPage);
       }
     })
     .catch(e => {
@@ -115,16 +115,16 @@ export default (app: Instance, store: Store) => () => ({
         });
 
       store.subscribe('app.searchText', text => {
-        scope.vm.state.force('Initial', true, {text, page: 1});
+        scope.vm.state.force('Initial', true, {text, currentPage: 1});
 
-        return text && search(scope, text, scope.vm.state.value().page);
+        return text && search(scope, text, scope.vm.state.value().currentPage);
       }, scope);
 
       store.subscribe('app.searchPage', page => {
         if (page) {
           scope.vm.state
-            .set('LoadingPage', scope.vm.state.after('Result'), {page})
-            .else(() => scope.vm.state.value({page}));
+            .set('LoadingPage', scope.vm.state.after('Result'), {currentPage: page})
+            .else(() => scope.vm.state.value({currentPage: page}));
 
           search(scope, scope.vm.state.value().text, page);
         }

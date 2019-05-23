@@ -62,7 +62,7 @@ ORDER BY 1
 `);
 
     // return {notes: [], count: 0};
-    return {notes: res, count: 77};
+    return {notes: res, count: 365};
   },
   // '/api/db/explore': () => [500, {message: 'Failed to fetch DB tree'}],
   // '/api/db/explore': () => [],
