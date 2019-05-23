@@ -14,7 +14,7 @@
     </div>
   </div>
 
-  <div class="bi-section-controls bi-fade-in" ng-if="vm.state.is('Result') || vm.state.after('Result')">
+  <div class="bi-section-controls bi-fade-in" ng-if="(vm.state.is('Result') && permissions.edit) || vm.state.after('Result')">
     <div>
       <div class="bi-align bi-s-h bi-fade-in" ng-if="!vm.marked.enabled">
         <button 
