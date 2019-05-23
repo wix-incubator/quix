@@ -13,11 +13,10 @@
     ng-if="vm.state.is('Result')"
     data-hook="files-sidebar-empty"
   >
-    <quix-image class="bi-empty-state-image" name="no_data.svg"></quix-image>
+    <quix-image class="bi-empty-state-image" name="add.svg"></quix-image>
 
-    <div class="bi-empty-state-header">
-      You don't have any notebooks
-    </div>
+    <div class="bi-empty-state-header">You don't have any notebooks</div>
+
     <div class="bi-empty-state-content">
       <a class="bi-link" ng-click="events.onNotebookAdd()">Add notebook</a>
     </div>
