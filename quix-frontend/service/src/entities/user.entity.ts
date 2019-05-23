@@ -1,7 +1,7 @@
 import {Column, Entity, PrimaryColumn} from 'typeorm';
 import {dbConf} from '../config/db-conf';
 
-@Entity({name: 'user'})
+@Entity({name: 'users'})
 export class DbUser {
   @PrimaryColumn('varchar', {length: 64})
   id!: string;
@@ -12,10 +12,10 @@ export class DbUser {
   @Column(dbConf.userAvatar)
   avatar?: string;
 
-  @Column(dbConf.idColumn)
+  @Column({...dbConf.idColumn, name: 'root_folder'})
   rootFolder!: string;
 
-  @Column({...dbConf.json, nullable: true})
+  @Column({...dbConf.json, name: 'json_content'})
   jsonContent?: any;
 }
 

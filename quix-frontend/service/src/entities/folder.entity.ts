@@ -11,7 +11,7 @@ import {
 import {dbConf} from '../config/db-conf';
 import {DbFileTreeNode} from './filenode.entity';
 
-@Entity()
+@Entity({name: 'folders'})
 export class DbFolder {
   @PrimaryColumn(dbConf.idColumn)
   id!: string;
@@ -27,6 +27,9 @@ export class DbFolder {
 
   @CreateDateColumn(dbConf.dateCreated)
   dateCreated!: number;
+
+  @Column({...dbConf.json, name: 'json_content'})
+  jsonContent: any = {};
 
   isLiked!: boolean;
 }

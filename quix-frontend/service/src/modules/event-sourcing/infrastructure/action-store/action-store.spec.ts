@@ -5,7 +5,7 @@ import {Repository} from 'typeorm';
 import * as uuid from 'uuid';
 import {ConfigService, ConfigModule} from 'config';
 import {DbActionStore} from './action-store';
-import {DbAction} from './entities/db-action';
+import {DbAction} from './entities/db-action.entity';
 import {IActionStore} from './types';
 
 describe('action store', () => {

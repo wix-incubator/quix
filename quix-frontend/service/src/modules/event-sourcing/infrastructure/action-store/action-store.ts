@@ -1,6 +1,6 @@
 import {Repository, In} from 'typeorm';
 import {IAction} from '../types';
-import {DbAction} from './entities/db-action';
+import {DbAction} from './entities/db-action.entity';
 import {IActionStore, IDBAction} from './types';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Injectable} from '@nestjs/common';

@@ -5,3 +5,4 @@ export {DbFolder} from './folder.entity';
 export {FileTreeRepository} from './filenode.repository';
 export {NoteRepository} from './note.repository';
 export {DbUser} from './user.entity';
+export {DbFavorites} from './favorites.entity';

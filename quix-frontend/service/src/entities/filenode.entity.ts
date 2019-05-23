@@ -17,7 +17,7 @@ import {DbNotebook} from './dbnotebook.entity';
 import {DbFolder} from './folder.entity';
 import {dbConf} from '../config/db-conf';
 
-@Entity()
+@Entity({name: 'tree_nodes'})
 export class DbFileTreeNode {
   constructor(id?: string, rest: Partial<DbFileTreeNode> = {}) {
     if (id) {

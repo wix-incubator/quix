@@ -3,7 +3,7 @@ import {IAction, IEventData} from '../../types';
 import {IDBAction} from '../types';
 import {dbConf} from '../../../../../config/db-conf';
 
-@Entity()
+@Entity({name: 'actions'})
 @Index(['id', 'type'], {unique: false})
 export class DbAction<T = IEventData, N extends string = string>
   implements IDBAction {
@@ -17,7 +17,7 @@ export class DbAction<T = IEventData, N extends string = string>
   user?: string;
 
   @Index()
-  @Column({...dbConf.eventsTimestamp, primary: true})
+  @Column({...dbConf.eventsTimestamp, primary: true, name: 'date_created'})
   dateCreated?: Date;
 
   @Column({type: 'varchar', width: 64})

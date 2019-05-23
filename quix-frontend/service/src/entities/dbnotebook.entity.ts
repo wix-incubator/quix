@@ -15,7 +15,7 @@ import {DbFileTreeNode} from './filenode.entity';
 import {INote, IFilePathItem, INotebook} from 'shared';
 import {dbConf} from '../config/db-conf';
 
-@Entity()
+@Entity({name: 'notebooks'})
 export class DbNotebook implements INotebook {
   @PrimaryColumn(dbConf.idColumn)
   id!: string;
@@ -32,7 +32,7 @@ export class DbNotebook implements INotebook {
   @CreateDateColumn(dbConf.dateCreated)
   dateCreated!: number;
 
-  @Column(dbConf.json)
+  @Column({...dbConf.json, name: 'json_content'})
   jsonContent: any = {};
 
   isLiked!: boolean;

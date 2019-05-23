@@ -21,7 +21,7 @@ import {
   FileTreeRepository,
   DbUser,
 } from 'entities';
-import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action';
+import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action.entity';
 import {FoldersService} from './folders/folders.service';
 import {NotebookController} from './notebooks/notebooks.controller';
 import {NotebookService} from './notebooks/notebooks.service';
