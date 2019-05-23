@@ -18,7 +18,7 @@ const listenToNavChange = (scope: IScope, app: Instance, store: Store) => {
         return (item.targetState === state || (item.activeStates && item.activeStates.indexOf(state) !== -1));
       });
 
-      const procede = await (menuItem && (!menuItem.condition || menuItem.condition(app, store, state, params.id)));
+      const procede = await (menuItem && (!menuItem.activeCondition || menuItem.activeCondition(app, store, state, params.id)));
 
       scope.vm.currentState = procede ? menuItem.targetState : null;
     }, scope)
@@ -42,7 +42,7 @@ export default (app: Instance, store: Store) => () => ({
             store.dispatch(AppActions.setSearchText(scope.vm.searchText || null, 'user'));
           },
           onNavItemClick(item) {
-            app.go(item.targetState);
+            app.go(item.targetState, {id: null});
           }
         });
 
