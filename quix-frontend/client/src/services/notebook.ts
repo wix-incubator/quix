@@ -3,7 +3,7 @@ import {Store} from '../lib/store';
 import {Instance} from '../lib/app';
 import {IFolder, INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem, createNote, IPrestoNote} from '../../../shared';
 import {FileType} from '../../../shared/entities/file';
-import {fetchRootPath, goUp, goToFile} from './files';
+import {fetchRootPath, goUp, goToFile} from './';
 
 const resolvePath = async (parentOrPath: IFolder | IFilePathItem[]) => {
   const path = isArray(parentOrPath) ? parentOrPath : [...parentOrPath.path, {
@@ -11,7 +11,7 @@ const resolvePath = async (parentOrPath: IFolder | IFilePathItem[]) => {
     name: parentOrPath.name
   }];
 
-  return path.length ? path : [await fetchRootPath()];
+  return path.length ? path : fetchRootPath();
 }
 
 export const addNotebook = async (store: Store, app: Instance, parentOrPath: IFolder | IFilePathItem[], props: Partial<INotebook> = {}) => {

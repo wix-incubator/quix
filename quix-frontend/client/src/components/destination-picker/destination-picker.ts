@@ -1,16 +1,13 @@
 import template from './destination-picker.html';
 import './destination-picker.scss';
 
-import {last} from 'lodash';
 import {initNgScope, createNgModel} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {Instance} from '../../lib/app';
 import {IFile, FileType} from '../../../../shared';
 import {IScope} from './destination-picker-types';
 import {cache} from '../../store';
-import {
-  StateManager
-} from '../../services';
+import {StateManager, fetchRoot, fetchFile, fetchFileParent} from '../../services';
 
 enum States {
   Initial,
@@ -21,19 +18,27 @@ enum States {
 
 const listenToNavChange = (scope: IScope, app: Instance, fileExplorer) => {
   app.getNavigator()
-    .listen(['files', 'notebook'], 'success', ({id}: {id: string}) => {
-      const files = scope.vm.state.value().files;
-      let file = files.find(f => f.id === id);
+    .listen(['files', 'notebook'], 'success', async ({id}: {id: string}, state: string) => {
+      let file = await fetchFile(id) || await fetchRoot();
 
-      if (file && scope.context === 'folder' && file.type === FileType.notebook) {
-        id = last<any>(file.path).id;
-        file = files.find(f => f.id === id);
+      if (!file) {
+        return;
       }
 
-    if (file) {
-      fileExplorer.setActive(file);
-      scope.model = file;
-    }
+      if (scope.context === 'folder' && file.type === FileType.notebook) {
+        file = await fetchFileParent(file.id);
+      }
+
+      if (file) {
+        fileExplorer.setActive(file);
+        scope.model = file;
+
+        if (file.type === FileType.folder) {
+          scope.events.onFolderClick(file);
+        } else if (file.type === FileType.notebook) {
+          scope.events.onFileClick(file);
+        }
+      }
     }, scope)
     .otherwise(() => fileExplorer.clearActive());
 }
