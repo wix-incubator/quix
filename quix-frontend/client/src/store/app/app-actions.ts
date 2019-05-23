@@ -1,9 +1,15 @@
 import {Runner} from '../../lib/runner';
 import {INotebook, INote} from '../../../../shared';
 
-export const search = (searchText: string, origin: 'user' | 'machine' = 'machine') => ({
+export const setSearchText = (searchText: string, origin: 'user' | 'machine' = 'machine') => ({
   type: 'app.setSearchText',
   searchText,
+  origin
+});
+
+export const setSearchPage = (searchPage: number, origin: 'user' | 'machine' = 'machine') => ({
+  type: 'app.setSearchPage',
+  searchPage,
   origin
 });
 

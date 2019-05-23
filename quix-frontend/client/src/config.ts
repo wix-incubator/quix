@@ -3,6 +3,14 @@ import {Store} from './lib/store';
 import {isOwner} from './services';
 import {waitForEntity} from './store';
 
+export const Search = {
+  ResultsPerPage: 20,
+  MaxPages: 100,
+  MaxPaginationButtons: 10,
+  PaginationEdgePages: 2,
+  PaginationMiddlePages: 5
+};
+
 export const QuixFolder = {
   id: 'quix',
   name: 'Quix',

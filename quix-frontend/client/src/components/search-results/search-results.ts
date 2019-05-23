@@ -13,13 +13,82 @@ import * as Resources from '../../services/resources';
 import * as AppActions from '../../store/app/app-actions';
 import {StateManager, extractLinesAroundMatch} from '../../services';
 import {paramSerializerFactory} from '../../lib/code-editor';
+import {Search} from '../../config';
 
 enum States {
   Initial,
   Error,
   Result,
   Content,
+  LoadingPage,
 }
+
+const initPagination = (scope: IScope, totalResults: number, currentPage: number) => {
+  const totalPages = Math.ceil(totalResults / Search.ResultsPerPage);
+
+  const leftEdgePages = Math.min(
+    Math.max(0, totalPages - Search.PaginationMiddlePages),
+    Search.PaginationEdgePages
+  );
+
+  const rightEdgePages = Math.min(
+    Math.max(0, totalPages - Search.PaginationEdgePages - Search.PaginationMiddlePages),
+    Search.PaginationEdgePages
+  );
+  
+  const middlePages = Math.min(totalPages, Search.PaginationMiddlePages);
+
+  const middleLeftBoundary = Math.min(
+    Math.max(
+      leftEdgePages,
+      currentPage - Math.round(Search.PaginationMiddlePages / 2)
+    ),
+    Math.max(0, totalPages - Search.PaginationMiddlePages - rightEdgePages)
+  );
+  
+  scope.vm.pages = [
+    ...[...(Array(leftEdgePages).keys())].map(i => i + 1),
+    ...[...(Array(middlePages).keys())].map(i => i + 1 + middleLeftBoundary),
+    ...[...(Array(rightEdgePages).keys())].map(i => i + 1 + totalPages - rightEdgePages),
+  ];
+
+  scope.vm.currentResults = Math.min(currentPage * Search.ResultsPerPage, totalResults);
+  scope.vm.totalPages = totalPages;
+
+  scope.vm.state.value({currentPage: Math.min(totalPages, currentPage)});
+}
+
+const initResults = (text: string, notes: IPrestoNote[]) => {
+  const serializer = paramSerializerFactory('sql');
+
+  return notes.map<INote>(note => ({
+    ...note,
+    content: extractLinesAroundMatch(serializer.removeEmbed(note.content), text)
+  }));
+}
+
+const search = ((currentSearchId = 1) => debounce((scope: IScope, text: string, page: number) => {
+  const searchId = ++currentSearchId;
+
+  return Resources.search(text, page - 1, Search.ResultsPerPage)
+    .then(({notes, count}: {notes: IPrestoNote[]; count: number}) => {
+      if (searchId === currentSearchId) {
+        scope.vm.state
+          .force('Result', true, {
+            totalResults: count,
+            notes: initResults(text, notes)
+          })
+          .set('Content', !!notes.length);
+
+        initPagination(scope, scope.vm.state.value().totalResults, scope.vm.state.value().page);
+      }
+    })
+    .catch(({data: error}) => {
+      if (searchId === currentSearchId) {
+        scope.vm.state.force('Error', true, {error});
+      }
+    });
+}, 300))();
 
 export default (app: Instance, store: Store) => () => ({
   restrict: 'E',
@@ -27,11 +96,11 @@ export default (app: Instance, store: Store) => () => ({
   scope: {},
   link: {
     async pre(scope: IScope) {
-      const serializer = paramSerializerFactory('sql');
-
       initNgScope(scope)
         .withVM({
-          text: null,
+          pages: null,
+          totalPages: 1,
+          currentResults: 1,
           $init() {
             this.state = new StateManager(States);
           }
@@ -39,8 +108,28 @@ export default (app: Instance, store: Store) => () => ({
         .withEvents({
           onNoteClick(note: INote) {
             app.go('notebook', {id: note.notebookId, note: note.id});
+          },
+          onPageSelect(page: number) {
+            store.dispatch(AppActions.setSearchPage(page, 'user'));
           }
         });
+
+      store.subscribe('app.searchText', text => {
+        scope.vm.state.force('Initial', true, {text, page: 1});
+
+        return text && search(scope, text, scope.vm.state.value().page);
+      }, scope);
+
+      store.subscribe('app.searchPage', page => {
+        if (page) {
+          scope.vm.state
+            .set('LoadingPage', scope.vm.state.after('Result'), {page})
+            .else(() => scope.vm.state.value({page}));
+
+          search(scope, scope.vm.state.value().text, page);
+        }
+      }, scope);
+
 
       scope.renderNoteContent = (note: INote) => ({
         html: inject('$compile')(`
@@ -50,28 +139,10 @@ export default (app: Instance, store: Store) => () => ({
         }))
       });
 
-      let searchId = 1;
-      const search = debounce((text: any, sId: number) => {
-        Resources.search(text).then((notes: IPrestoNote[]) => {
-          if (sId === searchId) {
-            scope.vm.state
-              .force('Result', true, {
-                notes: notes.map<INote>(note => ({
-                  ...note,
-                  content: extractLinesAroundMatch(serializer.removeEmbed(note.content), text)
-                }))
-              })
-              .set('Content', !!notes.length);
-          }
-        });
-      }, 300);
-
-      store.subscribe('app.searchText', text => {
-        scope.vm.state.force('Initial', true, {notes: null, text});
-        return text && search(text, ++searchId);
-      }, scope);
-
-      scope.$on('$destroy', () => store.dispatch(AppActions.search(null, 'user')));
+      scope.$on('$destroy', () => store.dispatch([
+        AppActions.setSearchPage(null, 'user'),
+        AppActions.setSearchText(null, 'user')
+      ]));
     }
   }
 });

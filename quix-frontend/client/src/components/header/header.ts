@@ -39,7 +39,7 @@ export default (app: Instance, store: Store) => () => ({
         })
         .withEvents({
           onSearch() {
-            store.dispatch(AppActions.search(scope.vm.searchText || null, 'user'));
+            store.dispatch(AppActions.setSearchText(scope.vm.searchText || null, 'user'));
           },
           onNavItemClick(item) {
             app.go(item.targetState);

@@ -1,12 +1,56 @@
 <div class="bi-section bi-grow bi-theme--light">
   <div class="bi-section-header">
-    <div class="bi-section-title">
-      <i class="bi-icon">search</i>
-      <span>
+    <div>
+      <div class="bi-section-title bi-align bi-s-h">
+        <i class="bi-icon">search</i>
         <span>
-          Search results <span class="bi-fade-in" ng-if="vm.state.after('Initial')">({{vm.state.value().notes.length}})</span>
+          <span>
+            Search results 
+            <span class="bi-fade-in" ng-if="vm.state.after('Result')">
+              ({{vm.currentResults}} / {{vm.state.value().totalResults}})
+            </span>
+          </span>
         </span>
-      </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bi-section-controls" ng-if="vm.state.after('Result')">
+    <div>
+      <div class="quix-search-pagination bi-button-group bi-fade-in">
+        <button 
+          class="bi-button"
+          ng-disabled="vm.state.value().currentPage === 1"
+          ng-click="events.onPageSelect(vm.state.value().currentPage - 1)"
+        >
+          <i class="bi-icon--sm">keyboard_arrow_left</i>
+        </button>
+
+        <button 
+          class="bi-center"
+          ng-class="{
+            'bi-button': page !== vm.state.value().currentPage,
+            'bi-button--primary': page === vm.state.value().currentPage
+          }"
+          ng-repeat-start="page in vm.pages"
+          ng-click="events.onPageSelect(page)"
+        >{{::page}}</button>
+
+        <button 
+          class="bi-button bi-center"
+          ng-if="vm.pages[$index + 1] - page > 1"
+          ng-repeat-end
+          ng-disabled="true"
+        >...</button>
+
+        <button 
+          class="bi-button"
+          ng-disabled="vm.state.value().currentPage === vm.totalPages"
+          ng-click="events.onPageSelect(vm.state.value().currentPage + 1)"
+        >
+          <i class="bi-icon--sm">keyboard_arrow_right</i>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -17,6 +61,15 @@
       </div>
     </div>
 
+    <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.is('Error')">
+      <div class="quix-empty-state bi-empty-state bi-fade-in">
+        <div class="bi-empty-state-icon bi-danger">
+          <i class="bi-icon bi-danger">error_outline</i>
+        </div>
+        <div class="bi-empty-state-header bi-danger">{{::vm.state.value().error.message}}</div>
+      </div>
+    </div>
+
     <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.is('Result')">
       <div class="quix-empty-state bi-empty-state bi-fade-in">
         <div class="bi-empty-state-header">No notes that match "{{::vm.state.value().text}}"</div>
@@ -24,7 +77,11 @@
     </div>
   </div>
 
-  <div class="bi-section-content--list bi-fade-in" ng-if="vm.state.is('Content')">
+  <div
+    class="bi-section-content--list bi-fade"
+    ng-class="{'bi-faded': vm.state.after('Content')}"
+    ng-if="vm.state.after('Result')"
+  >
     <div class="bi-c bi-s-v--x15">
       <div 
         class="bi-c bi-dont-shrink"

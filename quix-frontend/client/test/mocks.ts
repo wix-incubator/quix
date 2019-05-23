@@ -59,7 +59,8 @@ FROM $schema.lineitem
 GROUP BY 1, 2
 ORDER BY 1
 `);
-    return res;
+    // return [500, {message: 'dfg'}];
+    return {notes: res, count: 77};
   },
   // '/api/db/explore': () => [500, {message: 'Failed to fetch DB tree'}],
   '/api/db/explore': () => [{

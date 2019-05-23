@@ -13,6 +13,10 @@
   @include hover('lighter');
 }
 
+.bi-fade {
+  @include fade('lighter');
+}
+
 // lighter
 .bi-theme--lighter {
   .bi-muted {

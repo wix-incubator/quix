@@ -5,6 +5,7 @@ import {Middleware} from 'redux';
 import * as Runners from '../../services/runners';
 
 interface IApp {
+  searchPage?: number;
   searchText?: string;
   runners?: Record<string, any>;
 }
@@ -27,6 +28,8 @@ const runnerMiddleware: Middleware = () =>
 export default (app: Instance): IBranch<IApp> => register => {
   function appReducer(state: IApp = {runners: {}}, action): IApp {
     switch (action.type) {
+      case 'app.setSearchPage':
+        return {...state, searchPage: action.searchPage};
       case 'app.setSearchText':
         return {...state, searchText: action.searchText};
       case 'app.addRunner':

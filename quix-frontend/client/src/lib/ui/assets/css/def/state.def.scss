@@ -1,4 +1,5 @@
 @import 'colors.def';
+@import 'animations.def';
 
 @mixin disabled($theme) {
   &.bi-disabled,
@@ -14,6 +15,16 @@
     }
 
     cursor: default;
+  }
+}
+
+@mixin fade($theme) {
+  @extend %animation-fade-in;
+
+  transition: opacity .3s;
+
+  &.bi-faded {
+    opacity: .7;
   }
 }
 
