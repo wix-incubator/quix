@@ -24,6 +24,8 @@ export default (app: App, store: Store) => ({
   
     syncUrl();
 
+    scope.isRoot = !params.id;
+
     store.subscribe('folder', ({folder, files, error, view, permissions}) => {
       scope.folder = folder;
       scope.files = files;

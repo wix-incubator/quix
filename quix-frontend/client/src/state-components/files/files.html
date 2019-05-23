@@ -84,12 +84,16 @@
       ng-if="vm.state.is('Result')"
       data-hook="files-empty"
     >
-      <quix-image class="bi-empty-state-image" name="no_data.svg"></quix-image>
+      <quix-image class="bi-empty-state-image" name="{{::isRoot ? 'add.svg' : 'no_data.svg'}}"></quix-image>
 
-      <div class="bi-empty-state-header">Folder is empty</div>
-      <div class="bi-empty-state-content bi-s-h--x05" ng-if="permissions.addNotebook">
-        <a class="bi-link" ng-click="events.onFolderAdd()">Add folder</a>
-        <span>or</span>
+      <div class="bi-empty-state-header">{{::isRoot ? 'You dont have any notebooks' : 'Folder is empty'}}</div>
+
+      <div class="bi-empty-state-content bi-s-h--x05">
+        <span ng-if="::!isRoot">
+          <a class="bi-link" ng-click="events.onFolderAdd()">Add folder</a>
+          <span>or</span>
+        </span>
+
         <a class="bi-link" ng-click="events.onNotebookAdd()">Add notebook</a>
       </div>
     </div>
