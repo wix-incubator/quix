@@ -6,12 +6,12 @@ import {UsersTestkit} from '../../src/state-components/users/users-testkit';
 describe('Users ::', () => {
   let driver: Driver, testkit: UsersTestkit;
 
-  const gotoErrorUsers = async () => {
+  const gotoUsersWithError = async () => {
     await driver.mock.http('/api/users', [404, {message: 'Failed to fetch users'}]);
     await driver.goto(`/users`);
   }
 
-  const gotoEditableRootFolder = async (mock = [createMockUser()]) => {
+  const gotoUsers = async (mock = [createMockUser()]) => {
     await driver.mock.http('/api/users', mock);
     await driver.goto('/users');
 
@@ -26,13 +26,13 @@ describe('Users ::', () => {
   });
 
   it('should display error state when failed to fetch users', async () => {
-    await gotoErrorUsers();
+    await gotoUsersWithError();
 
     expect(await testkit.hasErrorState()).to.be.true;
   });
 
   it('should display content', async () => {
-    await gotoEditableRootFolder();
+    await gotoUsers();
 
     expect(await testkit.hasContent()).to.be.true;
     expect(await testkit.numOfUsers()).to.equal(1);

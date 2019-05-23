@@ -35,7 +35,7 @@ export const copyNotebook = async (store: Store, app: Instance, parentOrPath: IF
     owner: app.getUser().getEmail()
   });
 
-  return store.dispatchAndLog([
+  return store.logAndDispatch([
     NotebookActions.createNotebook(newNotebook.id, newNotebook),
     ...notes.map(({name: noteName, type, content, owner}) => {
       const note = createNote(newNotebook.id, {name: noteName, type, content, owner} as any);
@@ -56,7 +56,7 @@ export const copyNote = async (store: Store, app: Instance, targetNotebook: INot
     owner: app.getUser().getEmail()
   });
 
-  return store.dispatchAndLog([NoteActions.addNote(newNote.id, newNote)])
+  return store.logAndDispatch([NoteActions.addNote(newNote.id, newNote)])
     .then(() => goToFile(app, {...targetNotebook, type: FileType.notebook}, {isNew: false, note: newNote.id}))
     .then(() => newNote);
 }
