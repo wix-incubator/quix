@@ -83,9 +83,9 @@ const search = ((currentSearchId = 1) => debounce((scope: IScope, text: string, 
         initPagination(scope, scope.vm.state.value().totalResults, scope.vm.state.value().page);
       }
     })
-    .catch(({data: error}) => {
+    .catch(e => {
       if (searchId === currentSearchId) {
-        scope.vm.state.force('Error', true, {error});
+        scope.vm.state.force('Error', true, {error: {...e.data, status: e.status}});
       }
     });
 }, 300))();

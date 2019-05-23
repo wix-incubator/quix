@@ -11,10 +11,11 @@ import {setupNotifications} from './bootstrap';
 
 (window as any).UrlPattern = UrlPattern;  // expose for e2e tests
 
-const {googleClientId, staticsBaseUrl, ...config} = window.quixConfig;
+const {googleClientId, ...config} = window.quixConfig;
 
 create<{
   quixBackendUrl?: string;
+  staticsBaseUrl?: string;
 }>({
   id: 'quix',
   title: 'Quix'
@@ -23,7 +24,7 @@ create<{
   statePrefix: 'base',
   defaultUrl: '/home',
   homeState: 'home',
-  logoUrl: `${staticsBaseUrl}assets/logo.png`
+  logoUrl: `${config.staticsBaseUrl}assets/logo.png`
 }, ['bi.app', 'bi.runner', 'bi.fileExplorer'])
   .config(config)
   .plugin('app', plugin => {

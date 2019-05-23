@@ -63,15 +63,14 @@
 
     <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.is('Error')">
       <div class="quix-empty-state bi-empty-state bi-fade-in">
-        <div class="bi-empty-state-icon bi-danger">
-          <i class="bi-icon bi-danger">error_outline</i>
-        </div>
-        <div class="bi-empty-state-header bi-danger">{{::vm.state.value().error.message}}</div>
+        <quix-image class="bi-empty-state-image" name="error_{{::vm.state.value().error.status}}.svg"></quix-image>
+        <div class="bi-empty-state-header">{{::vm.state.value().error.message}}</div>
       </div>
     </div>
 
     <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.is('Result')">
       <div class="quix-empty-state bi-empty-state bi-fade-in">
+        <quix-image class="bi-empty-state-image" name="no_data.svg"></quix-image>
         <div class="bi-empty-state-header">No notes that match "{{::vm.state.value().text}}"</div>
       </div>
     </div>

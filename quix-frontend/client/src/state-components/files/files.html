@@ -72,10 +72,8 @@
     </div>
 
     <div class="quix-empty-state bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="files-error">
-      <div class="bi-empty-state-icon bi-danger">
-        <i class="bi-icon bi-danger">error_outline</i>
-      </div>
-      <div class="bi-empty-state-header bi-danger">{{::vm.state.value().error.message}}</div>
+      <quix-image class="bi-empty-state-image" name="error_{{::vm.state.value().error.status}}.svg"></quix-image>
+      <div class="bi-empty-state-header">{{::vm.state.value().error.message}}</div>
       <div class="bi-empty-state-content">
         <a class="bi-link" ng-click="events.onGoToRootClick()">Go to my notebooks</a>
       </div>
@@ -86,12 +84,9 @@
       ng-if="vm.state.is('Result')"
       data-hook="files-empty"
     >
-      <div class="bi-empty-state-icon">
-        <i class="bi-icon">note_add</i>
-      </div>
-      <div class="bi-empty-state-header">
-        Folder is empty
-      </div>
+      <quix-image class="bi-empty-state-image" name="no_data.svg"></quix-image>
+
+      <div class="bi-empty-state-header">Folder is empty</div>
       <div class="bi-empty-state-content bi-s-h--x05" ng-if="permissions.addNotebook">
         <a class="bi-link" ng-click="events.onFolderAdd()">Add folder</a>
         <span>or</span>

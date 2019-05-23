@@ -14,6 +14,10 @@ quix-home {
   .quix-home-actions {
     > *:not(:last-child) {
       margin-right: 50px;
+
+      img {
+        
+      }
     }
   }
 }

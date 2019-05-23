@@ -4,6 +4,8 @@
   display: flex;
   flex-direction: column;
   font-family: 'bi-ui';
+  align-items: center;
+
 
   > * {
     display: flex;
@@ -14,6 +16,11 @@
     .bi-icon {
       font-size: 80px;
     }
+  }
+
+  .bi-empty-state-image {
+    width: 150px;
+    margin-bottom: 10px;
   }
 
   .bi-empty-state-header {

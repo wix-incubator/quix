@@ -62,7 +62,7 @@ export default (app: Instance, store: Store) => () => ({
 
         scope.vm.state
           .force('Result', !!db, {db})
-          .set('Content', !!db)
+          .set('Content', () => !!db.length)
           .set('Visible', !isInitial);
       }, scope);
 
