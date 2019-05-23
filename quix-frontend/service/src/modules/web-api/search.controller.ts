@@ -11,7 +11,7 @@ import {SearchService} from 'modules/search/search';
 
 @Controller('/api/search')
 @UseGuards(AuthGuard())
-export class SearchControllerWithPagination {
+export class SearchController {
   constructor(private searchService: SearchService) {}
 
   @Get('/:term')
