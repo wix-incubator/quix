@@ -94,7 +94,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
         return data;
       })
 
-      .register('query-start', (data, meta, status) => {
+      .register('query-start', (data) => {
         this.getState()
           .startQuery(data.id);
 
@@ -115,12 +115,12 @@ export class Runner extends srv.eventEmitter.EventEmitter {
         return data;
       })
 
-      .register('progress', (data, meta, status) => {
+      .register('percentage', (data, meta, status) => {
         const totalQueries = this.getTotalNumOfQueries();
         const percentagePerQuery = 100 / totalQueries;
         const totalQueriesUntilNow = this.getState().getQueries().length - 1;
         const percentageUntilNow = totalQueriesUntilNow * percentagePerQuery;
-        const thisQueryPercentage = meta.percentage * percentagePerQuery / 100;
+        const thisQueryPercentage = data.percentage * percentagePerQuery / 100;
 
         this.getState()
           .setProgress(Math.round(percentageUntilNow + thisQueryPercentage))
@@ -133,7 +133,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
         return data;
       })
 
-      .register('error', (data, meta, status) => {
+      .register('error', (data) => {
         if (!this.getState().getCurrentQuery()) {
           // error happened in a very early stage of execution, some events need to be simulated
           this.events
