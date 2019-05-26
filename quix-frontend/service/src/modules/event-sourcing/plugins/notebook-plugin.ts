@@ -96,9 +96,9 @@ export class NotebookPlugin implements EventBusPlugin {
       };
 
       if (action.isLiked) {
-        tm.save(Object.assign(new DbFavorites(), favorite));
+        return tm.save(Object.assign(new DbFavorites(), favorite));
       } else {
-        tm.delete(DbFavorites, favorite);
+        return tm.delete(DbFavorites, favorite);
       }
     }
   }
