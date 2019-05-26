@@ -4,7 +4,7 @@ import {Repository} from 'typeorm';
 import {DbUser} from 'entities';
 import {InjectRepository} from '@nestjs/typeorm';
 import {dbUserToUser} from 'entities/user.entity';
-import {UserProfile} from './types';
+import {IGoogleUser} from './types';
 import {FileActions, createFolder} from 'shared/entities/file';
 import uuid from 'uuid/v4';
 @Injectable()
@@ -14,14 +14,14 @@ export class UsersService {
     private quixEventBus: QuixEventBus,
   ) {}
 
-  async doUserLogin(userFromLogin: UserProfile) {
+  async doUserLogin(userFromLogin: IGoogleUser) {
     const user = await this.userRepo.findOne({id: userFromLogin.email});
     if (!user) {
       await this.doFirstTimeLogin(userFromLogin);
     }
   }
 
-  async doFirstTimeLogin(userFromLogin: UserProfile) {
+  async doFirstTimeLogin(userFromLogin: IGoogleUser) {
     const rootFolderId = await this.createRootFolder(userFromLogin.email);
     const {avatar, email: id, name} = userFromLogin;
     const dbUser: DbUser = {avatar, id, name, rootFolder: rootFolderId};
