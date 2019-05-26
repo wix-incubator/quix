@@ -4,7 +4,6 @@
 import {Test, TestingModule} from '@nestjs/testing';
 import {
   getConnectionToken,
-  getCustomRepositoryToken,
   getRepositoryToken,
   TypeOrmModule,
 } from '@nestjs/typeorm';
@@ -16,17 +15,15 @@ import {
   DbNotebook,
   FileTreeRepository,
 } from 'entities';
-import {FileActions, FileType, IFilePathItem} from 'shared/entities/file';
-import {createNotebook, NotebookActions} from 'shared/entities/notebook';
+import {MockDataBuilder} from '../../../test/builder';
 import {Connection, Repository} from 'typeorm';
-import * as uuid from 'uuid';
 import {EventSourcingModule} from './event-sourcing.module';
 import {DbAction} from './infrastructure/action-store/entities/db-action.entity';
 import {QuixEventBus} from './quix-event-bus';
-import {MockDataBuilder} from 'test/builder';
 
 export class QuixEventBusDriver {
-  private builder: MockDataBuilder;
+  public mockBuilder: MockDataBuilder;
+
   constructor(
     public eventBus: QuixEventBus,
     public module: TestingModule,
@@ -39,7 +36,7 @@ export class QuixEventBusDriver {
     private configService: ConfigService,
     private defaultUser: string,
   ) {
-    this.builder = new MockDataBuilder(defaultUser);
+    this.mockBuilder = new MockDataBuilder(defaultUser);
   }
 
   static async create(defaultUser: string) {
@@ -112,9 +109,6 @@ export class QuixEventBusDriver {
         : 'PRAGMA foreign_keys = ON',
     );
   }
-
-  createNotebookAction = this.builder.createNotebookAction.bind(this.builder);
-  createFolderAction = this.builder.createFolderAction.bind(this.builder);
 
   getNotebook(id: string) {
     return {
