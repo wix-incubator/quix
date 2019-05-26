@@ -21,7 +21,7 @@ export class NotebookController {
   @Get(':id')
   @UseGuards(AuthGuard())
   async getNotebook(@User() user: IUser, @Param('id') id: string) {
-    const notebook = await this.notebookService.getId(user.email, id);
+    const notebook = await this.notebookService.getNotebook(user.email, id);
 
     if (!notebook) {
       throw new HttpException(`Can't find notebook`, HttpStatus.NOT_FOUND);

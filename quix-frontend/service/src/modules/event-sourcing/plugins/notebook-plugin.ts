@@ -12,7 +12,7 @@ import {QuixHookNames} from '../types';
 import {last} from 'lodash';
 import {FileType} from 'shared/entities/file';
 import {FileTreeRepository} from 'entities/filenode.repository';
-import { EntityType } from 'common/entity-type.enum';
+import {EntityType} from 'common/entity-type.enum';
 
 @Injectable()
 export class NotebookPlugin implements EventBusPlugin {

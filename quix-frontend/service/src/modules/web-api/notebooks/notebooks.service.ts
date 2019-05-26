@@ -15,7 +15,7 @@ export class NotebookService {
     private folderService: FoldersService,
   ) {}
 
-  async getId(
+  async getNotebook(
     user: string,
     notebookId: string,
   ): Promise<INotebook | undefined> {
