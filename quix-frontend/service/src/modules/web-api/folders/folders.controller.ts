@@ -5,14 +5,17 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {FoldersService} from './folders.service';
 import {QuixEventBus} from '../../event-sourcing/quix-event-bus';
 import {UserProfile, User} from 'modules/auth';
 import {AuthGuard} from '@nestjs/passport';
+import {DemoModeInterceptor} from 'common/demo-mode-interceptor';
 
 @Controller('/api')
 @UseGuards(AuthGuard())
+@UseInterceptors(DemoModeInterceptor)
 export class FoldersController {
   constructor(
     private foldersService: FoldersService,

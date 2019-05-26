@@ -41,6 +41,5 @@ import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
     SearchModule,
   ],
   controllers: [AppController],
-  providers: [],
 })
 export class AppModule {}

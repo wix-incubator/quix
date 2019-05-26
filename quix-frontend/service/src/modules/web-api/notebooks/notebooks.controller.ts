@@ -5,11 +5,14 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import {NotebookService} from './notebooks.service';
 import {AuthGuard} from '@nestjs/passport';
+import {DemoModeInterceptor} from 'common/demo-mode-interceptor';
 
 @Controller('/api/notebook')
+@UseInterceptors(DemoModeInterceptor)
 export class NotebookController {
   constructor(private notebookService: NotebookService) {}
 

@@ -1,10 +1,13 @@
 import {Test, TestingModule} from '@nestjs/testing';
-import request from 'supertest';
 import {AppModule} from './../src/app.module';
 import {INestApplication} from '@nestjs/common';
 import {ConfigService, EnvSettings} from '../src/config';
 import nock from 'nock';
 import {UserProfile} from '../src/modules/auth/types';
+import {E2EDriver} from './driver';
+import {MockDataBuilder} from './builder';
+import cookieParser = require('cookie-parser');
+import {sanitizeUserEmail} from 'common/user-sanitizer';
 
 // TODO: run this on mysql, need to reset db between tests
 process.env.DB_TYPE = 'sqlite';
@@ -17,8 +20,21 @@ class E2EConfigService extends ConfigService {
   }
 }
 
-describe('AppController (e2e)', () => {
+const user1profile: UserProfile = {
+  email: 'testing@quix.com',
+  id: '11',
+  name: 'Testing User',
+};
+const user2profile: UserProfile = {
+  email: 'secondUser@quix.com',
+  id: '22',
+  name: 'second User',
+};
+
+describe('Application (e2e)', () => {
   let app: INestApplication;
+  let driver: E2EDriver;
+  let builder: MockDataBuilder;
 
   const beforeAndAfter = () => {
     beforeEach(async () => {
@@ -30,7 +46,10 @@ describe('AppController (e2e)', () => {
         .compile();
 
       app = moduleFixture.createNestApplication();
+      app.use(cookieParser());
       await app.init();
+      driver = new E2EDriver(app);
+      builder = new MockDataBuilder();
     });
 
     afterEach(() => {
@@ -50,55 +69,130 @@ describe('AppController (e2e)', () => {
     });
     beforeAndAfter();
 
-    it('should proxy requests to the backend', () => {
+    it('should proxy requests to the backend', async () => {
       nock(`http://${fakeBackendHost}`)
         .get('/api/db/explore')
-        .reply(200, []);
+        .reply(200, ['mocked']);
 
-      return request(app.getHttpServer())
-        .get('/api/db/explore')
-        .expect(200);
+      const returned = await driver.get('db/explore');
+      expect(returned).toEqual(['mocked']);
     });
   });
 
-  describe('users table', () => {
-    const up: UserProfile = {
-      email: 'testing@quix.com',
-      id: '11',
-      name: 'Testing User',
-    };
-    const up2: UserProfile = {
-      email: 'secondUser@quix.com',
-      id: '22',
-      name: 'second User',
-    };
+  describe('user list', () => {
     beforeAndAfter();
 
-    it('should add a user on first login', async () => {
-      await request(app.getHttpServer())
-        .get(`/api/authenticate?code=${encodeURIComponent(JSON.stringify(up))}`)
-        .expect(200);
+    beforeEach(() => {
+      driver.addUser('user1', user1profile).addUser('user2', user2profile);
+    });
 
-      let users = (await request(app.getHttpServer())
-        .get(`/api/users`)
-        .expect(200)).body;
+    it('should add a user on first login', async () => {
+      await driver.doLogin('user1');
+
+      let users = await driver.as('user1').get('users');
 
       expect(users).toHaveLength(1);
 
-      await request(app.getHttpServer())
-        .get(
-          `/api/authenticate?code=${encodeURIComponent(JSON.stringify(up2))}`,
-        )
-        .expect(200);
+      await driver.doLogin('user2');
 
-      users = (await request(app.getHttpServer())
-        .get(`/api/users`)
-        .expect(200)).body;
+      users = await driver.as('user1').get('users');
 
       expect(users).toMatchObject([
-        {id: up.email, name: up.name, rootFolder: expect.any(String)},
-        {id: up2.email, name: up2.name, rootFolder: expect.any(String)},
+        {
+          id: user1profile.email,
+          name: user1profile.name,
+          rootFolder: expect.any(String),
+        },
+        {
+          id: user2profile.email,
+          name: user2profile.name,
+          rootFolder: expect.any(String),
+        },
       ]);
+    });
+  });
+
+  describe('Demo Mode', () => {
+    beforeEach(() => {
+      envSettingsOverride.DemoMode = true;
+    });
+    beforeAndAfter();
+    beforeEach(() => {
+      driver.addUser('user1', user1profile).addUser('user2', user2profile);
+    });
+
+    it('user list should not contain private information', async () => {
+      await driver.doLogin('user1');
+
+      let users = await driver.as('user1').get('users');
+
+      expect(users).toHaveLength(1);
+
+      await driver.doLogin('user2');
+
+      users = await driver.as('user1').get('users');
+
+      expect(users).toMatchObject([
+        {
+          id: user1profile.email,
+          name: user1profile.name,
+          rootFolder: expect.any(String),
+        },
+        {
+          id: expect.stringContaining('**'),
+          name: expect.stringContaining('**'),
+          rootFolder: expect.any(String),
+        },
+      ]);
+    });
+
+    it('when fetching other user notebook, user name should be hidden', async () => {
+      await driver.doLogin('user1');
+
+      const [{id: rootFolder}] = await driver.as('user1').get('files');
+      const [notebookId, createAction] = builder.createNotebookAction([
+        {id: rootFolder},
+      ]);
+
+      await driver.as('user1').postEvents(createAction);
+
+      let notebookFromServer = await driver
+        .as('user1')
+        .get('notebook', notebookId);
+
+      expect(notebookFromServer.owner).toBe(user1profile.email);
+
+      notebookFromServer = await driver.as('user2').get('notebook', notebookId);
+
+      expect(notebookFromServer.owner).toBe(
+        sanitizeUserEmail(user1profile.email),
+      );
+    });
+
+    it('when searching notebooks,', async () => {
+      await driver.doLogin('user1');
+
+      const [{id: rootFolder}] = await driver.as('user1').get('files');
+      const [notebookId, createAction] = builder.createNotebookAction([
+        {id: rootFolder},
+      ]);
+
+      await driver.as('user1').postEvents([
+        createAction,
+        builder.createNoteAction(notebookId, {
+          content: 'some query goes here',
+        }),
+      ]);
+
+      let searchResults = await driver
+        .as('user1')
+        .search('"some query goes here"');
+      expect(searchResults.notes[0].owner).toBe(user1profile.email);
+
+      searchResults = await driver.as('user2').search('"some query goes here"');
+      expect(searchResults.notes[0].owner).toBe(
+        sanitizeUserEmail(user1profile.email),
+      );
     });
   });
 });
