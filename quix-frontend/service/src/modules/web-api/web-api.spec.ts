@@ -27,7 +27,7 @@ import {FoldersService} from './folders/folders.service';
 import {NotebookService} from './notebooks/notebooks.service';
 import {NoteType} from 'shared/entities/note';
 import {WebApiModule} from './web-api.module';
-import {EntitiyType} from 'common/entity-type.enum';
+import {EntityType} from 'common/entity-type.enum';
 
 jest.setTimeout(60000);
 
@@ -261,10 +261,10 @@ describe('web-api module', () => {
         defaultUser,
         notebookName,
       );
-      const favourite = createFavourite(
+      const favourite = createFavorite(
         defaultUser,
         notebook.id,
-        EntitiyType.Notebook,
+        EntityType.Notebook,
       );
 
       await notebookRepo.save(notebook);
@@ -319,10 +319,10 @@ function createFolderNode(defaultUser: string, folderName: string) {
   return folderNode;
 }
 
-function createFavourite(
+function createFavorite(
   owner: string,
   entityId: string,
-  entityType: EntitiyType,
+  entityType: EntityType,
 ) {
   return Object.assign(new DbFavorites(), {
     entityId,

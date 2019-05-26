@@ -1,4 +1,4 @@
-export enum EntitiyType {
+export enum EntityType {
   Notebook,
   Note,
   Folder,

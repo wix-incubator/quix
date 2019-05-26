@@ -4,7 +4,7 @@ import {Repository} from 'typeorm';
 import {INotebook} from 'shared';
 import {DbNotebook, DbFavorites} from 'entities';
 import {FoldersService} from '../folders/folders.service';
-import {EntitiyType} from 'common/entity-type.enum';
+import {EntityType} from 'common/entity-type.enum';
 
 @Injectable()
 export class NotebookService {
@@ -30,7 +30,7 @@ export class NotebookService {
       notebookQuery.getOne(),
       this.favoritesRepo.findOne({
         entityId: notebookId,
-        entityType: EntitiyType.Notebook,
+        entityType: EntityType.Notebook,
         owner: user,
       }),
     ]);

@@ -3,7 +3,7 @@ import {getEnv} from './env';
 import {FileType} from 'shared/entities/file';
 import {ContentSearch, searchTextType} from 'modules/search/types';
 import {escape} from 'mysql';
-import {EntitiyType} from 'common/entity-type.enum';
+import {EntityType} from 'common/entity-type.enum';
 
 /* A comptability layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
 interface DbColumnConf {
@@ -51,8 +51,8 @@ const MySqlConf: DbColumnConf = {
   },
   entityTypeEnum: {
     type: 'enum',
-    enum: EntitiyType,
-    default: EntitiyType.Notebook,
+    enum: EntityType,
+    default: EntityType.Notebook,
   },
   userAvatar: {nullable: true, type: 'varchar', length: 255},
   concat: (s1, s2) => `CONCAT(${s1}, ${s2})`,
@@ -117,7 +117,7 @@ const SqliteConf: DbColumnConf = {
   },
   idColumn: {nullable: false, unique: true, type: 'varchar', length: 36},
   fileTypeEnum: {type: 'varchar', length: 32, default: FileType.folder},
-  entityTypeEnum: {type: 'integer', default: EntitiyType.Notebook},
+  entityTypeEnum: {type: 'integer', default: EntityType.Notebook},
   userAvatar: {nullable: true, type: 'varchar', length: 255},
   concat: (s1, s2) => `(${s1} || ${s2})`,
   fullTextSearch(columnName, contentSearchList) {

@@ -8,6 +8,7 @@ import {
   DbNotebook,
   FileTreeRepository,
   NoteRepository,
+  DbFavorites,
 } from 'entities';
 import {QuixEventBus} from './quix-event-bus';
 import {DbActionStore} from './infrastructure/action-store';
@@ -27,6 +28,7 @@ import {PassportModule} from '@nestjs/passport';
       DbAction,
       FileTreeRepository,
       NoteRepository,
+      DbFavorites,
     ]),
     ConfigModule,
     PassportModule,
