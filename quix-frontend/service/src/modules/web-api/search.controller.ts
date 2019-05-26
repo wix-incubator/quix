@@ -5,11 +5,14 @@ import {
   Query,
   UseGuards,
   ParseIntPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
 import {SearchService} from 'modules/search/search';
+import {DemoModeInterceptor} from 'common/demo-mode-interceptor';
 
 @Controller('/api/search')
+@UseInterceptors(DemoModeInterceptor)
 @UseGuards(AuthGuard())
 export class SearchController {
   constructor(private searchService: SearchService) {}

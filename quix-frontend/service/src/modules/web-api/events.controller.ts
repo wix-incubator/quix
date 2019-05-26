@@ -1,4 +1,11 @@
-import {Body, Controller, Post, UsePipes, UseGuards} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UsePipes,
+  UseGuards,
+  HttpCode,
+} from '@nestjs/common';
 import {DefaultAction} from 'shared/entities/common/common-types';
 import {BaseActionValidation} from '../event-sourcing/base-action-validation';
 import {QuixEventBus} from '../event-sourcing/quix-event-bus';
@@ -12,6 +19,7 @@ export class EventsController {
   @Post()
   @UseGuards(AuthGuard())
   @UsePipes(BaseActionValidation)
+  @HttpCode(200)
   async pushEvents(
     @Body() action: DefaultAction | DefaultAction[],
     @User() user: IGoogleUser,

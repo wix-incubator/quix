@@ -11,6 +11,7 @@ import {QuixEventBus} from './quix-event-bus';
 import {QuixEventBusDriver} from './quix-event-bus.driver';
 import {range, reject, find} from 'lodash';
 import {EntityType} from 'common/entity-type.enum';
+import {MockDataBuilder} from 'test/builder';
 
 jest.setTimeout(30000);
 
@@ -21,12 +22,13 @@ describe('event sourcing', () => {
 
   let eventBus: QuixEventBus;
   let module: TestingModule;
+  let mockBuilder: MockDataBuilder;
   // let notebookRepo: Repository<DbNotebook>;
   // let noteRepo: Repository<DbNote>;
 
   beforeAll(async () => {
     driver = await QuixEventBusDriver.create(defaultUser);
-    ({eventBus, module} = await driver);
+    ({eventBus, module, mockBuilder} = await driver);
   });
 
   beforeEach(() => driver.clearDb());
@@ -39,7 +41,7 @@ describe('event sourcing', () => {
     let createAction: NotebookActions;
 
     beforeEach(() => {
-      [id, createAction] = driver.createNotebookAction();
+      [id, createAction] = mockBuilder.createNotebookAction();
     });
 
     it('create notebook', async () => {
@@ -107,7 +109,7 @@ describe('event sourcing', () => {
     let note: INote;
 
     beforeEach(() => {
-      [notebookId, createNotebookAction] = driver.createNotebookAction();
+      [notebookId, createNotebookAction] = mockBuilder.createNotebookAction();
       note = createNote(notebookId);
       addNoteAction = NoteActions.addNote(note.id, note);
     });
@@ -175,7 +177,7 @@ describe('event sourcing', () => {
       const [
         secondNotebookId,
         createNotebookAction2,
-      ] = driver.createNotebookAction();
+      ] = mockBuilder.createNotebookAction();
 
       await driver.emitAsUser(eventBus, [createNotebookAction2]);
 
@@ -271,11 +273,11 @@ describe('event sourcing', () => {
     let createNotebookAction: any;
 
     beforeEach(() => {
-      [folderId, createFolderAction] = driver.createFolderAction(
+      [folderId, createFolderAction] = mockBuilder.createFolderAction(
         'rootFolder',
         [],
       );
-      [notebookId, createNotebookAction] = driver.createNotebookAction([
+      [notebookId, createNotebookAction] = mockBuilder.createNotebookAction([
         {id: folderId},
       ]);
     });
@@ -311,9 +313,10 @@ describe('event sourcing', () => {
     });
 
     it('have multiple notebooks inside a single folder', async () => {
-      const [notebookId2, createNotebookAction2] = driver.createNotebookAction([
-        {id: folderId},
-      ]);
+      const [
+        notebookId2,
+        createNotebookAction2,
+      ] = mockBuilder.createNotebookAction([{id: folderId}]);
       await driver.emitAsUser(eventBus, [
         createFolderAction,
         createNotebookAction,
@@ -328,7 +331,7 @@ describe('event sourcing', () => {
     });
 
     it('notebook move', async () => {
-      const [subFolder1, createSubFolder1] = driver.createFolderAction(
+      const [subFolder1, createSubFolder1] = mockBuilder.createFolderAction(
         'subFolder1',
         [{id: folderId}],
       );
@@ -349,24 +352,25 @@ describe('event sourcing', () => {
     });
 
     it('folder tree move', async () => {
-      const [subFolder1, createSubFolder1] = driver.createFolderAction(
+      const [subFolder1, createSubFolder1] = mockBuilder.createFolderAction(
         'subFolder1',
         [{id: folderId}],
       );
 
-      const [subFolder2, createSubFolder2] = driver.createFolderAction(
+      const [subFolder2, createSubFolder2] = mockBuilder.createFolderAction(
         'subFolder2',
         [{id: subFolder1}],
       );
 
-      const [subFolder3, createSubFolder3] = driver.createFolderAction(
+      const [subFolder3, createSubFolder3] = mockBuilder.createFolderAction(
         'subFolder3',
         [{id: folderId}],
       );
 
-      const [notebookId, createNotebookAction] = driver.createNotebookAction([
-        {id: subFolder2},
-      ]);
+      const [
+        notebookId,
+        createNotebookAction,
+      ] = mockBuilder.createNotebookAction([{id: subFolder2}]);
 
       await driver.emitAsUser(eventBus, [
         createFolderAction,
@@ -413,7 +417,7 @@ describe('event sourcing', () => {
     });
 
     it('delete an empty folder', async () => {
-      const [subFolder1, createSubFolder1] = driver.createFolderAction(
+      const [subFolder1, createSubFolder1] = mockBuilder.createFolderAction(
         'subFolder1',
         [{id: folderId}],
       );
@@ -431,24 +435,25 @@ describe('event sourcing', () => {
     });
 
     it('recursively delete a folder', async () => {
-      const [subFolder1, createSubFolder1] = driver.createFolderAction(
+      const [subFolder1, createSubFolder1] = mockBuilder.createFolderAction(
         'subFolder1',
         [{id: folderId}],
       );
 
-      const [subFolder2, createSubFolder2] = driver.createFolderAction(
+      const [subFolder2, createSubFolder2] = mockBuilder.createFolderAction(
         'subFolder2',
         [{id: subFolder1}],
       );
 
-      const [subFolder3, createSubFolder3] = driver.createFolderAction(
+      const [subFolder3, createSubFolder3] = mockBuilder.createFolderAction(
         'subFolder3',
         [{id: subFolder2}],
       );
 
-      const [notebookId, createNotebookAction] = driver.createNotebookAction([
-        {id: subFolder2},
-      ]);
+      const [
+        notebookId,
+        createNotebookAction,
+      ] = mockBuilder.createNotebookAction([{id: subFolder2}]);
 
       await driver.emitAsUser(eventBus, [
         createFolderAction,
