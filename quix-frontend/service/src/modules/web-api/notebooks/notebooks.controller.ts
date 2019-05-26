@@ -6,7 +6,7 @@ import {
   HttpStatus,
   UseGuards,
 } from '@nestjs/common';
-import {IUser} from 'shared/dist';
+import {IUser} from 'shared';
 import {User} from 'modules/auth';
 import {NotebookService} from './notebooks.service';
 import {AuthGuard} from '@nestjs/passport';

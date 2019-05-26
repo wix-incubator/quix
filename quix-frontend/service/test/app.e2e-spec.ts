@@ -4,7 +4,7 @@ import {AppModule} from './../src/app.module';
 import {INestApplication} from '@nestjs/common';
 import {ConfigService, EnvSettings} from '../src/config';
 import nock from 'nock';
-import {UserProfile} from '../src/modules/auth/types';
+import {IGoogleUser} from '../src/modules/auth/types';
 
 // TODO: run this on mysql, need to reset db between tests
 process.env.DB_TYPE = 'sqlite';
@@ -62,12 +62,12 @@ describe('AppController (e2e)', () => {
   });
 
   describe('users table', () => {
-    const up: UserProfile = {
+    const up: IGoogleUser = {
       email: 'testing@quix.com',
       id: '11',
       name: 'Testing User',
     };
-    const up2: UserProfile = {
+    const up2: IGoogleUser = {
       email: 'secondUser@quix.com',
       id: '22',
       name: 'second User',
