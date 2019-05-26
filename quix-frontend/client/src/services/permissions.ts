@@ -7,6 +7,7 @@ export interface IPermissions {
   delete?: boolean;
   rename?: boolean;
   clone?: boolean;
+  like?: boolean;
   bulk?: IPermissions;
 }
 
@@ -33,6 +34,7 @@ export const getDefaultPermissions = (): IPermissions => {
     delete: false,
     rename: false,
     clone: false,
+    like: false,
     bulk: null
   };
 }
@@ -45,14 +47,15 @@ export const getFolderPermissions = (app: Instance, folder: IFile): IFolderPermi
     edit: isFolderOwner,
     delete: isFolderOwner && !isRootFolder,
     rename: isFolderOwner && !isRootFolder,
+    clone: false,
+    like: false,
     addFolder: isFolderOwner,
     addNotebook: isFolderOwner,
-    clone: false,
     bulk: {
-      edit: false,
       delete: isFolderOwner,
       rename: false,
-      clone: false
+      clone: false,
+      like: false,
     }
   };
 }
@@ -66,16 +69,19 @@ export const getNotebookPermissions = (app: Instance, folder: IFile): INotebookP
     rename: isFolderOwner,
     addNote: isFolderOwner,
     clone: true,
+    like: true,
     note: {
       edit: isFolderOwner,
       delete: isFolderOwner,
       rename: isFolderOwner,
-      clone: true
+      clone: true,
+      like: false,
     },
     bulk: {
       delete: isFolderOwner,
       reorder: isFolderOwner,
-      clone: false
+      clone: false,
+      like: false,
     },
   };
 }
