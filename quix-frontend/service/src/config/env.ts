@@ -32,6 +32,7 @@ const envSettingsMap: {[K in keyof EnvSettings]: string} = {
   AuthType: 'AUTH_TYPE',
   AutoMigrateDb: 'DB_AUTO_MIGRATE',
   UseMinifiedStatics: 'MINIFIED_STATICS',
+  DemoMode: 'DEMO_MODE',
 };
 
 const envSettingsDefaults = {
@@ -51,9 +52,10 @@ const envSettingsDefaults = {
   CookieAge: 30 * 24 * 60 * 60 * 1000 /* 30 days */,
   AutoMigrateDb: true,
   UseMinifiedStatics: true,
+  DemoMode: false,
 };
 
-const testingDefaults: EnvSettings = {
+export const testingDefaults: EnvSettings = {
   DbName: 'quixtest',
   DbUser: 'root',
   DbPass: '',
@@ -70,6 +72,7 @@ const testingDefaults: EnvSettings = {
   AuthType: 'fake',
   AutoMigrateDb: true,
   UseMinifiedStatics: false,
+  DemoMode: false,
 };
 
 const identity = <T>(x: T) => x;
@@ -125,6 +128,7 @@ const transforms: {
   CookieAge: numberParse,
   AutoMigrateDb: booleanParse,
   UseMinifiedStatics: booleanParse,
+  DemoMode: booleanParse,
 };
 
 let env: EnvSettings;
