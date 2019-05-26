@@ -7,12 +7,21 @@ import {
   ParseIntPipe,
 } from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
+import {EnvSettings, ConfigService} from 'config';
 import {SearchService} from 'modules/search/search';
+import {sanitizeUserEmail} from 'utils/sanitizer';
 
 @Controller('/api/search')
 @UseGuards(AuthGuard())
 export class SearchController {
-  constructor(private searchService: SearchService) {}
+  private readonly envSettings: EnvSettings;
+
+  constructor(
+    private readonly configService: ConfigService,
+    private searchService: SearchService,
+  ) {
+    this.envSettings = this.configService.getEnvSettings();
+  }
 
   @Get('/:term')
   async doSearch(
@@ -20,11 +29,19 @@ export class SearchController {
     @Query('offset', new ParseIntPipe()) offset: number,
     @Query('total', new ParseIntPipe()) count: number,
   ) {
-    const [notes, totalNotesInSearch] = await this.searchService.search(
-      query,
-      count,
-      offset,
-    );
-    return {notes, count: totalNotesInSearch};
+    const res = await this.searchService.search(query, count, offset);
+
+    const notes =
+      this.envSettings.RunMode === 'demo'
+        ? res[0].map(note => ({
+            ...note,
+            owner: sanitizeUserEmail(note.owner),
+          }))
+        : res[0];
+
+    return {
+      notes,
+      count: res[1],
+    };
   }
 }

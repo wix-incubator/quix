@@ -16,6 +16,9 @@ export const loadEnv = () => {
 };
 
 const envSettingsMap: {[K in keyof EnvSettings]: string} = {
+  DbType: 'DB_TYPE',
+  AuthType: 'AUTH_TYPE',
+  RunMode: 'default',
   DbName: 'DB_NAME',
   DbUser: 'DB_USER',
   DbPass: 'DB_PASS',
@@ -28,8 +31,6 @@ const envSettingsMap: {[K in keyof EnvSettings]: string} = {
   AuthCookieName: 'AUTH_COOKIE',
   AuthEncKey: 'AUTH_SECRET',
   CookieAge: 'COOKIE_MAX_AGE',
-  DbType: 'DB_TYPE',
-  AuthType: 'AUTH_TYPE',
   AutoMigrateDb: 'DB_AUTO_MIGRATE',
   UseMinifiedStatics: 'MINIFIED_STATICS',
 };
@@ -37,6 +38,7 @@ const envSettingsMap: {[K in keyof EnvSettings]: string} = {
 const envSettingsDefaults = {
   DbType: 'mysql' as 'mysql' | 'sqlite',
   AuthType: 'fake' as 'fake' | 'google',
+  RunMode: 'demo' as 'demo' | 'normal',
   DbName: 'quix',
   DbUser: 'root',
   DbPass: '',
@@ -54,6 +56,9 @@ const envSettingsDefaults = {
 };
 
 const testingDefaults: EnvSettings = {
+  DbType: 'sqlite',
+  AuthType: 'fake',
+  RunMode: 'normal',
   DbName: 'quixtest',
   DbUser: 'root',
   DbPass: '',
@@ -66,8 +71,6 @@ const testingDefaults: EnvSettings = {
   AuthCookieName: '__quix',
   AuthEncKey: '',
   CookieAge: 30 * 24 * 60 * 60 * 1000,
-  DbType: 'sqlite',
-  AuthType: 'fake',
   AutoMigrateDb: true,
   UseMinifiedStatics: false,
 };
@@ -111,6 +114,7 @@ const transforms: {
         throw new Error('Unknown Auth type.');
     }
   },
+  RunMode: identity as any,
   DbName: identity,
   DbUser: identity,
   DbPass: identity,

@@ -7,6 +7,7 @@ import {dbUserToUser} from 'entities/user.entity';
 import {UserProfile} from './types';
 import {FileActions, createFolder} from 'shared/entities/file';
 import uuid from 'uuid/v4';
+
 @Injectable()
 export class UsersService {
   constructor(
@@ -17,7 +18,7 @@ export class UsersService {
   async doUserLogin(userFromLogin: UserProfile) {
     const user = await this.userRepo.findOne({id: userFromLogin.email});
     if (!user) {
-      await this.doFirstTimeLogin(userFromLogin);
+    await this.doFirstTimeLogin(userFromLogin);
     }
   }
 
@@ -25,6 +26,7 @@ export class UsersService {
     const rootFolderId = await this.createRootFolder(userFromLogin.email);
     const {avatar, email: id, name} = userFromLogin;
     const dbUser: DbUser = {avatar, id, name, rootFolder: rootFolderId};
+
     return this.userRepo.save(dbUser);
   }
 
@@ -41,8 +43,9 @@ export class UsersService {
     return id;
   }
 
-  async getListOfUsers() {
+  async getListOfUsers(sanitize = false) {
     const dbusers = await this.userRepo.find();
-    return dbusers.map(dbUserToUser);
+
+    return dbusers.map(user => dbUserToUser(user, sanitize));
   }
 }

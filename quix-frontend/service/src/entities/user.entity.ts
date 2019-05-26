@@ -1,5 +1,7 @@
 import {Column, Entity, PrimaryColumn} from 'typeorm';
 import {dbConf} from '../config/db-conf';
+import {sanitizeUserEmail, sanitizeUserName} from 'utils/sanitizer';
+import {IUser} from 'shared';
 
 @Entity({name: 'users'})
 export class DbUser {
@@ -19,14 +21,15 @@ export class DbUser {
   jsonContent?: any;
 }
 
-export interface IUser {
-  id: string;
-  name: string;
-  avatar: string;
-  rootFolder: string;
-}
+export const dbUserToUser = (dbuser: DbUser, sanitize = false): IUser => {
+  const {avatar, name, rootFolder, id} = dbuser;
+  const email = sanitize ? sanitizeUserEmail(id) : id;
 
-export const dbUserToUser = (dbuser: DbUser): IUser => {
-  const {jsonContent, avatar, name, rootFolder, id} = dbuser;
-  return {id, avatar: avatar || '', name: name || '', rootFolder};
+  return {
+    id: email,
+    email,
+    avatar: avatar || '',
+    name: sanitize ? sanitizeUserName(name || '') : name || '',
+    rootFolder,
+  };
 };
