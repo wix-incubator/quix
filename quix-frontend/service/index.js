@@ -1,3 +1,5 @@
+/* ugly hack to handle path mapping on dist folder*/
+
 const mapValues = require('lodash/mapValues')
 const path = require('path');
 const tsConfig = require("./tsconfig.json");

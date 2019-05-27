@@ -31,6 +31,6 @@ export const createMysqlConf = (
     synchronize: settings.AutoMigrateDb,
     entities,
     logger: 'advanced-console',
-    // logging: true,
+    logging: ['error', 'schema', 'warn'],
   };
 };
