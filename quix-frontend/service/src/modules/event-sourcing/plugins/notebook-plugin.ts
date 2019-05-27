@@ -46,7 +46,7 @@ export class NotebookPlugin implements EventBusPlugin {
     api.hooks.listen(
       QuixHookNames.PROJECTION,
       async (action: NotebookActions) =>
-        this.em.transaction('REPEATABLE READ', async transactionManager => {
+        this.em.transaction(async transactionManager => {
           await this.projectNotebook(action, transactionManager);
           await this.projectFileTree(action, transactionManager);
           await this.projectFavorites(action, transactionManager);
