@@ -1,5 +1,5 @@
-export enum EntitiyType {
-  Notebook,
-  Note,
-  Folder,
+export enum EntityType {
+  Notebook = 'notebook',
+  Note = 'note',
+  Folder = 'folder',
 }

@@ -3,7 +3,7 @@ import {AuthGuard} from '@nestjs/passport';
 import {ConfigService, EnvSettings} from 'config';
 import {Response} from 'express';
 import {AuthService} from './auth.service';
-import {UserProfile} from './types';
+import {IGoogleUser} from './types';
 import {User} from './user-decorator';
 import {UsersService} from './users.service';
 
@@ -21,7 +21,7 @@ export class AuthController {
 
   @Get('user')
   @UseGuards(AuthGuard())
-  async getUser(@User() user: UserProfile) {
+  async getUser(@User() user: IGoogleUser) {
     await this.userService.doUserLogin(user);
     return user;
   }

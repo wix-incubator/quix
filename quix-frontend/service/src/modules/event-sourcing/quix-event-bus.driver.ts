@@ -14,12 +14,14 @@ import {
   DbNote,
   DbNotebook,
   FileTreeRepository,
+  DbFavorites,
 } from 'entities';
 import {MockDataBuilder} from '../../../test/builder';
 import {Connection, Repository} from 'typeorm';
 import {EventSourcingModule} from './event-sourcing.module';
 import {DbAction} from './infrastructure/action-store/entities/db-action.entity';
 import {QuixEventBus} from './quix-event-bus';
+import {EntityType} from 'common/entity-type.enum';
 
 export class QuixEventBusDriver {
   public mockBuilder: MockDataBuilder;
@@ -32,6 +34,7 @@ export class QuixEventBusDriver {
     public eventsRepo: Repository<DbAction>,
     public folderRepo: Repository<DbFolder>,
     public fileTreeRepo: Repository<DbFileTreeNode>,
+    public favoritesRepo: Repository<DbFavorites>,
     private conn: Connection,
     private configService: ConfigService,
     private defaultUser: string,
@@ -52,6 +55,7 @@ export class QuixEventBusDriver {
               DbNote,
               DbNotebook,
               DbAction,
+              DbFavorites,
             ]),
           inject: [ConfigService],
         }),
@@ -75,6 +79,9 @@ export class QuixEventBusDriver {
     const folderRepo: Repository<DbFolder> = module.get(
       getRepositoryToken(DbFolder),
     );
+    const favoritesRepo: Repository<DbFavorites> = module.get(
+      getRepositoryToken(DbFavorites),
+    );
     const conn: Connection = module.get(getConnectionToken());
     const configService: ConfigService = module.get(ConfigService);
 
@@ -86,6 +93,7 @@ export class QuixEventBusDriver {
       eventsRepo,
       folderRepo,
       fileTreeRepo,
+      favoritesRepo,
       conn,
       configService,
       defaultUser,
@@ -103,6 +111,7 @@ export class QuixEventBusDriver {
     await this.clearNotes();
     await this.clearFolders();
     await this.clearNotebooks();
+    await this.clearFavorites();
     await this.conn.query(
       dbType === 'mysql'
         ? 'SET FOREIGN_KEY_CHECKS = 1'
@@ -114,13 +123,42 @@ export class QuixEventBusDriver {
     return {
       and: {
         expectToBeDefined: async () => {
-          const notebook = (await this.notebookRepo.findOne(id))!;
+          const notebook = await this.notebookRepo.findOneOrFail(id);
           expect(notebook).toBeDefined();
           return notebook;
         },
         expectToBeUndefined: async () => {
           const notebook = await this.notebookRepo.findOne(id);
           expect(notebook).not.toBeDefined();
+          return undefined;
+        },
+      },
+    };
+  }
+
+  getFavorite(owner: string, entityId: string, entityType: EntityType) {
+    return {
+      and: {
+        expectToBeDefined: async () => {
+          const favorite = await this.favoritesRepo.findOneOrFail({
+            entityId,
+            entityType,
+            owner,
+          });
+
+          expect(favorite).toBeDefined();
+
+          return favorite;
+        },
+        expectToBeUndefined: async () => {
+          const favorite = await this.favoritesRepo.findOne({
+            entityId,
+            entityType,
+            owner,
+          });
+
+          expect(favorite).not.toBeDefined();
+
           return undefined;
         },
       },
@@ -158,6 +196,10 @@ export class QuixEventBusDriver {
 
   async clearNotebooks() {
     return this.notebookRepo.delete({});
+  }
+
+  async clearFavorites() {
+    return this.favoritesRepo.delete({});
   }
 
   emitAsUser(eventBus: QuixEventBus, actions: any[], user = this.defaultUser) {

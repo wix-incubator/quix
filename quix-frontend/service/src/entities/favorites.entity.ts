@@ -1,4 +1,4 @@
-import {EntitiyType} from 'common/entity-type.enum';
+import {EntityType} from 'common/entity-type.enum';
 import {dbConf} from 'config/db-conf';
 import {Column, Entity, Index} from 'typeorm';
 
@@ -12,5 +12,5 @@ export class DbFavorites {
   entityId!: string;
 
   @Column({...dbConf.entityTypeEnum, name: 'entity_type'})
-  entityType!: EntitiyType;
+  entityType!: EntityType;
 }

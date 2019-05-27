@@ -1,11 +1,11 @@
 import {Strategy as BaseStrategy} from 'passport-strategy';
 import {Request} from 'express';
-import {UserProfile} from './types';
+import {IGoogleUser} from './types';
 import {PassportStrategy} from '@nestjs/passport';
 import {Injectable, Logger} from '@nestjs/common';
 import {ConfigService} from 'config';
 
-const defaultUser: UserProfile = {
+const defaultUser: IGoogleUser = {
   email: 'user@quix.com',
   id: '1',
   name: 'Default User',
@@ -44,7 +44,7 @@ export class MockStrategy extends PassportStrategy(PassportFakeStrategy) {
     super({cookieName: configService.getEnvSettings().AuthCookieName});
   }
 
-  async validate(payload: UserProfile) {
+  async validate(payload: IGoogleUser) {
     return payload;
   }
 }

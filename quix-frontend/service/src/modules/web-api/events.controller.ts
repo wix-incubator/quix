@@ -9,7 +9,7 @@ import {
 import {DefaultAction} from 'shared/entities/common/common-types';
 import {BaseActionValidation} from '../event-sourcing/base-action-validation';
 import {QuixEventBus} from '../event-sourcing/quix-event-bus';
-import {User, UserProfile} from 'modules/auth';
+import {User, IGoogleUser} from 'modules/auth';
 import {AuthGuard} from '@nestjs/passport';
 
 @Controller('/api/events')
@@ -22,7 +22,7 @@ export class EventsController {
   @HttpCode(200)
   async pushEvents(
     @Body() action: DefaultAction | DefaultAction[],
-    @User() user: UserProfile,
+    @User() user: IGoogleUser,
   ) {
     if (Array.isArray(action)) {
       action.forEach(singleAction =>

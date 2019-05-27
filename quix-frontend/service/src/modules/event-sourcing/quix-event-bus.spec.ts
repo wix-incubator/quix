@@ -10,6 +10,7 @@ import {FileActions, FileType} from 'shared/entities/file';
 import {QuixEventBus} from './quix-event-bus';
 import {QuixEventBusDriver} from './quix-event-bus.driver';
 import {range, reject, find} from 'lodash';
+import {EntityType} from 'common/entity-type.enum';
 import {MockDataBuilder} from 'test/builder';
 
 jest.setTimeout(30000);
@@ -68,15 +69,26 @@ describe('event sourcing', () => {
       expect(notebook.name).toBe('newName');
     });
 
-    // it('update isLiked', async () => {
-    //   await driver.emitAsUser(eventBus, [
-    //     createAction,
-    //     NotebookActions.toggleIsLiked(id, true),
-    //   ]);
-    //   const notebook = await driver.getNotebook(id).and.expectToBeDefined();
+    it('toggle isLiked', async () => {
+      await driver.emitAsUser(eventBus, [
+        createAction,
+        NotebookActions.toggleIsLiked(id, true),
+      ]);
 
-    //   expect(notebook.isLiked).toBe(true);
-    // });
+      await driver.getNotebook(id).and.expectToBeDefined();
+
+      await driver
+        .getFavorite(defaultUser, id, EntityType.Notebook)
+        .and.expectToBeDefined();
+
+      await driver.emitAsUser(eventBus, [
+        NotebookActions.toggleIsLiked(id, false),
+      ]);
+
+      await driver
+        .getFavorite(defaultUser, id, EntityType.Notebook)
+        .and.expectToBeUndefined();
+    });
 
     it('delete', async () => {
       await eventBus.emit(createAction);

@@ -51,11 +51,11 @@
     Share {{::type}}
   </bi-tooltip>
       
-  <!-- <bi-tooltip ng-if="::!options.bulk">
+  <bi-tooltip ng-if="::permissions.like">
     <bi-toggle>
       <i
         class="bi-action"
-        ng-class="::{
+        ng-class="{
           'bi-icon': !options.compact,
           'bi-icon--sm': options.compact,
           'bi-danger': context.isLiked
@@ -63,6 +63,6 @@
         ng-click="$event.stopPropagation(); events.onLikeToggle()"
       >{{context.isLiked ? 'favorite' :'favorite_border'}}</i>
     </bi-toggle>
-    Add {{::type}} to favorites
-  </bi-tooltip> -->
+    {{context.isLiked ? 'Remove' : 'Add'}} {{::type}} {{context.isLiked ? 'from' : 'to'}} favorites
+  </bi-tooltip>
 </div>

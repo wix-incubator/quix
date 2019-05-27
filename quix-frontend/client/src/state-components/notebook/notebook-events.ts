@@ -63,7 +63,11 @@ export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook
 export const onLikeToggle = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
   const {id, isLiked} = notebook;
 
-  store.dispatchAndLog(NotebookActions.toggleIsLiked(id, !isLiked));
+  store.dispatchAndLog(NotebookActions.toggleIsLiked(id, !isLiked))
+    .then((action) => toast.showToast({
+      text: action.isLiked ? 'Added notebook to favorites' : 'Removed notebook from favorites',
+      type: 'success'
+    }, 3000));
 }
 
 export const onSave = (scope: IScope, store: Store, app: Instance) => () => {

@@ -3,7 +3,7 @@ import {AppModule} from './../src/app.module';
 import {INestApplication} from '@nestjs/common';
 import {ConfigService, EnvSettings} from '../src/config';
 import nock from 'nock';
-import {UserProfile} from '../src/modules/auth/types';
+import {IGoogleUser} from '../src/modules/auth/types';
 import {E2EDriver} from './driver';
 import {MockDataBuilder} from './builder';
 import cookieParser = require('cookie-parser');
@@ -20,12 +20,12 @@ class E2EConfigService extends ConfigService {
   }
 }
 
-const user1profile: UserProfile = {
+const user1profile: IGoogleUser = {
   email: 'testing@quix.com',
   id: '11',
   name: 'Testing User',
 };
-const user2profile: UserProfile = {
+const user2profile: IGoogleUser = {
   email: 'secondUser@quix.com',
   id: '22',
   name: 'second User',

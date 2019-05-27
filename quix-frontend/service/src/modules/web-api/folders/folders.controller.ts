@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import {FoldersService} from './folders.service';
 import {QuixEventBus} from '../../event-sourcing/quix-event-bus';
-import {UserProfile, User} from 'modules/auth';
+import {IGoogleUser, User} from 'modules/auth';
 import {AuthGuard} from '@nestjs/passport';
 import {DemoModeInterceptor} from 'common/demo-mode-interceptor';
 
@@ -23,7 +23,7 @@ export class FoldersController {
   ) {}
 
   @Get('files')
-  async getFullTree(@User() user: UserProfile) {
+  async getFullTree(@User() user: IGoogleUser) {
     const {email} = user;
     const list = await this.foldersService.getFilesForUser(email);
 

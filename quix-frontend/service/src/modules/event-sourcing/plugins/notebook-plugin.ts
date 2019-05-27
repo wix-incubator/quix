@@ -1,6 +1,6 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository, InjectEntityManager} from '@nestjs/typeorm';
-import {DbNotebook, DbFileTreeNode} from 'entities';
+import {DbNotebook, DbFileTreeNode, DbFavorites} from 'entities';
 import {Repository, EntityManager} from 'typeorm';
 import {
   notebookReducer,
@@ -12,6 +12,7 @@ import {QuixHookNames} from '../types';
 import {last} from 'lodash';
 import {FileType} from 'shared/entities/file';
 import {FileTreeRepository} from 'entities/filenode.repository';
+import {EntityType} from 'common/entity-type.enum';
 
 @Injectable()
 export class NotebookPlugin implements EventBusPlugin {
@@ -28,7 +29,9 @@ export class NotebookPlugin implements EventBusPlugin {
       NotebookActionTypes.createNotebook,
       NotebookActionTypes.deleteNotebook,
       NotebookActionTypes.updateName,
+      NotebookActionTypes.toggleIsLiked,
     ];
+
     api.setEventFilter(type => handledEvents.includes(type));
 
     api.hooks.listen(QuixHookNames.VALIDATION, (action: NotebookActions) => {
@@ -36,20 +39,22 @@ export class NotebookPlugin implements EventBusPlugin {
         case NotebookActionTypes.updateName:
         case NotebookActionTypes.deleteNotebook:
         case NotebookActionTypes.createNotebook:
+        case NotebookActionTypes.toggleIsLiked:
       }
     });
 
     api.hooks.listen(
       QuixHookNames.PROJECTION,
       async (action: NotebookActions) =>
-        this.em.transaction('SERIALIZABLE', async transactionManager => {
-          await this.projectionHandleNotebookDb(action, transactionManager);
-          await this.projectionHandleFileTreeDb(action, transactionManager);
+        this.em.transaction(async transactionManager => {
+          await this.projectNotebook(action, transactionManager);
+          await this.projectFileTree(action, transactionManager);
+          await this.projectFavorites(action, transactionManager);
         }),
     );
   };
 
-  async projectionHandleNotebookDb(action: NotebookActions, tm: EntityManager) {
+  private async projectNotebook(action: NotebookActions, tm: EntityManager) {
     const model =
       action.type === NotebookActionTypes.createNotebook
         ? undefined
@@ -64,19 +69,46 @@ export class NotebookPlugin implements EventBusPlugin {
     }
   }
 
-  async projectionHandleFileTreeDb(action: NotebookActions, tm: EntityManager) {
+  private async projectFileTree(action: NotebookActions, tm: EntityManager) {
     switch (action.type) {
       case NotebookActionTypes.createNotebook: {
         const {notebook} = action;
         const parent = last(notebook.path);
         const node = new DbFileTreeNode();
+
         node.id = notebook.id;
         node.notebookId = notebook.id;
         node.owner = (action as any).user;
         node.type = FileType.notebook;
         node.parent = parent ? new DbFileTreeNode(parent.id) : undefined;
+
         return tm.getCustomRepository(FileTreeRepository).save(node);
       }
+    }
+  }
+
+  private async projectFavorites(action: NotebookActions, tm: EntityManager) {
+    switch (action.type) {
+      case NotebookActionTypes.toggleIsLiked: {
+        const favorite = {
+          entityId: action.id,
+          entityType: EntityType.Notebook,
+          owner: (action as any).user,
+        };
+
+        if (action.isLiked) {
+          return tm.save(Object.assign(new DbFavorites(), favorite));
+        } else {
+          return tm.delete(DbFavorites, favorite);
+        }
+      }
+      case NotebookActionTypes.deleteNotebook: {
+        return tm.delete(DbFavorites, {
+          entityId: action.id,
+          owner: (action as any).user,
+        });
+      }
+      default:
     }
   }
 }

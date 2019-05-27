@@ -1,14 +1,14 @@
 /* tslint:disable:variable-name */
 import {INestApplication} from '@nestjs/common';
 import request from 'supertest';
-import {UserProfile} from 'modules/auth';
+import {IGoogleUser} from 'modules/auth';
 import {testingDefaults} from 'config/env';
 import {INotebook, INote, IFolder, IFile} from 'shared';
 
 const defaultCookie = testingDefaults.AuthCookieName;
 
 interface GetFunctionTypeHelper {
-  (url: 'users'): Promise<UserProfile[]>;
+  (url: 'users'): Promise<IGoogleUser[]>;
   (url: 'files'): Promise<IFile[]>;
   (url: 'files', id: string): Promise<IFolder>;
   (url: 'note', id: string): Promise<INote>;
@@ -16,13 +16,13 @@ interface GetFunctionTypeHelper {
   (...url: string[]): Promise<any>;
 }
 
-const createUserCookie = (user: UserProfile) =>
+const createUserCookie = (user: IGoogleUser) =>
   Buffer.from(JSON.stringify(user)).toString('base64');
 
 class HttpHelper {
   constructor(
     protected _supertest: request.SuperTest<request.Test>,
-    protected user?: UserProfile,
+    protected user?: IGoogleUser,
   ) {}
 
   public baseGet(url: string) {
@@ -70,13 +70,13 @@ class HttpHelper {
 }
 
 export class E2EDriver extends HttpHelper {
-  private users: Map<string, UserProfile> = new Map();
+  private users: Map<string, IGoogleUser> = new Map();
 
   constructor(private app: INestApplication) {
     super(request(app.getHttpServer()));
   }
 
-  addUser(nickname: string, up: UserProfile) {
+  addUser(nickname: string, up: IGoogleUser) {
     this.users.set(nickname, up);
     return this;
   }

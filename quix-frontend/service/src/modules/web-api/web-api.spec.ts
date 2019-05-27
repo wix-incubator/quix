@@ -20,13 +20,15 @@ import {
   NoteRepository,
   FileTreeRepository,
   DbUser,
+  DbFavorites,
 } from 'entities';
 import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action.entity';
 import {FoldersService} from './folders/folders.service';
-import {NotebookController} from './notebooks/notebooks.controller';
 import {NotebookService} from './notebooks/notebooks.service';
 import {NoteType} from 'shared/entities/note';
 import {WebApiModule} from './web-api.module';
+import {EntityType} from 'common/entity-type.enum';
+
 jest.setTimeout(60000);
 
 // TODO: write a driver for this test, refactor everything @aviad
@@ -37,6 +39,7 @@ describe('web-api module', () => {
   let folderRepo: Repository<DbFolder>;
   let eventsRepo: Repository<DbAction>;
   let fileTreeRepo: FileTreeRepository;
+  let favoritesRepo: Repository<DbFavorites>;
   let folderService: FoldersService;
   let notebookService: NotebookService;
   let configService: ConfigService;
@@ -55,6 +58,7 @@ describe('web-api module', () => {
     await folderRepo.delete({});
     await notebookRepo.delete({});
     await fileTreeRepo.clear();
+    await favoritesRepo.clear();
     await conn.query(
       dbType === 'mysql'
         ? 'SET FOREIGN_KEY_CHECKS=1'
@@ -76,6 +80,7 @@ describe('web-api module', () => {
               DbNotebook,
               DbAction,
               DbUser,
+              DbFavorites,
             ]),
           inject: [ConfigService],
         }),
@@ -89,6 +94,7 @@ describe('web-api module', () => {
     eventsRepo = module.get(getRepositoryToken(DbAction));
     fileTreeRepo = module.get(getRepositoryToken(FileTreeRepository));
     folderRepo = module.get(getRepositoryToken(DbFolder));
+    favoritesRepo = module.get(getRepositoryToken(DbFavorites));
     folderService = module.get(FoldersService);
     notebookService = module.get(NotebookService);
     conn = module.get(getConnectionToken());
@@ -216,7 +222,11 @@ describe('web-api module', () => {
       await notebookRepo.save(notebook);
       await fileTreeRepo.save(notebookNode);
 
-      const response = await notebookService.getId(notebook.id);
+      const response = await notebookService.getNotebook(
+        defaultUser,
+        notebook.id,
+      );
+
       expect(response!.id).toBe(notebook.id);
       expect(response!.path).toEqual([
         {name: 'folderName', id: folderNode.id},
@@ -244,8 +254,36 @@ describe('web-api module', () => {
       const to = 1;
       await noteRepo.reorder(notes[from], to);
 
-      const response = await notebookService.getId(notebook.id);
+      const response = await notebookService.getNotebook(
+        defaultUser,
+        notebook.id,
+      );
       expect(response!.notes[to].name).toBe(`note${from}`);
+    });
+
+    it('get a notebook, with favorite indication', async () => {
+      const notebookName = 'some new notebook';
+      const [notebookNode, notebook] = createNotebookNode(
+        defaultUser,
+        notebookName,
+      );
+      const favorite = createFavorite(
+        defaultUser,
+        notebook.id,
+        EntityType.Notebook,
+      );
+
+      await notebookRepo.save(notebook);
+      await fileTreeRepo.save(notebookNode);
+      await favoritesRepo.save(favorite);
+
+      const response = await notebookService.getNotebook(
+        defaultUser,
+        notebook.id,
+      );
+
+      expect(response!.id).toBe(notebook.id);
+      expect(response!.isLiked).toBe(true);
     });
   });
 });
@@ -288,4 +326,16 @@ function createFolderNode(defaultUser: string, folderName: string) {
     owner: defaultUser,
   });
   return folderNode;
+}
+
+function createFavorite(
+  owner: string,
+  entityId: string,
+  entityType: EntityType,
+) {
+  return Object.assign(new DbFavorites(), {
+    entityId,
+    entityType,
+    owner,
+  });
 }

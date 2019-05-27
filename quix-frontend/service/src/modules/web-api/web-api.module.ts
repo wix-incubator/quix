@@ -9,6 +9,7 @@ import {
   FileTreeRepository,
   NoteRepository,
   DbUser,
+  DbFavorites,
 } from 'entities';
 import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action.entity';
 import {FoldersController} from './folders/folders.controller';
@@ -33,6 +34,7 @@ import {UserListController} from './user-list.controller';
       FileTreeRepository,
       NoteRepository,
       DbUser,
+      DbFavorites,
     ]),
     ConfigModule,
     AuthModule.create(),
