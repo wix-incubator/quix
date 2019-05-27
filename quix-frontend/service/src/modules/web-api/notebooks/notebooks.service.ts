@@ -29,9 +29,8 @@ export class NotebookService {
     const [notebook, favorite] = await Promise.all([
       notebookQuery.getOne(),
       this.favoritesRepo.findOne({
-        entityId: notebookId,
-        entityType: EntityType.Notebook,
         owner: user,
+        entityId: notebookId,
       }),
     ]);
 

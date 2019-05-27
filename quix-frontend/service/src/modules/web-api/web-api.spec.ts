@@ -222,7 +222,10 @@ describe('web-api module', () => {
       await notebookRepo.save(notebook);
       await fileTreeRepo.save(notebookNode);
 
-      const response = await notebookService.getNotebook(defaultUser, notebook.id);
+      const response = await notebookService.getNotebook(
+        defaultUser,
+        notebook.id,
+      );
 
       expect(response!.id).toBe(notebook.id);
       expect(response!.path).toEqual([
@@ -251,7 +254,10 @@ describe('web-api module', () => {
       const to = 1;
       await noteRepo.reorder(notes[from], to);
 
-      const response = await notebookService.getNotebook(defaultUser, notebook.id);
+      const response = await notebookService.getNotebook(
+        defaultUser,
+        notebook.id,
+      );
       expect(response!.notes[to].name).toBe(`note${from}`);
     });
 
@@ -271,7 +277,10 @@ describe('web-api module', () => {
       await fileTreeRepo.save(notebookNode);
       await favoritesRepo.save(favorite);
 
-      const response = await notebookService.getNotebook(defaultUser, notebook.id);
+      const response = await notebookService.getNotebook(
+        defaultUser,
+        notebook.id,
+      );
 
       expect(response!.id).toBe(notebook.id);
       expect(response!.isLiked).toBe(true);

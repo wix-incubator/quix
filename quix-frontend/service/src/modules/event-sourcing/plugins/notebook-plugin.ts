@@ -46,7 +46,7 @@ export class NotebookPlugin implements EventBusPlugin {
     api.hooks.listen(
       QuixHookNames.PROJECTION,
       async (action: NotebookActions) =>
-        this.em.transaction('SERIALIZABLE', async transactionManager => {
+        this.em.transaction('REPEATABLE READ', async transactionManager => {
           await this.projectNotebook(action, transactionManager);
           await this.projectFileTree(action, transactionManager);
           await this.projectFavorites(action, transactionManager);
@@ -88,18 +88,27 @@ export class NotebookPlugin implements EventBusPlugin {
   }
 
   private async projectFavorites(action: NotebookActions, tm: EntityManager) {
-    if (action.type === NotebookActionTypes.toggleIsLiked) {
-      const favorite = {
-        entityId: action.id,
-        entityType: EntityType.Notebook,
-        owner: (action as any).user,
-      };
+    switch (action.type) {
+      case NotebookActionTypes.toggleIsLiked: {
+        const favorite = {
+          entityId: action.id,
+          entityType: EntityType.Notebook,
+          owner: (action as any).user,
+        };
 
-      if (action.isLiked) {
-        return tm.save(Object.assign(new DbFavorites(), favorite));
-      } else {
-        return tm.delete(DbFavorites, favorite);
+        if (action.isLiked) {
+          return tm.save(Object.assign(new DbFavorites(), favorite));
+        } else {
+          return tm.delete(DbFavorites, favorite);
+        }
       }
+      case NotebookActionTypes.deleteNotebook: {
+        return tm.delete(DbFavorites, {
+          entityId: action.id,
+          owner: (action as any).user,
+        });
+      }
+      default:
     }
   }
 }

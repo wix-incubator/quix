@@ -34,8 +34,3 @@ export const createMysqlConf = (
     // logging: true,
   };
 };
-
-// const dbConnectionProvider = {
-//   provide: 'CONNECTION',
-//   useValue: connection,
-// };
