@@ -5,7 +5,7 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "build": "tsc -b && npm run update-statics",
+    "build": "tsc -b tsconfig.build.js && npm run update-statics",
     "start": "ts-node --files -r tsconfig-paths/register scripts/start.ts",
     "update-statics": "ts-node scripts/update-statics.ts",
     "start:dev": "nodemon",
