@@ -49,8 +49,8 @@ If you use google oauth, you must supply the clientId and the secret:
 * GOOGLE_SSO_SECRET
 
 Other variables related to authentication:
-* AUTH_COOKIE - defaults to `__quix`
-* AUTH_SECRET - the encyption key for the cookie.
+* AUTH_COOKIE - defaults to `__quix`. When using `google` auth, must be provided.
+* AUTH_SECRET - the encyption key for the cookie. Must be provided.
 * COOKIE_MAX_AGE - should be in seconds, default is 30 days.
 
 #### Configuration for custom deployment
@@ -58,4 +58,15 @@ Running quix with `docker-compose` should "just work", but when deploying quix, 
 
 * BACKEND_INTERNAL_URL - An address + port number (no protocol) where you have the backend service deployed and accessible to the frontend service.
 * BACKEND_PUBLIC_URL - An address + port number (no protocol) to the backend service, made accessible to user's browser. In most scenarios, it's value is the same as `BACKEND_INTERNAL_URL`.
-* DB_AUTO_MIGRATE - In case of upgrades/schema change, this controls whether quix should try and upgrade the schema automatically. Defaults to `true`.
+* ENABLE_APPMETRICS - Set this variable if you want to enable [appmetrics-dash](https://github.com/RuntimeTools/appmetrics-dash).
+* APPMETRICS_PORT - The port where appmetrics dash will be exposed.
+
+## Upgrading Quix
+This takes into account a `docker-compose` setup. Extrapolate as needed if you have some other custom deployment. 
+
+1. Backup your data, if possible.
+2. Download an updated `docker-compose.yml` or `docker-compose.prebuilt.yml`. If you are not using the prebuilt images, you need to run `docker-compose build`.
+3. Stop the frontend and backend services - `docker-compose stop backend frontend`.
+4. Make sure all your enviroment variables are exported correctly in your current shell, specificly all the `DB_*` variables.
+5. Run DB migrations: `docker-compose run --rm frontend scripts/run_migrations.sh`.
+6. Start services again `docker-compose up -d`.

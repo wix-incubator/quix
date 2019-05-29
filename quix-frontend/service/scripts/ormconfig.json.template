@@ -6,9 +6,10 @@
   "password": ":dbpass:",
   "database": ":dbname:",
   "entities": ["src/**/*.entity{.ts,.js}"],
-  "migrations": ["./migrations/*.ts"],
+  "migrations": ["./src/migrations/*.ts"],
   "synchronize": false,
   "cli": {
-    "migrationsDir": "./migrations"
-  }
+    "migrationsDir": "./src/migrations"
+  },
+  "logging": true
 }

@@ -31,6 +31,8 @@ services:
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
+      - APPMETRICS_PORT
+      - ENABLE_APPMETRICS
   db:
     image: "mysql:5.7"
     restart: always

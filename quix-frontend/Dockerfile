@@ -9,5 +9,5 @@ WORKDIR /service
 RUN npm install && npm run build && npm install -g pm2 && (rm -f .env || true)
 
 EXPOSE 3000
-ENTRYPOINT ["pm2-runtime", "index.js"]
+ENTRYPOINT ["pm2-runtime", "start", "ecosystem.config.js"]
 

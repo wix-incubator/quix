@@ -50,7 +50,7 @@ const envSettingsDefaults = {
   AuthCookieName: '__quix',
   AuthEncKey: '123456',
   CookieAge: 30 * 24 * 60 * 60 * 1000 /* 30 days */,
-  AutoMigrateDb: true,
+  AutoMigrateDb: false,
   UseMinifiedStatics: true,
   DemoMode: false,
 };

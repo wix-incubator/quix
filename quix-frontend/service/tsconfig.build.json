@@ -3,6 +3,6 @@
   "references": [{
     "path": "../shared"
   }],
-  "include": ["src/main.ts", "src/types/**/*.ts"],  
+  "include": ["src/main.ts", "src/types/**/*.ts", "src/migrations/*.ts"],  
   "exclude": ["node_modules", "test", "**/*spec.ts"]
 }

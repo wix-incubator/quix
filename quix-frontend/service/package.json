@@ -27,6 +27,7 @@
     "@nestjs/passport": "^6.0.0",
     "@nestjs/platform-express": "^6.0.0",
     "@nestjs/typeorm": "^6.0.0",
+    "appmetrics-dash": "^4.1.0",
     "cookie-parser": "^1.4.4",
     "dotenv": "^7.0.0",
     "google-auth-library": "^3.1.2",
