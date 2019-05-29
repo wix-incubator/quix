@@ -15,6 +15,7 @@
   &:hover {
     box-shadow: $default-box-shadow;
 
+    .bi-icon,
     span {
       color: $primary !important;
     }
@@ -23,6 +24,13 @@
   &:active {
     transition: box-shadow .1s;
     box-shadow: 0 4px 8px rgba(0, 0, 0, .175);
+  }
+
+  .bi-icon {
+    transition: color .3s;
+    margin: -10px 0 20px 0;
+    font-size: 140px !important;
+    color: $grey--500 !important;
   }
 
   img {

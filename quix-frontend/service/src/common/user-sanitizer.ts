@@ -5,7 +5,5 @@ export const sanitizeUserEmail = (email: string) => {
 };
 
 export const sanitizeUserName = (name: string) => {
-  const [first, last] = (name || 'Dummy Dummy').split(' ');
-
-  return [`${first[0]}***`, `${last[0]}***`].join(' ');
+  return 'Quix User';
 };

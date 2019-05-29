@@ -24,7 +24,7 @@ export class UserListController {
           : {
               name: sanitizeUserName(u.name),
               id: sanitizeUserEmail(u.id),
-              avatar: '',
+              avatar: 'http://quix.wix.com:3000/assets/user.png',
               rootFolder: u.rootFolder,
             };
       });
