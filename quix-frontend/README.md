@@ -11,7 +11,7 @@ You can set up your DB either by providing environment variables or by directly 
 
 ### Environment variables
 Application uses the following environment variables to connect to DB:
-* DB_NAME - defaults to `Quix`
+* DB_NAME - defaults to `quix`
 * DB_USER - defaults to `root`
 * DB_PASS - defaults to empty password
 * DB_HOST - defaults to `localhost`

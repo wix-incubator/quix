@@ -32,5 +32,12 @@ export const createMysqlConf = (
     entities,
     logger: 'advanced-console',
     logging: ['error', 'schema', 'warn'],
+    migrations: isTsNode()
+      ? ['./src/migrations/*.ts']
+      : ['./dist/migrations/*.js'],
   };
 };
+
+function isTsNode() {
+  return !!require.extensions['.ts'];
+}

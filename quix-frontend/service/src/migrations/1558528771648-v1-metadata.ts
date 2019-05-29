@@ -1,6 +1,6 @@
 import {MigrationInterface, QueryRunner} from 'typeorm';
-import {DbMetadata} from '../src/entities/version-metadata.entity';
-import {CURRENT_QUIX_SCHEMA_VERSION, QUIX_SCHEMA} from '../src/consts';
+import {DbMetadata} from '../entities/version-metadata.entity';
+import {CURRENT_QUIX_SCHEMA_VERSION, QUIX_SCHEMA} from '../consts';
 const PREVIOUS_QUIX_SCHEMA = 0;
 
 export class VersionMetadata1558528771648 implements MigrationInterface {

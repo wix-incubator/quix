@@ -1,4 +1,4 @@
-FROM keymetrics/pm2:10-alpine	
+FROM node:10
 
 COPY ./ ./
 WORKDIR /client
@@ -6,7 +6,7 @@ RUN npm install
 WORKDIR /shared
 RUN npm install
 WORKDIR /service
-RUN npm install && npm run build && (rm -f .env || true) && mkdir -p /logs
+RUN npm install && npm run build && npm install -g pm2 && (rm -f .env || true)
 
 EXPOSE 3000
 ENTRYPOINT ["pm2-runtime", "start", "ecosystem.config.js"]
