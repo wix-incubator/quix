@@ -33,6 +33,7 @@ const envSettingsMap: {[K in keyof EnvSettings]: string} = {
   AutoMigrateDb: 'DB_AUTO_MIGRATE',
   UseMinifiedStatics: 'MINIFIED_STATICS',
   DemoMode: 'DEMO_MODE',
+  DbDebug: 'DB_DEBUG',
 };
 
 const envSettingsDefaults = {
@@ -53,6 +54,7 @@ const envSettingsDefaults = {
   AutoMigrateDb: false,
   UseMinifiedStatics: true,
   DemoMode: false,
+  DbDebug: false,
 };
 
 export const testingDefaults: EnvSettings = {
@@ -73,6 +75,7 @@ export const testingDefaults: EnvSettings = {
   AutoMigrateDb: true,
   UseMinifiedStatics: false,
   DemoMode: false,
+  DbDebug: false,
 };
 
 const identity = <T>(x: T) => x;
@@ -129,6 +132,7 @@ const transforms: {
   AutoMigrateDb: booleanParse,
   UseMinifiedStatics: booleanParse,
   DemoMode: booleanParse,
+  DbDebug: booleanParse,
 };
 
 let env: EnvSettings;

@@ -22,6 +22,7 @@ export class AppController {
         staticsBaseUrl: '',
         quixBackendUrl: this.settings.QuixBackendPublicUrl,
         googleClientId: this.settings.GoogleClientId,
+        demoMode: this.settings.DemoMode,
       },
       debug: !this.configService.getEnvSettings().UseMinifiedStatics,
     };

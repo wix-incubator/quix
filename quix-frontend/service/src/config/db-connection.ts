@@ -31,7 +31,7 @@ export const createMysqlConf = (
     synchronize: settings.AutoMigrateDb,
     entities,
     logger: 'advanced-console',
-    logging: ['error', 'schema', 'warn'],
+    logging: settings.DbDebug ? true : ['error', 'schema', 'warn'],
     migrations: isTsNode()
       ? ['./src/migrations/*.ts']
       : ['./dist/migrations/*.js'],
