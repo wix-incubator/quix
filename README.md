@@ -27,8 +27,5 @@ See the [demo](http://quix.wix.com) version of Quix.
 #### Explore
 ![](documentation/docs/assets/db.gif)
 
-#### Search
-![](documentation/docs/assets/search.gif)
-
 ## License
 MIT
