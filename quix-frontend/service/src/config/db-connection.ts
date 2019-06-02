@@ -1,17 +1,19 @@
 import {ConnectionOptions} from 'typeorm';
 import {EnvSettings} from './env';
+import {isJestTest, isTsNode} from './utils';
 
 type ClassConstructor = new (...args: any[]) => any;
 
 export const createInMemConf = (
   entities: ClassConstructor[] | string[],
+  settings: EnvSettings,
 ): ConnectionOptions => {
   return {
     type: 'sqljs',
-    synchronize: true,
+    synchronize: settings.AutoMigrateDb,
     entities,
     logger: 'advanced-console',
-    // logging: true,
+    logging: settings.DbDebug,
     // autoSave: true,
     // location: './sqlite.db',
   };
@@ -31,13 +33,9 @@ export const createMysqlConf = (
     synchronize: settings.AutoMigrateDb,
     entities,
     logger: 'advanced-console',
-    logging: settings.DbDebug ? true : ['error', 'schema', 'warn'],
+    logging: settings.DbDebug,
     migrations: isTsNode()
       ? ['./src/migrations/*.ts']
       : ['./dist/migrations/*.js'],
   };
 };
-
-function isTsNode() {
-  return !!require.extensions['.ts'];
-}

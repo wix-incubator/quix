@@ -27,7 +27,7 @@ export abstract class ConfigService {
   getDbConnection(entites: any[]): ConnectionOptions {
     switch (this.env.DbType) {
       case 'sqlite':
-        return dbConnection.createInMemConf(entites);
+        return dbConnection.createInMemConf(entites, this.env);
       case 'mysql': {
         return dbConnection.createMysqlConf(entites, this.env);
       }

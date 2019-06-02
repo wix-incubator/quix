@@ -61,8 +61,8 @@ const MySqlConf: DbColumnConf = {
       contentSearchList
         .map(contentSearch =>
           contentSearch.type === searchTextType.PHRASE
-            ? `+"${contentSearch.text}"`
-            : `+${contentSearch.text}*`,
+            ? `"${contentSearch.text}"`
+            : `${contentSearch.text}*`,
         )
         .join(' '),
     )} IN BOOLEAN MODE)`;

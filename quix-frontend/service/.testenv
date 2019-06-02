@@ -3,3 +3,4 @@ DB_NAME=quixtest
 DB_USER=root
 DB_HOST=localhost
 DB_PASS=
+#DB_DEBUG=true

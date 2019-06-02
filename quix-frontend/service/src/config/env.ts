@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import {isJestTest} from './utils';
 import path from 'path';
 import {defaults} from 'lodash';
+import {BaseConnectionOptions} from 'typeorm/connection/BaseConnectionOptions';
 
 let enviormentLoaded = false;
 export const loadEnv = () => {
@@ -54,7 +55,7 @@ const envSettingsDefaults = {
   AutoMigrateDb: false,
   UseMinifiedStatics: true,
   DemoMode: false,
-  DbDebug: false,
+  DbDebug: ['error', 'schema', 'warn'] as BaseConnectionOptions['logging'],
 };
 
 export const testingDefaults: EnvSettings = {
@@ -132,7 +133,21 @@ const transforms: {
   AutoMigrateDb: booleanParse,
   UseMinifiedStatics: booleanParse,
   DemoMode: booleanParse,
-  DbDebug: booleanParse,
+  DbDebug: s => {
+    if (s === undefined) {
+      return undefined;
+    }
+    if (s === '') {
+      return false;
+    }
+    if (s.toLowerCase() === 'true') {
+      return true;
+    }
+    if (s.toLowerCase() === 'false') {
+      return false;
+    }
+    return s.split(',') as BaseConnectionOptions['logging'];
+  },
 };
 
 let env: EnvSettings;
