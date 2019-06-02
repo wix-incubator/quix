@@ -3,7 +3,8 @@
 Quix is a multi-user, easy-to-use notebook manager. By utilizing [Presto](https://github.com/prestosql/presto) it provides unified access to multiple data sources and effectively acts as a shared space for your company's BI insights and know-how.
 
 See the [documentation](https://wix.github.io/quix/docs/installation) for installation and configuration instructions.  
-See the [demo](http://quix.wix.com) version of Quix.
+
+Feel free to play around with a [demo](http://quix.wix.com) instance of Quix.
 
 ## Features
 - [Query organizer](#Organize) - organize your notebooks in folders for easy access and sharing
