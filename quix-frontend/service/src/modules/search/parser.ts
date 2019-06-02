@@ -59,6 +59,7 @@ const getSpecialOperators = (
   return [query, s];
 };
 
+const fullTextSearchSpeciaChars = /[+\-><\(\)~*\/"@]+/g;
 const getTextFromSearchQuery = (s: string) => {
   const result = [];
   let match = null;
@@ -67,8 +68,14 @@ const getTextFromSearchQuery = (s: string) => {
   while ((match = searchRegexMap[SearchTypes.content][0].exec(s))) {
     result.push(
       match[1]
-        ? {type: searchTextType.WORD, text: match[1].replace('@', ' ')}
-        : {type: searchTextType.PHRASE, text: match[2].replace('@', ' ')},
+        ? {
+            type: searchTextType.WORD,
+            text: match[1].replace(fullTextSearchSpeciaChars, ' ').trim(),
+          }
+        : {
+            type: searchTextType.PHRASE,
+            text: match[2].replace(fullTextSearchSpeciaChars, ' ').trim(),
+          },
     );
   }
   return result;
