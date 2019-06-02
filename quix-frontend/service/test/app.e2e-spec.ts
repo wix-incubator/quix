@@ -140,7 +140,7 @@ describe('Application (e2e)', () => {
         },
         {
           id: expect.stringContaining('**'),
-          name: expect.stringContaining('**'),
+          name: 'Quix User',
           rootFolder: expect.any(String),
         },
       ]);
