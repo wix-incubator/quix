@@ -33,12 +33,14 @@ Note that you need to specify full URL, including protocol, port and API version
 
 #### DB
 Quix also uses MySQL to store notebooks and other application data. Location of this data is specified by `DB_VOLUME_PATH`.  
-As an alternative, you can use an external MySQL database, by specifying some of the following variables:
+As an alternative, you can also use an external MySQL database, by specifying some of the following variables:
 * DB_NAME - defaults to `quix`, must exist
 * DB_USER - defaults to `root`
 * DB_PASS - defaults to empty password
 * DB_HOST - defaults to `db`
 * DB_PORT - defaults to `3306`
+
+* DB_AUTO_MIGRATE - this sets the [Typeorm](https://typeorm.io/#/connection-options) `synchronize` flag. Defaults to `false`. You probably only want to set this when running locally for development or if you don't care at all about your data.
 
 #### User authentication
 Quix can work in two modes: multi-user mode, authenticated with [Google OAuth](https://console.developers.google.com/apis/credentials), or in a single-user mode. This is controlled by the following variables:
