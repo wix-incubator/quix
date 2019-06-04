@@ -18,17 +18,18 @@ const mocks = {
   '/api/events': () =>[200],
   '/api/users': () =>[
     createMockUser({
+      id: 'valeryf@wix.com',
+      avatar: 'https://lh4.googleusercontent.com/-W0WqulhKa-E/AAAAAAAAAAI/AAAAAAAAAsI/YUf_DDZhNCQ/s96-c/photo.jpg',
+      name: 'Valery Frolov',
+      rootFolder: '6c98fe9a-39f7-4674-b003-70f9061bbee5'
+    }),
+    createMockUser({
       id: 'antonp@wix.com',
       avatar: 'https://lh4.googleusercontent.com/-PhbzLtqaoGo/AAAAAAAAAAI/AAAAAAAAAlM/QQPR22nvo7o/s96-c/photo.jpg',
       name: 'Anton Podolsky',
       rootFolder: 'de6908dd-7f1e-4803-ab0d-5f9d6a496609'
     }),
-    createMockUser({
-      id: 'valeryf@wix.com',
-      avatar: 'https://lh4.googleusercontent.com/-W0WqulhKa-E/AAAAAAAAAAI/AAAAAAAAAsI/YUf_DDZhNCQ/s96-c/photo.jpg',
-      name: 'Valery Frolov',
-      rootFolder: '6c98fe9a-39f7-4674-b003-70f9061bbee5'
-  })],
+  ],
   // '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],
   // '/api/files': () => [500, {message: 'Failed to fetch files'}],
   // '/api/files': () => [],

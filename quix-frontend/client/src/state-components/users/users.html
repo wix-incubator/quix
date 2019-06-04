@@ -27,9 +27,8 @@
           class="bi-table--nav bi-c-h bi-grow"
           fields="vm.fields"
           rows="vm.state.value().users"
-          bt-options="::{stickyHeader: true, trackBy: 'id'}"
+          bt-options="::{stickyHeader: true}"
           on-row-click="events.onUserClick(row)"
-          order-by="name"
           data-hook="users-table"
         ></bi-tbl>
       </div>
