@@ -41,7 +41,8 @@ export class User {
   private readonly permission = new Permission();
 
   fetch(appId?: string) {
-    return inject('$resource')(`${appId ? `/${appId}` : ''}/api/user`).get().$promise.then(data => this.set(data.payload || data));
+    return inject('$resource')(`${appId ? `/${appId}` : ''}/api/user`).get().$promise
+      .then(data => this.set(data.payload || data));
   }
 
   set({email, avatar, role}: Record<string, string>) {

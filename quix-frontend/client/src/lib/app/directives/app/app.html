@@ -25,7 +25,7 @@
             role="button"
             data-hook="apps-menu-{{::menuApp.name}}"
           >
-            <i 
+            <i
               class="bi-icon bi-muted"
               ng-class="::{'bi-success': menuApp.name === app.getId()}"
             >lens</i>
@@ -42,7 +42,10 @@
 </div>
 
 <div class="bi-r-h">
-  <div class="bi-app-menu bi-theme--darker bi-dont-shrink bi-fade-in" ng-if="::app.getMenuItems().length">
+  <div 
+    class="bi-app-menu bi-theme--darker bi-dont-shrink bi-fade-in"
+    ng-if="::user.isLoggedIn() && app.getMenuItems().length"
+  >
     <ul>
     <ul>
       <li
@@ -64,7 +67,7 @@
 
   <div 
     class="bi-app-sidebar bi-theme--dark bi-section bi-c"
-    ng-if="vm.menu.current && (vm.menu.current.template || vm.menu.current.compiled)"
+    ng-if="user.isLoggedIn() && vm.menu.current && (vm.menu.current.template || vm.menu.current.compiled)"
     bi-resizable
     br-options="::{minWidth: 300, handles: 'e', stateName: 'app-sidebar'}"
   >
@@ -85,5 +88,14 @@
     ></div>
   </div>
 
-  <div class="bi-app-content bi-c-h bi-grow" ui-view bi-state-loader></div>
+  <div class="bi-app-content bi-c-h bi-grow" ui-view>
+    <div class="bi-c-h bi-grow bi-center bi-align bi-theme--light">
+      <div class="bi-empty-state--loading bi-fade-in">
+        <div class="bi-empty-state-content bi-c-h">
+          <div class="bi-center">Logging you in via Google OAuth</div>
+          <div class="bi-center bi-danger bi-fade-in" ng-if="vm.loginHint.enabled">(Please make sure you've enabled the login popup)</div>
+       </div>
+      </div>
+    </div>
+  </div>
 </div>

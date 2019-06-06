@@ -34,7 +34,8 @@ export default () => {
             apps: without(Apps, find(Apps, {id: scope.app.getId()} as any)),
             menu: {
               current: null
-            }
+            },
+            loginHint: {}
           })
           .withEvents({
             onMenuItemToggle(item: IMenuItem) {
@@ -82,6 +83,8 @@ export default () => {
             return stateName.indexOf(item.state) >= 0 && !!(setCurrentMenuItem(scope, item) || true);
           });
         }, scope).otherwise(() => scope.vm.menu.current && scope.vm.menu.current.state && setCurrentMenuItem(scope, null));
+
+        inject('$timeout')(() => scope.vm.loginHint.toggle(true), 5000);
       }
     }
   };

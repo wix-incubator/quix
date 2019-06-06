@@ -1,9 +1,7 @@
-import {config, login as ssoLogin} from './sso';
+import {login} from './sso';
 import {User} from './user';
 
 export const getAuthStates = (appId: string, googleClientId: string, user: User) => {
-  config(googleClientId);
-
   return [{
     name: 'auth',
     options: {
@@ -12,8 +10,14 @@ export const getAuthStates = (appId: string, googleClientId: string, user: User)
       resolve: {
         user() {
           return user.fetch(appId)
-            .catch(e => [401, 403].indexOf(e.status) !== -1 && ssoLogin(appId)
-              .then(data => user.set(data.payload || data)));
+            .catch(e => {
+              if ([401, 403].indexOf(e.status) !== -1) {
+                return login(googleClientId, appId);
+              }
+
+              return Promise.reject(e);
+            })
+            .then(data => user.set(data.payload || data));
         }
       }
     }
