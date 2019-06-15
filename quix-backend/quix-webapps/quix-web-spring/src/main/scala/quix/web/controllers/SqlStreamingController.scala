@@ -8,19 +8,21 @@ import monix.execution.{CancelableFuture, Scheduler}
 import org.springframework.web.socket.handler.TextWebSocketHandler
 import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSession}
 import quix.api.execute._
+import quix.api.module.ExecutionModule
 import quix.api.users.{User, Users}
 import quix.core.results.MultiBuilder
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.core.utils.TaskOps._
-import quix.presto._
 
 import scala.util.Try
 
-class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent])
+class SqlStreamingController(val module: ExecutionModule[String, Batch],
+                             val users: Users,
+                             val downloads: DownloadableQueries[String, Batch, ExecutionEvent])
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
 
-  val io = Scheduler.io("presto-executor")
+  val io = Scheduler.io(module.name + "-executor")
 
   val executions = new ConcurrentHashMap[String, CancelableFuture[Unit]]
 
@@ -52,7 +54,7 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
     val initConsumer = Task.eval(new WebsocketConsumer[ExecutionEvent](socket.getId, user, socket))
     val useConsumer = (consumer: WebsocketConsumer[ExecutionEvent]) => {
       logger.info(s"event=start-execution socket-id=${socket.getId} sql=${payload.code}")
-      prestoModule.start(payload, consumer.id, consumer.user, makeResultBuilder(consumer, payload.session))
+      module.start(payload, consumer.id, consumer.user, makeResultBuilder(consumer, payload.session))
     }
 
     val closeConsumer = (consumer: WebsocketConsumer[ExecutionEvent]) => consumer.close()
@@ -88,7 +90,7 @@ class PrestoController(val prestoModule: PrestoQuixModule, users: Users, val dow
 
   def makeResultBuilder(consumer: Consumer[ExecutionEvent], session: Map[String, String]) = {
     if (session.get("mode").contains("download")) {
-      downloadableQueries.adapt(new MultiBuilder[String](consumer), consumer)
+      downloads.adapt(new MultiBuilder[String](consumer), consumer)
     } else {
       new MultiBuilder[String](consumer)
     }

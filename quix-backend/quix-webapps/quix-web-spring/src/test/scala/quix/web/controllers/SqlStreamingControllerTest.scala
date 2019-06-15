@@ -14,7 +14,7 @@ import quix.web.{E2EContext, MockBeans, SpringConfigWithTestExecutor}
 @RunWith(classOf[SpringRunner])
 @SpringBootTest(webEnvironment = DEFINED_PORT, classes = Array(classOf[SpringConfigWithTestExecutor]))
 @TestPropertySource(locations = Array("classpath:test.properties"))
-class PrestoControllerTest extends E2EContext with LazyLogging {
+class SqlStreamingControllerTest extends E2EContext with LazyLogging {
 
   new TestContextManager(this.getClass).prepareTestInstance(this)
 

@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment
 import quix.api.db.Db
 import quix.api.execute.{AsyncQueryExecutor, Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.users.DummyUsers
+import quix.athena.{AthenaConfig, AthenaQuixModule}
 import quix.core.download.DownloadableQueriesImpl
 import quix.core.executions.SequentialExecutions
 import quix.core.utils.JsonOps
@@ -110,6 +111,28 @@ class PrestoConfiguration extends LazyLogging {
   @Bean def initDownloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent] = {
     logger.info(s"event=[spring-config] bean=[DownloadableQueries]")
     new DownloadableQueriesImpl
+  }
+}
+
+@Configuration
+class AthenaConfiguration extends LazyLogging {
+
+  @Bean def initAthenaConfig(env: Environment): AthenaConfig = {
+    val output = env.getProperty("athena.output", "")
+    val region = env.getProperty("athena.region", "")
+    val database = env.getProperty("athena.database", "")
+
+    val config = AthenaConfig(output, region, database)
+
+    logger.warn(s"event=[spring-config] bean=[AthenaConfig] config==$config")
+
+    config
+  }
+
+  @Bean def initAthenaQuixModule(config: AthenaConfig): AthenaQuixModule = {
+    logger.info(s"event=[spring-config] bean=[AthenaQuixModule]")
+
+    AthenaQuixModule(config)
   }
 }
 

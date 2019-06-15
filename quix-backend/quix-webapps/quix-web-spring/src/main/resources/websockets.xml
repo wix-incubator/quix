@@ -9,6 +9,7 @@
 
     <websocket:handlers allowed-origins="*">
         <websocket:mapping path="/api/v1/execute/sql" handler="initPrestoController"/>
+        <websocket:mapping path="/api/v1/execute/athena" handler="initAthenaController"/>
 
         <websocket:handshake-handler ref="initDefaultHandshakeHandler"/>
 

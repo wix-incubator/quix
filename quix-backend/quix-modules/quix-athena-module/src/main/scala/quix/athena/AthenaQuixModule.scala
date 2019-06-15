@@ -1,5 +1,7 @@
 package quix.athena
 
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
+import com.amazonaws.services.athena.AmazonAthenaClient
 import monix.eval.Task
 import quix.api.execute.{Batch, Builder, StartCommand}
 import quix.api.module.ExecutionModule
@@ -16,5 +18,20 @@ class AthenaQuixModule(val executions: SequentialExecutions[String]) extends Exe
     executions
       .execute(sqls, user, resultBuilder)
       .doOnCancel(executions.kill(id, user))
+  }
+}
+
+object AthenaQuixModule {
+  def apply(config: AthenaConfig): AthenaQuixModule = {
+    val athena = AmazonAthenaClient.builder
+      .withRegion(config.region)
+      .withCredentials(new DefaultAWSCredentialsProviderChain)
+      .build()
+
+    val client = new AwsAthenaClient(athena, config)
+    val executor = new AthenaQueryExecutor(client)
+    val executions = new SequentialExecutions[String](executor)
+
+    new AthenaQuixModule(executions)
   }
 }
