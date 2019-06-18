@@ -17,12 +17,11 @@ import quix.core.utils.TaskOps._
 
 import scala.util.Try
 
-class SqlStreamingController(val module: ExecutionModule[String, Batch],
+class SqlStreamingController(val modules: Map[String, ExecutionModule[String, Batch]],
                              val users: Users,
-                             val downloads: DownloadableQueries[String, Batch, ExecutionEvent])
+                             val downloads: DownloadableQueries[String, Batch, ExecutionEvent],
+                             val io: Scheduler)
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
-
-  val io = Scheduler.io(module.name + "-executor")
 
   val executions = new ConcurrentHashMap[String, CancelableFuture[Unit]]
 
@@ -51,10 +50,18 @@ class SqlStreamingController(val module: ExecutionModule[String, Batch],
   }
 
   private def handleExecutionMessage(socket: WebSocketSession, payload: StartCommand[String], user: User) = {
+    val queryType = socket.getUri.toString.split("/").last
+
     val initConsumer = Task.eval(new WebsocketConsumer[ExecutionEvent](socket.getId, user, socket))
     val useConsumer = (consumer: WebsocketConsumer[ExecutionEvent]) => {
-      logger.info(s"event=start-execution socket-id=${socket.getId} sql=${payload.code}")
-      module.start(payload, consumer.id, consumer.user, makeResultBuilder(consumer, payload.session))
+      modules.get(queryType) match {
+        case Some(module) =>
+          logger.info(s"event=start-execution socket-id=${socket.getId} sql=${payload.code} uri=${socket.getUri} queryType=$queryType")
+          module.start(payload, consumer.id, consumer.user, makeResultBuilder(consumer, payload.session))
+        case None =>
+          logger.warn(s"event=start-execution-failure message=unknown-query-type socket-id=${socket.getId} sql=${payload.code} uri=${socket.getUri} queryType=$queryType")
+          Task.unit
+      }
     }
 
     val closeConsumer = (consumer: WebsocketConsumer[ExecutionEvent]) => consumer.close()

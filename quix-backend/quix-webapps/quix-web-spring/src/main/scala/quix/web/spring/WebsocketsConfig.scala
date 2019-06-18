@@ -3,6 +3,7 @@ package quix.web.spring
 import java.util
 
 import com.typesafe.scalalogging.LazyLogging
+import monix.execution.Scheduler
 import org.eclipse.jetty.websocket.api.WebSocketPolicy
 import org.springframework.context.annotation.{Bean, Configuration, ImportResource}
 import org.springframework.http.server.{ServerHttpRequest, ServerHttpResponse, ServletServerHttpRequest}
@@ -11,23 +12,19 @@ import org.springframework.web.socket.server.HandshakeInterceptor
 import org.springframework.web.socket.server.jetty.JettyRequestUpgradeStrategy
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
 import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
+import quix.api.module.ExecutionModule
 import quix.api.users.Users
-import quix.athena.AthenaQuixModule
-import quix.presto.PrestoQuixModule
 import quix.web.controllers.SqlStreamingController
 
 @Configuration
 @ImportResource(Array("classpath:websockets.xml"))
 class WebsocketsConfig extends LazyLogging {
 
-  @Bean def initPrestoController(users: Users, prestoModule: PrestoQuixModule, downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]) = {
+  @Bean def initSqlStreamingController(users: Users,
+                                       modules: Map[String, ExecutionModule[String, Batch]],
+                                       downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]) = {
     logger.info("event=[spring-config] bean=[PrestoController]")
-    new SqlStreamingController(prestoModule, users, downloadableQueries)
-  }
-
-  @Bean def initAthenaController(users: Users, athenaQuixModule: AthenaQuixModule, downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]) = {
-    logger.info("event=[spring-config] bean=[PrestoController]")
-    new SqlStreamingController(athenaQuixModule, users, downloadableQueries)
+    new SqlStreamingController(modules, users, downloadableQueries, Scheduler.io("presto-io"))
   }
 
   @Bean def initWebSocketPolicy(): WebSocketPolicy = {

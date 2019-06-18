@@ -2,6 +2,8 @@ package quix.athena
 
 import java.net.{ConnectException, SocketException, SocketTimeoutException}
 
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
+import com.amazonaws.services.athena.AmazonAthenaClient
 import com.amazonaws.services.athena.model.{GetQueryResultsResult, QueryExecution, QueryExecutionState, StartQueryExecutionResult}
 import monix.eval.Task
 import quix.api.execute._
@@ -146,5 +148,17 @@ class AthenaQueryExecutor(val client: AthenaClient,
     case e@(_: ConnectException | _: SocketTimeoutException | _: SocketException) =>
       new IllegalStateException(s"Athena can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}", e)
     case _ => e
+  }
+}
+
+object AthenaQueryExecutor {
+  def apply(config: AthenaConfig) = {
+    val athena = AmazonAthenaClient.builder
+      .withRegion(config.region)
+      .withCredentials(new DefaultAWSCredentialsProviderChain)
+      .build()
+
+    val client = new AwsAthenaClient(athena, config)
+    new AthenaQueryExecutor(client)
   }
 }

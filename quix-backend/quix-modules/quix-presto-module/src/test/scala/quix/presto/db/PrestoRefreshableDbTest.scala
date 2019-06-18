@@ -12,7 +12,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration._
 
-class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
+class PrestoRefreshableDbTest extends SpecWithJUnit with MustMatchers {
 
   "RefreshableDb.mergeNewAndOldCatalogs" should {
 
@@ -23,7 +23,7 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
       val newCatalogs = List(Catalog("bi", schemas))
       val oldCatalogs = List(Catalog("bi", schemas))
 
-      val mergedResult = RefreshableDb.mergeNewAndOldCatalogs(newCatalogs, oldCatalogs)
+      val mergedResult = PrestoRefreshableDb.mergeNewAndOldCatalogs(newCatalogs, oldCatalogs)
 
       mergedResult must_=== newCatalogs
     }
@@ -35,7 +35,7 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
       val newCatalogs = List(Catalog("bi", List(Schema("dbo", nonEmptyTables))))
       val oldCatalogs = List(Catalog("bi", List(Schema("dbo", emptyTables))))
 
-      val mergedResult = RefreshableDb.mergeNewAndOldCatalogs(newCatalogs, oldCatalogs)
+      val mergedResult = PrestoRefreshableDb.mergeNewAndOldCatalogs(newCatalogs, oldCatalogs)
 
       mergedResult must_=== newCatalogs
     }
@@ -47,7 +47,7 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
       val newCatalogs = List(Catalog("bi", List(Schema("dbo", emptyTables))))
       val oldCatalogs = List(Catalog("bi", List(Schema("dbo", nonEmptyTables))))
 
-      val mergedResult = RefreshableDb.mergeNewAndOldCatalogs(newCatalogs, oldCatalogs)
+      val mergedResult = PrestoRefreshableDb.mergeNewAndOldCatalogs(newCatalogs, oldCatalogs)
 
       mergedResult must_=== newCatalogs
     }
@@ -58,7 +58,7 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
       val newCatalogs = List(Catalog("bi", List.empty[Schema]))
       val oldCatalogs = List(Catalog("bi", List(Schema("dbo", nonEmptyTables))))
 
-      val mergedResult = RefreshableDb.mergeNewAndOldCatalogs(newCatalogs, oldCatalogs)
+      val mergedResult = PrestoRefreshableDb.mergeNewAndOldCatalogs(newCatalogs, oldCatalogs)
 
       mergedResult must_=== oldCatalogs
     }
@@ -70,7 +70,7 @@ class RefreshableDbTest extends SpecWithJUnit with MustMatchers {
     val state = new DbState()
     val config = RefreshableDbConfig(1000L.millis, 1000L.millis)
 
-    val db = new RefreshableDb(executor, config, state)
+    val db = new PrestoRefreshableDb(executor, config, state)
 
     def materialize[T](task: Task[T]): T = {
       val future = task.runToFuture(Scheduler.global)
