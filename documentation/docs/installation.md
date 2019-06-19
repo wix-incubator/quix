@@ -29,7 +29,8 @@ Most of the configuration you'll need is done in the [.env](https://github.com/w
 By default, Quix works with demo Presto instance that runs inside Docker Compose.  
 To work with your real Presto DB, change `PRESTO_API` URL.
 
-Note that you need to specify full URL, including protocol, port and API version. For example: `http://presto.my.domain:8181/v1`
+Note that you need to specify full URL, including protocol, port and API version.
+* PRESTO_API - e.g. `http://presto.my.domain:8181/v1`
 
 #### DB
 Quix also uses MySQL to store notebooks and other application data. Location of this data is specified by `DB_VOLUME_PATH`.  
