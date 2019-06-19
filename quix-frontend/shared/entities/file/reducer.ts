@@ -3,7 +3,7 @@ import {createReducer, composeReducers, createListReducer, createClientReducer, 
 import {INotebook, clientNotebookReducer} from '../notebook';
 import {createFile} from './file';
 import {IFilePathItem, IFile, FileType} from './types';
-import {FileActionTypes, FileActions} from './actions';
+import {FileActionTypes} from './actions';
 
 const moveFile = (files: IFile[], id: string, path: IFilePathItem[]) => {
   const file = files.find(f => f.id === id);
@@ -45,15 +45,7 @@ export const fileReducer = composeReducers(
 
 export const clientFileReducer = composeReducers(
   createClientReducer('file'),
-  clientNotebookReducer as any,
-  (state: IFile | undefined, action: FileActions) => {
-    switch (action.type) {
-      case FileActionTypes.toggleIsLiked:
-        return state && {...state, isLiked: action.isLiked};
-      default:
-        return state;
-    }
-  }
+  clientNotebookReducer
 );
 
 export const fileListReducer = composeReducers(
