@@ -1,9 +1,9 @@
 import {last, remove} from 'lodash';
 import {createReducer, composeReducers, createListReducer, createClientReducer, createClientListReducer} from '../common/create-reducer';
-import {INotebook} from '../notebook';
+import {INotebook, clientNotebookReducer} from '../notebook';
 import {createFile} from './file';
 import {IFilePathItem, IFile, FileType} from './types';
-import {FileActionTypes} from './actions';
+import {FileActionTypes, FileActions} from './actions';
 
 const moveFile = (files: IFile[], id: string, path: IFilePathItem[]) => {
   const file = files.find(f => f.id === id);
@@ -45,7 +45,15 @@ export const fileReducer = composeReducers(
 
 export const clientFileReducer = composeReducers(
   createClientReducer('file'),
-  createClientReducer('notebook')
+  clientNotebookReducer as any,
+  (state: IFile | undefined, action: FileActions) => {
+    switch (action.type) {
+      case FileActionTypes.toggleIsLiked:
+        return state && {...state, isLiked: action.isLiked};
+      default:
+        return state;
+    }
+  }
 );
 
 export const fileListReducer = composeReducers(
@@ -54,8 +62,8 @@ export const fileListReducer = composeReducers(
 );
 
 export const clientFileListReducer = composeReducers(
-  createClientListReducer('file', fileReducer, {delete: false}) as any,
-  createClientListReducer('notebook', fileReducer) as any,
+  createClientListReducer('file', clientFileReducer, {delete: false}) as any,
+  createClientListReducer('notebook', clientFileReducer) as any,
   ((state: IFile[], action: any) => {
     switch (action.type) {
       case FileActionTypes.moveFile:
