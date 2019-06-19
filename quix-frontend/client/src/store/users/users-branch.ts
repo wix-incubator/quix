@@ -3,10 +3,6 @@ import {IBranch} from '../../lib/store';
 import {Instance} from '../../lib/app';
 import {IUser} from '../../../../shared';
 
-export interface IPermissions {
-  edit: boolean;
-}
-
 export default (app: Instance): IBranch => register => {
   const users = (state: IUser[] = null, action: any) => {
     switch (action.type) {

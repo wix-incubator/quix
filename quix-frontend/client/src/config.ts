@@ -30,6 +30,10 @@ export const HeaderMenu = [{
   activeCondition: (app: Instance, store: Store, state: string, id: string) => 
     waitForEntity(store, id, state === 'files' ? 'folder' : 'notebook').then(entity => isOwner(app, entity))
 }, {
+  title: 'Favorites',
+  targetState: 'favorites',
+  activeCondition: null
+}, {
   title: 'Users',
   targetState: 'users',
   activeCondition: null
