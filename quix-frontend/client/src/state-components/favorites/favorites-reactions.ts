@@ -4,7 +4,7 @@ import {IFile} from '../../../../shared';
 
 export function setFavorites(scope: IScope, favorites: IFile[]) {
   scope.vm.state
-    .set('Result', !!favorites, {favorites})
+    .force('Result', !!favorites, {favorites})
     .set('Content', () => !!favorites.length, {favorites})
     .then(() => scope.vm.fields = initTableFields(scope));
 }

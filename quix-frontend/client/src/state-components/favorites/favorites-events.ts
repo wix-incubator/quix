@@ -10,9 +10,9 @@ export const onFavoriteClick = (scope: IScope, store: Store, app: Instance) => (
 };
 
 export const onLikeToggle = (scope: IScope, store: Store, app: Instance) => (file: IFile) => {
-  const {id} = file;
+  const {id, isLiked} = file;
 
-  store.dispatchAndLog(FileActions.toggleIsLiked(id, false))
+  store.dispatchAndLog(FileActions.toggleIsLiked(id, !isLiked))
     .then((action) => toast.showToast({
       text: action.isLiked ? 'Added notebook to favorites' : 'Removed notebook from favorites',
       type: 'success'
