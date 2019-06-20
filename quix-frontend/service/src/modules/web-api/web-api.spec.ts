@@ -349,7 +349,7 @@ describe('web-api module', () => {
     });
   });
 
-  describe.only('favorites service', () => {
+  describe('favorites service', () => {
     it('get favorites per user', async () => {
       const notebook = createNotebook(defaultUser);
       const favorite = createFavorite(
