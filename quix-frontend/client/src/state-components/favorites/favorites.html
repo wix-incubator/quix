@@ -18,6 +18,15 @@
       </div>
       <div class="bi-empty-state-header">{{::vm.state.value().error.message}}</div>
     </div>
+
+    <div
+      class="quix-empty-state bi-empty-state bi-fade-in"
+      ng-if="vm.state.is('Result')"
+      data-hook="favorites-empty"
+    >
+      <quix-image class="bi-empty-state-image" name="no_data.svg"></quix-image>
+      <div class="bi-empty-state-header">You dont have any favorites}}</div>
+    </div>
   </div>
 
   <div class="bi-section-content bi-c-h" ng-if="vm.state.is('Content')">

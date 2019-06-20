@@ -25,11 +25,71 @@ import {
 import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action.entity';
 import {FoldersService} from './folders/folders.service';
 import {NotebookService} from './notebooks/notebooks.service';
+import {FavoritesService} from './favorites/favorites.service';
 import {NoteType} from 'shared/entities/note';
 import {WebApiModule} from './web-api.module';
 import {EntityType} from 'common/entity-type.enum';
 
 jest.setTimeout(60000);
+
+function createNotebook(defaultUser: string, notebookName = 'New notebook') {
+  const notebook = new DbNotebook();
+
+  notebook.id = uuid();
+  notebook.owner = defaultUser;
+  notebook.name = notebookName;
+
+  return notebook;
+}
+
+function createNotebookNode(defaultUser: string, notebookName: string) {
+  const notebook = createNotebook(defaultUser, notebookName);
+
+  const notebookNode = new DbFileTreeNode();
+  notebookNode.id = uuid();
+  notebookNode.owner = defaultUser;
+  notebookNode.notebookId = notebook.id;
+  notebookNode.type = FileType.notebook;
+  return [notebookNode, notebook] as const;
+}
+
+function createNote(defaultUser: string, noteName: string, notebookId: string) {
+  const note = new DbNote({
+    id: uuid(),
+    owner: defaultUser,
+    name: noteName,
+    content: '',
+    type: NoteType.PRESTO,
+    notebookId,
+    dateCreated: 1,
+    dateUpdated: 1,
+  });
+  return note;
+}
+
+function createFolderNode(defaultUser: string, folderName: string) {
+  const folderNode = new DbFileTreeNode();
+  folderNode.id = uuid();
+  folderNode.owner = defaultUser;
+  folderNode.folder = Object.assign(new DbFolder(), {
+    id: folderNode.id,
+    name: folderName,
+    owner: defaultUser,
+  });
+  return folderNode;
+}
+
+function createFavorite(
+  owner: string,
+  entityId: string,
+  entityType: EntityType,
+) {
+  return Object.assign(new DbFavorites(), {
+    entityId,
+    entityType,
+    owner,
+  });
+}
 
 // TODO: write a driver for this test, refactor everything @aviad
 describe('web-api module', () => {
@@ -42,6 +102,7 @@ describe('web-api module', () => {
   let favoritesRepo: Repository<DbFavorites>;
   let folderService: FoldersService;
   let notebookService: NotebookService;
+  let favoritesService: FavoritesService;
   let configService: ConfigService;
   let conn: Connection;
   const defaultUser = 'foo@wix.com';
@@ -97,6 +158,7 @@ describe('web-api module', () => {
     favoritesRepo = module.get(getRepositoryToken(DbFavorites));
     folderService = module.get(FoldersService);
     notebookService = module.get(NotebookService);
+    favoritesService = module.get(FavoritesService);
     conn = module.get(getConnectionToken());
     configService = module.get(ConfigService);
   });
@@ -286,56 +348,22 @@ describe('web-api module', () => {
       expect(response!.isLiked).toBe(true);
     });
   });
+
+  describe.only('favorites service', () => {
+    it('get favorites per user', async () => {
+      const notebook = createNotebook(defaultUser);
+      const favorite = createFavorite(
+        defaultUser,
+        notebook.id,
+        EntityType.Notebook,
+      );
+
+      await notebookRepo.save(notebook);
+      await favoritesRepo.save(favorite);
+
+      const response = await favoritesService.getFavoritesForUser(defaultUser);
+
+      expect(response).toBe(notebook.id);
+    });
+  });
 });
-
-function createNotebookNode(defaultUser: string, notebookName: string) {
-  const notebook = new DbNotebook();
-  notebook.id = uuid();
-  notebook.owner = defaultUser;
-  notebook.name = notebookName;
-
-  const notebookNode = new DbFileTreeNode();
-  notebookNode.id = uuid();
-  notebookNode.owner = defaultUser;
-  notebookNode.notebookId = notebook.id;
-  notebookNode.type = FileType.notebook;
-  return [notebookNode, notebook] as const;
-}
-
-function createNote(defaultUser: string, noteName: string, notebookId: string) {
-  const note = new DbNote({
-    id: uuid(),
-    owner: defaultUser,
-    name: noteName,
-    content: '',
-    type: NoteType.PRESTO,
-    notebookId,
-    dateCreated: 1,
-    dateUpdated: 1,
-  });
-  return note;
-}
-
-function createFolderNode(defaultUser: string, folderName: string) {
-  const folderNode = new DbFileTreeNode();
-  folderNode.id = uuid();
-  folderNode.owner = defaultUser;
-  folderNode.folder = Object.assign(new DbFolder(), {
-    id: folderNode.id,
-    name: folderName,
-    owner: defaultUser,
-  });
-  return folderNode;
-}
-
-function createFavorite(
-  owner: string,
-  entityId: string,
-  entityType: EntityType,
-) {
-  return Object.assign(new DbFavorites(), {
-    entityId,
-    entityType,
-    owner,
-  });
-}
