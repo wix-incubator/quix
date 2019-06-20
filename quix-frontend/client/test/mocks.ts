@@ -32,8 +32,8 @@ const mocks = {
   ],
   // '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],
   // '/api/files': () => [500, {message: 'Failed to fetch files'}],
-  // '/api/files': () => [],
-  '/api/files': () => createMockFiles([createMockFolder({id: '10'}), createMockFile({id: '11'})]),
+  '/api/files': () => createMockFiles(),
+  // '/api/files': () => createMockFiles([createMockFolder({id: '10'}), createMockFile({id: '11'})]),
   '/api/files/404': () => [404, {message: 'Folder not found'}],
   '/api/files/500': () => [500, {message: 'Couldn\'t fetch folder'}],
   '/api/files/:id': ({id}) => createMockFolderPayload([
