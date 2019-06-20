@@ -368,6 +368,8 @@ describe('web-api module', () => {
           id: notebook.id,
           name: notebook.name,
           type: FileType.notebook,
+          owner: notebook.owner,
+          isLiked: true,
           path: [],
         },
       ]);

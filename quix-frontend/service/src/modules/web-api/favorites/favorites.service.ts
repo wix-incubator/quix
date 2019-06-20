@@ -23,13 +23,26 @@ export class FavoritesService {
       .where('fav.owner = :user', {user})
       .orderBy({'notebook.name': 'ASC'});
 
-    const res = await favoritesQuery.execute();
+    const res: IFile[] = await favoritesQuery.execute();
 
-    return res.map(({notebook_id, notebook_name, fav_entity_type}: any) => ({
-      id: notebook_id,
-      name: notebook_name,
-      type: fav_entity_type,
-      path: [],
-    }));
+    return res.map(
+      ({
+        notebook_id,
+        notebook_name,
+        notebook_owner,
+        notebook_date_created,
+        notebook_date_updated,
+        fav_entity_type,
+      }: any) => ({
+        id: notebook_id,
+        name: notebook_name,
+        owner: notebook_owner,
+        type: fav_entity_type,
+        isLiked: true,
+        path: [],
+        dateCreated: notebook_date_created,
+        dateUpdated: notebook_date_updated,
+      }),
+    );
   }
 }
