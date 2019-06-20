@@ -363,7 +363,14 @@ describe('web-api module', () => {
 
       const response = await favoritesService.getFavoritesForUser(defaultUser);
 
-      expect(response).toBe(notebook.id);
+      expect(response).toEqual([
+        {
+          id: notebook.id,
+          name: notebook.name,
+          type: FileType.notebook,
+          path: [],
+        },
+      ]);
     });
   });
 });
