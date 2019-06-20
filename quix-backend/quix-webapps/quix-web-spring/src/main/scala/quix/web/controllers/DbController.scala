@@ -14,6 +14,13 @@ import scala.concurrent.duration.{FiniteDuration, _}
 class DbController(modules: Map[String, ExecutionModule[String, Batch]], requestTimeout: FiniteDuration = 5.seconds) {
 
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
+  @RequestMapping(value = Array("/db/config"), method = Array(RequestMethod.GET))
+  @ResponseBody
+  def getDbConfig = {
+    Map("trees" -> modules.keySet)
+  }
+
+  @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
   @RequestMapping(value = Array("/{moduleId}/db/explore"), method = Array(RequestMethod.GET))
   @ResponseBody
   def getCatalogsNoColumns(@PathVariable moduleId: String) = {
