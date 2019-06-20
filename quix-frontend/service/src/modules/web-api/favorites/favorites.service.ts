@@ -3,7 +3,6 @@ import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {IFile} from 'shared';
 import {DbNotebook, DbFavorites} from 'entities';
-import {FoldersService} from '../folders/folders.service';
 
 @Injectable()
 export class FavoritesService {
