@@ -12,11 +12,13 @@ export const initTableFields = scope => {
         </div>
       `, {file}, scope);
     }
-  }, {
-    name: 'path',
-    filter(_, file) {
-      return `/${file.path.slice(1).map(({name}) => name).join('/')}`;
-    }
+  // }, {
+  //   name: 'path',
+  //   filter(_, file: IFile, index, compile) {
+  //     return compile(`
+  //       <span class="bi-text--sm bi-muted">{{::path}}</span>
+  //     `, {path: `/${file.path.slice(1).map(({name}) => name).join('/')}`}, scope);
+  //   }
   }, {
     name: 'owner',
   }, {
