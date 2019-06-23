@@ -10,9 +10,9 @@ import {DbFileTreeNode} from './filenode.entity';
 import {dbConf} from 'config/db-conf';
 import assert from 'assert';
 import {FileType} from 'shared';
-import {groupBy} from 'lodash';
 import {DbNotebook} from './dbnotebook.entity';
 import {DbFolder} from './folder.entity';
+import {DbFavorites} from './favorites.entity';
 /**
  * This custom repository saves a tree structure in sql, using path enumeration/materialized path.
  * We don't use the built in solution by typeorm as it doesn't support moving/deletions yet.
@@ -176,6 +176,15 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
           .delete()
           .from(DbNotebook)
           .whereInIds(notebooksToDelete)
+          .execute();
+
+        await em
+          .createQueryBuilder()
+          .delete()
+          .from(DbFavorites)
+          .where('entity_id in (:...ids)', {
+            ids: notebooksToDelete.map(({id}) => id),
+          })
           .execute();
       }
       if (foldersToDeltete.length) {

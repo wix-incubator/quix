@@ -75,8 +75,6 @@ describe('event sourcing', () => {
         NotebookActions.toggleIsLiked(id, true),
       ]);
 
-      await driver.getNotebook(id).and.expectToBeDefined();
-
       await driver
         .getFavorite(defaultUser, id, EntityType.Notebook)
         .and.expectToBeDefined();
@@ -99,6 +97,20 @@ describe('event sourcing', () => {
       await driver.emitAsUser(eventBus, [NotebookActions.deleteNotebook(id)]);
 
       await driver.getNotebook(id).and.expectToBeUndefined();
+    });
+
+    it('delete favorite after deleting the notebook', async () => {
+      await eventBus.emit([createAction]);
+
+      await driver.emitAsUser(eventBus, [
+        NotebookActions.toggleIsLiked(id, true),
+      ]);
+
+      await driver.emitAsUser(eventBus, [NotebookActions.deleteNotebook(id)]);
+
+      await driver
+        .getFavorite(defaultUser, id, EntityType.Notebook)
+        .and.expectToBeUndefined();
     });
   });
 
@@ -472,6 +484,34 @@ describe('event sourcing', () => {
       /* Checking that deletion deletes entities from other tables */
       await driver.getNotebook(notebookId).and.expectToBeUndefined();
       expect(await driver.folderRepo.find()).toHaveLength(1);
+    });
+
+    it('delete notebook favorite after deleting the parent folder', async () => {
+      const [subFolderId, createSubFolder] = mockBuilder.createFolderAction(
+        'subFolder',
+        [{id: folderId}],
+      );
+
+      const [
+        notebookId,
+        createNotebookAction,
+      ] = mockBuilder.createNotebookAction([{id: subFolderId}]);
+
+      await driver.emitAsUser(eventBus, [
+        createFolderAction,
+        createSubFolder,
+        createNotebookAction,
+      ]);
+
+      await driver.emitAsUser(eventBus, [
+        NotebookActions.toggleIsLiked(notebookId, true),
+      ]);
+
+      await driver.emitAsUser(eventBus, [FileActions.deleteFile(subFolderId)]);
+
+      await driver
+        .getFavorite(defaultUser, notebookId, EntityType.Notebook)
+        .and.expectToBeUndefined();
     });
   });
 });
