@@ -2,7 +2,9 @@
   <div class="bi-section-header">
     <div>
       <div class="bi-section-title">
-        Users
+        Users <span class="bi-fade-in" ng-if="vm.state.is('Content')">
+          {{::vm.state.value().users.length}}
+        </span>
       </div>
     </div>
   </div>
