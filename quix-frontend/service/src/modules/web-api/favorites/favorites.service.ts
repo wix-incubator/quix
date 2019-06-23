@@ -40,8 +40,8 @@ export class FavoritesService {
         type: fav_entity_type,
         isLiked: true,
         path: [],
-        dateCreated: notebook_date_created,
-        dateUpdated: notebook_date_updated,
+        dateCreated: notebook_date_created.valueOf(),
+        dateUpdated: notebook_date_updated.valueOf(),
       }),
     );
   }
