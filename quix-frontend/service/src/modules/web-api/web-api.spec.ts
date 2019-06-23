@@ -371,6 +371,8 @@ describe('web-api module', () => {
           owner: notebook.owner,
           isLiked: true,
           path: [],
+          dateCreated: notebook.dateCreated,
+          dateUpdated: notebook.dateUpdated,
         },
       ]);
     });
