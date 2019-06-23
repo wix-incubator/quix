@@ -1,6 +1,6 @@
 import {last, remove} from 'lodash';
 import {createReducer, composeReducers, createListReducer, createClientReducer, createClientListReducer} from '../common/create-reducer';
-import {INotebook} from '../notebook';
+import {INotebook, clientNotebookReducer} from '../notebook';
 import {createFile} from './file';
 import {IFilePathItem, IFile, FileType} from './types';
 import {FileActionTypes} from './actions';
@@ -45,7 +45,7 @@ export const fileReducer = composeReducers(
 
 export const clientFileReducer = composeReducers(
   createClientReducer('file'),
-  createClientReducer('notebook')
+  clientNotebookReducer
 );
 
 export const fileListReducer = composeReducers(

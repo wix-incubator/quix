@@ -1,24 +1,26 @@
 import {combineReducers} from 'redux';
 import {IBranch} from '../../lib/store';
 import {Instance} from '../../lib/app';
-import {IUser} from '../../../../shared';
+import {IFile, composeReducers, clientFileListReducer} from '../../../../shared';
 
 export default (app: Instance): IBranch => register => {
-  const users = (state: IUser[] = null, action: any) => {
+  const favorites = composeReducers(
+    clientFileListReducer,
+    (state: IFile[] = null, action: any) => {
     switch (action.type) {
-      case 'users.set':
-        return action.users;
+      case 'favorites.set':
+        return action.favorites;
       default:
     }
 
     return state;
-  };
+  });
 
   const error = (state: any = null, action: any) => {
     switch (action.type) {
-      case 'users.set':
+      case 'favorites.set':
         return null;
-      case 'users.setError':
+      case 'favorites.setError':
         return action.error;
       default:
     }
@@ -26,5 +28,5 @@ export default (app: Instance): IBranch => register => {
     return state;
   }
 
-  register(combineReducers({users, error}));
+  register(combineReducers({favorites, error}));
 };

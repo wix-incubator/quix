@@ -31,7 +31,7 @@ export class FoldersController {
   }
 
   @Get('files/:id')
-  async GetSpecificFolder(@Param('id') id: string) {
+  async getSpecificFolder(@Param('id') id: string) {
     const folder = this.foldersService.getFolder(id);
     if (!folder) {
       throw new HttpException(`Can't find folder`, HttpStatus.NOT_FOUND);

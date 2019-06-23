@@ -10,6 +10,8 @@ import {default as folder} from './folder/folder-branch';
 import {default as folderCache} from './folder/folder-cache';
 import {default as users} from './users/users-branch';
 import {default as usersCache} from './users/users-cache';
+import {default as favorites} from './favorites/favorites-branch';
+import {default as favoritesCache} from './favorites/favorites-cache';
 import {IEntity} from '../../../shared';
 
 export const branches = {
@@ -19,6 +21,7 @@ export const branches = {
   files,
   db,
   folder,
+  favorites,
 };
 
 export let cache = null;
@@ -29,6 +32,7 @@ export const initCache = (store: Store) => {
     files: foldersCache(store),
     db: dbCache(store),
     folder: folderCache(store),
+    favorites: favoritesCache(store),
   };
 };
 

@@ -32,11 +32,14 @@ const mocks = {
   ],
   // '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],
   // '/api/files': () => [500, {message: 'Failed to fetch files'}],
-  // '/api/files': () => [],
-  '/api/files': () => createMockFiles([createMockFolder({id: '10'}), createMockFile({id: '11'})]),
+  '/api/files': () => createMockFiles(),
+  // '/api/files': () => createMockFiles([createMockFolder({id: '10'}), createMockFile({id: '11'})]),
   '/api/files/404': () => [404, {message: 'Folder not found'}],
   '/api/files/500': () => [500, {message: 'Couldn\'t fetch folder'}],
-  '/api/files/:id': ({id}) => createMockFolderPayload([createMockFolder({id: '100'}), createMockFile({id: '101'})], {id}),
+  '/api/files/:id': ({id}) => createMockFolderPayload([
+    createMockFolder({id: '100'}),
+    createMockFile({id: '101'})
+  ], {id}),
   '/api/notebook/404': () => [404, {message: 'Notebook not found'}],
   '/api/notebook/500': () => [500, {message: 'Couldn\'t fetch notebook'}],
   '/api/notebook/:id': ({id}) => createMockNotebook([
@@ -46,6 +49,10 @@ const mocks = {
     createMockNote(id, {id: '1004'}),
     createMockNote(id, {id: '1005'}),
   ], {id}),
+  '/api/favorites': ({id}) => [
+    createMockFile({id: '100', isLiked: true}),
+    createMockFile({id: '101', isLiked: true})
+  ],
   '/api/search/none': () => [],
   '/api/search/:text': ({text}) => {
     if (text === '500') {
