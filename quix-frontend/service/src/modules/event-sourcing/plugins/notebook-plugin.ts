@@ -66,7 +66,6 @@ export class NotebookPlugin implements EventBusPlugin {
       return tm.save(new DbNotebook(newModel));
     } else if (action.type === NotebookActionTypes.deleteNotebook) {
       await tm.delete(DbNotebook, {id: action.id});
-      return tm.delete(DbFavorites, {entity_id: action.id});
     }
   }
 
@@ -106,7 +105,6 @@ export class NotebookPlugin implements EventBusPlugin {
       case NotebookActionTypes.deleteNotebook: {
         return tm.delete(DbFavorites, {
           entityId: action.id,
-          owner: (action as any).user,
         });
       }
       default:

@@ -106,6 +106,10 @@ describe('event sourcing', () => {
         NotebookActions.toggleIsLiked(id, true),
       ]);
 
+      await driver
+        .getFavorite(defaultUser, id, EntityType.Notebook)
+        .and.expectToBeDefined();
+
       await driver.emitAsUser(eventBus, [NotebookActions.deleteNotebook(id)]);
 
       await driver
