@@ -106,11 +106,37 @@ describe('event sourcing', () => {
         NotebookActions.toggleIsLiked(id, true),
       ]);
 
+      await driver
+        .getFavorite(defaultUser, id, EntityType.Notebook)
+        .and.expectToBeDefined();
+
       await driver.emitAsUser(eventBus, [NotebookActions.deleteNotebook(id)]);
 
       await driver
         .getFavorite(defaultUser, id, EntityType.Notebook)
         .and.expectToBeUndefined();
+    });
+
+    it('delete only the favorite of the deleted notebook', async () => {
+      const [id1, createAction1] = mockBuilder.createNotebookAction();
+      const [id2, createAction2] = mockBuilder.createNotebookAction();
+
+      await eventBus.emit([createAction1, createAction2]);
+
+      await driver.emitAsUser(eventBus, [
+        NotebookActions.toggleIsLiked(id1, true),
+        NotebookActions.toggleIsLiked(id2, true),
+      ]);
+
+      await driver.emitAsUser(eventBus, [NotebookActions.deleteNotebook(id1)]);
+
+      await driver
+        .getFavorite(defaultUser, id1, EntityType.Notebook)
+        .and.expectToBeUndefined();
+
+      await driver
+        .getFavorite(defaultUser, id2, EntityType.Notebook)
+        .and.expectToBeDefined();
     });
   });
 
