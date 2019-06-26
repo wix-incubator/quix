@@ -1,7 +1,7 @@
 import {includes, uniq, assign} from 'lodash';
 import {initNgScope, createNgModel, utils, inject} from '../../../core';
 
-import * as template from './tags.html';
+import template from './tags.html';
 import './tags.scss';
 
 export interface IScope extends ng.IScope {
@@ -50,6 +50,8 @@ function parse(model: any[], biOptions) {
 
 function render(scope, model: any[], biOptions) {
   scope.vm.current = model.map(item => biOptions.render(item));
+
+  initItems(scope, biOptions);
 }
 
 function validate(attrs) {
@@ -101,7 +103,6 @@ export default function directive(): ng.IDirective {
           .renderWith(model => render(scope, model, biOptions))
           .validateWith(() => validate(attrs))
           .watchDeep(true)
-          .watchWith(() => initItems(scope, biOptions))
           .feedBack(false);
 
         initNgScope(scope)
@@ -113,7 +114,7 @@ export default function directive(): ng.IDirective {
             debounce: 0
           })
           .withVM({
-            current: [],
+            current: null,
             currentText: '',
             pending: false,
             deferred: false,
@@ -193,7 +194,8 @@ export default function directive(): ng.IDirective {
           }
 
           scope.collection = collection;
-          scope.items = collection;
+          
+          initItems(scope, biOptions);
         });
 
         scope.renderTag = tag => ({html: renderTagTransclusion(transclude, biOptions, tag)});
