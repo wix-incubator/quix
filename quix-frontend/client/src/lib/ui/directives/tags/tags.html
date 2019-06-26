@@ -1,14 +1,17 @@
 <bi-dropdown
   class="bi-row-inline bi-grow"
   bd-is-open="vm.dropdown.enabled"
-  bd-options="::{minWidth: 'toggle', toggleOn: 'manual'}"
+  bd-options="::{
+    width: options.dropdownWidth,
+    minWidth: options.dropdownWidth ? null : 'toggle',
+    toggleOn: 'manual'
+  }"
   on-show="events.onDropdownShow()"
-  on-hide="events.onDropdownHide()"
   >
   <bi-toggle class="bi-grow">
     <div class="bi-tags-container bi-input bi-wrap bi-grow">
-      <div class="bi-tags-tag bi-r-i bi-dont-grow bi-align bi-border bi-space-h--x05" ng-repeat="tag in vm.current">
-        <span class="bi-tags-content">{{::tag}}</span>
+      <div class="bi-tags-tag bi-r-i bi-dont-grow bi-align bi-border bi-space-h--x05" ng-repeat="tag in model">
+        <span class="bi-tags-content" bi-html="renderTag(tag)"></span>
         <i ng-if="::!readonly" class="bi-tags-remove bi-action bi-icon bi-fade-in" ng-click="actions.removeItem($index)">close</i>
       </div>
 
@@ -16,6 +19,7 @@
         class="bi-tags-input bi-input bi-grow"
         ng-if="::!readonly"
         ng-model="vm.currentText"
+        ng-model-options="::{debounce: options.debounce}"
         ng-change="events.onInputChange()"
         placeholder="{{::placeholder || 'Enter a tag'}}"
       >
@@ -23,20 +27,25 @@
     </div>
   </bi-toggle>
 
-  <ul class="bi-dropdown-menu" ng-if="(options.autocomplete && items !== null) || vm.pending">
+  <ul
+    class="bi-dropdown-menu"
+    ng-if="(options.autocomplete && items !== null) || vm.pending"
+    bi-infinite-scroll="items"
+    bis-buffer="buffer"
+  >
     <li class="bi-center" ng-if="vm.pending">
-      <span class="bi-spinner"></span>
+      <span class="bi-spinner--sm"></span>
     </li>
 
-    <li class="bi-text--sm bi-muted" ng-if="!filteredItems.length && !vm.pending">
+    <li class="bi-text--sm bi-muted" ng-if="!buffer.length && !vm.pending">
       No suggestions
     </li>
 
     <li
-      ng-repeat="item in filteredItems = (items | filter:vm.currentText | filter:filterExsitingTags | orderBy: renderItem)"
+      ng-repeat="item in buffer"
       ng-click="actions.addItem(item)"
     >
-      <div ng-bind-html="renderItem(item) | biHighlight:vm.currentText"></div>
+      <div bi-html="renderItem(item)"></div>
     </li>
   </ul>
 </bi-dropdown>
