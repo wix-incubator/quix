@@ -6,7 +6,7 @@
     <link type="image/png" href="${clientTopology.staticsBaseUrl}assets/favicon.png" rel="shortcut icon">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:200,300,400,600,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="${clientTopology.staticsBaseUrl}app#if(!${debug}).min#{end}.css">
+    <link rel="stylesheet" href="${clientTopology.staticsBaseUrl}app#if(!${clientTopology.debug}).min#{end}.css">
   </head>
   <body class="bi-c" ng-controller="app">
     <bi-app app="app">
@@ -21,13 +21,9 @@
     </bi-app>
 
     <script>
-      window.quixConfig = {
-        staticsBaseUrl: '${clientTopology.staticsBaseUrl}',
-        quixBackendUrl: '${clientTopology.quixBackendUrl}',
-        googleClientId: '${clientTopology.googleClientId}',
-      };
+      window.quixConfig = ${quixConfig}
     </script>
 
-    <script src="${clientTopology.staticsBaseUrl}app.bundle#if(!${debug}).min#{end}.js"></script>
+    <script src="${clientTopology.staticsBaseUrl}app.bundle#if(!${clientTopology.debug}).min#{end}.js"></script>
   </body>
 </html>

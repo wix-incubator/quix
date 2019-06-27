@@ -13,8 +13,8 @@ import {
   checkSchemaVersion,
   createIntialSchmeaIfNeeded,
   isMasterProcess,
-  retry,
 } from './utils/create-schema-helpers';
+import {retry} from './utils/retry-promise';
 
 async function bootstrap() {
   const logger = new Logger();

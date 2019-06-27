@@ -8,10 +8,10 @@ import UrlPattern from 'url-pattern';
 import {config as runnerConfig} from './lib/runner';
 import './lib/file-explorer';
 import {setupNotifications} from './bootstrap';
+import {ClientConfigHelper} from '../../shared';
 
 (window as any).UrlPattern = UrlPattern;  // expose for e2e tests
-
-const {googleClientId, ...config} = window.quixConfig;
+const clientConfig = ClientConfigHelper.load(window.quixConfig);
 
 create<{
   quixBackendUrl?: string;
@@ -20,13 +20,13 @@ create<{
   id: 'quix',
   title: 'Quix'
 }, {
-  auth: {googleClientId},
-  statePrefix: 'base',
-  defaultUrl: '/home',
-  homeState: 'home',
-  logoUrl: `${config.staticsBaseUrl}assets/logo.png`
-}, ['bi.app', 'bi.runner', 'bi.fileExplorer'])
-  .config(config)
+    auth: clientConfig.getAuth(),
+    statePrefix: 'base',
+    defaultUrl: '/home',
+    homeState: 'home',
+    logoUrl: `${clientConfig.getClientTopology().staticsBaseUrl}assets/logo.png`
+  }, ['bi.app', 'bi.runner', 'bi.fileExplorer'])
+  .config(clientConfig.getClientTopology())
   .plugin('app', plugin => {
     plugin.components(components);
     plugin.stateComponents(stateComponents);
@@ -41,7 +41,7 @@ create<{
       runnerConfig.set({prestoUrl: app.getConfig().quixBackendUrl});
 
       app.getModule().controller('app', ['$scope', scope => scope.app = app] as any);
-      setupNotifications();
+      setupNotifications(clientConfig.getClientTopology().staticsBaseUrl);
     });
   })
   .build();

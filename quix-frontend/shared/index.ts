@@ -43,3 +43,5 @@ export {
   noteListReducer,
   clientNoteListReducer
 } from './entities/note';
+
+export {ClientConfigHelper, ConfigComponent} from './config-helper/config-helper'

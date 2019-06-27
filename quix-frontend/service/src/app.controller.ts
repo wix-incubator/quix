@@ -3,28 +3,36 @@ import {ConfigService, EnvSettings} from './config';
 import {InjectConnection} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
 import {Response} from 'express';
+import {ClientConfigHelper} from 'shared';
 
 @Controller()
 export class AppController {
   private settings: EnvSettings;
+  private clientConfig: ClientConfigHelper | undefined;
+
   constructor(
     private configService: ConfigService,
     @InjectConnection() private conn: Connection,
   ) {
     this.settings = this.configService.getEnvSettings();
+    this.fetchClientConfig();
+    setInterval(() => this.fetchClientConfig.bind(this), 1000 * 60 * 10);
+  }
+
+  private fetchClientConfig() {
+    this.configService.getClientConfig().then(c => (this.clientConfig = c));
   }
 
   @Get()
   @Render('index.vm')
   getIndex() {
+    if (!this.clientConfig) {
+      throw new Error('Server not up yet');
+    }
+    const clientTopology = this.clientConfig.getClientTopology();
     return {
-      clientTopology: {
-        staticsBaseUrl: '',
-        quixBackendUrl: this.settings.QuixBackendPublicUrl,
-        googleClientId: this.settings.GoogleClientId,
-        demoMode: this.settings.DemoMode,
-      },
-      debug: !this.configService.getEnvSettings().UseMinifiedStatics,
+      clientTopology,
+      quixConfig: this.clientConfig.write(),
     };
   }
 

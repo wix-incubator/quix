@@ -35,6 +35,7 @@ const envSettingsMap: {[K in keyof EnvSettings]: string} = {
   UseMinifiedStatics: 'MINIFIED_STATICS',
   DemoMode: 'DEMO_MODE',
   DbDebug: 'DB_DEBUG',
+  Modules: 'MODULES',
 };
 
 const envSettingsDefaults = {
@@ -56,27 +57,22 @@ const envSettingsDefaults = {
   UseMinifiedStatics: true,
   DemoMode: false,
   DbDebug: ['error', 'schema', 'warn'] as BaseConnectionOptions['logging'],
+  Modules: ['presto'],
 };
 
 export const testingDefaults: EnvSettings = {
+  ...envSettingsDefaults,
   DbName: 'quixtest',
-  DbUser: 'root',
-  DbPass: '',
   DbHost: 'localhost',
-  DbPort: 3306,
   QuixBackendInternalUrl: 'localhost:8081',
   QuixBackendPublicUrl: 'localhost:8081',
-  GoogleClientId: '',
-  GoogleAuthSecret: '',
-  AuthCookieName: '__quix',
   AuthEncKey: '',
-  CookieAge: 30 * 24 * 60 * 60 * 1000,
   DbType: 'sqlite',
   AuthType: 'fake',
   AutoMigrateDb: true,
   UseMinifiedStatics: false,
-  DemoMode: false,
   DbDebug: false,
+  Modules: ['presto'],
 };
 
 const identity = <T>(x: T) => x;
@@ -88,6 +84,8 @@ const booleanParse = (s: string | undefined) =>
       ? false
       : true
     : undefined;
+const stringListParse = (s: string | undefined) =>
+  s !== undefined ? s.split(',') : undefined;
 
 const transforms: {
   [K in keyof EnvSettings]: (
@@ -148,6 +146,7 @@ const transforms: {
     }
     return s.split(',') as BaseConnectionOptions['logging'];
   },
+  Modules: stringListParse,
 };
 
 let env: EnvSettings;

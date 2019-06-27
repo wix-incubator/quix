@@ -13,6 +13,7 @@ interface INotificationTemplate {
 
 class BrowserNotificationsManager {
   private $window: ng.IWindowService;
+  private baseUrl: string;
   private readonly Notification = Notification;
   private readonly templates: Record<string, INotificationTemplate> = {};
 
@@ -20,14 +21,18 @@ class BrowserNotificationsManager {
     if (this.Notification && this.Notification.permission === 'default') {
       this.Notification.requestPermission();
     }
-    
+
     injector.on('ready', () => {
       this.$window = injector.get('$window');
     });
   }
 
   private fixUrl(url: string) {
-    return this.$window.quixConfig.staticsBaseUrl + url;
+    return this.baseUrl + url;
+  }
+
+  setBaseUrl(baseUrl: string) {
+    this.baseUrl = baseUrl;
   }
 
   register(template: INotificationTemplate) {
