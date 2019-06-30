@@ -308,11 +308,11 @@ export class Runner extends srv.eventEmitter.EventEmitter {
 export default function create(type: RunnerType, scope, {
   mode = 'stream',
   version = null,
-  baseUrl = config.get().prestoUrl
+  baseUrl = config.get().baseUrl
 } = {
     mode: 'stream',
     version: null,
-    baseUrl: config.get().prestoUrl
+    baseUrl: config.get().baseUrl
 }) {
   if (!baseUrl) {
     throw new Error('Missing base url definition');

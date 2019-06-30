@@ -1,4 +1,5 @@
 import {StateManager} from '../../services/state';
+import {Instance} from '../../lib/app';
 
 enum States {
   Initial,
@@ -7,7 +8,7 @@ enum States {
   Content
 }
 
-export default () => ({
+export default (app: Instance) => ({
   note: null,
   breadcrumbs: {
     enabled: true,
@@ -24,6 +25,7 @@ export default () => ({
       focusName: false
     });
 
+    this.noteTypes = app.getConfig().getModulesByComponent('note').map(({id}) => id);
     this.state = new StateManager(States);
     this.marked.map = {};
     this.marked.list = [];

@@ -12,11 +12,9 @@ import {ClientConfigHelper} from '../../shared';
 
 (window as any).UrlPattern = UrlPattern;  // expose for e2e tests
 const clientConfig = ClientConfigHelper.load(window.quixConfig);
+const {staticsBaseUrl, quixBackendUrl} = clientConfig.getClientTopology();
 
-create<{
-  quixBackendUrl?: string;
-  staticsBaseUrl?: string;
-}>({
+create<ClientConfigHelper>({
   id: 'quix',
   title: 'Quix'
 }, {
@@ -24,9 +22,9 @@ create<{
     statePrefix: 'base',
     defaultUrl: '/home',
     homeState: 'home',
-    logoUrl: `${clientConfig.getClientTopology().staticsBaseUrl}assets/logo.png`
+    logoUrl: `${staticsBaseUrl}assets/logo.png`
   }, ['bi.app', 'bi.runner', 'bi.fileExplorer'])
-  .config(clientConfig.getClientTopology())
+  .config(clientConfig)
   .plugin('app', plugin => {
     plugin.components(components);
     plugin.stateComponents(stateComponents);
@@ -36,12 +34,11 @@ create<{
     plugin.menuItem({name: 'DB Explorer', icon: 'storage', template: '<quix-db-sidebar class="bi-c bi-grow"></quix-db-sidebar>'});
 
     plugin.onPluginReady((app, store) => {
-      initCache(store);
-
-      runnerConfig.set({prestoUrl: app.getConfig().quixBackendUrl});
-
       app.getModule().controller('app', ['$scope', scope => scope.app = app] as any);
-      setupNotifications(clientConfig.getClientTopology().staticsBaseUrl);
+
+      initCache(store);
+      runnerConfig.set({baseUrl: quixBackendUrl});
+      setupNotifications(staticsBaseUrl);
     });
   })
   .build();
