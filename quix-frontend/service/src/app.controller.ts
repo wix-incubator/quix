@@ -19,7 +19,7 @@ export class AppController {
   getIndex() {
     return {
       clientTopology: {
-        staticsBaseUrl: this.settings.MountPath,
+        staticsBaseUrl: this.settings.MountPath + '/',
         quixBackendUrl: this.settings.QuixBackendPublicUrl,
         googleClientId: this.settings.GoogleClientId,
         demoMode: this.settings.DemoMode,

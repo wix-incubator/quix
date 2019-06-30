@@ -33,6 +33,7 @@ export class Permission {
   }
 }
 
+const addPrefixSlash = (s: string) => s[0] === '/' ? s : '/' + s;
 export class User {
   private email: string;
   private avatar: string;
@@ -41,7 +42,7 @@ export class User {
   private readonly permission = new Permission();
 
   fetch(appId?: string) {
-    return inject('$resource')(`${appId ? `/${appId}` : ''}/api/user`).get().$promise
+    return inject('$resource')(`${appId ? addPrefixSlash(appId) : ''}/api/user`).get().$promise
       .then(data => this.set(data.payload || data));
   }
 
