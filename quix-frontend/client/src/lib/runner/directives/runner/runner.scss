@@ -56,7 +56,7 @@ bi-runner {
 
       &.bi-active {
         color: $black;
-        background-color: $white;
+        background-color: $white !important;
         border-bottom: $white;
       }
 

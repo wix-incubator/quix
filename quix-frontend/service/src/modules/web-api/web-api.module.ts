@@ -22,6 +22,9 @@ import {EventsController} from './events.controller';
 import {SearchController} from './search.controller';
 import {SearchModule} from 'modules/search/search.module';
 import {UserListController} from './user-list.controller';
+import {FavoritesService} from './favorites/favorites.service';
+import {FavoritesController} from './favorites/favorites.controller';
+
 @Module({
   imports: [
     ConfigModule,
@@ -47,8 +50,9 @@ import {UserListController} from './user-list.controller';
     EventsController,
     SearchController,
     UserListController,
+    FavoritesController,
   ],
-  providers: [NotebookService, FoldersService],
+  providers: [NotebookService, FoldersService, FavoritesService],
   exports: [],
 })
 export class WebApiModule {}

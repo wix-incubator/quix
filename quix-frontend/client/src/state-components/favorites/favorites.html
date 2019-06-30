@@ -2,8 +2,8 @@
   <div class="bi-section-header">
     <div>
       <div class="bi-section-title">
-        Users <span class="bi-fade-in" ng-if="vm.state.is('Content')">
-          ({{::vm.state.value().users.length}})
+        Favorites <span class="bi-fade-in" ng-if="vm.state.is('Content')">
+          ({{vm.state.value().favorites.length}})
         </span>
       </div>
     </div>
@@ -11,27 +11,36 @@
 
   <div class="bi-section-content--center" ng-if="vm.state.before('Content')">
     <div class="quix-empty-state bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
-      <div class="bi-empty-state-content">Loading users...</div>
+      <div class="bi-empty-state-content">Loading favorites...</div>
     </div>
 
-    <div class="quix-empty-state bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="users-error">
+    <div class="quix-empty-state bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="favorites-error">
       <div class="bi-empty-state-icon bi-danger">
         <i class="bi-icon bi-danger">error_outline</i>
       </div>
       <div class="bi-empty-state-header">{{::vm.state.value().error.message}}</div>
     </div>
+
+    <div
+      class="quix-empty-state bi-empty-state bi-fade-in"
+      ng-if="vm.state.is('Result')"
+      data-hook="favorites-empty"
+    >
+      <quix-image class="bi-empty-state-image" name="no_data.svg"></quix-image>
+      <div class="bi-empty-state-header">You dont have any favorites</div>
+    </div>
   </div>
 
   <div class="bi-section-content bi-c-h" ng-if="vm.state.is('Content')">
-    <div class="bi-panel bi-c-h bi-fade-in bi-theme--lighter" data-hook="users-content">
+    <div class="bi-panel bi-c-h bi-fade-in bi-theme--lighter" data-hook="favorites-content">
       <div class="bi-panel-content bi-c-h">
         <bi-tbl
           class="bi-table--nav bi-c-h bi-grow"
           fields="vm.fields"
-          rows="vm.state.value().users"
+          rows="vm.state.value().favorites"
           bt-options="::{stickyHeader: true}"
-          on-row-click="events.onUserClick(row)"
-          data-hook="users-table"
+          on-row-click="events.onFavoriteClick(row)"
+          data-hook="favorites-table"
         ></bi-tbl>
       </div>
     </div>

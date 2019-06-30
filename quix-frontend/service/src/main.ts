@@ -42,6 +42,6 @@ async function bootstrap() {
   app.setBaseViewsDir(path.resolve(__dirname, '..', 'statics'));
   app.engine('.vm', velocityEngine());
   app.use(cookieParser());
-  await app.listen(3000);
+  await app.listen(env.HttpPort);
 }
 bootstrap();

@@ -36,6 +36,7 @@ const envSettingsMap: {[K in keyof EnvSettings]: string} = {
   DemoMode: 'DEMO_MODE',
   DbDebug: 'DB_DEBUG',
   Modules: 'MODULES',
+  HttpPort: 'HTTP_PORT',
 };
 
 const envSettingsDefaults = {
@@ -58,6 +59,7 @@ const envSettingsDefaults = {
   DemoMode: false,
   DbDebug: ['error', 'schema', 'warn'] as BaseConnectionOptions['logging'],
   Modules: ['presto'],
+  HttpPort: 3000,
 };
 
 export const testingDefaults: EnvSettings = {
@@ -73,6 +75,7 @@ export const testingDefaults: EnvSettings = {
   UseMinifiedStatics: false,
   DbDebug: false,
   Modules: ['presto'],
+  HttpPort: 3000,
 };
 
 const identity = <T>(x: T) => x;
@@ -147,6 +150,7 @@ const transforms: {
     return s.split(',') as BaseConnectionOptions['logging'];
   },
   Modules: stringListParse,
+  HttpPort: numberParse,
 };
 
 let env: EnvSettings;
