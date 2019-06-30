@@ -1,8 +1,9 @@
-import {Controller, Get, Render, Res} from '@nestjs/common';
+import {Controller, Get, Render, Res, Req} from '@nestjs/common';
 import {ConfigService, EnvSettings} from './config';
 import {InjectConnection} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
-import {Response} from 'express';
+import {Response, Request} from 'express';
+import Url from 'url';
 
 @Controller()
 export class AppController {
@@ -16,10 +17,10 @@ export class AppController {
 
   @Get()
   @Render('index.vm')
-  getIndex() {
+  getIndex(@Req() request: Request) {
     return {
       clientTopology: {
-        staticsBaseUrl: '',
+        staticsBaseUrl: Url.parse(request.url).path || '',
         quixBackendUrl: this.settings.QuixBackendPublicUrl,
         googleClientId: this.settings.GoogleClientId,
         demoMode: this.settings.DemoMode,
