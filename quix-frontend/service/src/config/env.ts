@@ -35,6 +35,7 @@ const envSettingsMap: {[K in keyof EnvSettings]: string} = {
   UseMinifiedStatics: 'MINIFIED_STATICS',
   DemoMode: 'DEMO_MODE',
   DbDebug: 'DB_DEBUG',
+  HttpPort: 'HTTP_PORT',
 };
 
 const envSettingsDefaults = {
@@ -56,6 +57,7 @@ const envSettingsDefaults = {
   UseMinifiedStatics: true,
   DemoMode: false,
   DbDebug: ['error', 'schema', 'warn'] as BaseConnectionOptions['logging'],
+  HttpPort: 3000,
 };
 
 export const testingDefaults: EnvSettings = {
@@ -77,6 +79,7 @@ export const testingDefaults: EnvSettings = {
   UseMinifiedStatics: false,
   DemoMode: false,
   DbDebug: false,
+  HttpPort: 3000,
 };
 
 const identity = <T>(x: T) => x;
@@ -148,6 +151,7 @@ const transforms: {
     }
     return s.split(',') as BaseConnectionOptions['logging'];
   },
+  HttpPort: numberParse,
 };
 
 let env: EnvSettings;
