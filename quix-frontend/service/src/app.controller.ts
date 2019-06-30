@@ -1,4 +1,4 @@
-import {Controller, Get, Render, Res} from '@nestjs/common';
+import {Controller, Get, Render, Res, Req} from '@nestjs/common';
 import {ConfigService, EnvSettings} from './config';
 import {InjectConnection} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
