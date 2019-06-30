@@ -64,6 +64,10 @@ export class Driver {
     return this.page.goto(`${baseURL}/#${state}`);
   }
 
+  async sleep(ms: number) {
+    return this.page.waitFor(ms);
+  }
+
   createTestkit(TestkitCtor) {
     return new TestkitCtor(this.page);
   }

@@ -1,4 +1,3 @@
-import {injector} from '../lib/core/srv/injector';
 import {isFunction} from 'lodash';
 
 interface INotificationTemplate {
@@ -12,7 +11,6 @@ interface INotificationTemplate {
 
 
 class BrowserNotificationsManager {
-  private $window: ng.IWindowService;
   private baseUrl: string;
   private readonly Notification = Notification;
   private readonly templates: Record<string, INotificationTemplate> = {};
@@ -21,10 +19,6 @@ class BrowserNotificationsManager {
     if (this.Notification && this.Notification.permission === 'default') {
       this.Notification.requestPermission();
     }
-
-    injector.on('ready', () => {
-      this.$window = injector.get('$window');
-    });
   }
 
   private fixUrl(url: string) {
@@ -46,7 +40,7 @@ class BrowserNotificationsManager {
     }
 
     let body: string;
-    if (!template.onlyWhenHidden || this.$window.document.hidden) {
+    if (!template.onlyWhenHidden || window.document.hidden) {
       if (isFunction(template.body)) {
         body = template.body(...args);
       } else {
@@ -54,7 +48,7 @@ class BrowserNotificationsManager {
       }
       const notification = new this.Notification(template.title, {body, icon: this.fixUrl(template.icon)});
       if (template.onClick) {
-        notification.onclick = template.onClick.bind(notification, this.$window);
+        notification.onclick = template.onClick.bind(notification, window);
       }
     }
   }
