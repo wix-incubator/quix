@@ -16,5 +16,6 @@ interface Window {
     googleClientId: string;
     staticsBaseUrl: string;
     quixBackendUrl: string;
+    basePath: string;
   }
 }

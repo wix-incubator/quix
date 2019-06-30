@@ -3,7 +3,6 @@ import {ConfigService, EnvSettings} from './config';
 import {InjectConnection} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
 import {Response, Request} from 'express';
-import Url from 'url';
 
 @Controller()
 export class AppController {
@@ -17,13 +16,14 @@ export class AppController {
 
   @Get()
   @Render('index.vm')
-  getIndex(@Req() request: Request) {
+  getIndex() {
     return {
       clientTopology: {
-        staticsBaseUrl: Url.parse(request.url).path || '',
+        staticsBaseUrl: this.settings.MountPath,
         quixBackendUrl: this.settings.QuixBackendPublicUrl,
         googleClientId: this.settings.GoogleClientId,
         demoMode: this.settings.DemoMode,
+        basePath: this.settings.MountPath,
       },
       debug: !this.configService.getEnvSettings().UseMinifiedStatics,
     };
