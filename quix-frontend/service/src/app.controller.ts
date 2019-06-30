@@ -29,10 +29,14 @@ export class AppController {
     if (!this.clientConfig) {
       throw new Error('Server not up yet');
     }
+
     const clientTopology = this.clientConfig.getClientTopology();
+    const mode = this.clientConfig.getMode();
+
     return {
       clientTopology,
-      quixConfig: this.clientConfig.write(),
+      mode,
+      quixConfig: this.clientConfig.serialize(),
     };
   }
 

@@ -2,7 +2,7 @@ import {mapValues} from 'lodash';
 import {inject} from '../lib/core';
 import {IFile, IFolder, INotebook, INote, IUser} from '../../../shared';
 
-const resource = ( action: 'get' | 'query', endpoint: string, params: Record<string, any>) => 
+const resource = (action: 'get' | 'query', endpoint: string, params: Record<string, any>) => 
   inject('$resource')(endpoint, mapValues(params, (v, k) => `@${k}`))[action](params).$promise;
 
 const one = <T>(endpoint: string, params: Record<string, any> = {}): Promise<T> => resource('get', endpoint, params);

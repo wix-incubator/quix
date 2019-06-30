@@ -3,9 +3,8 @@ import {ConnectionOptions} from 'typeorm';
 import * as dbConnection from './db-connection';
 import {EnvSettings, loadEnv, getEnv} from './env';
 import {ClientConfigHelper, ConfigComponent} from 'shared';
-import axios, {AxiosResponse} from 'axios';
+import axios from 'axios';
 import {retry} from '../utils/retry-promise';
-import {ConfigModule} from './config.module';
 
 export type DbTypes = 'mysql' | 'sqlite';
 
@@ -42,19 +41,23 @@ export abstract class ConfigService {
   async getClientConfig() {
     const env = this.getEnvSettings();
     const clientConfig = new ClientConfigHelper();
+
     clientConfig
       .setAuth({googleClientId: env.GoogleClientId})
-      .setOptions({demoMode: env.DemoMode})
       .setClientTopology({
         quixBackendUrl: env.QuixBackendPublicUrl,
         staticsBaseUrl: '',
+      })
+      .setMode({
         debug: env.UseMinifiedStatics,
+        demo: false,
       });
+
     env.Modules.forEach(m =>
       clientConfig.addModule({
         id: m,
         name: m,
-        componenets: [ConfigComponent.note],
+        components: [ConfigComponent.note],
       }),
     );
 
@@ -67,7 +70,7 @@ export abstract class ConfigService {
       .catch(e => ['presto']);
 
     modulesSupportingDbTree.forEach(m =>
-      clientConfig.addComponentToModule(m, ConfigComponent.dbExplorer),
+      clientConfig.addModuleComponent(m, ConfigComponent.dbExplorer),
     );
 
     return clientConfig;

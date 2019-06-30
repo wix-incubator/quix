@@ -1,7 +1,11 @@
 {
   "clientTopology": {
     "staticsBaseUrl": "//localhost:3200/",
-    "quixBackendUrl": "//localhost:3000/fakeBackend",
-    "googleClientId": ""
-  }
+    "quixBackendUrl": "//localhost:3000/fakeBackend"
+  },
+  "mode": {
+    "debug": true,
+    "demo": false
+  },
+  "quixConfig": "{\"modules\":[],\"auth\":{\"googleClientId\":\"\"},\"clientTopology\":{\"staticsBaseUrl\":\"\",\"quixBackendUrl\":\"\"},\"mode\":{\"debug\":false,\"demo\":false}}"
 }

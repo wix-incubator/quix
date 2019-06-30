@@ -5,29 +5,28 @@ export enum ConfigComponent {
   dbExplorer = 'dbExplorer'
 }
 
-interface Module {
+interface ConfigModule {
   id: string,
   name: string,
-  componenets: ConfigComponent[]
+  components: ConfigComponent[]
 }
 
-
 const defaultConfigData = {
-  modules: [] as Module[],
+  modules: [] as ConfigModule[],
   auth: {
     googleClientId: ''
   },
   clientTopology: {
     staticsBaseUrl: '',
     quixBackendUrl: '',
-    debug: false,
   },
-  options: {
-    demoMode: false
+  mode: {
+    debug: false,
+    demo: false
   }
 }
-type ConfigData = typeof defaultConfigData;
 
+type ConfigData = typeof defaultConfigData;
 
 export class ClientConfigHelper {
   private readonly config: ConfigData;
@@ -35,7 +34,7 @@ export class ClientConfigHelper {
     this.config = {...defaultConfigData, ...initialConfig};
   }
 
-  write(): string {
+  serialize(): string {
     return JSON.stringify(this.config);
   }
 
@@ -54,20 +53,22 @@ export class ClientConfigHelper {
     return this.config.modules;
   }
 
-  addModule(p: Module) {
+  addModule(p: ConfigModule) {
     this.config.modules.push(p);
     return this;
   }
 
-  getModulesSupportingComponent(module: ConfigComponent) {
-    return this.config.modules.filter(p => p.componenets.includes(module));
+  getModulesByComponent(component: ConfigComponent) {
+    return this.config.modules.filter(p => p.components.includes(component));
   }
 
-  addComponentToModule(moduleId: string, component: ConfigComponent) {
+  addModuleComponent(moduleId: string, component: ConfigComponent) {
     const m = this.getModule(moduleId);
+
     if (m) {
-      m.componenets.push(component);
+      m.components.push(component);
     }
+
     return this;
   }
 
@@ -75,17 +76,17 @@ export class ClientConfigHelper {
     return this.config.auth;
   }
 
-  setAuth(auth: ConfigData['auth']) {
-    this.config.auth = {...auth}
-    return this;
-  }
-
   getClientTopology() {
     return this.config.clientTopology;
   }
 
-  getOptions() {
-    return this.config.options;
+  getMode() {
+    return this.config.mode;
+  }
+
+  setAuth(auth: ConfigData['auth']) {
+    this.config.auth = {...auth}
+    return this;
   }
 
   setClientTopology(clientTopology: ConfigData['clientTopology']) {
@@ -93,9 +94,8 @@ export class ClientConfigHelper {
     return this;
   }
 
-  setOptions(options: ConfigData['options']) {
-    this.config.options = {...options};
+  setMode(mode: ConfigData['mode']) {
+    this.config.mode = {...mode};
     return this;
   }
-
 }

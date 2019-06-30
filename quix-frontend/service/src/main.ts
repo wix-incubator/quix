@@ -4,7 +4,7 @@ import {NestExpressApplication} from '@nestjs/platform-express';
 import path from 'path';
 import velocityEngine from './template-engine/velocity';
 import cookieParser from 'cookie-parser';
-import {createConnection, getMetadataArgsStorage, Connection} from 'typeorm';
+import {createConnection} from 'typeorm';
 import {createMysqlConf} from 'config/db-connection';
 import {getEnv} from 'config/env';
 import {DbMetadata} from 'entities/version-metadata.entity';
