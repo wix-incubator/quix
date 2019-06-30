@@ -45,6 +45,7 @@ export default () => {
     },
     scope: {
       version: '=',
+      type: '=',
       runner: '=',
       bsrOptions: '=',
       onEditorLoad: '&',

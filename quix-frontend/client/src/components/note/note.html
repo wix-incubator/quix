@@ -72,6 +72,7 @@
       ng-model="note.content"
       ng-change="events.onContentChange()"
       bsr-options="::{fitContent: true, params: true, focus: options.focusEditor}"
+      type="note.type"
       runner="runner"
       download-file-name="getDownloadFileName(query)"
       on-save="events.onSave()"

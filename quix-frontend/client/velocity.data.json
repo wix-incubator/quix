@@ -1,11 +1,11 @@
 {
   "clientTopology": {
     "staticsBaseUrl": "//localhost:3200/",
-    "quixBackendUrl": "//localhost:3000/fakeBackend"
+    "quixBackendUrl": "//localhost:3000/mock"
   },
   "mode": {
     "debug": true,
     "demo": false
   },
-  "quixConfig": "{\"modules\":[{id: \"presto\", \"components\": [\"note\"]}, {id: \"athena\", \"components\": [\"note\"]}],\"auth\":{\"googleClientId\":\"\"},\"clientTopology\":{\"staticsBaseUrl\":\"//localhost:3200/\",\"quixBackendUrl\":\"//localhost:3000/fakeBackend\"},\"mode\":{\"debug\":true,\"demo\":false}}"
+  "quixConfig": "{\"modules\":[{id: \"presto\", \"components\": [\"note\"]}, {id: \"athena\", \"components\": [\"note\"]}],\"auth\":{\"googleClientId\":\"\"},\"clientTopology\":{\"staticsBaseUrl\":\"//localhost:3200/\",\"quixBackendUrl\":\"//localhost:3000/mock\"},\"mode\":{\"debug\":true,\"demo\":false}}"
 }

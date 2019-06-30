@@ -215,7 +215,7 @@ export default () => {
 
         initNgScope(scope)
           .withOptions('brOptions', {
-            type: 'sql',
+            type: 'presto',
             buttonText: 'Run',
             disableCustomActions: false
           }, true)
