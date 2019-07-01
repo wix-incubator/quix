@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Coeval
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.context.annotation.{Bean, Configuration}
+import org.springframework.context.annotation.{Bean, Configuration, DependsOn}
 import org.springframework.core.env.Environment
 import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.module.ExecutionModule
@@ -138,6 +138,7 @@ class ModulesConfiguration extends LazyLogging {
   }
 
   @Bean
+  @DependsOn(Array("initPresto", "initAthena"))
   def initKnownModules: Map[String, ExecutionModule[String, Batch]] = {
     logger.info(s"event=[spring-config] bean=[initKnownModules] modules=[${Registry.modules.keySet.toList.sorted}]")
 
