@@ -2,6 +2,7 @@ package quix.athena
 
 import java.net.{ConnectException, SocketException, SocketTimeoutException}
 
+import com.amazonaws.SdkClientException
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
 import com.amazonaws.services.athena.AmazonAthenaClient
 import com.amazonaws.services.athena.model.{GetQueryResultsResult, QueryExecution, QueryExecutionState, StartQueryExecutionResult}
@@ -145,6 +146,17 @@ class AthenaQueryExecutor(val client: AthenaClient,
   }
 
   def rewriteException(e: Exception): Exception = e match {
+    case e: SdkClientException if e.getMessage.contains("Unable to load AWS credentials") =>
+      new IllegalStateException(
+        s"""
+           |Athena can't be reached, make sure you configured aws credentials correctly.
+           |Refer to https://docs.aws.amazon.com/sdk-for-java/v1/developer-guide/credentials.html for details.
+           |Quix is using DefaultAWSCredentialsProviderChain from aws-java-sdk to discover the aws credentials.
+           |
+           |Underlying exception name is ${e.getClass.getSimpleName} with message [${e.getMessage}]
+           |
+           |""".stripMargin, e)
+
     case e@(_: ConnectException | _: SocketTimeoutException | _: SocketException) =>
       new IllegalStateException(s"Athena can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}", e)
     case _ => e
