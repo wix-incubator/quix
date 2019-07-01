@@ -7,7 +7,11 @@ services:
     depends_on:
       - presto
     environment:
+      - MODULES
       - PRESTO_API
+      - ATHENA_OUTPUT
+      - ATHENA_REGION
+      - ATHENA_DATABASE
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
