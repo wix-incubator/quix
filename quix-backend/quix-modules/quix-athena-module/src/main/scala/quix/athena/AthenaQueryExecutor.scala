@@ -146,7 +146,9 @@ class AthenaQueryExecutor(val client: AthenaClient,
   }
 
   def rewriteException(e: Exception): Exception = e match {
-    case e: SdkClientException if e.getMessage.contains("Unable to load AWS credentials") =>
+    case e: SdkClientException if
+    e.getMessage.contains("Unable to load AWS credentials") ||
+      e.getMessage.contains("Unable to load credentials from service endpoint") =>
       new IllegalStateException(
         s"""
            |Athena can't be reached, make sure you configured aws credentials correctly.
