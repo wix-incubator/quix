@@ -107,7 +107,7 @@ export default class Controller {
   renderFolder(scope) {
     return this.render(`
       <div class="bi-spread">
-        <div class="bi-align bi-grow bi-fade-in">
+        <div class="bi-r-h bi-align bi-grow bi-fade-in">
           <i
             class="fe-toggle bi-action bi-icon bi-pointer"
             ng-class="{'fe-toggle--hidden': folder.isEmpty() || options.expandAllFolders}"
@@ -115,7 +115,7 @@ export default class Controller {
           >arrow_drop_down</i>
 
           <span 
-            class="fe-item-name bi-align bi-grow bi-pointer"
+            class="fe-item-name bi-r-h bi-align bi-grow bi-pointer"
             ng-click="events.onFolderClick(folder)"
             drag="!readonly"
             jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
@@ -130,7 +130,7 @@ export default class Controller {
           >
             <span class="fe-icon-container" bi-html="renderFolderIcon(folder)"></span>
 
-            <span bi-draggable="events.onDrag(folder)">
+            <span class="bi-text--ellipsis" bi-draggable="events.onDrag(folder)">
               <span
                 ng-if="vm.folders.get(folder).edit.enabled"
                 ng-model="folder.name"

@@ -81,7 +81,7 @@ ORDER BY 1
       name: 'schema',
       type: 'schema',
       children: [{
-        name: 'table',
+        name: 'table_with_a_very_looooooooooooooooong_name',
         type: 'table',
         children: []
       }]
