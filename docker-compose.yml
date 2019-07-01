@@ -12,6 +12,8 @@ services:
       - ATHENA_OUTPUT
       - ATHENA_REGION
       - ATHENA_DATABASE
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_KEY
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
