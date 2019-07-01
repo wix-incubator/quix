@@ -92,7 +92,7 @@ ORDER BY 1
     children: []
   }],
   '/api/db/explore/:schema/:catalog/:table': () => ({
-    children: [{name: 'column', dataType: 'varchar'}]
+    children: [{name: 'with_a_very_looooooooooooooooong_name', dataType: 'varchar'}]
   }),
   '/api/db/autocomplete': () => ({
     catalogs: ['catalog', 'catalog2'],

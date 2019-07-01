@@ -172,9 +172,9 @@ export default class Controller {
         ng-model="file"
         title="{{::file.getName()}}"
       >
-        <span class="fe-item-name bi-align">
+        <span class="fe-item-name bi-r-h bi-align">
           <span class="fe-icon-container" bi-html="renderFileIcon(file)"></span>
-          <span bi-draggable="events.onDrag(file)">{{file.getName()}}</span>
+          <span class="bi-text--ellipsis" bi-draggable="events.onDrag(file)">{{file.getName()}}</span>
         </span>
       </div>
     `)(scope);
