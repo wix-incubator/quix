@@ -30,6 +30,8 @@ function directive(params) {
 
 function initScope(scope, controller: Controller, depth: number) {
   scope.depth = depth;
+  scope.renderFolder = (s) => controller.renderFolder(s);
+  scope.renderFile = (s) => controller.renderFile(s);
   scope.renderFolderIcon = (folder) => controller.renderFolderIcon(scope, folder);
   scope.renderFileIcon = (file) => controller.renderFileIcon(scope, file);
   scope.renderMenu = (folder) => controller.renderMenu(scope, folder);
