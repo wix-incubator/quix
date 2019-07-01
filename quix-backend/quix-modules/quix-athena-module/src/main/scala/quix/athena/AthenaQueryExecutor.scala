@@ -5,7 +5,7 @@ import java.net.{ConnectException, SocketException, SocketTimeoutException}
 import com.amazonaws.SdkClientException
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
 import com.amazonaws.services.athena.AmazonAthenaClient
-import com.amazonaws.services.athena.model._
+import com.amazonaws.services.athena.model.{AmazonAthenaException, GetQueryResultsResult, QueryExecution, QueryExecutionState, StartQueryExecutionResult, Row => AthenaRow}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
@@ -93,15 +93,29 @@ class AthenaQueryExecutor(val client: AthenaClient,
 
     val res = result.getResultSet
 
-    val rows = if (isFirst) res.getRows.asScala.toList.drop(1) else res.getRows.asScala.toList
+    val rows = res.getRows.asScala.toList
 
-    val data = for (row <- rows)
+    val data = for ((row, index) <- rows.zipWithIndex if !columnsRow(row, index, columns))
       yield {
         for ((datatype, datum) <- types.zip(row.getData.asScala.map(_.getVarCharValue)).toList)
           yield convert(datatype, datum)
       }
 
     Batch(data = data, columns = columns)
+  }
+
+  /*
+    athena docs states that first row contains column names, we need to skip that row
+   */
+  def columnsRow(row: AthenaRow, index: Int, maybeColumns: Option[List[BatchColumn]]) = {
+    import scala.collection.JavaConverters._
+
+    if (index == 0) {
+      val values = row.getData.asScala.map(_.getVarCharValue).toList
+      val types = maybeColumns.map(_.map(_.name)).getOrElse(Nil)
+
+      values == types
+    } else false
   }
 
   def convert(datatype: String, datum: String): AnyRef = {
@@ -132,7 +146,7 @@ class AthenaQueryExecutor(val client: AthenaClient,
               .flatMap(_ => Task.raiseError(ex))
 
           case ex: Exception =>
-            val log =Task(logger.warn(s"method=advance event=error query-id=$queryId user=${query.user.email} cancelled=${query.isCancelled}", ex))
+            val log = Task(logger.warn(s"method=advance event=error query-id=$queryId user=${query.user.email} cancelled=${query.isCancelled}", ex))
 
             builder.errorSubQuery(queryId, ex)
               .flatMap(_ => log)
