@@ -33,6 +33,7 @@ services:
       - AUTH_TYPE
       - APPMETRICS_PORT
       - ENABLE_APPMETRICS
+      - MODULES
   db:
     image: "mysql:5.7"
     restart: always
