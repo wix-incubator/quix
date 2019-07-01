@@ -5,7 +5,7 @@ import java.net.{ConnectException, SocketException, SocketTimeoutException}
 import com.amazonaws.SdkClientException
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
 import com.amazonaws.services.athena.AmazonAthenaClient
-import com.amazonaws.services.athena.model.{GetQueryResultsResult, QueryExecution, QueryExecutionState, StartQueryExecutionResult}
+import com.amazonaws.services.athena.model._
 import monix.eval.Task
 import quix.api.execute._
 import quix.core.utils.TaskOps._
@@ -145,10 +145,8 @@ class AthenaQueryExecutor(val client: AthenaClient,
     }
   }
 
-  def rewriteException(e: Exception): Exception = e match {
-    case e: SdkClientException if
-    e.getMessage.contains("Unable to load AWS credentials") ||
-      e.getMessage.contains("Unable to load credentials from service endpoint") =>
+  def rewriteException(e: Exception): Exception = {
+    def badCredentials(e: Exception) = {
       new IllegalStateException(
         s"""
            |Athena can't be reached, make sure you configured aws credentials correctly.
@@ -158,10 +156,23 @@ class AthenaQueryExecutor(val client: AthenaClient,
            |Underlying exception name is ${e.getClass.getSimpleName} with message [${e.getMessage}]
            |
            |""".stripMargin, e)
+    }
 
-    case e@(_: ConnectException | _: SocketTimeoutException | _: SocketException) =>
-      new IllegalStateException(s"Athena can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}", e)
-    case _ => e
+    e match {
+      case e: SdkClientException
+        if e.getMessage.contains("Unable to load AWS credentials") ||
+          e.getMessage.contains("Unable to load credentials") => badCredentials(e)
+
+      case e: AmazonAthenaException if e.getMessage.contains("Check your AWS Secret Access Key") =>
+        badCredentials(e)
+
+      case e: AmazonAthenaException if e.getMessage.contains("The security token included in the request is invalid") =>
+        badCredentials(e)
+
+      case e@(_: ConnectException | _: SocketTimeoutException | _: SocketException) =>
+        new IllegalStateException(s"Athena can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}", e)
+      case _ => e
+    }
   }
 }
 
