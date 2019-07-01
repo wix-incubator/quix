@@ -42,7 +42,7 @@ class AthenaQueryExecutorTest extends SpecWithJUnit with MustMatchers with Mocki
       athena.advance(any(), any()) returns Task.raiseError(exception)
 
       // call
-      executor.advance("some-token", builder, query.id, query).runToFuture
+      executor.advance(builder, query.id, query).runToFuture
 
 
       // verify
