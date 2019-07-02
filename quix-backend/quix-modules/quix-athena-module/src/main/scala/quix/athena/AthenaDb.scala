@@ -34,7 +34,7 @@ class AthenaDb(queryExecutor: AsyncQueryExecutor[String, Batch], state: AthenaDb
     val sql = s"describe $schema.$table"
     val mapper: List[String] => Kolumn = {
       case List(nameAndType) =>
-        nameAndType.split("\\w+") match {
+        nameAndType.split("\\s+") match {
           case Array(name, kind) => Kolumn(name, kind)
           case _ => Kolumn(nameAndType, "unknown")
         }
