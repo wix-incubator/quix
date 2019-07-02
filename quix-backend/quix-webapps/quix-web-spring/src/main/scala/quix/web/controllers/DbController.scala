@@ -11,7 +11,7 @@ import scala.concurrent.duration.{FiniteDuration, _}
 
 @Controller
 @RequestMapping(Array("/api"))
-class DbController(modules: Map[String, ExecutionModule[String, Batch]], requestTimeout: FiniteDuration = 5.seconds) {
+class DbController(modules: Map[String, ExecutionModule[String, Batch]], requestTimeout: FiniteDuration = 30.seconds) {
 
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
   @RequestMapping(value = Array("/db/config"), method = Array(RequestMethod.GET))
