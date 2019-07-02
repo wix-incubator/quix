@@ -28,6 +28,10 @@ export default class Controller {
     this.slots.menu = this.$transclude.isSlotFilled('menu');
   }
 
+  private render(html) {
+    return scope => inject('$timeout')(() => inject('$compile')(html)(scope), 50);
+  }
+
   getInstance(): Instance {
     return this.instance;
   }
@@ -98,6 +102,82 @@ export default class Controller {
       scope.bfe = {file};
       element.append(clone);
     });
+  }
+
+  renderFolder(scope) {
+    return this.render(`
+      <div class="bi-spread">
+        <div class="bi-r-h bi-align bi-grow bi-fade-in">
+          <i
+            class="fe-toggle bi-action bi-icon bi-pointer"
+            ng-class="{'fe-toggle--hidden': folder.isEmpty() || options.expandAllFolders}"
+            ng-click="events.onFolderToggle(folder);"
+          >arrow_drop_down</i>
+
+          <span 
+            class="fe-item-name bi-r-h bi-align bi-grow bi-pointer"
+            ng-click="events.onFolderClick(folder)"
+            drag="!readonly"
+            jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
+            jqyoui-options="{
+              helper: 'clone',
+              distance: 5,
+              scroll: true,
+              appendTo: 'parent',
+              containment: options.draggable ? 'window' : vm.container
+            }"
+            ng-model="folder"
+          >
+            <span class="fe-icon-container" bi-html="renderFolderIcon(folder)"></span>
+
+            <span class="bi-text--ellipsis" bi-draggable="events.onDrag(folder)">
+              <span
+                ng-if="vm.folders.get(folder).edit.enabled"
+                ng-model="folder.name"
+                contenteditable="{{vm.folders.get(folder).edit.enabled}}"
+                on-change="events.onFolderRenamed(folder)"
+                on-blur="events.onFolderBlur(folder)"
+                ce-options="::{autoEdit: true}"
+              >{{folder.getName()}}</span>
+
+              <span ng-if="!vm.folders.get(folder).edit.enabled">{{folder.getName()}}</span>
+            </span>
+          </span>
+        </div>
+
+        <bi-dropdown bd-options="::{align: 'right'}" ng-if="::vm.folder.hasMenu(folder)">
+          <bi-toggle class="bi-align">
+            <i class="bi-action bi-icon">more_vert</i>
+          </bi-toggle>
+
+          <div bi-html="renderMenu(folder)"></div>
+        </bi-dropdown>
+      </div>
+    `)(scope);
+  }
+
+  renderFile(scope) {
+    return this.render(`
+      <div
+        class="fe-item {{::'fe-item-depth-' + depth}} bi-spread bi-align bi-pointer"
+        drag="!readonly"
+        jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
+        jqyoui-options="{
+          helper: 'clone',
+          distance: 5,
+          scroll: true,
+          appendTo: 'parent',
+          containment: options.draggable ? 'window' : vm.container
+        }"
+        ng-model="file"
+        title="{{::file.getName()}}"
+      >
+        <span class="fe-item-name bi-r-h bi-align">
+          <span class="fe-icon-container" bi-html="renderFileIcon(file)"></span>
+          <span class="bi-text--ellipsis" bi-draggable="events.onDrag(file)">{{file.getName()}}</span>
+        </span>
+      </div>
+    `)(scope);
   }
 
   renderFolderIcon(scope, folder: Folder) {

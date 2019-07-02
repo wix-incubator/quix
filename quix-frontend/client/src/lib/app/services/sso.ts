@@ -22,7 +22,7 @@ const insertGoogleSdk = () => {
 };
 
 const authenticate = (prefix: string, code?: string) => {
-  const url = (prefix ? '/' + prefix : '') + '/api/authenticate' + (code ? `?code=${code}` : '');
+  const url = (prefix ? prefix : '') + '/api/authenticate' + (code ? `?code=${code}` : '');
   return inject('$resource')(url).get().$promise;
 };
 

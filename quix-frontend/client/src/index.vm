@@ -25,6 +25,7 @@
         staticsBaseUrl: '${clientTopology.staticsBaseUrl}',
         quixBackendUrl: '${clientTopology.quixBackendUrl}',
         googleClientId: '${clientTopology.googleClientId}',
+        basePath: '${clientTopology.basePath}',
       };
     </script>
 
