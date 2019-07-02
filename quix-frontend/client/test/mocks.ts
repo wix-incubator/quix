@@ -92,7 +92,7 @@ ORDER BY 1
     children: []
   }],
   '/api/db/presto/explore/:schema/:catalog/:table': () => ({
-    children: [{name: 'with_a_very_looooooooooooooooong_name', dataType: 'varchar'}]
+    children: [{name: 'column_with_a_very_looooooooooooooooong_name', dataType: 'varchar'}]
   }),
   '/api/db/presto/autocomplete': () => ({
     catalogs: ['catalog', 'catalog2'],
