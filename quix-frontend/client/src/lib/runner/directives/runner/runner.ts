@@ -25,7 +25,7 @@ function initRunner(scope, instance: RunnerComponentInstance, mode = 'stream') {
   scope.runner = (scope.runner || createRunner(scope.options.type, scope, {
     version: scope.version,
     mode,
-    baseUrl: instance.getBaseUrl()
+    executeBaseUrl: instance.getExecuteBaseUrl()
   })
   .transformRequest(instance.getDataTransformer())
   .transformResponse(instance.getResponseTransformer())
@@ -123,7 +123,7 @@ export class RunnerComponentInstance extends srv.eventEmitter.EventEmitter {
   private dataTransformer: Function;
   private responseTransformer: Function;
   private errorTransformer: Function = (runner, query, error) => error;
-  private baseUrl: string;
+  private executeBaseUrl: string;
 
   constructor(private readonly scope) {
     super();
@@ -145,8 +145,8 @@ export class RunnerComponentInstance extends srv.eventEmitter.EventEmitter {
     return this.errorTransformer;
   }
 
-  getBaseUrl() {
-    return this.baseUrl;
+  getExecuteBaseUrl() {
+    return this.executeBaseUrl;
   }
 
   setRequestTransformer(fn: (code) => typeof code) {
@@ -161,8 +161,8 @@ export class RunnerComponentInstance extends srv.eventEmitter.EventEmitter {
     this.errorTransformer = (runner, query, error) => fn(runner, query, error);
   }
 
-  setBaseUrl(baseUrl: string) {
-    this.baseUrl = baseUrl;
+  setExecuteBaseUrl(baseUrl: string) {
+    this.executeBaseUrl = baseUrl;
   }
 
   setCurrentQuery(query) {

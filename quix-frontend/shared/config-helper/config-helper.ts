@@ -6,23 +6,24 @@ export enum ConfigComponent {
 }
 
 interface ConfigModule {
-  id: string,
-  name: string,
-  components: ConfigComponent[]
+  id: string;
+  name: string;
+  components: ConfigComponent[];
 }
 
 const defaultConfigData = {
   modules: [] as ConfigModule[],
   auth: {
-    googleClientId: ''
+    googleClientId: '',
   },
   clientTopology: {
     staticsBaseUrl: '',
-    quixBackendUrl: '',
+    executeBaseUrl: '',
+    apiBasePath: '',
   },
   mode: {
     debug: false,
-    demo: false
+    demo: false,
   }
 }
 
@@ -30,8 +31,12 @@ type ConfigData = typeof defaultConfigData;
 
 export class ClientConfigHelper {
   private readonly config: ConfigData;
+
   constructor(initialConfig: Partial<ConfigData> = {}) {
-    this.config = {...defaultConfigData, ...initialConfig};
+    this.config = {
+      ...defaultConfigData, 
+      ...initialConfig
+    };
   }
 
   serialize(): string {

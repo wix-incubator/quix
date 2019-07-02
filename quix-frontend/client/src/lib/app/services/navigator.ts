@@ -26,11 +26,11 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
     super();
   }
 
-  init(basePath: string, user: User, ngApp: IModule) {
+  init(apiBasePath: string, user: User, ngApp: IModule) {
     this.prefix = this.options.statePrefix;
 
     if (this.options.auth) {
-      this.states = getAuthStates(basePath, this.options.auth.googleClientId, user);
+      this.states = getAuthStates(apiBasePath, this.options.auth.googleClientId, user);
       this.prefix = `auth.${this.prefix}`;
     }
 

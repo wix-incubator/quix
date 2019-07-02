@@ -1,7 +1,7 @@
 import {login} from './sso';
 import {User} from './user';
 
-export const getAuthStates = (basePath: string, googleClientId: string, user: User) => {
+export const getAuthStates = (apiBasePath: string, googleClientId: string, user: User) => {
   return [{
     name: 'auth',
     options: {
@@ -9,10 +9,10 @@ export const getAuthStates = (basePath: string, googleClientId: string, user: Us
       template: '<div class="bi-c-h bi-grow" ui-view bi-state-loader></div>',
       resolve: {
         user() {
-          return user.fetch(basePath)
+          return user.fetch(apiBasePath)
             .catch(e => {
               if ([401, 403].indexOf(e.status) !== -1) {
-                return login(googleClientId, basePath);
+                return login(googleClientId, apiBasePath);
               }
 
               return Promise.reject(e);

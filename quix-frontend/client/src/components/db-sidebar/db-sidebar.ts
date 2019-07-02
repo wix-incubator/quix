@@ -41,7 +41,7 @@ export default (app: Instance, store: Store) => () => ({
             const path = [...folder.path, {id: folder.id, name: folder.name}];
             const [catalog, schema, table] = path.map(({name}) => name);
 
-            return Resources.dbColumns(catalog, schema, table)
+            return Resources.dbColumns('presto', catalog, schema, table)
               .then(({children: columns}) => convert(columns, [...path]))
               .then(columns => store.dispatch(DbActions.addColumns(folder.id, columns)));
           },

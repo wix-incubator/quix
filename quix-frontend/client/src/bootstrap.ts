@@ -1,8 +1,9 @@
 import {browserNotificationsManager} from './services';
 import {INotebook, INote} from '../../shared';
 
-export const setupNotifications = (baseUrl: string) => {
-  browserNotificationsManager.setBaseUrl(baseUrl);
+export const setupNotifications = (staticsBaseUrl: string) => {
+  browserNotificationsManager.setStaticsBaseUrl(staticsBaseUrl);
+
   browserNotificationsManager.register({
     name: 'runnerFinished',
     icon: 'assets/notification_success.png',

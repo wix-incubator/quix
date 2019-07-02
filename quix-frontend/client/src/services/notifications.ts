@@ -11,7 +11,7 @@ interface INotificationTemplate {
 
 
 class BrowserNotificationsManager {
-  private baseUrl: string;
+  private staticsBaseUrl: string;
   private readonly Notification = Notification;
   private readonly templates: Record<string, INotificationTemplate> = {};
 
@@ -22,11 +22,11 @@ class BrowserNotificationsManager {
   }
 
   private fixUrl(url: string) {
-    return this.baseUrl + url;
+    return `${this.staticsBaseUrl}${url}`;
   }
 
-  setBaseUrl(baseUrl: string) {
-    this.baseUrl = baseUrl;
+  setStaticsBaseUrl(staticsBaseUrl: string) {
+    this.staticsBaseUrl = staticsBaseUrl;
   }
 
   register(template: INotificationTemplate) {

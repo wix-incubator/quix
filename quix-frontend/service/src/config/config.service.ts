@@ -45,12 +45,13 @@ export abstract class ConfigService {
     clientConfig
       .setAuth({googleClientId: env.GoogleClientId})
       .setClientTopology({
-        quixBackendUrl: env.QuixBackendPublicUrl,
-        staticsBaseUrl: '',
+        executeBaseUrl: env.QuixBackendPublicUrl,
+        staticsBaseUrl: `${env.MountPath}/`,
+        apiBasePath: env.MountPath,
       })
       .setMode({
         debug: env.UseMinifiedStatics,
-        demo: false,
+        demo: env.DemoMode,
       });
 
     env.Modules.forEach(m =>

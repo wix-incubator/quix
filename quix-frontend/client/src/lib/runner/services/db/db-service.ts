@@ -15,11 +15,12 @@ export interface IDbNode {
 
 export class DbInfo {
   private readonly $http: angular.IHttpService = inject('$http');
-  constructor(private readonly basePath = '') {}
+
+  constructor(private readonly type: string, private readonly apiBasePath = '') {}
 
   fetchAllKeywords(): Promise<IAutocomplete[]> {
     return this.$http<any>({
-      url: this.basePath + `/api/db/autocomplete`,
+      url: `${this.apiBasePath}/api/db/${this.type}/autocomplete`,
       method: 'GET'
     })
       .then(({data}) => Object.keys(data).reduce((res, meta) => {
@@ -31,7 +32,7 @@ export class DbInfo {
 
   fetchSchema(): Promise<IDbNode[]> {
     return this.$http<any>({
-      url: this.basePath + `/api/db/explore`,
+      url: `${this.apiBasePath}/api/db/${this.type}/explore`,
       method: 'GET'
     })
       .then(({data}) => data)
