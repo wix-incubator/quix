@@ -2,7 +2,6 @@ import { inject } from "../../../core";
 
 export default () => {
   let timeout;
-  let promise = Promise.resolve();
 
   return {
     restrict: 'A',
@@ -12,16 +11,11 @@ export default () => {
     },
 
     async link(scope, element) {
+      const delay = parseInt(scope.biHtmlDelay, 10);
       const render = () => element.html(scope.biHtml({scope: scope.$parent}).html);
 
       if (scope.biHtmlDelay) {
-        timeout = timeout || inject('$timeout');
-
-        const delay = parseInt(scope.biHtmlDelay, 10);
-
-        promise = new Promise(resolve => promise.then(() => {
-          timeout(render, delay).then(resolve);
-        }));
+        (timeout = timeout || inject('$timeout'))(render, delay);
       } else {
         render();
       }
