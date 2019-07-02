@@ -17,6 +17,8 @@ services:
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
+      - PRESTO_DB_EMPTY_TIMEOUT
+      - PRESTO_DB_REQUEST_TIMEOUT
   frontend:
     build: ./quix-frontend/
     ports:
