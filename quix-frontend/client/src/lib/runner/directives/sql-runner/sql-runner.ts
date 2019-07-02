@@ -8,6 +8,7 @@ import {attachErrorHandler, getParamsOffset} from '../../services/syntax-valdato
 import {initSqlWorker} from '../../services/workers/sql-parser-worker';
 import {RunnerComponentInstance} from '../runner/runner';
 import {requestCredentials, isPermissionError} from '../../services/permissions/permissions-service';
+import {config} from '../../config';
 
 const AUTO_PARAMS = [{
   name: 'START_TIME',
@@ -199,7 +200,8 @@ export default () => {
                             isAutoParam: false,
                             isKeyOnlyParam: true,
                             options: null
-                          }), meta: type};
+                          }), meta: type
+                        };
                       })
                     ];
                   }
@@ -211,7 +213,7 @@ export default () => {
               runnerInstance.on('error', (rowNumber, msg) => editorInstance.getAnnotator().showError(rowNumber, msg));
 
               if (!scope.readonly && scope.options.useAutocomplete) {
-                setupCompleters(editorInstance).catch(console.error);
+                setupCompleters(editorInstance, config.get().basePath).catch(console.error);
               }
 
               if (!scope.readonly && scope.options.showSyntaxErrors) {

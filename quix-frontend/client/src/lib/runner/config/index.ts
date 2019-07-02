@@ -1,3 +1,6 @@
 import {Config} from '../../core';
 
-export const config = new Config<{baseUrl: string}>();
+export const config = new Config<{
+  executeBaseUrl: string;
+  apiBasePath: string;
+}>();

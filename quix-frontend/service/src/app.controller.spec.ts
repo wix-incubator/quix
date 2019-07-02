@@ -15,7 +15,7 @@ describe('AppController', () => {
 
   describe('root', () => {
     xit('should return valid render model', () => {
-      expect(appController.getIndex({url: 'foo'} as any)).toEqual({
+      expect(appController.getIndex()).toEqual({
         clientTopology: {
           staticsBaseUrl: '',
         },

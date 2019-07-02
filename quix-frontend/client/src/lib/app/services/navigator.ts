@@ -26,11 +26,11 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
     super();
   }
 
-  init(appId: string, user: User, ngApp: IModule) {
+  init(basePath: string, user: User, ngApp: IModule) {
     this.prefix = this.options.statePrefix;
 
     if (this.options.auth) {
-      this.states = getAuthStates(appId, this.options.auth.googleClientId, user);
+      this.states = getAuthStates(basePath, this.options.auth.googleClientId, user);
       this.prefix = `auth.${this.prefix}`;
     }
 
@@ -49,7 +49,7 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
             console.warn(e);
           }
         });
-    }]);
+      }]);
 
     ngApp.run(['$rootScope', (scope) => {
       scope.$on('$stateChangeStart', (e, state, params, fromState) => {

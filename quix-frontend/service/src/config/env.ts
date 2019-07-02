@@ -37,6 +37,7 @@ const envSettingsMap: {[K in keyof EnvSettings]: string} = {
   DbDebug: 'DB_DEBUG',
   Modules: 'MODULES',
   HttpPort: 'HTTP_PORT',
+  MountPath: 'MOUNT_PATH',
 };
 
 const envSettingsDefaults = {
@@ -60,6 +61,7 @@ const envSettingsDefaults = {
   DbDebug: ['error', 'schema', 'warn'] as BaseConnectionOptions['logging'],
   Modules: ['presto'],
   HttpPort: 3000,
+  MountPath: '',
 };
 
 export const testingDefaults: EnvSettings = {
@@ -76,6 +78,7 @@ export const testingDefaults: EnvSettings = {
   DbDebug: false,
   Modules: ['presto'],
   HttpPort: 3000,
+  MountPath: '',
 };
 
 const identity = <T>(x: T) => x;
@@ -151,6 +154,7 @@ const transforms: {
   },
   Modules: stringListParse,
   HttpPort: numberParse,
+  MountPath: identity,
 };
 
 let env: EnvSettings;

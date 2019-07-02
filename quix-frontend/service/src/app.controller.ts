@@ -7,14 +7,12 @@ import {ClientConfigHelper} from 'shared';
 
 @Controller()
 export class AppController {
-  private settings: EnvSettings;
   private clientConfig: ClientConfigHelper | undefined;
 
   constructor(
     private configService: ConfigService,
     @InjectConnection() private conn: Connection,
   ) {
-    this.settings = this.configService.getEnvSettings();
     this.fetchClientConfig();
     setInterval(() => this.fetchClientConfig.bind(this), 1000 * 60 * 10);
   }

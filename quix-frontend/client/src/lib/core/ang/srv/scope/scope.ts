@@ -60,7 +60,8 @@ export class ScopeHelper {
     return this;
   }
 
-  withVM(vm, params?) {
+  withVM(vm, params = {}) {
+
     if (this.scope.$vm) {
       vm = this.scope.$vm;
     } else {
@@ -68,25 +69,36 @@ export class ScopeHelper {
     }
 
     const {scope, controllers} = this; /* clousre var for getters on the VM */
-    vm.init(_.assign({
-      get model() {
+
+
+    Object.defineProperty(params, 'model', {
+      get() {
         return scope.model;
-      },
-      get modelValue() {
+      }
+    });
+
+    Object.defineProperty(params, 'modelValue', {
+      get() {
         if (!controllers.ngModel) {
           throw new Error('scopeHelper: ngModel controller is required when accesing vm.$params.modelValue');
         }
 
         return controllers.ngModel.$modelValue;
-      },
-      get viewValue() {
+      }
+    });
+
+    Object.defineProperty(params, 'viewValue', {
+      get() {
         if (!controllers.ngModel) {
           throw new Error('scopeHelper: ngModel controller is required when accesing vm.$params.viewValue');
         }
 
         return controllers.ngModel.$viewValue;
       }
-    }, params));
+    });
+
+
+    vm.init(params);
 
     this.scope.vm = this.scope.$vm = vm;
 

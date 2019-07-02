@@ -41,10 +41,11 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
   private readonly user: User;
   private readonly menuItems: IMenuItem[] = [];
   private readonly title: string;
+  private readonly basePath: string;
   private conf: Config;
 
   constructor(
-    private readonly id: string | {id: string; title: string},
+    private readonly id: string | {id: string; title: string; basePath: string},
     private readonly ngApp: angular.IModule,
     private readonly options: {
       statePrefix?: string;
@@ -52,7 +53,7 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
       auth?: {googleClientId: string};
       homeState?: string;
       logoUrl?: string;
-    }, 
+    },
     private ngmodules = []
   ) {
     super();
@@ -62,8 +63,10 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
     if (typeof id === 'object') {
       this.id = id.id;
       this.title = id.title;
+      this.basePath = id.basePath;
     } else {
       this.title = id;
+      this.basePath = id;
     }
 
     this.navigator = new Navigator({
@@ -71,7 +74,7 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
       defaultUrl: options.defaultUrl || '/',
       auth: options.auth,
       homeState: options.homeState
-    }).init(null, this.user, ngApp);
+    }).init(this.basePath, this.user, ngApp);
   }
 
   /**
@@ -210,7 +213,7 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
       this.appstore = createStore(branches, {logUrl});
       return this;
     }
-      return this.appstore;
+    return this.appstore;
 
   }
 
@@ -238,7 +241,7 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
   build(): Instance<Config> {
     const app = new Instance<Config>(
       this.id as string,
-      this.title, 
+      this.title,
       this.options.logoUrl,
       this.plugins,
       this.user,

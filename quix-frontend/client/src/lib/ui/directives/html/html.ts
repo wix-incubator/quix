@@ -1,13 +1,18 @@
 export default () => {
   return {
     restrict: 'A',
-    transclude: true,
     scope: {
       biHtml: '&'
     },
 
-    link(scope, element, attrs, ctrl, transclude) {
-      const {html} = scope.biHtml({scope: scope.$new()});
+    async link(scope, element) {
+      let html = scope.biHtml({scope: scope.$parent});
+
+      if (html.then) {
+        html = await html;
+      } else {
+        html = html.html;
+      }
 
       element.html(html);
    }

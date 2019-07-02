@@ -11,9 +11,9 @@ let sqlParser: BiSqlWebWorkerMngr;
 let keywords: Promise<AceCompletion[]>; // All Completions
 
 /* tslint:disable:no-shadowed-variable */
-export async function setupCompleters(editorInstance: CodeEditorInstance) {
+export async function setupCompleters(editorInstance: CodeEditorInstance, basePath = '') {
   sqlParser = await initSqlWorker();
-  const dbInfoService = new DbInfo();
+  const dbInfoService = new DbInfo(basePath);
 
   keywords = keywords || dbInfoService.fetchAllKeywords();
 

@@ -56,7 +56,7 @@ bi-file-explorer-inner {
       }
 
       &.fe-folder--open {
-        > div > div > .fe-toggle {
+        > div > div > div > .fe-toggle {
           transform: rotate(0);
         }
       }
