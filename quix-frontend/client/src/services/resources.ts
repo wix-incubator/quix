@@ -27,6 +27,7 @@ export const search = (text: string, offset: number, total: number) => one<{coun
 export const db = (type: string) => many(api`db/:type/explore`, {type});
 export const dbColumns = (type: string, catalog: string, schema: string, table: string) => 
   one(api`db/:type/explore/:catalog/:schema/:table`, {
+    type,
     catalog,
     schema,
     table
