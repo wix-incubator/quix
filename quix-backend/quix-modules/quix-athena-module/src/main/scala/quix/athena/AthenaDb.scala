@@ -31,7 +31,7 @@ class AthenaDb(queryExecutor: AsyncQueryExecutor[String, Batch], state: AthenaDb
   override def autocomplete: Task[Map[String, List[String]]] = Task.now(Map.empty)
 
   override def table(catalog: String, schema: String, table: String): Task[Table] = {
-    val sql = s"describe $schema.$table"
+    val sql = s"describe `$schema`.`$table`"
     val mapper: List[String] => Kolumn = {
       case List(nameAndType) =>
         nameAndType.split("\\s+") match {
