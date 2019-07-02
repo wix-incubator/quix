@@ -67,7 +67,7 @@ class AthenaQueryExecutorTest extends SpecWithJUnit with MustMatchers with Mocki
       val queryExecution = executor.waitLoop("query-id", query.copy(isCancelled = true), builder).runSyncUnsafe()
 
       // verify
-      queryExecution.getStatus.getState must_=== QueryExecutionState.RUNNING.toString
+      queryExecution must_=== QueryExecutionState.RUNNING
     }
 
     "stop if query is canceled but still queued" in new ctx {
@@ -82,7 +82,7 @@ class AthenaQueryExecutorTest extends SpecWithJUnit with MustMatchers with Mocki
       val queryExecution = executor.waitLoop("query-id", query.copy(isCancelled = true), builder).runSyncUnsafe()
 
       // verify
-      queryExecution.getStatus.getState must_=== QueryExecutionState.QUEUED.toString
+      queryExecution must_=== QueryExecutionState.QUEUED
     }
 
     "stop if query is finished" in new ctx {
@@ -109,7 +109,7 @@ class AthenaQueryExecutorTest extends SpecWithJUnit with MustMatchers with Mocki
       val queryExecution = executor.waitLoop("query-id", query, builder).runSyncUnsafe()
 
       // verify
-      queryExecution.getStatus.getState must_=== QueryExecutionState.SUCCEEDED.toString
+      queryExecution must_=== QueryExecutionState.SUCCEEDED
     }
 
     "stop if query is FAILED and notify builder" in new ctx {
@@ -137,7 +137,7 @@ class AthenaQueryExecutorTest extends SpecWithJUnit with MustMatchers with Mocki
       val queryExecution = executor.waitLoop("query-id", query, builder).runSyncUnsafe()
 
       // verify
-      queryExecution.getStatus.getState must_=== QueryExecutionState.FAILED.toString
+      queryExecution must_=== QueryExecutionState.FAILED
       builder.lastError.map(_.getMessage) must beSome("Query failed with status FAILED with reason = boom!")
     }
   }
