@@ -228,24 +228,3 @@ class DbState(var catalogs: List[Catalog] = Nil,
 
   def shouldSyncAutocomplete = autocomplete.isEmpty || lastAutocompleteSync + 5.minutes.toMillis < System.currentTimeMillis()
 }
-
-object PrestoRefreshableDb extends LazyLogging {
-
-  def mergeNewAndOldCatalogs(newCatalogs: List[Catalog], oldCatalogs: List[Catalog]): List[Catalog] = {
-    newCatalogs.map { newCatalog =>
-      val maybeOldCatalog = oldCatalogs.find(_.name == newCatalog.name)
-
-      (newCatalog, maybeOldCatalog) match {
-        case (_, None) =>
-          newCatalog
-
-        case (_, Some(oldCatalog)) if newCatalog.children.isEmpty =>
-          logger.warn("Catalog " + newCatalog + "is empty")
-          oldCatalog
-
-        case _ =>
-          newCatalog
-      }
-    }
-  }
-}
