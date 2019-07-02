@@ -15,6 +15,7 @@
       }"
       ng-model="vm.dropped.item"
       bi-html="renderFolder(scope)"
+      bi-html-delay="30"
     ></div>
 
     <bi-file-explorer-inner
@@ -46,5 +47,6 @@
     ng-class="{'bi-active': vm.file.isActive(file)}"
     ng-click="events.onFileClick(file)"
     bi-html="renderFile(scope)"
+    bi-html-delay="30"
   ></li>
 </ul>
