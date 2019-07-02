@@ -8,7 +8,7 @@ import quix.api.users.User
 import quix.core.executions.SequentialExecutions
 import quix.core.sql.PrestoSqlOps
 
-class AthenaQuixModule(val executions: SequentialExecutions[String], val db : Option[Db] = None) extends ExecutionModule[String, Batch] {
+class AthenaQuixModule(val executions: SequentialExecutions[String], val db: Option[Db] = None) extends ExecutionModule[String, Batch] {
   override def name: String = "athena"
 
   override def start(command: StartCommand[String], id: String, user: User, resultBuilder: Builder[String, Batch]): Task[Unit] = {
@@ -23,7 +23,8 @@ class AthenaQuixModule(val executions: SequentialExecutions[String], val db : Op
 object AthenaQuixModule {
   def apply(executor: AsyncQueryExecutor[String, Batch]): AthenaQuixModule = {
     val executions = new SequentialExecutions[String](executor)
+    val db = new AthenaDb(executor)
 
-    new AthenaQuixModule(executions)
+    new AthenaQuixModule(executions, Some(db))
   }
 }
