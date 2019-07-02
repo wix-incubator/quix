@@ -10,4 +10,25 @@ quix-db-sidebar {
       margin: 3px 5px 0 0;
     }
   }
+
+  .bi-heading {
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      border-bottom: 1px solid $dark-border-color;
+      z-index: 1;
+    }
+
+    toggle {
+      padding: 0 10px;
+      background-color: $dark-bg;
+      font-size: 14px;
+      z-index: 2;
+    }
+  }
 }

@@ -1,7 +1,11 @@
 <bi-dropdown
   class="bi-grow"
   ng-class="{'bs-custom-toggle': vm.isCustomToggle}"
-  bd-options="::{minWidth: 'toggle', width: options.width}"
+  bd-options="::{
+    minWidth: 'toggle',
+    width: options.width,
+    align: options.alignDropdown
+  }"
   bd-is-open="vm.dropdownOpen"
   on-show="events.onDropdownShow()"
   on-hide="events.onDropdownHide()"

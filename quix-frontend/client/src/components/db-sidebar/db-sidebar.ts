@@ -29,8 +29,10 @@ export default (app: Instance, store: Store) => () => ({
     async pre(scope: IScope) {
       initNgScope(scope)
         .withVM({
+          types: app.getConfig().getModulesByComponent('dbExplorer').map(({id}) => id),
           $init() {
             this.state = new StateManager(States);
+            this.type = this.types[0];
           }
         })
         .withEvents({
@@ -41,12 +43,15 @@ export default (app: Instance, store: Store) => () => ({
             const path = [...folder.path, {id: folder.id, name: folder.name}];
             const [catalog, schema, table] = path.map(({name}) => name);
 
-            return Resources.dbColumns('presto', catalog, schema, table)
+            return Resources.dbColumns(scope.vm.type, catalog, schema, table)
               .then(({children: columns}) => convert(columns, [...path]))
               .then(columns => store.dispatch(DbActions.addColumns(folder.id, columns)));
           },
           onSelectTableRows(table: IFile) {
             openTempQuery(scope, getTableQuery(table), true);
+          },
+          onTypeChange(type) {
+            cache.db.fetch(type);
           }
         });
 
@@ -56,7 +61,6 @@ export default (app: Instance, store: Store) => () => ({
         };
       }
 
-      cache.db.get();
       store.subscribe('db.db', (db) => {
         const isInitial = scope.vm.state.is('Initial');
 
@@ -69,6 +73,8 @@ export default (app: Instance, store: Store) => () => ({
       store.subscribe('db.error', (error: any) => {
         scope.vm.state.force('Error', !!error, {error});
       }, scope);
+
+      cache.db.fetch(scope.vm.type);
     }
   }
 });

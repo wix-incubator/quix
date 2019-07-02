@@ -1,3 +1,20 @@
+<div class="bi-center bi-heading bi-fade-in" ng-if="vm.types.length > 1">
+  <bi-simple-select
+    ng-model="vm.type"
+    ng-change="events.onTypeChange(vm.type)"
+    bi-options="type as type | biToHumanCase for type in ::vm.types"
+    bs-options="::{alignDropdown: 'left'}"
+  >
+    <toggle>
+      <span class="bi-action bi-align bi-s-h--x05">
+        <span></span>
+        <span class="bi-text--ui bi-text--600">{{item.formatted}}</span>
+        <i class="bi-icon--sm">arrow_drop_down</i>
+      </span>
+    </toggle>
+  </bi-simple-select>
+</div>
+
 <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.before('Content')">
   <div class="quix-empty-state bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
     <div class="bi-empty-state-content">Loading DB...</div>
@@ -14,7 +31,7 @@
   </div>
 </div>
 
-<div class="bi-fade-in" ng-if="vm.state.after('Result')">
+<div class="bi-c-h bi-s-v bi-fade-in" ng-if="vm.state.after('Result')">
   <bi-file-explorer
     ng-show="vm.state.is('Visible')"
     ng-model="vm.state.value().db"

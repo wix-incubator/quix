@@ -74,7 +74,7 @@ ORDER BY 1
   },
   // '/api/db/presto/explore': () => [500, {message: 'Failed to fetch DB tree'}],
   // '/api/db/presto/explore': () => [],
-  '/api/db/presto/explore': () => [{
+  '/api/db/:type/explore': () => [{
     name: 'catalog',
     type: 'catalog',
     children: [{
@@ -91,10 +91,10 @@ ORDER BY 1
     type: 'catalog',
     children: []
   }],
-  '/api/db/presto/explore/:schema/:catalog/:table': () => ({
+  '/api/db/:type/explore/:schema/:catalog/:table': () => ({
     children: [{name: 'column_with_a_very_looooooooooooooooong_name', dataType: 'varchar'}]
   }),
-  '/api/db/presto/autocomplete': () => ({
+  '/api/db/:type/autocomplete': () => ({
     catalogs: ['catalog', 'catalog2'],
     schemas: ['schema'],
     tables: ['table'],
