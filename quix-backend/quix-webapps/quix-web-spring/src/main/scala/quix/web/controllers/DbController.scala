@@ -21,7 +21,7 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]], request
   }
 
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
-  @RequestMapping(value = Array("/{moduleId}/db/explore"), method = Array(RequestMethod.GET))
+  @RequestMapping(value = Array("/db/{moduleId}/explore"), method = Array(RequestMethod.GET))
   @ResponseBody
   def getCatalogsNoColumns(@PathVariable moduleId: String) = {
     getDb(moduleId).map {
@@ -30,7 +30,7 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]], request
   }
 
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
-  @RequestMapping(value = Array("/{moduleId}/db/explore/{catalog}/{schema}/{table}"), method = Array(RequestMethod.GET))
+  @RequestMapping(value = Array("/db/{moduleId}/explore/{catalog}/{schema}/{table}"), method = Array(RequestMethod.GET))
   @ResponseBody
   def getTable(@PathVariable moduleId: String, @PathVariable catalog: String, @PathVariable schema: String, @PathVariable table: String) = {
     getDb(moduleId).map {
@@ -39,7 +39,7 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]], request
   }
 
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
-  @RequestMapping(value = Array("/{moduleId}/db/autocomplete"), method = Array(RequestMethod.GET))
+  @RequestMapping(value = Array("/db/{moduleId}/autocomplete"), method = Array(RequestMethod.GET))
   @ResponseBody
   def autocomplete(@PathVariable moduleId: String) = {
     getDb(moduleId).map {
