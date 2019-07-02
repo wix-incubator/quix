@@ -24,12 +24,13 @@ object TryAthena extends LazyLogging {
     val client = new AwsAthenaClient(athena, config)
     val queryExecutor = new AthenaQueryExecutor(client)
 
-    val query = ActiveQuery("query-id", statements = Seq("show schemas"), User("valeryf"))
+    val query = ActiveQuery("query-id", statements = Seq("select * from default.elb_log limit 10;"), User("valeryf"))
     val builder = new SingleBuilder[String]()
     val task = queryExecutor.runTask(query, builder)
 
     Await.result(task.runToFuture(Scheduler.global), Duration.Inf)
 
     logger.info("results = " + builder.build())
+    logger.info("lastError = " + builder.lastError)
   }
 }
