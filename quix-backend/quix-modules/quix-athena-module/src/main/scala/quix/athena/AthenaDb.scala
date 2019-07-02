@@ -28,17 +28,6 @@ class AthenaDb(queryExecutor: AsyncQueryExecutor[String, Batch], state: AthenaDb
     }
   }
 
-  def inferSchemaInOneQuery(schemaName: String): Task[Schema] = {
-    val sql = s"show tables in $schemaName"
-
-    for {
-      tablesNames <- executeForSingleColumn(sql)
-    } yield {
-      val tables = tablesNames.map(table => Table(table, List()))
-      Schema(schemaName, tables.sortBy(_.name))
-    }
-  }
-
   override def autocomplete: Task[Map[String, List[String]]] = Task.now(Map.empty)
 
   override def table(catalog: String, schema: String, table: String): Task[Table] = {
@@ -84,7 +73,7 @@ class AthenaDb(queryExecutor: AsyncQueryExecutor[String, Batch], state: AthenaDb
     }
 
     def inferSchemaInOneQuery(schemaName: String): Task[Schema] = {
-      val sql = s"show tables in $schemaName"
+      val sql = s"show tables in `$schemaName`"
 
       for {
         tablesNames <- executeForSingleColumn(sql)
