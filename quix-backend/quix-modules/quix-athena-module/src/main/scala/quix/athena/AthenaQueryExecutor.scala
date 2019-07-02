@@ -184,15 +184,16 @@ class AthenaQueryExecutor(val client: AthenaClient,
   }
 
   def initClient(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[StartQueryExecutionResult] = {
-    val log = Task(logger.info(s"method=initClient event=start query-id=${query.id} user=${query.user.email}"))
+    val log = Task(logger.info(s"method=initClient event=start query-id=${query.id} user=${query.user.email} sql=${query.text}"))
 
-    val clientTask = client.init(query).onErrorHandleWith {
-      case e: Exception =>
-        val ex = rewriteException(e)
-        builder.error(query.id, ex)
-          .logOnError(s"method=initClient event=error query-id=${query.id} user=${query.user.email}")
-          .flatMap(_ => Task.raiseError(ex))
-    }
+    val clientTask = client
+      .init(query)
+      .logOnError(s"method=initClient event=error query-id=${query.id} user=${query.user.email} sql=${query.text}")
+      .onErrorHandleWith {
+        case e: Exception =>
+          builder.error(query.id, rewriteException(e))
+            .flatMap(_ => Task.raiseError(rewriteException(e)))
+      }
 
     log.flatMap(_ => clientTask)
   }
