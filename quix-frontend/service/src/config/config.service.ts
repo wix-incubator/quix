@@ -58,20 +58,8 @@ export abstract class ConfigService {
       clientConfig.addModule({
         id: m,
         name: m,
-        components: [ConfigComponent.note],
+        components: [ConfigComponent.note, ConfigComponent.dbExplorer],
       }),
-    );
-
-    const modulesSupportingDbTree = await retry(() =>
-      axios.get(`${env.QuixBackendInternalUrl}/api/db/config`),
-    )
-      .forNtimes(5)
-      .andWaitXmilliseconds(1000)
-      .then(r => r.data as string[])
-      .catch(e => ['presto']);
-
-    modulesSupportingDbTree.forEach(m =>
-      clientConfig.addModuleComponent(m, ConfigComponent.dbExplorer),
     );
 
     return clientConfig;

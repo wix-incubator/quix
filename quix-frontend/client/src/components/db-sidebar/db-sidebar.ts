@@ -57,8 +57,10 @@ export default (app: Instance, store: Store) => () => ({
             openTempQuery(scope, getTableQuery(table), true);
           },
           onTypeChange(type) {
-            cache.db.fetch(type);
             scope.state.save();
+            scope.vm.state.force('Initial');
+
+            cache.db.fetch(type);
           }
         })
         .withState('dbSidebar', 'dbSidebar', {});
