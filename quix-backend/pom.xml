@@ -14,7 +14,7 @@
         <module>quix-core</module>
         <module>quix-modules/quix-presto-module</module>
         <module>quix-webapps/quix-web-spring</module>
-        <module>quix-modules/quix-jdbc-modules</module>
+        <module>quix-modules/quix-jdbc-module</module>
     </modules>
 
 </project>
