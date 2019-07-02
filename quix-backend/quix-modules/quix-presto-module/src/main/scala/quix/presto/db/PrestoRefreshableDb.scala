@@ -7,6 +7,7 @@ import monix.eval.Task
 import quix.api.db._
 import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Batch}
 import quix.api.users.User
+import quix.core.db.DbOps
 import quix.core.results.SingleBuilder
 
 import scala.concurrent.duration._
@@ -20,7 +21,6 @@ class PrestoRefreshableDb(val queryExecutor: AsyncQueryExecutor[String, Batch],
   extends Db with LazyLogging {
 
   val user = User("quix-db-tree")
-  var lastSync = 0L
 
   override def table(catalog: String, schema: String, table: String): Task[Table] = {
     val sql =
@@ -216,6 +216,10 @@ class PrestoRefreshableDb(val queryExecutor: AsyncQueryExecutor[String, Batch],
   def reset = {
     state.catalogs = Nil
     state.autocomplete = Map.empty
+  }
+
+  override def search(query: String): Task[List[Catalog]] = {
+    catalogs.map(catalogList => DbOps.search(catalogList, query))
   }
 }
 

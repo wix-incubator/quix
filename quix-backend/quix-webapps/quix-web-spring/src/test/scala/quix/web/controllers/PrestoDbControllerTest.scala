@@ -47,6 +47,48 @@ class PrestoDbControllerTest extends E2EContext {
   }
 
   @Test
+  def returnEmptyListForNonMatchingQuery(): Unit = {
+    executor.withResults(List(List("catalog", "schema", "table")))
+
+    val catalogs = get[List[Catalog]]("api/db/presto/search?q=foo")
+
+    assertThat(catalogs, Matchers.is(List.empty[Catalog]))
+  }
+
+  @Test
+  def searchByTableName(): Unit = {
+    executor.withResults(List(List("catalog", "schema", "table")))
+
+    val catalogs = get[List[Catalog]]("api/db/presto/search?q=table")
+
+    val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", children = Nil)))))
+
+    assertThat(catalogs, Matchers.is(List(catalog)))
+  }
+
+  @Test
+  def searchBySchemaName(): Unit = {
+    executor.withResults(List(List("catalog", "schema", "table")))
+
+    val catalogs = get[List[Catalog]]("api/db/presto/search?q=schema")
+
+    val catalog = Catalog("catalog", children = List(Schema("schema", children = Nil)))
+
+    assertThat(catalogs, Matchers.is(List(catalog)))
+  }
+
+  @Test
+  def searchByCatalogName(): Unit = {
+    executor.withResults(List(List("catalog", "schema", "table")))
+
+    val catalogs = get[List[Catalog]]("api/db/presto/search?q=catalog")
+
+    val catalog = Catalog("catalog", children = Nil)
+
+    assertThat(catalogs, Matchers.is(List(catalog)))
+  }
+
+  @Test
   def handleGetTableRequestWhenPrestoIsOnline(): Unit = {
     executor.withResults(List(List("column1", "varchar"), List("column2", "int")))
 

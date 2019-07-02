@@ -47,6 +47,15 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]], request
     }.getOrElse(Map.empty)
   }
 
+  @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
+  @RequestMapping(value = Array("/db/{moduleId}/search"), method = Array(RequestMethod.GET))
+  @ResponseBody
+  def search(@PathVariable moduleId: String, @RequestParam("q") query: String) = {
+    getDb(moduleId).map {
+      _.search(query).runSyncUnsafe(requestTimeout)
+    }.getOrElse(Map.empty)
+  }
+
   def getDb(moduleId: String) = {
     for {
       module <- modules.get(moduleId)

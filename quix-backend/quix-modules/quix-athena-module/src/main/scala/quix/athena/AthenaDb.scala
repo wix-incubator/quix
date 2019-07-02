@@ -6,6 +6,7 @@ import monix.eval.Task
 import quix.api.db._
 import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Batch}
 import quix.api.users.User
+import quix.core.db.DbOps
 import quix.core.results.SingleBuilder
 
 import scala.concurrent.duration._
@@ -84,6 +85,9 @@ class AthenaDb(queryExecutor: AsyncQueryExecutor[String, Batch], state: AthenaDb
     }
   }
 
+  override def search(query: String): Task[List[Catalog]] = {
+    catalogs.map(catalogList => DbOps.search(catalogList, query))
+  }
 }
 
 class AthenaDbState(var schemas: List[Schema] = Nil,

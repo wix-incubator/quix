@@ -21,4 +21,21 @@ object DbOps extends LazyLogging {
       }
     }
   }
+
+  def search(catalogs: List[Catalog], query: String): List[Catalog] = {
+    val filtered = catalogs.map { catalog =>
+      val schemas = catalog.children
+
+      val filtered = schemas.map { schema =>
+        val tables = schema.children
+        val filtered = tables.filter(_.name.contains(query))
+
+        schema.copy(children = filtered)
+      }.filter(schema => schema.children.nonEmpty || schema.name.contains(query))
+
+      catalog.copy(children = filtered)
+    }.filter(catalog => catalog.children.nonEmpty || catalog.name.contains(query))
+
+    filtered
+  }
 }

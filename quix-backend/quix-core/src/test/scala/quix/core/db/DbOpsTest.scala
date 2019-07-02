@@ -6,7 +6,7 @@ import quix.api.db.{Catalog, Kolumn, Schema, Table}
 
 class DbOpsTest extends SpecWithJUnit with MustMatchers  {
 
-  "RefreshableDb.mergeNewAndOldCatalogs" should {
+  "DbOps.mergeNewAndOldCatalogs" should {
 
     "pass sanity if no change was detected" in {
       val columns: List[Kolumn] = List(Kolumn("uuid", "guid"))
@@ -55,6 +55,41 @@ class DbOpsTest extends SpecWithJUnit with MustMatchers  {
       mergedResult must_=== oldCatalogs
     }
 
+  }
+
+  "DbOps.search" should {
+    "pass sanity" in {
+      DbOps.search(List.empty, "foo") must beEmpty
+    }
+
+    "search by catalog name" in {
+      val first = Catalog("this-is-foo-catalog", Nil)
+      val second = Catalog("this-is-boo-catalog", Nil)
+
+      val expected = List(first)
+
+      DbOps.search(List(first, second), "foo") must_=== expected
+    }
+
+    "search by schema name" in {
+      val first = Schema("this-is-foo-schema", Nil)
+      val second = Schema("this-is-boo-schema", Nil)
+
+      val catalog = Catalog("catalog", List(first, second))
+      val expected = Catalog("catalog", List(first))
+
+      DbOps.search(List(catalog), "foo") must contain(expected)
+    }
+
+    "search by table name" in {
+      val first = Table("this-is-foo-table", Nil)
+      val second = Table("this-is-boo-table", Nil)
+
+      val catalog = Catalog("catalog", List(Schema("schema", List(first, second))))
+      val expected = Catalog("catalog", List(Schema("schema", List(first))))
+
+      DbOps.search(List(catalog), "foo") must contain(expected)
+    }
   }
 
 }
