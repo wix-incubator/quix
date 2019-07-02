@@ -86,10 +86,10 @@ export const onNoteRun = (scope: IScope, store: Store, app: Instance) => () => {
   saveQueuedNotes(store);
 }
 
-export const onNoteAdd = (scope: IScope, store: Store, app: Instance) => () => {
+export const onNoteAdd = (scope: IScope, store: Store, app: Instance) => (type: any) => {
   const {notebook} = scope.vm.state.value();
   const {id} = notebook;
-  const note = createNote(id);
+  const note = createNote(id, {type});
   
   store.dispatchAndLog(NoteActions.addNote(note.id, note));
   store.dispatch(setNote(note));

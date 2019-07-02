@@ -72,9 +72,9 @@ ORDER BY 1
     // return {notes: [], count: 0};
     return {notes: res, count: 365};
   },
-  // '/api/db/explore': () => [500, {message: 'Failed to fetch DB tree'}],
-  // '/api/db/explore': () => [],
-  '/api/db/explore': () => [{
+  // '/api/db/presto/explore': () => [500, {message: 'Failed to fetch DB tree'}],
+  // '/api/db/presto/explore': () => [],
+  '/api/db/presto/explore': () => [{
     name: 'catalog',
     type: 'catalog',
     children: [{
@@ -91,10 +91,10 @@ ORDER BY 1
     type: 'catalog',
     children: []
   }],
-  '/api/db/explore/:schema/:catalog/:table': () => ({
+  '/api/db/presto/explore/:schema/:catalog/:table': () => ({
     children: [{name: 'with_a_very_looooooooooooooooong_name', dataType: 'varchar'}]
   }),
-  '/api/db/autocomplete': () => ({
+  '/api/db/presto/autocomplete': () => ({
     catalogs: ['catalog', 'catalog2'],
     schemas: ['schema'],
     tables: ['table'],

@@ -14,7 +14,7 @@ import quix.web.{E2EContext, MockBeans, SpringConfigWithTestExecutor}
 @RunWith(classOf[SpringRunner])
 @SpringBootTest(webEnvironment = DEFINED_PORT, classes = Array(classOf[SpringConfigWithTestExecutor]))
 @TestPropertySource(locations = Array("classpath:test.properties"))
-class DbControllerTest extends E2EContext {
+class PrestoDbControllerTest extends E2EContext {
 
   new TestContextManager(this.getClass).prepareTestInstance(this)
   val executor = MockBeans.queryExecutor
@@ -30,7 +30,7 @@ class DbControllerTest extends E2EContext {
   def returnEmptyCatalogsWhenPrestoIsDown(): Unit = {
     executor.withExceptions(new Exception("presto is down!"), 100)
 
-    val catalogs = get[List[Catalog]]("api/db/explore")
+    val catalogs = get[List[Catalog]]("api/presto/db/explore")
 
     assertThat(catalogs, Matchers.is(List.empty[Catalog]))
   }
@@ -39,7 +39,7 @@ class DbControllerTest extends E2EContext {
   def sendSinglePrestoQueryWhenDBTreeIsEmpty(): Unit = {
     executor.withResults(List(List("catalog", "schema", "table")))
 
-    val catalogs = get[List[Catalog]]("api/db/explore")
+    val catalogs = get[List[Catalog]]("api/presto/db/explore")
 
     val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", children = Nil)))))
 
@@ -50,7 +50,7 @@ class DbControllerTest extends E2EContext {
   def handleGetTableRequestWhenPrestoIsOnline(): Unit = {
     executor.withResults(List(List("column1", "varchar"), List("column2", "int")))
 
-    val actual = get[Table]("api/db/explore/catalog/schema/table")
+    val actual = get[Table]("api/presto/db/explore/catalog/schema/table")
 
     val expected = Table("table", List(Kolumn("column1", "varchar"), Kolumn("column2", "int")))
 
@@ -61,7 +61,7 @@ class DbControllerTest extends E2EContext {
   def handleGetTableRequestWhenPrestoIsDown(): Unit = {
     executor.withException(new Exception("presto is down!"))
 
-    val actual = get[Table]("api/db/explore/catalog/schema/table")
+    val actual = get[Table]("api/presto/db/explore/catalog/schema/table")
 
     val expected = Table("table", children = Nil)
 
@@ -72,7 +72,7 @@ class DbControllerTest extends E2EContext {
   def handleAutoCompleteRequestWhenPrestoIsOffline(): Unit = {
     executor.withExceptions(new Exception("presto is down"), 100)
 
-    val actual = get[Map[String, List[String]]]("api/db/autocomplete")
+    val actual = get[Map[String, List[String]]]("api/presto/db/autocomplete")
 
     assertThat(actual.isEmpty, Matchers.is(true))
   }
@@ -84,7 +84,7 @@ class DbControllerTest extends E2EContext {
       .withResults(List(List("catalog", "schema", "table")))
       .withResults(List(List("column1"), List("column2")))
 
-    val actual = get[Map[String, List[String]]]("api/db/autocomplete")
+    val actual = get[Map[String, List[String]]]("api/presto/db/autocomplete")
 
     assertThat(actual("catalogs"), Matchers.is(List("catalog")))
     assertThat(actual("schemas"), Matchers.is(List("schema")))
@@ -102,7 +102,7 @@ class DbControllerTest extends E2EContext {
 
     // first request goes to presto
     {
-      val actual = get[Map[String, List[String]]]("api/db/autocomplete")
+      val actual = get[Map[String, List[String]]]("api/presto/db/autocomplete")
 
       assertThat(actual("catalogs"), Matchers.is(List("catalog")))
       assertThat(actual("schemas"), Matchers.is(List("schema")))
@@ -112,7 +112,7 @@ class DbControllerTest extends E2EContext {
 
     // second request from cache
     {
-      val actual = get[Map[String, List[String]]]("api/db/autocomplete")
+      val actual = get[Map[String, List[String]]]("api/presto/db/autocomplete")
 
       assertThat(actual("catalogs"), Matchers.is(List("catalog")))
       assertThat(actual("schemas"), Matchers.is(List("schema")))

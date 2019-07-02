@@ -84,4 +84,5 @@ crashlytics-build.properties
 .vscode
 node_modules
 
+.env
 .env-internal

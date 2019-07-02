@@ -1,21 +1,20 @@
 package quix.web.spring
 
-import java.util.concurrent.TimeUnit
-
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Coeval
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.context.annotation.{Bean, Configuration}
+import org.springframework.context.annotation.{Bean, Configuration, DependsOn}
 import org.springframework.core.env.Environment
-import quix.api.db.Db
-import quix.api.execute.{AsyncQueryExecutor, Batch, DownloadableQueries, ExecutionEvent}
+import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
+import quix.api.module.ExecutionModule
 import quix.api.users.DummyUsers
+import quix.athena.{AthenaConfig, AthenaQueryExecutor, AthenaQuixModule}
 import quix.core.download.DownloadableQueriesImpl
 import quix.core.executions.SequentialExecutions
 import quix.core.utils.JsonOps
 import quix.presto._
-import quix.presto.db.{RefreshableDb, RefreshableDbConfig}
+import quix.presto.db.{PrestoRefreshableDb, RefreshableDbConfig}
 import quix.presto.rest.ScalaJPrestoStateClient
 import quix.web.auth.JwtUsers
 import quix.web.controllers.{DbController, DownloadController, HealthController}
@@ -64,48 +63,91 @@ class AuthConfig extends LazyLogging {
 }
 
 @Configuration
-class PrestoConfiguration extends LazyLogging {
+class ModulesConfiguration extends LazyLogging {
 
-  def addMissingSlashIfNeeded(endpoint: String) = {
-    if (endpoint.endsWith("/")) endpoint
-    else endpoint + "/"
+  object Registry {
+    val modules = scala.collection.mutable.Map.empty[String, ExecutionModule[String, Batch]]
   }
 
-  @Bean def initPrestoConfig(env: Environment): PrestoConfig = {
-    val prestoBaseApi = addMissingSlashIfNeeded(env.getRequiredProperty("presto.api"))
+  @Bean def initPresto(env: Environment) = {
+    val modules = env.getProperty("modules", "").split(",")
 
-    val statementsApi = prestoBaseApi + "statement"
-    val healthApi = prestoBaseApi + "cluster"
-    val queryInfoApi = prestoBaseApi + "query/"
+    if (modules.contains("presto")) {
+      val config = {
+        def addMissingSlashIfNeeded(endpoint: String) = {
+          if (endpoint.endsWith("/")) endpoint
+          else endpoint + "/"
+        }
 
-    val defaultCatalog = env.getProperty("presto.catalog", "system")
-    val defaultSchema = env.getProperty("presto.schema", "runtime")
-    val defaultSource = env.getProperty("presto.source", "quix")
+        val prestoBaseApi = addMissingSlashIfNeeded(env.getRequiredProperty("presto.api"))
 
-    val config = PrestoConfig(statementsApi, healthApi, queryInfoApi, defaultSchema, defaultCatalog, defaultSource)
+        val statementsApi = prestoBaseApi + "statement"
+        val healthApi = prestoBaseApi + "cluster"
+        val queryInfoApi = prestoBaseApi + "query/"
 
-    logger.warn(s"event=[spring-config] bean=[PrestoConfig] presto.api=$prestoBaseApi")
+        val defaultCatalog = env.getProperty("presto.catalog", "system")
+        val defaultSchema = env.getProperty("presto.schema", "runtime")
+        val defaultSource = env.getProperty("presto.source", "quix")
 
-    config
+        PrestoConfig(statementsApi, healthApi, queryInfoApi, defaultSchema, defaultCatalog, defaultSource)
+      }
+
+      val client = new ScalaJPrestoStateClient(config)
+      val executor = new QueryExecutor(client)
+      val executions = new SequentialExecutions[String](executor)
+
+      val db = {
+        import scala.concurrent.duration._
+
+        val firstEmptyStateDelay = env.getProperty("presto.db.empty.timeout", classOf[Long], 1000L * 10)
+        val requestTimeout = env.getProperty("presto.db.request.timeout", classOf[Long], 5000L)
+
+        logger.info(s"event=[spring-config] bean=[RefreshableDbConfig] firstEmptyStateDelay=$firstEmptyStateDelay requestTimeout=$requestTimeout")
+
+        new PrestoRefreshableDb(executor, RefreshableDbConfig(firstEmptyStateDelay.millis, requestTimeout.millis))
+      }
+
+      val module = new PrestoQuixModule(executions, Some(db))
+
+      Registry.modules.update("presto", module)
+    }
+
+    "OK"
   }
 
-  @Bean def initQueryExecutor(config: PrestoConfig): AsyncQueryExecutor[String, Batch] = {
-    logger.info("event=[spring-config] bean=[QueryExecutor]")
+  @Bean def initAthena(env: Environment) = {
+    val modules = env.getProperty("modules", "").split(",")
 
-    val prestoClient = new ScalaJPrestoStateClient(config)
-    new QueryExecutor(prestoClient)
+    if (modules.contains("athena")) {
+
+      val config = {
+        val output = env.getRequiredProperty("athena.output")
+        val region = env.getRequiredProperty("athena.region")
+          val database = env.getProperty("athena.database", "")
+        AthenaConfig(output, region, database)
+      }
+
+      logger.warn(s"event=[spring-config] bean=[AthenaConfig] config==$config")
+
+      val executor = AthenaQueryExecutor(config)
+
+      Registry.modules.update("athena", AthenaQuixModule(executor))
+    }
+
+    "OK"
   }
 
-  @Bean def initPrestoExecutions(executor: AsyncQueryExecutor[String, Batch]): SequentialExecutions[String] = {
-    logger.info("event=[spring-config] bean=[PrestoExecutions]")
+  @Bean
+  @DependsOn(Array("initPresto", "initAthena"))
+  def initKnownModules: Map[String, ExecutionModule[String, Batch]] = {
+    logger.info(s"event=[spring-config] bean=[initKnownModules] modules=[${Registry.modules.keySet.toList.sorted}]")
 
-    new SequentialExecutions[String](executor)
+    Registry.modules.toMap
   }
+}
 
-  @Bean def initPrestoQuixModule(executions: SequentialExecutions[String]): PrestoQuixModule = {
-    logger.info(s"event=[spring-config] bean=[PrestoQuixModule]")
-    new PrestoQuixModule(executions)
-  }
+@Configuration
+class DownloadConfiguration extends LazyLogging {
 
   @Bean def initDownloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent] = {
     logger.info(s"event=[spring-config] bean=[DownloadableQueries]")
@@ -116,10 +158,9 @@ class PrestoConfiguration extends LazyLogging {
 @Configuration
 class Controllers extends LazyLogging {
 
-
-  @Bean def initDbController(db: Db, config: RefreshableDbConfig) = {
+  @Bean def initDbController(modules: Map[String, ExecutionModule[String, Batch]]) = {
     logger.info("event=[spring-config] bean=[DbController]")
-    new DbController(db, config.requestTimeout)
+    new DbController(modules)
   }
 
   @Bean def initDownloadController(downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]): DownloadController = {
@@ -130,34 +171,6 @@ class Controllers extends LazyLogging {
   @Bean def initHealthController() = {
     logger.info("event=[spring-config] bean=[HealthController]")
     new HealthController
-  }
-}
-
-@Configuration
-class DbConfig extends LazyLogging {
-
-  import scala.concurrent.duration._
-
-  @Bean def initRefreshableDbConfig(env: Environment): RefreshableDbConfig = {
-    val firstEmptyStateDelay = env.getProperty("db.state.firstDelayInMillis", classOf[Long], 1000L * 10)
-    val requestTimeout = env.getProperty("db.state.requestDelayInMillis", classOf[Long], 5000L)
-
-    logger.info(s"event=[spring-config] bean=[RefreshableDbConfig] firstEmptyStateDelay=$firstEmptyStateDelay requestTimeout=$requestTimeout")
-
-    RefreshableDbConfig(firstEmptyStateDelay.millis, requestTimeout.millis)
-  }
-
-  @Bean def initDb(env: Environment, executor: AsyncQueryExecutor[String, Batch], config: RefreshableDbConfig): Db = {
-    val initialDelay = env.getProperty("db.refresh.initialDelayInMinutes", classOf[Long], 1L)
-    val delay = env.getProperty("db.refresh.delayInMinutes", classOf[Long], 15L)
-
-    val db = new RefreshableDb(executor, config)
-
-    logger.info(s"event=[spring-config] bean=[DbController] initial-delay=$initialDelay delay=$delay")
-
-    db.scheduleChore(initialDelay, delay, TimeUnit.MINUTES)
-
-    db
   }
 }
 

@@ -55,7 +55,7 @@ export class DbNote implements IBaseNote {
 
   @AfterLoad()
   updateContentOnLoad() {
-    if (this.type === NoteType.PRESTO) {
+    if (this.type === NoteType.PRESTO || this.type === NoteType.ATHENA) {
       this.content = this.textContent;
     } else if (this.type === NoteType.NATIVE) {
       this.content = this.jsonContent.native;
@@ -66,7 +66,8 @@ export class DbNote implements IBaseNote {
   @BeforeUpdate()
   updateContent() {
     this.jsonContent = this.jsonContent || {};
-    if (this.type === NoteType.PRESTO) {
+
+    if (this.type === NoteType.PRESTO || this.type === NoteType.ATHENA) {
       this.textContent = this.content;
     } else if (this.type === NoteType.NATIVE) {
       this.jsonContent.native = this.content;

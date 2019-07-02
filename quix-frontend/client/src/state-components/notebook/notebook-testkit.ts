@@ -9,6 +9,7 @@ const enum Hooks {
   Content = 'notebook-content',
   Note = 'notebook-note',
   AddNote = 'notebook-add-note',
+  AddNoteDropdown = 'notebook-add-note-dropdown',
 }
 
 export class NotebookTestkit extends Testkit {
@@ -38,7 +39,11 @@ export class NotebookTestkit extends Testkit {
   }
 
   async clickAddNote() {
-    return this.click.hook(Hooks.AddNote);
+    return this.click.hook(Hooks.AddNote, ':first-child');
+  }
+
+  async clickAddNoteDropdown() {
+    await this.click.hook(Hooks.AddNoteDropdown);
   }
 
   async numOfNotes() {
@@ -46,6 +51,6 @@ export class NotebookTestkit extends Testkit {
   }
 
   async isAddNoteEnabled() {
-    return this.evaluate.hook(Hooks.AddNote, el => !el.hasAttribute('disabled'));
+    return this.evaluate.hook(Hooks.AddNoteDropdown, el => !el.hasAttribute('disabled'));
   }
 }

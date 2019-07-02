@@ -4,25 +4,23 @@ import java.util.UUID
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import monix.execution.Scheduler
 import quix.api.db._
 import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Batch}
 import quix.api.users.User
 import quix.core.results.SingleBuilder
-import quix.core.utils.Chores
 
 import scala.concurrent.duration._
 
 case class RefreshableDbConfig(firstEmptyStateTimeout: FiniteDuration,
                                requestTimeout: FiniteDuration)
 
-class RefreshableDb(val queryExecutor: AsyncQueryExecutor[String, Batch],
-                    val config: RefreshableDbConfig,
-                    val state: DbState = new DbState())
-  extends Db with Chores with LazyLogging {
+class PrestoRefreshableDb(val queryExecutor: AsyncQueryExecutor[String, Batch],
+                          val config: RefreshableDbConfig,
+                          val state: DbState = new DbState())
+  extends Db with LazyLogging {
 
-  val io: Scheduler = Scheduler.io("quix-db-tree")
   val user = User("quix-db-tree")
+  var lastSync = 0L
 
   override def table(catalog: String, schema: String, table: String): Task[Table] = {
     val sql =
@@ -51,13 +49,16 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[String, Batch],
   }
 
   override def catalogs: Task[List[Catalog]] = {
-    if (state.catalogs.isEmpty) {
+    if (state.shouldSyncCatalogs) {
       for {
         newCatalogs <- Catalogs
           .inferCatalogsInSingleQuery
           .timeout(config.firstEmptyStateTimeout)
           .onErrorFallbackTo(Task(Nil))
-        _ <- Task(state.catalogs = newCatalogs)
+        _ <- Task {
+          state.catalogs = newCatalogs
+          state.lastCatalogSync = System.currentTimeMillis()
+        }
       } yield newCatalogs
     } else Task.now(state.catalogs)
   }
@@ -68,7 +69,10 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[String, Batch],
         catalogList <- catalogs
         newAutocomplete <- Autocomplete.get(catalogList)
           .onErrorFallbackTo(Task(Map.empty[String, List[String]]))
-        _ <- Task(state.autocomplete = newAutocomplete)
+        _ <- Task {
+          state.autocomplete = newAutocomplete
+          state.lastAutocompleteSync = System.currentTimeMillis()
+        }
       } yield newAutocomplete
     } else Task.now(state.autocomplete)
   }
@@ -209,35 +213,23 @@ class RefreshableDb(val queryExecutor: AsyncQueryExecutor[String, Batch],
     } yield Map("catalogs" -> catalogs, "schemas" -> schemas, "tables" -> tables, "columns" -> columns)
   }
 
-  override def chore(): Unit = {
-    val startMillis = System.currentTimeMillis()
-
-    val task = for {
-      _ <- Task.eval(logger.info(s"event=db-refresh-chore-start"))
-
-      newCatalogs <- Catalogs.get
-      _ <- Task.eval {
-        state.catalogs = RefreshableDb.mergeNewAndOldCatalogs(newCatalogs, state.catalogs)
-      }
-
-      autocomplete <- Autocomplete.get(newCatalogs)
-      _ <- Task(state.autocomplete = autocomplete)
-
-      _ <- Task.eval(logger.info(s"event=db-refresh-chore-finish millis=${System.currentTimeMillis() - startMillis}"))
-    } yield ()
-
-    task.runToFuture(io)
-  }
-
   def reset = {
     state.catalogs = Nil
     state.autocomplete = Map.empty
   }
 }
 
-class DbState(var catalogs: List[Catalog] = Nil, var autocomplete: Map[String, List[String]] = Map.empty)
+class DbState(var catalogs: List[Catalog] = Nil,
+              var autocomplete: Map[String, List[String]] = Map.empty,
+              var lastCatalogSync: Long = 0L,
+              var lastAutocompleteSync: Long = 0L) {
 
-object RefreshableDb extends LazyLogging {
+  def shouldSyncCatalogs = catalogs.isEmpty || lastCatalogSync + 5.minutes.toMillis < System.currentTimeMillis()
+
+  def shouldSyncAutocomplete = autocomplete.isEmpty || lastAutocompleteSync + 5.minutes.toMillis < System.currentTimeMillis()
+}
+
+object PrestoRefreshableDb extends LazyLogging {
 
   def mergeNewAndOldCatalogs(newCatalogs: List[Catalog], oldCatalogs: List[Catalog]): List[Catalog] = {
     newCatalogs.map { newCatalog =>

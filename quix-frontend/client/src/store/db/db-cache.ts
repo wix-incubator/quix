@@ -6,4 +6,4 @@ import {convert} from '../../services/db';
 export default store => new StoreCache<any>(store, 'db.db')
   .cacheWith(setDb)
   .catchWith(setError)
-  .fetchWith(() => db().then(res => convert(res)));
+  .fetchWith(() => db('presto').then(res => convert(res)));

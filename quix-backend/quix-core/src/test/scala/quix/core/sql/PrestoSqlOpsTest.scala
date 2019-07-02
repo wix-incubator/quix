@@ -1,9 +1,9 @@
-package quix.presto
+package quix.core.sql
 
-import org.specs2.mutable.Spec
-import quix.presto.PlainPrestoSqlSupport.{splitToStatements => split}
+import org.specs2.mutable.SpecWithJUnit
+import quix.core.sql.PrestoSqlOps.{splitToStatements => split}
 
-class PlainPrestoSqlSupportTest extends Spec {
+class PrestoSqlOpsTest extends SpecWithJUnit {
 
   "PlainPrestoSqlSupport.splitToStatements" should {
     "handle single line statements" in {
@@ -29,4 +29,5 @@ class PlainPrestoSqlSupportTest extends Spec {
     }
 
   }
+
 }

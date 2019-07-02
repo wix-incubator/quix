@@ -51,7 +51,7 @@ export default (app: App, store: Store) => ({
   link: scope => {
     const conf = initNgScope(scope)
       .withOptions('$stateOptions', {isNew: false})
-      .withVM(VM());
+      .withVM(VM(app));
 
     initEvents(scope, conf, app, store, Events);
   }

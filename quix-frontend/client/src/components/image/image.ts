@@ -14,7 +14,7 @@ export default (app: Instance, store: Store) => () => ({
   },
   link: {
     async pre(scope: IScope) {
-      scope.src = `${app.getConfig().staticsBaseUrl}assets/${scope.name}`;
+      scope.src = `${app.getConfig().getClientTopology().staticsBaseUrl}assets/${scope.name}`;
     }
   }
 });
