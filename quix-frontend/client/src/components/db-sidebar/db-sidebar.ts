@@ -30,9 +30,15 @@ export default (app: Instance, store: Store) => () => ({
       initNgScope(scope)
         .withVM({
           types: app.getConfig().getModulesByComponent('dbExplorer').map(({id}) => id),
+          $export() {
+            return {type: this.type};
+          },
+          $import({type}) {
+            this.type = type;
+          },
           $init() {
             this.state = new StateManager(States);
-            this.type = this.types[0];
+            this.type = this.type || this.types[0];
           }
         })
         .withEvents({
@@ -52,8 +58,10 @@ export default (app: Instance, store: Store) => () => ({
           },
           onTypeChange(type) {
             cache.db.fetch(type);
+            scope.state.save();
           }
-        });
+        })
+        .withState('dbSidebar', 'dbSidebar', {});
 
       scope.getFolderPermissions = (folder: any) => {
         return {
