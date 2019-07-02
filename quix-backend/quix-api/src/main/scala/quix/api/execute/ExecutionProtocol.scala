@@ -52,7 +52,7 @@ object SubQueryEnd {
 }
 
 object SubQueryError {
-  def apply(id: String, message: String): ExecutionEvent = ExecutionEvent("query-error", new SubQueryError(id, message))
+  def apply(id: String, message: String): ExecutionEvent = ExecutionEvent("error", new SubQueryError(id, message))
 }
 
 object SubQueryFields {
