@@ -19,6 +19,8 @@ services:
       - AUTH_TYPE
       - PRESTO_DB_EMPTY_TIMEOUT
       - PRESTO_DB_REQUEST_TIMEOUT
+    env_file:
+      - env-example
   frontend:
     build: ./quix-frontend/
     ports:
@@ -42,6 +44,8 @@ services:
       - APPMETRICS_PORT
       - ENABLE_APPMETRICS
       - MODULES
+    env_file:
+      - env-example
   db:
     image: "mysql:5.7"
     restart: always
