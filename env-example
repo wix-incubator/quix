@@ -1,4 +1,4 @@
-PRESTO_API=http://presto:8085/v1
+PRESTO_API=http://presto:8080/v1
 AUTH_COOKIE=
 AUTH_SECRET=
 DB_VOLUME_PATH=/var/lib/mysql
