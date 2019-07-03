@@ -54,7 +54,7 @@ export default (app: Instance, store: Store) => () => ({
               .then(columns => store.dispatch(DbActions.addColumns(folder.id, columns)));
           },
           onSelectTableRows(table: IFile) {
-            openTempQuery(scope, getTableQuery(table), true);
+            openTempQuery(scope, scope.vm.type, getTableQuery(table), true);
           },
           onTypeChange(type) {
             scope.state.save();
