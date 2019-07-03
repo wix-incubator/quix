@@ -2,10 +2,12 @@ package quix.web.spring
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.typesafe.scalalogging.LazyLogging
+import javax.sql.DataSource
 import monix.eval.Coeval
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration, DependsOn}
 import org.springframework.core.env.Environment
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.module.ExecutionModule
 import quix.api.users.DummyUsers
@@ -13,6 +15,7 @@ import quix.athena.{AthenaConfig, AthenaQueryExecutor, AthenaQuixModule}
 import quix.core.download.DownloadableQueriesImpl
 import quix.core.executions.SequentialExecutions
 import quix.core.utils.JsonOps
+import quix.jdbc.{JdbcDataSourceFactory, JdbcQueryExecutor, JdbcQuixModule}
 import quix.presto._
 import quix.presto.db.{PrestoRefreshableDb, RefreshableDbConfig}
 import quix.presto.rest.ScalaJPrestoStateClient
@@ -63,11 +66,44 @@ class AuthConfig extends LazyLogging {
 }
 
 @Configuration
+class JdbcConfiguration extends LazyLogging {
+
+
+  @Bean def jdbcDataDataSource(env: Environment): String = {
+
+    if (shouldConfigureJdb()) {
+      val dbUrl = env.getRequiredProperty("jdbc.url")
+      val dbUserName =  env.getRequiredProperty("jdbc.username")
+      val dbPassWord =  env.getRequiredProperty("jdbc.password")
+
+      val roDataSource = JdbcDataSourceFactory.getMySQLDataSource(
+        url = dbUrl, userName = dbUserName, password = dbPassWord
+      )
+
+      val roJdbTemplateClient = new NamedParameterJdbcTemplate(roDataSource)
+      val executor = new JdbcQueryExecutor(readJdbcClient = roJdbTemplateClient)
+
+      Registry.modules.update("jdbc",JdbcQuixModule(executor))
+    }
+
+
+    def shouldConfigureJdb() = {
+      val modules = env.getProperty("modules", "").split(",")
+      modules.contains("jdbc")
+    }
+
+    "OK"
+  }
+}
+
+
+object Registry {
+  val modules = scala.collection.mutable.Map.empty[String, ExecutionModule[String, Batch]]
+}
+
+@Configuration
 class ModulesConfiguration extends LazyLogging {
 
-  object Registry {
-    val modules = scala.collection.mutable.Map.empty[String, ExecutionModule[String, Batch]]
-  }
 
   @Bean def initPresto(env: Environment) = {
     val modules = env.getProperty("modules", "").split(",")
