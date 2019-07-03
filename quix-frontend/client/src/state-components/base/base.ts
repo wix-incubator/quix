@@ -27,7 +27,7 @@ export default (app: App, store: Store) => ({
     initNgScope(scope)
       .withEvents({
         onTempNoteClick() {
-          openTempQuery(scope);
+          openTempQuery(scope, 'presto');
         }
       });
   }
