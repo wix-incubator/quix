@@ -12,7 +12,7 @@ services:
       - AUTH_SECRET
       - AUTH_TYPE
     env_file:
-      - env_example
+      - env-example
   frontend:
     build: ./quix-frontend/
     ports:
@@ -36,7 +36,7 @@ services:
       - APPMETRICS_PORT
       - ENABLE_APPMETRICS
     env_file:
-      - env_example
+      - env-example
   db:
     image: "mysql:5.7"
     restart: always

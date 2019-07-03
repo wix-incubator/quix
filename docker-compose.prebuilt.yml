@@ -12,7 +12,7 @@ services:
       - AUTH_SECRET
       - AUTH_TYPE
     env_file:
-      - env_example
+      - env-example
   frontend:
     image: wixquix/quix-frontend:release-0.2.7
     ports:
@@ -34,7 +34,7 @@ services:
       - AUTH_SECRET
       - AUTH_TYPE
     env_file:
-      - env_example
+      - env-example
   db:
     image: "mysql:5.7"
     restart: always
