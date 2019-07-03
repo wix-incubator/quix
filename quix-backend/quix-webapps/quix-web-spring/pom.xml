@@ -119,6 +119,17 @@
             <version>2.9.6</version>
         </dependency>
 
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>4.3.22.RELEASE</version>
+        </dependency>
 
         <!-- tests -->
         <dependency>
@@ -153,6 +164,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.wix</groupId>
+            <artifactId>wix-embedded-mysql</artifactId>
+            <version>4.1.2</version>
+            <scope>test</scope>
+        </dependency>
 
 
         <!-- https://mvnrepository.com/artifact/org.asynchttpclient/async-http-client -->

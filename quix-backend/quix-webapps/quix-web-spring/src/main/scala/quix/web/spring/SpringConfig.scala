@@ -2,7 +2,6 @@ package quix.web.spring
 
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.typesafe.scalalogging.LazyLogging
-import javax.sql.DataSource
 import monix.eval.Coeval
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration, DependsOn}
@@ -68,15 +67,14 @@ class AuthConfig extends LazyLogging {
 @Configuration
 class JdbcConfiguration extends LazyLogging {
 
-
-  @Bean def jdbcDataDataSource(env: Environment): String = {
+  @Bean def initJdbc(env: Environment): String = {
 
     if (shouldConfigureJdb()) {
       val dbUrl = env.getRequiredProperty("jdbc.url")
       val dbUserName =  env.getRequiredProperty("jdbc.username")
       val dbPassWord =  env.getRequiredProperty("jdbc.password")
 
-      val roDataSource = JdbcDataSourceFactory.getMySQLDataSource(
+      val roDataSource = JdbcDataSourceFactory.getDriverDataSource(
         url = dbUrl, userName = dbUserName, password = dbPassWord
       )
 
@@ -174,7 +172,7 @@ class ModulesConfiguration extends LazyLogging {
   }
 
   @Bean
-  @DependsOn(Array("initPresto", "initAthena"))
+  @DependsOn(Array("initPresto", "initAthena" , "initJdbc"))
   def initKnownModules: Map[String, ExecutionModule[String, Batch]] = {
     logger.info(s"event=[spring-config] bean=[initKnownModules] modules=[${Registry.modules.keySet.toList.sorted}]")
 
