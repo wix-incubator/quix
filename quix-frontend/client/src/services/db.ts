@@ -17,3 +17,11 @@ export const convert = (nodes: any[], path = [], res = []) => {
 
   return res;
 }
+
+export const sanitizeTableToken = (token: string, quoteChar: string) => {
+  if (token.includes('.')) {
+    return `${quoteChar}${token}${quoteChar}`;
+  }
+
+  return token;
+}
