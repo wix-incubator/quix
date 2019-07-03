@@ -3,6 +3,10 @@ import {Store} from './lib/store';
 import {isOwner} from './services';
 import {waitForEntity} from './store';
 
+export const DB = {
+  SampleLimit: 1000,
+};
+
 export const Search = {
   ResultsPerPage: 20,
   MaxPages: 100,

@@ -1,8 +1,8 @@
-// plugins: '${plugins}'  // e.g. [{id: 'presto', name: 'Presto', modules: ['note', 'dbExplorer']}, {id: 'athena', name: 'Athena', modules: ['note', 'dbExplorer']}], fetch some config from backend
+// plugins: '${plugins}'  // e.g. [{id: 'presto', name: 'Presto', modules: ['note', 'db']}, {id: 'athena', name: 'Athena', modules: ['note', 'db']}], fetch some config from backend
 
 export enum ConfigComponent {
   note = 'note',
-  dbExplorer = 'dbExplorer'
+  db = 'db'
 }
 
 interface ConfigModule {

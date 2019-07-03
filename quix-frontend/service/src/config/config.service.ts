@@ -58,7 +58,7 @@ export abstract class ConfigService {
       clientConfig.addModule({
         id: m,
         name: m,
-        components: [ConfigComponent.note, ConfigComponent.dbExplorer],
+        components: [ConfigComponent.note, ConfigComponent.db],
       }),
     );
 

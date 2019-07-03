@@ -7,11 +7,12 @@ import {Instance} from '../../lib/app';
 import {IFile} from '../../../../shared';
 import {IScope} from './db-sidebar-types';
 import {cache} from '../../store';
-import {convert, getTableQuery} from '../../services/db';
+import {convert} from '../../services/db';
 import * as Resources from '../../services/resources';
 import * as DbActions from '../../store/db/db-actions';
 import {StateManager} from '../../services/state';
 import {openTempQuery} from '../../services';
+import {pluginManager} from '../../plugins';
 
 enum States {
   Initial,
@@ -29,7 +30,7 @@ export default (app: Instance, store: Store) => () => ({
     async pre(scope: IScope) {
       initNgScope(scope)
         .withVM({
-          types: app.getConfig().getModulesByComponent('dbExplorer').map(({id}) => id),
+          types: pluginManager.getPluginIdsByType('db'),
           $export() {
             return {type: this.type};
           },
@@ -54,7 +55,9 @@ export default (app: Instance, store: Store) => () => ({
               .then(columns => store.dispatch(DbActions.addColumns(folder.id, columns)));
           },
           onSelectTableRows(table: IFile) {
-            openTempQuery(scope, scope.vm.type, getTableQuery(table), true);
+            const query = pluginManager.getPluginById(scope.vm.type, 'db').getSampleQuery(table);
+
+            openTempQuery(scope, scope.vm.type, query, true);
           },
           onTypeChange(type) {
             scope.state.save();
