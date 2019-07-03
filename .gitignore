@@ -85,3 +85,4 @@ crashlytics-build.properties
 node_modules
 
 .env-internal
+.env
