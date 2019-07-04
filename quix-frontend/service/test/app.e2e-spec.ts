@@ -92,23 +92,26 @@ describe('Application (e2e)', () => {
       let users = await driver.as('user1').get('users');
 
       expect(users).toHaveLength(1);
-
       await driver.doLogin('user2');
 
       users = await driver.as('user1').get('users');
-
       expect(users).toMatchObject([
         {
           id: user1profile.email,
           name: user1profile.name,
           rootFolder: expect.any(String),
+          dateCreated: expect.any(Number),
+          dateUpdated: expect.any(Number),
         },
         {
           id: user2profile.email,
           name: user2profile.name,
           rootFolder: expect.any(String),
+          dateCreated: expect.any(Number),
+          dateUpdated: expect.any(Number),
         },
       ]);
+      expect(users[0].dateCreated - Date.now()).toBeLessThan(2000); // Within 2 seconds
     });
   });
 
@@ -196,3 +199,7 @@ describe('Application (e2e)', () => {
     });
   });
 });
+
+function resolveIn(n: number = 1000) {
+  return new Promise(resolve => setTimeout(resolve, n));
+}

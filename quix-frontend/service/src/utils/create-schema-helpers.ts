@@ -13,7 +13,9 @@ export async function checkSchemaVersion(conn: Connection, logger: Logger) {
       return undefined;
     });
   if (!result || result.version !== CURRENT_QUIX_SCHEMA_VERSION) {
-    logger.error(`Can't run Quix. DB schema version doesn't match `);
+    logger.error(
+      `Can't run Quix. DB schema version doesn't match. Please check how to upgrade the schema at https://wix.github.io/quix/docs/installation#upgrading-quix`,
+    );
     process.exit(-1);
   }
 }

@@ -18,13 +18,30 @@ export class UsersService {
     const user = await this.userRepo.findOne({id: userFromLogin.email});
     if (!user) {
       await this.doFirstTimeLogin(userFromLogin);
+    } else {
+      await this.doLogin(userFromLogin);
     }
   }
 
   async doFirstTimeLogin(userFromLogin: IGoogleUser) {
     const rootFolderId = await this.createRootFolder(userFromLogin.email);
     const {avatar, email: id, name} = userFromLogin;
-    const dbUser: DbUser = {avatar, id, name, rootFolder: rootFolderId};
+    const dbUser: Partial<DbUser> = {
+      avatar,
+      id,
+      name,
+      rootFolder: rootFolderId,
+    };
+    return this.userRepo.save(dbUser);
+  }
+
+  async doLogin(userFromLogin: IGoogleUser) {
+    const {avatar, email: id, name} = userFromLogin;
+    const dbUser: Partial<DbUser> = {
+      avatar,
+      id,
+      name,
+    };
     return this.userRepo.save(dbUser);
   }
 

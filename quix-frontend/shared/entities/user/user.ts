@@ -7,5 +7,7 @@ export const createUser = (props: Partial<IUser> = {}): IUser => ({
   email: 'local@quix.com',
   avatar: '',
   rootFolder: '',
+  dateCreated: 0,
+  dateUpdated: 0,
   ...props
 });
