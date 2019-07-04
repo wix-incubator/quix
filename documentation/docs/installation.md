@@ -35,7 +35,9 @@ To work with your real Presto DB, change `PRESTO_API` URL.
 Note that you need to specify full URL, including protocol, port and API version:
 * PRESTO_API - `http://presto.my.domain:8181/v1`  
 
-  If you're running Presto locally please use your internal IP or `host.docker.internal` (macOS only) instead of `localhost`.
+  If you're running Presto locally, use the following instead of `localhost`:
+  * Your internal IP
+  * Or `host.docker.internal` (macOS only)
 
 #### DB
 Quix also uses MySQL to store notebooks and other application data. Location of this data is specified by `DB_VOLUME_PATH`.  
