@@ -9,7 +9,7 @@ sidebar_label: Installation
 * [Docker Compose](https://docs.docker.com/compose/install/)
 * `.env` file in the root folder with the following default configuration:
 ```
-PRESTO_API=http://presto.my.domain:8181/v1
+PRESTO_API=http://presto:8080/v1
 DB_VOLUME_PATH=/var/lib/mysql
 ```
 
