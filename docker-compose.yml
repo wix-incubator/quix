@@ -11,8 +11,6 @@ services:
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
-    env_file:
-      - env-example
   frontend:
     build: ./quix-frontend/
     ports:
@@ -35,8 +33,6 @@ services:
       - AUTH_TYPE
       - APPMETRICS_PORT
       - ENABLE_APPMETRICS
-    env_file:
-      - env-example
   db:
     image: "mysql:5.7"
     restart: always
@@ -44,7 +40,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "quix"
     volumes:
-      - "db_volume:$DB_VOLUME_PATH"
+      - "db_volume:/var/lib/mysql"
   presto:
     image: "starburstdata/presto"
     ports:
