@@ -111,11 +111,11 @@ export default class Controller {
         <div class="bi-r-h bi-align bi-grow bi-fade-in">
           <i
             class="fe-toggle bi-action bi-icon bi-pointer"
-            ng-class="{'fe-toggle--hidden': folder.isEmpty() || options.expandAllFolders}"
+            ng-class="{'fe-toggle--hidden': folder.isEmpty()}"
             ng-click="events.onFolderToggle(folder);"
           >arrow_drop_down</i>
 
-          <span 
+          <span
             class="fe-item-name bi-r-h bi-align bi-grow bi-pointer"
             ng-click="events.onFolderClick(folder)"
             drag="!readonly"

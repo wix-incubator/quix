@@ -199,7 +199,7 @@ export function fileExplorer() {
     link: {
       pre: (scope, element, attrs, [ngModel, controller]: [ng.INgModelController, Controller]) => {
         createNgModel(scope, ngModel)
-          .formatWith((model: IItemDef[]) => defToTree(model))
+          .formatWith((model: IItemDef[]) => defToTree(model, scope.options))
           .parseWith((model: Folder) => treeToDef(model))
           .renderWith((model: Folder) => {
             scope.vm.init({controller, item: model, options: scope.options});

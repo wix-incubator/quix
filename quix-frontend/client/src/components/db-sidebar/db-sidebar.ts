@@ -21,6 +21,8 @@ enum States {
   Result,
   Content,
   Search,
+  SearchResult,
+  SearchContent,
   Visible,
 }
 
@@ -59,7 +61,16 @@ export default (app: Instance, store: Store) => () => ({
 
             return Resources.dbColumns(scope.vm.type, catalog, schema, table)
               .then(({children: columns}) => convert(columns, [...path]))
-              .then(columns => store.dispatch(DbActions.addColumns(folder.id, columns)));
+              .then(columns => {
+                const {state} = scope.vm;
+                const alias = state.is('SearchContent') ? 'dbFiltered' : 'db';
+
+                state.value()[alias].forEach(item => item.id === folder.id && (item.lazy = false));             
+                state.value()[alias] = [
+                  ...state.value()[alias],
+                  ...columns
+                ];
+              });
           },
           onSelectTableRows(table: IFile) {
             const query = pluginManager.getPluginById(scope.vm.type, 'db').getSampleQuery(table);
@@ -78,19 +89,16 @@ export default (app: Instance, store: Store) => () => ({
             const {state} = scope.vm;
 
             if (!text) {
-              state.set('Visible', true, {
-                db: state.value().dbInitial
-              });
-
+              state.set('Visible', true, {dbFiltered: null});
               return;
             }
 
             state.force('Search', true);
 
             search(text)(res => {
-              state.set('Visible', true, {
-                db: convert(res)
-              });
+              state 
+                .set('SearchResult', !!res)
+                .set('SearchContent', () => res.length, () => ({dbFiltered: convert(res)}));
             });
           }
         })
@@ -106,7 +114,7 @@ export default (app: Instance, store: Store) => () => ({
         const isInitial = scope.vm.state.is('Initial');
 
         scope.vm.state
-          .force('Result', !!db, {db, dbInitial: db})
+          .force('Result', !!db, {db, dbOriginal: db})
           .set('Content', () => !!db.length)
           .set('Visible', !isInitial);
       }, scope);

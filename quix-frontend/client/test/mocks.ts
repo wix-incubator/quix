@@ -100,10 +100,19 @@ ORDER BY 1
     tables: ['table'],
     columns: ['column'],
   }),
+  // '/api/db/:type/search': () => [],
   '/api/db/:type/search': () => [{
-    name: 'res',
+    name: 'catalog',
     type: 'catalog',
-    children: []
+    children: [{
+      name: 'schema',
+      type: 'schema',
+      children: [{
+        name: 'table_with_a_very_looooooooooooooooong_name',
+        type: 'table',
+        children: []
+      }]
+    }]
   }],
 };
 

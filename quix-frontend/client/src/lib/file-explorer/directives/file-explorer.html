@@ -1,8 +1,8 @@
 <ul ng-if="::vm" class="fe-folders">
   <li
+    ng-class="{'fe-folder--open': vm.folder.isOpen(folder)}"
     ng-repeat="folder in model.getFolders() | orderBy:'name' track by folder.getId()"
     ng-if="!options.hideEmptyFolders || folder.hasFileLeaf()"
-    ng-class="{'fe-folder--open': vm.folder.isOpen(folder)}"
   >
     <div
       class="fe-item bi-hover bi-muted {{::'fe-item-depth-' + depth}}"
@@ -20,7 +20,7 @@
 
     <bi-file-explorer-inner
       class="fade-in"
-      ng-if="vm.folder.isOpen(folder) || options.expandAllFolders"
+      ng-if="vm.folder.isOpen(folder)"
       model="folder"
       fe-options="options"
       readonly="::readonly"

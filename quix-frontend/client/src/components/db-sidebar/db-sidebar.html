@@ -40,9 +40,14 @@
     placeholder="Search"
   >
 
-  <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.is('Search')">
-    <div class="bi-empty-state--loading bi-fade-in">
+  <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.before('SearchContent')">
+    <div class="bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Search')">
       <div class="bi-empty-state-content">Searching...</div>
+    </div>
+
+    <div class="bi-empty-state bi-fade-in" ng-if="vm.state.is('SearchResult')">
+      <quix-image class="bi-empty-state-image" name="no_data.svg"></quix-image>
+      <div class="bi-empty-state-content">No tables that match "{{::vm.search.text}}"</div>
     </div>
   </div>
 
@@ -51,6 +56,38 @@
     ng-model="vm.state.value().db"
     fe-options="::{draggable: true}"
     on-load="events.onFileExplorerLoad()"
+    on-lazy-folder-fetch="events.onLazyFolderFetch(folder)"
+    permissions="getFolderPermissions(folder)"
+    readonly="true"
+  > 
+    <folder-icon class="bi-icon--xs">
+      {{::{
+        catalog: 'book',
+        schema: 'storage',
+        table: 'view_module'
+      }[folder.nodeType]}}
+    </folder-icon>
+
+    <file-icon class="bi-text--sm">
+     {{file.nodeType}}
+    </file-icon>
+
+    <menu>
+      <ul class="bi-dropdown-menu" ng-if="::folder.nodeType === 'table'">
+        <li 
+          class="bi-align bi-space-h"
+          ng-click="events.onSelectTableRows(folder)"
+        >
+          <div>Select rows (limit 1000)</div>
+        </li>
+      </ul>
+    </menu>
+  </bi-file-explorer>
+
+  <bi-file-explorer
+    ng-if="vm.state.is('SearchContent')"
+    ng-model="vm.state.value().dbFiltered"
+    fe-options="::{draggable: true, expandAllFolders: true}"
     on-lazy-folder-fetch="events.onLazyFolderFetch(folder)"
     permissions="getFolderPermissions(folder)"
     readonly="true"
