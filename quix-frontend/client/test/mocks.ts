@@ -100,6 +100,11 @@ ORDER BY 1
     tables: ['table'],
     columns: ['column'],
   }),
+  '/api/db/:type/search': () => [{
+    name: 'res',
+    type: 'catalog',
+    children: []
+  }],
 };
 
 let mockOverrides = {};

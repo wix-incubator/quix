@@ -2,8 +2,16 @@
 @import './def/flex.def';
 @import './def/input.def';
 
-.bi-input {
-  @extend %input;
+.bi-theme--lighter {
+  .bi-input {
+    @include input('lighter');
+  }
+}
+
+.bi-theme--dark {
+  .bi-input {
+    @include input('dark');
+  }
 }
 
 textarea.bi-input {

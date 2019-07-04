@@ -13,12 +13,14 @@ import * as DbActions from '../../store/db/db-actions';
 import {StateManager} from '../../services/state';
 import {openTempQuery} from '../../services';
 import {pluginManager} from '../../plugins';
+import {debounceAsync} from '../../utils';
 
 enum States {
   Initial,
   Error,
   Result,
   Content,
+  Search,
   Visible,
 }
 
@@ -28,9 +30,14 @@ export default (app: Instance, store: Store) => () => ({
   scope: {},
   link: {
     async pre(scope: IScope) {
+      const search = debounceAsync(text => Resources.dbSearch(scope.vm.type, text));
+
       initNgScope(scope)
         .withVM({
           types: pluginManager.getPluginIdsByType('db'),
+          search: {
+            text: null
+          },
           $export() {
             return {type: this.type};
           },
@@ -61,9 +68,30 @@ export default (app: Instance, store: Store) => () => ({
           },
           onTypeChange(type) {
             scope.state.save();
+
+            scope.vm.search.text = null;
             scope.vm.state.force('Initial');
 
             cache.db.fetch(type);
+          },
+          onSearchChange(text) {
+            const {state} = scope.vm;
+
+            if (!text) {
+              state.set('Visible', true, {
+                db: state.value().dbInitial
+              });
+
+              return;
+            }
+
+            state.force('Search', true);
+
+            search(text)(res => {
+              state.set('Visible', true, {
+                db: convert(res)
+              });
+            });
           }
         })
         .withState('dbSidebar', 'dbSidebar', {});
@@ -74,11 +102,11 @@ export default (app: Instance, store: Store) => () => ({
         };
       }
 
-      store.subscribe('db.db', (db) => {
+      store.subscribe('db.db', (db: any) => {
         const isInitial = scope.vm.state.is('Initial');
 
         scope.vm.state
-          .force('Result', !!db, {db})
+          .force('Result', !!db, {db, dbInitial: db})
           .set('Content', () => !!db.length)
           .set('Visible', !isInitial);
       }, scope);

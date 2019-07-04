@@ -1,3 +1,5 @@
+import { inject } from './lib/core';
+
 export const singletone = () => {
   let state: any[] = null;
   
@@ -26,3 +28,11 @@ export const singletone = () => {
 
   return instance;
 }
+
+export const debounceAsync = (req: Function, __id = 0) => 
+    (...args) => 
+      (res: Function, ___id = ++__id) => 
+        inject('$timeout')(() => 
+          __id === ___id && req(...args).then(dres => 
+            __id === ___id && res(dres))
+        , 300);

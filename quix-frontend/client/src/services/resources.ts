@@ -24,6 +24,7 @@ export const search = (text: string, offset: number, total: number) => one<{coun
   offset,
   total
 });
+
 export const db = (type: string) => many(api`db/:type/explore`, {type});
 export const dbColumns = (type: string, catalog: string, schema: string, table: string) => 
   one(api`db/:type/explore/:catalog/:schema/:table`, {
@@ -32,3 +33,5 @@ export const dbColumns = (type: string, catalog: string, schema: string, table: 
     schema,
     table
   });
+
+export const dbSearch = (type: string, q: string) => many(api`db/:type/search`, {type, q});
