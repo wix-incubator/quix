@@ -6,10 +6,8 @@ import com.mysql.jdbc.Driver
 //import com.mysql.jdbc.jdbc2.optional.MysqlDataSource
 
 object JdbcDataSourceFactory {
-  def getDriverDataSource(url: String, userName: String, password: String): SimpleDriverDataSource = {
-    val driver = new Driver()
-    var mysqlDS = new SimpleDriverDataSource(driver,url, userName, password)
-
+  def getDriverDataSource(url: String, userName: String, password: String): DriverManagerDataSource = {
+    var mysqlDS = new DriverManagerDataSource(url, userName, password)
     mysqlDS
   }
 }
