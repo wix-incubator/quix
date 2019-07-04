@@ -20,7 +20,7 @@ export function goToFile(fileDef: IItemDef, folder: Folder): File {
 /**
  * Creates a tree structure from a file definition array.
  */
-export function defToTree(items: IItemDef[], options): Folder {
+export function defToTree(items: IItemDef[], options: any): Folder {
   const root = new Folder(null, null);
   const itemsMap = items.reduce((res, item: IItemDef) => {
     res[item.id] = item;
@@ -42,9 +42,12 @@ export function defToTree(items: IItemDef[], options): Folder {
 
     if (item.type === 'folder') {
       if (!folder.getFolderById(item.id)) {
-        folder.addFolder(item.id, itemsMap[item.id].name, omit(itemsMap[item.id], 'id', 'name', 'type', 'path'))
-          .setLazy(item.lazy)
-          .toggleOpen(!item.lazy && options.expandAllFolders);
+        const childFolder = folder.addFolder(item.id, itemsMap[item.id].name, omit(itemsMap[item.id], 'id', 'name', 'type', 'path'))
+          .setLazy(item.lazy);
+        
+          if (options.expandAllFolders && !item.lazy) {
+            childFolder.toggleOpen(true);
+          }
       }
     } else {
       folder.addFile(item.id, item.name, item.type, omit(itemsMap[item.id], 'id', 'name', 'type', 'path'));
