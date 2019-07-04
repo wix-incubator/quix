@@ -9,7 +9,6 @@ import {IScope} from './db-sidebar-types';
 import {cache} from '../../store';
 import {convert} from '../../services/db';
 import * as Resources from '../../services/resources';
-import * as DbActions from '../../store/db/db-actions';
 import {StateManager} from '../../services/state';
 import {openTempQuery} from '../../services';
 import {pluginManager} from '../../plugins';
