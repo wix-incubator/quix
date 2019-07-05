@@ -64,7 +64,7 @@ class JdbcExecutionsTest extends SpecWithJUnit with Mockito with AroundEach {
       val value1: AnyRef = Int.box(10)
       val value2: AnyRef = "zzz"
       eventually {
-        there was one(builder).addSubQuery("1", Batch(List(List(value1, value2)), Some(List(BatchColumn("col1"), BatchColumn("col2")))))
+        there was one(builder).addSubQuery(queryId, Batch(List(List(value1, value2)), Some(List(BatchColumn("col1"), BatchColumn("col2")))))
 
       }
 

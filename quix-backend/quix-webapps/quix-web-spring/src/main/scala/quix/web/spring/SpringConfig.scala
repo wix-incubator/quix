@@ -64,6 +64,12 @@ class AuthConfig extends LazyLogging {
   }
 }
 
+
+object Registry {
+  val modules = scala.collection.mutable.Map.empty[String, ExecutionModule[String, Batch]]
+}
+
+
 @Configuration
 class JdbcConfiguration extends LazyLogging {
 
@@ -92,11 +98,6 @@ class JdbcConfiguration extends LazyLogging {
 
     "OK"
   }
-}
-
-
-object Registry {
-  val modules = scala.collection.mutable.Map.empty[String, ExecutionModule[String, Batch]]
 }
 
 @Configuration

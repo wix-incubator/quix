@@ -31,7 +31,7 @@ class JdbcQueryExecutor(readJdbcClient: NamedParameterJdbcTemplate,
           a.values().asScala.toList
         })
 
-        builder.addSubQuery("1", Batch(result, Some(columns)))
+        builder.addSubQuery(query.id, Batch(result, Some(columns)))
 
         builder.end(query)
 
