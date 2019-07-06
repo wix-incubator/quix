@@ -56,8 +56,8 @@
     <bi-file-explorer
       ng-show="vm.state.is('Visible')"
       ng-model="vm.state.value().db"
-      fe-options="::{draggable: true}"
-      on-load="events.onFileExplorerLoad()"
+      fe-options="::{draggable: true, expandRootFolder: true}"
+      on-load="events.onFileExplorerLoad(fileExplorer)"
       on-lazy-folder-fetch="events.onLazyFolderFetch(folder)"
       permissions="getFolderPermissions(folder)"
       readonly="true"

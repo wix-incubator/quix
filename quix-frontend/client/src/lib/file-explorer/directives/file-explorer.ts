@@ -3,7 +3,7 @@ import {createNgModel, initNgScope, inject, utils} from '../../core';
 import {confirm, toast} from '../../ui';
 import {IItemDef} from '../services';
 import {File, Folder} from '../services/file-explorer-models';
-import {treeToDef, defToTree} from '../services/file-explorer-tools';
+import {treeToDef, defToTree, addFile} from '../services/file-explorer-tools';
 import Controller from '../services/file-explorer-controller';
 import VM from './file-explorer-vm';
 
@@ -115,11 +115,10 @@ function initScope(scope, controller: Controller, depth: number) {
           scope.vm.folder.toggleOpen(folder);
 
           if (folder.isLazy() && scope.vm.folder.isOpen(folder)) {
-            const promise = controller.fetchLazyFolder(folder);
-
-            if (promise && promise.then) {
-              promise.then(() => folder.setLazy(false));
-            }
+            controller.fetchLazyFolder(folder).then(items => {
+              items.forEach(item => addFile(folder, item));
+              folder.setLazy(false);
+            });
           }
         }
       },
@@ -169,9 +168,11 @@ export function fileExplorerInner() {
 
     link: {
       pre: (scope, element, attrs, controller) => {
-        scope.$watch('model', model => {
-          scope.vm.init({controller, item: scope.model, options: scope.options})
-        });
+        scope.$watch('model', model => scope.vm.init({
+          controller,
+          item: scope.model,
+          options: scope.options
+        }));
 
         initScope(scope, controller, element.parents('bi-file-explorer-inner').length as number + 1);
       }
@@ -204,17 +205,15 @@ export function fileExplorer() {
           .formatWith((model: IItemDef[]) => defToTree(model, scope.options))
           .parseWith((model: Folder) => treeToDef(model))
           .renderWith((model: Folder) => {
-            scope.vm.init({controller, item: model, options: scope.options});
-
-            model.getFolders().forEach(folder => {
-              folder.on('openToggled', (m, f, isOpen) => {
-                scope.vm.folder.toggleOpen(f, isOpen);
-              }, true);
+            scope.vm.init({
+              controller,
+              item: model,
+              options: scope.options
             });
           })
           .then(() => {
             if (scope.options.expandRootFolder && scope.model.getFolders().length === 1) {
-              scope.model.getFolders()[0].toggleOpen();
+              scope.model.getFolders()[0].toggleOpen(true);
             }
 
             scope.onLoad({fileExplorer: controller.getInstance()});

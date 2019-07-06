@@ -9,5 +9,4 @@ export interface IItemDef {
   type: string;
   path: IPathItemDef[];
   lazy?: boolean;
-  open?: boolean;
 }

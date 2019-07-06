@@ -91,8 +91,8 @@ ORDER BY 1
     type: 'catalog',
     children: []
   }],
-  '/api/db/:type/explore/:catalog/:schema/:table': () => ({
-    children: [{name: 'column_with_a_very_looooooooooooooooong_name', dataType: 'varchar'}]
+  '/api/db/:type/explore/:catalog/:schema/:table': ({table}) => ({
+    children: [{name: `column_of_${table}`, dataType: 'varchar'}]
   }),
   '/api/db/:type/autocomplete': () => ({
     catalogs: ['catalog', 'catalog2'],
@@ -120,8 +120,8 @@ ORDER BY 1
       name: 'schema2',
       type: 'schema',
       children: [{
-        name: 'table_with_a_very_looooooooooooooooong_name',
-        type: 'table2',
+        name: 'table2_with_a_very_looooooooooooooooong_name',
+        type: 'table',
         children: []
       }]
     }]

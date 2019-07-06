@@ -43,7 +43,7 @@ export default (app: Instance, store: Store) => () => ({
             return {type: this.type};
           },
           $import({type}) {
-            this.type = type;
+            this.type = this.types.includes(type) && type;
           },
           $init() {
             this.state = new StateManager(States);
@@ -59,21 +59,11 @@ export default (app: Instance, store: Store) => () => ({
             const [catalog, schema, table] = path.map(({name}) => name);
 
             return Resources.dbColumns(scope.vm.type, catalog, schema, table)
-              .then(({children: columns}) => convert(columns, [...path]))
-              .then(columns => {
-                const {state} = scope.vm;
-                const alias = state.is('SearchContent') ? 'dbFiltered' : 'db';
-
-                state.value()[`${alias}Original`].forEach(item => item.id === folder.id && (item.lazy = false));             
-
-                state.value()[alias] = [
-                  ...state.value()[`${alias}Original`],
-                  ...columns
-                ];
-              });
+              .then(({children: columns}) => convert(columns, [...path]));
           },
           onSelectTableRows(table: IFile) {
-            const query = pluginManager.getPluginById(scope.vm.type, 'db').getSampleQuery(table);
+            const query = pluginManager.getPluginById(scope.vm.type, 'db')
+              .getSampleQuery(table);
 
             openTempQuery(scope, scope.vm.type, query, true);
           },
@@ -91,7 +81,6 @@ export default (app: Instance, store: Store) => () => ({
             if (!text) {
               state.set('Visible', true, {
                 dbFiltered: null,
-                dbFilteredOriginal: null
               });
 
               return;
@@ -99,18 +88,14 @@ export default (app: Instance, store: Store) => () => ({
 
             state.force('Search', true);
 
-            search(text)(res => {
-              state 
-                .set('SearchResult', !!res)
-                .set('SearchContent', () => res.length, () => {
-                  const filtered = convert(res);
+            search(text)(res => state
+              .set('SearchResult', !!res)
+              .set('SearchContent', () => res.length, () => {
+                const filtered = convert(res);
 
-                  return {
-                    dbFiltered: filtered,
-                    dbFilteredOriginal: filtered,
-                  };
-                });
-            });
+                return {dbFiltered: filtered};
+              })
+            );
           }
         })
         .withState('dbSidebar', 'dbSidebar', {});

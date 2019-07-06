@@ -79,6 +79,7 @@ export default class Controller {
 
   syncItem(item: Item, eventName: string, ...args): Controller {
     this.ngModel.$setViewValue(this.$scope.model.$clone());
+
     this.fireEvent(item, eventName, ...args);
 
     return this;
@@ -107,8 +108,8 @@ export default class Controller {
 
   renderFolder(scope) {
     return this.render(`
-      <div class="bi-spread">
-        <div class="bi-r-h bi-align bi-grow bi-fade-in">
+      <div class="bi-spread bi-fade-in">
+        <div class="bi-r-h bi-align bi-grow">
           <i
             class="fe-toggle bi-action bi-icon bi-pointer"
             ng-class="{'fe-toggle--hidden': folder.isEmpty()}"
@@ -159,25 +160,10 @@ export default class Controller {
 
   renderFile(scope) {
     return this.render(`
-      <div
-        class="fe-item {{::'fe-item-depth-' + depth}} bi-spread bi-align bi-pointer"
-        drag="!readonly"
-        jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
-        jqyoui-options="{
-          helper: 'clone',
-          distance: 5,
-          scroll: true,
-          appendTo: 'parent',
-          containment: options.draggable ? 'window' : vm.container
-        }"
-        ng-model="file"
-        title="{{::file.getName()}}"
-      >
-        <span class="fe-item-name bi-r-h bi-align">
-          <span class="fe-icon-container" bi-html="renderFileIcon(file)"></span>
-          <span class="bi-text--ellipsis" bi-draggable="events.onDrag(file)">{{file.getName()}}</span>
-        </span>
-      </div>
+      <span class="fe-item-name bi-r-h bi-align">
+        <span class="fe-icon-container" bi-html="renderFileIcon(file)"></span>
+        <span class="bi-text--ellipsis" bi-draggable="events.onDrag(file)">{{file.getName()}}</span>
+      </span>
     `)(scope);
   }
 

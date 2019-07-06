@@ -15,11 +15,10 @@
       }"
       ng-model="vm.dropped.item"
       bi-html="renderFolder(scope)"
-      bi-html-delay="50"
+      bi-html-delay="{{$index === 0 ? '' : '50'}}"
     ></div>
 
     <bi-file-explorer-inner
-      class="fade-in"
       ng-if="vm.folder.isOpen(folder)"
       model="folder"
       fe-options="options"
@@ -46,7 +45,22 @@
     ng-repeat="file in model.getFiles() | orderBy:vm.order.field track by file.getId()"
     ng-class="{'bi-active': vm.file.isActive(file)}"
     ng-click="events.onFileClick(file)"
-    bi-html="renderFile(scope)"
-    bi-html-delay="50"
-  ></li>
+  >
+    <div
+      class="fe-item {{::'fe-item-depth-' + depth}} bi-spread bi-align bi-pointer bi-fade-in"
+      drag="!readonly"
+      jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
+      jqyoui-options="{
+        helper: 'clone',
+        distance: 5,
+        scroll: true,
+        appendTo: 'parent',
+        containment: options.draggable ? 'window' : vm.container
+      }"
+      ng-model="file"
+      title="{{::file.getName()}}"
+      bi-html="renderFile(scope)"
+      bi-html-delay="{{$index === 0 ? '' : '50'}}"
+    ></div>
+  </li>
 </ul>
