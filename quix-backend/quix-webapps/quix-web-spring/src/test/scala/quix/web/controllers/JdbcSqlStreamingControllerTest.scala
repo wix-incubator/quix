@@ -12,7 +12,6 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.junit.runner.RunWith
 import org.junit.{After, Before, Test}
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT
 import org.springframework.test.annotation.DirtiesContext
@@ -35,7 +34,6 @@ class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
   val server = createEmbeddedMySqlServer()
 
 
-
   def createEmbeddedMySqlServer() = {
     val config: MysqldConfig = aMysqldConfig(v5_6_23)
       .withCharset(UTF8)
@@ -49,22 +47,22 @@ class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
   }
 
   @Before
-  def before() : Unit = {
+  def before(): Unit = {
     executor.clear
     startTestServer = server.start()
   }
 
   @After
-  def after() :Unit = {
+  def after(): Unit = {
     startTestServer.stop()
   }
 
-  @Test (timeout=30000)
+  @Test(timeout = 30000)
   def passSanity(): Unit = {
     executor
       .withResults(List(List("1")), queryId = "query-id", columns = List("foo"))
 
-    val listener = execute("select * from t1" , webSocketModuleSuffix = "jdbc")
+    val listener = execute("select * from t1", webSocketModuleSuffix = "jdbc")
 
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-start","data":{"id":"query-id"}}"""))
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-id","code":"select * from t1"}}"""))
