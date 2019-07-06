@@ -8,8 +8,6 @@ sidebar_label: Installation
 * [Docker](https://www.docker.com/products)
 * [Docker Compose](https://docs.docker.com/compose/install/)
 
-**N.B.** Quix relies on [Presto](https://prestosql.io/), which is included with the Docker container in this repository, but for the **demo purposes** only. To work with real data, it must be accessible via a Presto API URL (more on this in [Configuration](#configuration)).
-
 ## Running
 Run Docker Compose:
 
@@ -19,18 +17,23 @@ docker-compose up
 
 The initial run of the `docker-compose up` command will take care of all the dependencies, like MySQL, Presto, Maven, etc, will install all necessary Quix components and create a web-accessible Quix instance.
 
-To access Quix, navigate to:
+To access Quix, navigate to:  
 `http://localhost:3000`
 
 ## Configuration
-Most of the configuration you'll need is done in the [.env](https://github.com/wix/quix/blob/master/.env) configuration file.
+Most of the configuration you'll need is done through enviornment variables. docker-compose can load enviornemnt-variables easily through a `.env` file.
+You can rename our [env-example](https://github.com/wix/quix/blob/master/env-example) file to `.env`, and modify it's values as needed. 
 
 #### Presto
 By default, Quix works with demo Presto instance that runs inside Docker Compose.  
 To work with your real Presto DB, change `PRESTO_API` URL.
 
 Note that you need to specify full URL, including protocol, port and API version:
-* PRESTO_API - e.g. `http://presto.my.domain:8181/v1`
+* PRESTO_API - `http://presto.my.domain:8181/v1`  
+
+  If you're running Presto locally, use the following instead of `localhost`:
+  * Your internal IP
+  * Or `host.docker.internal` (macOS only)
 
 #### DB
 Quix also uses MySQL to store notebooks and other application data. Location of this data is specified by `DB_VOLUME_PATH`.  
@@ -62,7 +65,7 @@ Running quix with `docker-compose` should "just work", but when deploying quix, 
 * BACKEND_INTERNAL_URL - An address + port number (no protocol) where you have the backend service deployed and accessible to the frontend service.
 * BACKEND_PUBLIC_URL - An address + port number (no protocol) to the backend service, made accessible to user's browser. In most scenarios, it's value is the same as `BACKEND_INTERNAL_URL`.
 * ENABLE_APPMETRICS - Set this variable if you want to enable [appmetrics-dash](https://github.com/RuntimeTools/appmetrics-dash).
-* APPMETRICS_PORT - The port where appmetrics dash will be exposed.
+* APPMETRICS_PORT - The port where appmetrics dashboard will be exposed.
 
 ## Upgrading Quix
 This takes into account a `docker-compose` setup. Extrapolate as needed if you have some other custom deployment. 
