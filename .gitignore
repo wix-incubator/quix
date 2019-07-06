@@ -86,3 +86,4 @@ node_modules
 
 .env
 .env-internal
+.env

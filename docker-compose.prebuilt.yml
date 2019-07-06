@@ -1,7 +1,7 @@
 version: '3'
 services:
   backend:
-    image: wixquix/quix-backend:release-0.2.1
+    image: wixquix/quix-backend:release-0.2.7
     ports:
       - "8081:8081"
     depends_on:
@@ -11,8 +11,10 @@ services:
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
+    env_file:
+      - env-example
   frontend:
-    image: wixquix/quix-fronend:release-0.2.1
+    image: wixquix/quix-frontend:release-0.2.7
     ports:
       - "3000:3000"
     depends_on:
@@ -31,6 +33,8 @@ services:
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
+    env_file:
+      - env-example
   db:
     image: "mysql:5.7"
     restart: always
@@ -38,7 +42,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "quix"
     volumes:
-      - "db_volume:$DB_VOLUME_PATH"
+      - "db_volume:/var/lib/mysql"
   presto:
     image: "starburstdata/presto"
     ports:

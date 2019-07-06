@@ -1,20 +1,24 @@
+import { inject } from "../../../core";
+
 export default () => {
+  let timeout;
+
   return {
     restrict: 'A',
     scope: {
-      biHtml: '&'
+      biHtml: '&',
+      biHtmlDelay: '@'
     },
 
     async link(scope, element) {
-      let html = scope.biHtml({scope: scope.$parent});
+      const delay = parseInt(scope.biHtmlDelay, 10);
+      const render = () => element.html(scope.biHtml({scope: scope.$parent}).html);
 
-      if (html.then) {
-        html = await html;
+      if (scope.biHtmlDelay) {
+        (timeout = timeout || inject('$timeout'))(render, delay);
       } else {
-        html = html.html;
+        render();
       }
-
-      element.html(html);
    }
   };
 };

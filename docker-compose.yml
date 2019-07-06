@@ -47,7 +47,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "quix"
     volumes:
-      - "db_volume:$DB_VOLUME_PATH"
+      - "db_volume:/var/lib/mysql"
   presto:
     image: "starburstdata/presto"
     ports:

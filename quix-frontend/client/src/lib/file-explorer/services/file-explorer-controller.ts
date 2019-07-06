@@ -14,22 +14,23 @@ interface Permissions {
  */
 export default class Controller {
   private readonly ngModel: ng.INgModelController;
+  private readonly $compile: ng.ICompileService;
   private readonly instance: Instance;
   private currentFolder: Folder = null;
   private currentFile: File = null;
-  private readonly $transclude: ng.ITranscludeFunction;
+
   private readonly slots: Record<string, boolean> = {};
 
-  constructor(private readonly $scope, private readonly $element, $transclude) {
+  constructor(private readonly $scope, private readonly $element, private readonly $transclude :ng.ITranscludeFunction) {
     this.instance = new Instance($scope);
     this.ngModel = $element.controller('ngModel');
-    this.$transclude = $transclude;
+    this.$compile = inject('$compile');
 
     this.slots.menu = this.$transclude.isSlotFilled('menu');
   }
 
   private render(html) {
-    return scope => inject('$timeout')(() => inject('$compile')(html)(scope), 50);
+    return scope => ({html: this.$compile(html)(scope)});
   }
 
   getInstance(): Instance {
