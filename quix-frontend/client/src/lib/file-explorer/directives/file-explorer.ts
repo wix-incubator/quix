@@ -169,7 +169,9 @@ export function fileExplorerInner() {
 
     link: {
       pre: (scope, element, attrs, controller) => {
-        scope.$watch('model', model => scope.vm.init({controller, item: scope.model, options: scope.options}));
+        scope.$watch('model', model => {
+          scope.vm.init({controller, item: scope.model, options: scope.options})
+        });
 
         initScope(scope, controller, element.parents('bi-file-explorer-inner').length as number + 1);
       }
@@ -203,6 +205,12 @@ export function fileExplorer() {
           .parseWith((model: Folder) => treeToDef(model))
           .renderWith((model: Folder) => {
             scope.vm.init({controller, item: model, options: scope.options});
+
+            model.getFolders().forEach(folder => {
+              folder.on('openToggled', (m, f, isOpen) => {
+                scope.vm.folder.toggleOpen(f, isOpen);
+              }, true);
+            });
           })
           .then(() => {
             if (scope.options.expandRootFolder && scope.model.getFolders().length === 1) {

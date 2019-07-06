@@ -64,9 +64,10 @@ export default (app: Instance, store: Store) => () => ({
                 const {state} = scope.vm;
                 const alias = state.is('SearchContent') ? 'dbFiltered' : 'db';
 
-                state.value()[alias].forEach(item => item.id === folder.id && (item.lazy = false));             
+                state.value()[`${alias}Original`].forEach(item => item.id === folder.id && (item.lazy = false));             
+
                 state.value()[alias] = [
-                  ...state.value()[alias],
+                  ...state.value()[`${alias}Original`],
                   ...columns
                 ];
               });
@@ -88,7 +89,11 @@ export default (app: Instance, store: Store) => () => ({
             const {state} = scope.vm;
 
             if (!text) {
-              state.set('Visible', true, {dbFiltered: null});
+              state.set('Visible', true, {
+                dbFiltered: null,
+                dbFilteredOriginal: null
+              });
+
               return;
             }
 
@@ -97,7 +102,14 @@ export default (app: Instance, store: Store) => () => ({
             search(text)(res => {
               state 
                 .set('SearchResult', !!res)
-                .set('SearchContent', () => res.length, () => ({dbFiltered: convert(res)}));
+                .set('SearchContent', () => res.length, () => {
+                  const filtered = convert(res);
+
+                  return {
+                    dbFiltered: filtered,
+                    dbFilteredOriginal: filtered,
+                  };
+                });
             });
           }
         })

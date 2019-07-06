@@ -31,15 +31,15 @@
   </div>
 </div>
 
-<div class="bi-c-h bi-s-v--x15 bi-grow bi-fade-in bi-scroll" ng-if="vm.state.after('Result')">
+<div class="bi-c-h bi-s-v--x15 bi-grow bi-fade-in" ng-if="vm.state.after('Result')">
   <input
-    class="quix-db-search bi-input"
+    class="quix-db-search bi-input bi-dont-shrink"
     ng-model="vm.search.text"
     ng-change="events.onSearchChange(vm.search.text)"
     bi-focus
     placeholder="Search"
   >
-
+  
   <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.before('SearchContent')">
     <div class="bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Search')">
       <div class="bi-empty-state-content">Searching...</div>
@@ -51,68 +51,72 @@
     </div>
   </div>
 
-  <bi-file-explorer
-    ng-show="vm.state.is('Visible')"
-    ng-model="vm.state.value().db"
-    fe-options="::{draggable: true}"
-    on-load="events.onFileExplorerLoad()"
-    on-lazy-folder-fetch="events.onLazyFolderFetch(folder)"
-    permissions="getFolderPermissions(folder)"
-    readonly="true"
-  > 
-    <folder-icon class="bi-icon--xs">
-      {{::{
-        catalog: 'book',
-        schema: 'storage',
-        table: 'view_module'
-      }[folder.nodeType]}}
-    </folder-icon>
+  <div class="bi-c-h bi-grow bi-scroll">
 
-    <file-icon class="bi-text--sm">
-     {{file.nodeType}}
-    </file-icon>
+    <bi-file-explorer
+      ng-show="vm.state.is('Visible')"
+      ng-model="vm.state.value().db"
+      fe-options="::{draggable: true}"
+      on-load="events.onFileExplorerLoad()"
+      on-lazy-folder-fetch="events.onLazyFolderFetch(folder)"
+      permissions="getFolderPermissions(folder)"
+      readonly="true"
+    > 
+      <folder-icon class="bi-icon--xs">
+        {{::{
+          catalog: 'book',
+          schema: 'storage',
+          table: 'view_module'
+        }[folder.nodeType]}}
+      </folder-icon>
 
-    <menu>
-      <ul class="bi-dropdown-menu" ng-if="::folder.nodeType === 'table'">
-        <li 
-          class="bi-align bi-space-h"
-          ng-click="events.onSelectTableRows(folder)"
-        >
-          <div>Select rows (limit 1000)</div>
-        </li>
-      </ul>
-    </menu>
-  </bi-file-explorer>
+      <file-icon class="bi-text--sm">
+      {{file.nodeType}}
+      </file-icon>
 
-  <bi-file-explorer
-    ng-if="vm.state.is('SearchContent')"
-    ng-model="vm.state.value().dbFiltered"
-    fe-options="::{draggable: true, expandAllFolders: true}"
-    on-lazy-folder-fetch="events.onLazyFolderFetch(folder)"
-    permissions="getFolderPermissions(folder)"
-    readonly="true"
-  > 
-    <folder-icon class="bi-icon--xs">
-      {{::{
-        catalog: 'book',
-        schema: 'storage',
-        table: 'view_module'
-      }[folder.nodeType]}}
-    </folder-icon>
+      <menu>
+        <ul class="bi-dropdown-menu" ng-if="::folder.nodeType === 'table'">
+          <li 
+            class="bi-align bi-space-h"
+            ng-click="events.onSelectTableRows(folder)"
+          >
+            <div>Select rows (limit 1000)</div>
+          </li>
+        </ul>
+      </menu>
+    </bi-file-explorer>
 
-    <file-icon class="bi-text--sm">
-     {{file.nodeType}}
-    </file-icon>
+    <bi-file-explorer
+      ng-if="vm.state.is('SearchContent')"
+      ng-model="vm.state.value().dbFiltered"
+      fe-options="::{draggable: true, expandAllFolders: true}"
+      on-lazy-folder-fetch="events.onLazyFolderFetch(folder)"
+      permissions="getFolderPermissions(folder)"
+      readonly="true"
+    > 
+      <folder-icon class="bi-icon--xs">
+        {{::{
+          catalog: 'book',
+          schema: 'storage',
+          table: 'view_module'
+        }[folder.nodeType]}}
+      </folder-icon>
 
-    <menu>
-      <ul class="bi-dropdown-menu" ng-if="::folder.nodeType === 'table'">
-        <li 
-          class="bi-align bi-space-h"
-          ng-click="events.onSelectTableRows(folder)"
-        >
-          <div>Select rows (limit 1000)</div>
-        </li>
-      </ul>
-    </menu>
-  </bi-file-explorer>
+      <file-icon class="bi-text--sm">
+      {{file.nodeType}}
+      </file-icon>
+
+      <menu>
+        <ul class="bi-dropdown-menu" ng-if="::folder.nodeType === 'table'">
+          <li 
+            class="bi-align bi-space-h"
+            ng-click="events.onSelectTableRows(folder)"
+          >
+            <div>Select rows (limit 1000)</div>
+          </li>
+        </ul>
+      </menu>
+    </bi-file-explorer>
+    
+  </div>
 </div>
