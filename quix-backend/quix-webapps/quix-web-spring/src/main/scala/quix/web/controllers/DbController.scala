@@ -7,11 +7,9 @@ import quix.api.db.Table
 import quix.api.execute.Batch
 import quix.api.module.ExecutionModule
 
-import scala.concurrent.duration.{FiniteDuration, _}
-
 @Controller
 @RequestMapping(Array("/api"))
-class DbController(modules: Map[String, ExecutionModule[String, Batch]], requestTimeout: FiniteDuration = 30.seconds) {
+class DbController(modules: Map[String, ExecutionModule[String, Batch]]) {
 
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
   @RequestMapping(value = Array("/db/config"), method = Array(RequestMethod.GET))
@@ -25,7 +23,7 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]], request
   @ResponseBody
   def getCatalogsNoColumns(@PathVariable moduleId: String) = {
     getDb(moduleId).map {
-      _.catalogs.runSyncUnsafe(requestTimeout)
+      _.catalogs.runSyncUnsafe()
     }.getOrElse(Nil)
   }
 
@@ -34,7 +32,7 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]], request
   @ResponseBody
   def getTable(@PathVariable moduleId: String, @PathVariable catalog: String, @PathVariable schema: String, @PathVariable table: String) = {
     getDb(moduleId).map {
-      _.table(catalog, schema, table).runSyncUnsafe(requestTimeout)
+      _.table(catalog, schema, table).runSyncUnsafe()
     }.getOrElse(Table(table, Nil))
   }
 
@@ -43,7 +41,7 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]], request
   @ResponseBody
   def autocomplete(@PathVariable moduleId: String) = {
     getDb(moduleId).map {
-      _.autocomplete.runSyncUnsafe(requestTimeout)
+      _.autocomplete.runSyncUnsafe()
     }.getOrElse(Map.empty)
   }
 
@@ -52,7 +50,7 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]], request
   @ResponseBody
   def search(@PathVariable moduleId: String, @RequestParam("q") query: String) = {
     getDb(moduleId).map {
-      _.search(query).runSyncUnsafe(requestTimeout)
+      _.search(query).runSyncUnsafe()
     }.getOrElse(Map.empty)
   }
 

@@ -21,10 +21,8 @@ class AthenaQuixModule(val executions: SequentialExecutions[String], val db: Opt
 }
 
 object AthenaQuixModule {
-  def apply(executor: AsyncQueryExecutor[String, Batch]): AthenaQuixModule = {
+  def apply(executor: AsyncQueryExecutor[String, Batch], db: AthenaDb): AthenaQuixModule = {
     val executions = new SequentialExecutions[String](executor)
-    val db = new AthenaDb(executor)
-
     new AthenaQuixModule(executions, Some(db))
   }
 }

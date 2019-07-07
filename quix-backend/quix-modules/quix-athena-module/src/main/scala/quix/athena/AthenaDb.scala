@@ -9,9 +9,10 @@ import quix.api.users.User
 import quix.core.db.DbOps
 import quix.core.results.SingleBuilder
 
+import scala.concurrent.TimeoutException
 import scala.concurrent.duration._
 
-class AthenaDb(queryExecutor: AsyncQueryExecutor[String, Batch], state: AthenaDbState = new AthenaDbState) extends Db {
+class AthenaDb(queryExecutor: AsyncQueryExecutor[String, Batch], config: AthenaConfig, state: AthenaDbState = new AthenaDbState) extends Db {
 
   val user = User("quix-athena-db-tree")
 
@@ -41,15 +42,20 @@ class AthenaDb(queryExecutor: AsyncQueryExecutor[String, Batch], state: AthenaDb
         }
     }
 
-    for {columns <- executeFor(sql, mapper)}
-      yield Table(table, columns)
+    val task = for {columns <- executeFor(sql, mapper)}
+      yield Table(table, columns.filter(_.name.nonEmpty).distinct)
+
+    val timeoutError = Task.raiseError(
+      new TimeoutException(s"Failed to describe table in ${config.requestTimeout.millis.toSeconds} seconds"))
+
+    task.timeoutTo(config.requestTimeout.millis, timeoutError)
   }
 
   def executeFor[T](sql: String, resultMapper: List[String] => T) = {
     val query = ActiveQuery(UUID.randomUUID().toString, Seq(sql), user)
     val resultBuilder = new SingleBuilder[String]
     for {
-      _ <- queryExecutor.runTask(query, resultBuilder)
+      _ <- queryExecutor.runTask(query, resultBuilder).timeout(config.requestTimeout.millis)
       results <- Task.eval(resultBuilder.build())
       mapped <- Task.eval(results.map(row => resultMapper(row.map(_.toString).toList)))
       failedIfEmpty <- if (resultBuilder.isFailure) {
@@ -67,10 +73,15 @@ class AthenaDb(queryExecutor: AsyncQueryExecutor[String, Batch], state: AthenaDb
 
   object Schemas {
     def get: Task[List[Schema]] = {
-      for {
+      val task = for {
         schemaNames <- executeForSingleColumn("show databases")
         schemas <- Task.traverse(schemaNames)(inferSchemaInOneQuery)
       } yield schemas
+
+      val timeoutError = Task.raiseError(
+        new TimeoutException(s"Failed to build db tree in ${config.firstEmptyStateDelay.millis.toSeconds} seconds"))
+
+      task.timeoutTo(config.firstEmptyStateDelay.millis, timeoutError)
     }
 
     def inferSchemaInOneQuery(schemaName: String): Task[Schema] = {

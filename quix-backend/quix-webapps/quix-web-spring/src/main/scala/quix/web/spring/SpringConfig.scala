@@ -9,7 +9,7 @@ import org.springframework.core.env.Environment
 import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.module.ExecutionModule
 import quix.api.users.DummyUsers
-import quix.athena.{AthenaConfig, AthenaQueryExecutor, AthenaQuixModule}
+import quix.athena.{AthenaConfig, AthenaDb, AthenaQueryExecutor, AthenaQuixModule}
 import quix.core.download.DownloadableQueriesImpl
 import quix.core.executions.SequentialExecutions
 import quix.core.utils.JsonOps
@@ -123,15 +123,20 @@ class ModulesConfiguration extends LazyLogging {
       val config = {
         val output = env.getRequiredProperty("athena.output")
         val region = env.getRequiredProperty("athena.region")
-          val database = env.getProperty("athena.database", "")
-        AthenaConfig(output, region, database)
+        val database = env.getProperty("athena.database", "")
+
+        val firstEmptyStateDelay = env.getProperty("athena.db.empty.timeout", classOf[Long], 1000L * 10)
+        val requestTimeout = env.getProperty("athena.db.request.timeout", classOf[Long], 5000L)
+
+        AthenaConfig(output, region, database, firstEmptyStateDelay, requestTimeout)
       }
 
       logger.warn(s"event=[spring-config] bean=[AthenaConfig] config==$config")
 
       val executor = AthenaQueryExecutor(config)
+      val db = new AthenaDb(executor, config)
 
-      Registry.modules.update("athena", AthenaQuixModule(executor))
+      Registry.modules.update("athena", AthenaQuixModule(executor, db))
     }
 
     "OK"
