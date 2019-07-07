@@ -49,14 +49,14 @@
 
   @if ($theme == 'lighter') {
     color: $lighter-color;
-    background-color: lighten($lighter-hover-bg, 3);
+    background-color: $white;
 
     &::placeholder {
       color: $lighter-muted-color;
     }
   } @else if ($theme == 'light') {
     color: $light-color;
-    background-color: lighten($light-hover-bg, 3);
+    background-color: $white;
 
     &::placeholder {
       color: $light-muted-color;
