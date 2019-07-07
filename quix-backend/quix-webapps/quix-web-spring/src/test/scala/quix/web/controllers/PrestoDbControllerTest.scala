@@ -72,7 +72,7 @@ class PrestoDbControllerTest extends E2EContext {
 
     val catalogs = get[List[Catalog]]("api/db/presto/search?q=schema")
 
-    val catalog = Catalog("catalog", children = List(Schema("schema", children = Nil)))
+    val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", children = Nil)))))
 
     assertThat(catalogs, Matchers.is(List(catalog)))
   }
@@ -83,7 +83,7 @@ class PrestoDbControllerTest extends E2EContext {
 
     val catalogs = get[List[Catalog]]("api/db/presto/search?q=catalog")
 
-    val catalog = Catalog("catalog", children = Nil)
+    val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", children = Nil)))))
 
     assertThat(catalogs, Matchers.is(List(catalog)))
   }
