@@ -9,8 +9,7 @@ import {IScope} from './db-sidebar-types';
 import {cache} from '../../store';
 import {convert} from '../../services/db';
 import * as Resources from '../../services/resources';
-import {StateManager} from '../../services/state';
-import {openTempQuery} from '../../services';
+import {openTempQuery, StateManager} from '../../services';
 import {pluginManager} from '../../plugins';
 import {debounceAsync} from '../../utils';
 
