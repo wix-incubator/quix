@@ -54,6 +54,10 @@ export default (app: Instance, store: Store) => () => ({
           onFileExplorerLoad() {
             scope.vm.state.set('Visible');
           },
+          onRetryClick() {
+            scope.vm.state.force('Initial');
+            cache.db.fetch(scope.vm.type);
+          },
           onLazyFolderFetch(folder: IFile) {
             const path = [...folder.path, {id: folder.id, name: folder.name}];
             const [catalog, schema, table] = path.map(({name}) => name);
