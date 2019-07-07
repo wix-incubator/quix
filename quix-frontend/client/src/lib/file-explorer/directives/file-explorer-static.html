@@ -1,0 +1,61 @@
+<ul ng-if="::vm" class="fe-folders">
+  <li
+    ng-class="{'fe-folder--open': vm.folder.isOpen(folder)}"
+    ng-repeat="folder in ::model.getFolders() | orderBy:'name' track by folder.getId()"
+    ng-if="::!options.hideEmptyFolders || folder.hasFileLeaf()"
+  >
+    <div
+      class="fe-item bi-spread bi-fade-in bi-hover bi-muted {{::'fe-item-depth-' + depth}}"
+    >
+      <div class="bi-r-h bi-align bi-grow">
+        <i
+          class="fe-toggle bi-action bi-icon bi-pointer"
+          ng-class="::{'fe-toggle--hidden': folder.isEmpty()}"
+          ng-click="events.onFolderToggle(folder);"
+        >arrow_drop_down</i>
+
+        <span
+          class="fe-item-name bi-r-h bi-align bi-grow bi-pointer"
+          ng-click="events.onFolderClick(folder)"
+          bi-html="renderFolder(scope)"
+        ></span>
+      </div>
+
+      <bi-dropdown bd-options="::{align: 'right'}" ng-if="::vm.folder.hasMenu(folder)">
+        <bi-toggle class="bi-align">
+          <i class="bi-action bi-icon">more_vert</i>
+        </bi-toggle>
+
+        <div bi-html="renderMenu(scope, folder)"></div>
+      </bi-dropdown>
+    </div>
+    
+    <bi-file-explorer-inner-static
+      ng-if="vm.folder.isOpen(folder)"
+      model="folder"
+      fe-options="options"
+      readonly="true"
+    ></bi-file-explorer-inner-static>
+  </li>
+</ul>
+
+<ul
+  ng-if="::vm"
+  class="fe-files"
+>
+  <li ng-if="model.isLazy()">
+    <div class="fe-item {{::'fe-item-depth-' + depth}} bi-align bi-muted bi-fade-in">Loading...</div>
+  </li>
+
+  <li
+    class="bi-hover bi-muted"
+    ng-repeat="file in model.getFiles() | orderBy:vm.order.field track by file.getId()"
+    ng-click="events.onFileClick(file)"
+  >
+    <div
+      class="fe-item {{::'fe-item-depth-' + depth}} bi-spread bi-align bi-pointer bi-fade-in"
+      title="{{::file.getName()}}"
+      bi-html="renderFile(scope)"
+    ></div>
+  </li>
+</ul>

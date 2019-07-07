@@ -119,7 +119,10 @@ export default (app: Instance, store: Store) => () => ({
         scope.vm.state.force('Error', !!error, {error});
       }, scope);
 
-      cache.db.fetch(scope.vm.type);
+
+      if (!store.getState('db.db')) {
+        cache.db.fetch(scope.vm.type);
+      }
     }
   }
 });

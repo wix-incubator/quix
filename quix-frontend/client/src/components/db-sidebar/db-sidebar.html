@@ -51,9 +51,8 @@
     </div>
   </div>
 
-  <div class="bi-c-h bi-grow bi-scroll">
-
-    <bi-file-explorer
+  <div class="bi-c-h bi-grow bi-scroll" ng-show="vm.state.after('SearchResult')">
+    <bi-file-explorer-static
       ng-show="vm.state.is('Visible')"
       ng-model="vm.state.value().db"
       fe-options="::{draggable: true, expandRootFolder: true}"
@@ -84,9 +83,9 @@
           </li>
         </ul>
       </menu>
-    </bi-file-explorer>
+    </bi-file-explorer-static>
 
-    <bi-file-explorer
+    <bi-file-explorer-static
       ng-if="vm.state.is('SearchContent')"
       ng-model="vm.state.value().dbFiltered"
       fe-options="::{draggable: true, expandAllFolders: true}"
@@ -116,7 +115,7 @@
           </li>
         </ul>
       </menu>
-    </bi-file-explorer>
+    </bi-file-explorer-static>
     
   </div>
 </div>

@@ -1,1 +1,6 @@
-export {fileExplorer, fileExplorerInner} from './file-explorer';
+export {
+  fileExplorer,
+  fileExplorerStatic,
+  fileExplorerInner,
+  fileExplorerInnerStatic
+} from './file-explorer';

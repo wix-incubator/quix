@@ -7,9 +7,12 @@ import {treeToDef, defToTree, addFile} from '../services/file-explorer-tools';
 import Controller from '../services/file-explorer-controller';
 import VM from './file-explorer-vm';
 
-import template from './file-explorer.html';
+import templateDynamic from './file-explorer-dynamic.html';
+import templateStatic from './file-explorer-static.html';
+
 import './file-explorer.scss';
 
+type Mode = 'static' | 'dynamic';
 
 const confirmAction = (action: 'delete', context: 'folder', name: string) => {
   return confirm({
@@ -21,20 +24,20 @@ const confirmAction = (action: 'delete', context: 'folder', name: string) => {
   });
 }
 
-function directive(params) {
+function directive(mode: Mode, params) {
   return assign({
-    template,
+    template: mode === 'dynamic' ? templateDynamic : templateStatic,
     restrict: 'E'
   }, params);
 }
 
-function initScope(scope, controller: Controller, depth: number) {
+function initScope(scope, controller: Controller, depth: number, mode: Mode) {
   scope.depth = depth;
   scope.renderFolder = (s) => controller.renderFolder(s);
   scope.renderFile = (s) => controller.renderFile(s);
   scope.renderFolderIcon = (folder) => controller.renderFolderIcon(scope, folder);
   scope.renderFileIcon = (file) => controller.renderFileIcon(scope, file);
-  scope.renderMenu = (folder) => controller.renderMenu(scope, folder);
+  scope.renderMenu = (s, folder) => controller.renderMenu(s, folder);
 
   const helper = initNgScope(scope)
     .readonly(scope.readonly)
@@ -157,9 +160,9 @@ function initScope(scope, controller: Controller, depth: number) {
     }
 }
 
-export function fileExplorerInner() {
-  return directive({
-    require: '^biFileExplorer',
+const fileExplorerInnerBuilder = (mode: Mode) => () => {
+  return directive(mode, {
+    require: `^biFileExplorer${mode === 'static' ? 'Static' : ''}`,
     scope: {
       model: '=',
       feOptions: '<',
@@ -174,15 +177,20 @@ export function fileExplorerInner() {
           options: scope.options
         }));
 
-        initScope(scope, controller, element.parents('bi-file-explorer-inner').length as number + 1);
+        initScope(
+          scope,
+          controller,
+          element.parents(`bi-file-explorer-inner${mode === 'static' ? '-static' : ''}`).length as number + 1,
+          mode
+        );
       }
     }
   });
 }
 
-export function fileExplorer() {
-  return directive({
-    require: ['ngModel', 'biFileExplorer'],
+const fileExplorerBuilder = (mode: Mode) => () => {
+  return directive(mode, {
+    require: ['ngModel', `biFileExplorer${mode === 'static' ? 'Static' : ''}`],
     transclude: {
       folderIcon: '?folderIcon',
       fileIcon: '?fileIcon',
@@ -220,7 +228,7 @@ export function fileExplorer() {
           })
           .feedBack(false);
 
-        initScope(scope, controller, 0);
+        initScope(scope, controller, 0, mode);
 
         element.addClass(`fe-folder-mode-${scope.options.folderMode}`);
       }
@@ -228,3 +236,7 @@ export function fileExplorer() {
   });
 }
 
+export const fileExplorer = fileExplorerBuilder('dynamic');
+export const fileExplorerStatic = fileExplorerBuilder('static');
+export const fileExplorerInner = fileExplorerInnerBuilder('dynamic');
+export const fileExplorerInnerStatic = fileExplorerInnerBuilder('static');

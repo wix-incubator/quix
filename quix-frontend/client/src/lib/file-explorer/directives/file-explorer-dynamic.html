@@ -5,7 +5,7 @@
     ng-if="!options.hideEmptyFolders || folder.hasFileLeaf()"
   >
     <div
-      class="fe-item bi-hover bi-muted {{::'fe-item-depth-' + depth}}"
+      class="fe-item bi-spread bi-fade-in bi-hover bi-muted {{::'fe-item-depth-' + depth}}"
       ng-class="{'bi-active': vm.folder.isActive(folder)}"
       drop="::!readonly"
       jqyoui-droppable="{onDrop: 'events.onItemDrop(folder)'}"
@@ -14,9 +14,39 @@
         greedy: true
       }"
       ng-model="vm.dropped.item"
-      bi-html="renderFolder(scope)"
-      bi-html-delay="{{$index === 0 ? '' : '50'}}"
-    ></div>
+    >
+      <div class="bi-r-h bi-align bi-grow">
+        <i
+          class="fe-toggle bi-action bi-icon bi-pointer"
+          ng-class="{'fe-toggle--hidden': folder.isEmpty()}"
+          ng-click="events.onFolderToggle(folder);"
+        >arrow_drop_down</i>
+
+        <span
+          class="fe-item-name bi-r-h bi-align bi-grow bi-pointer"
+          ng-click="events.onFolderClick(folder)"
+          drag="!readonly"
+          jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
+          jqyoui-options="{
+            helper: 'clone',
+            distance: 5,
+            scroll: true,
+            appendTo: 'parent',
+            containment: options.draggable ? 'window' : vm.container
+          }"
+          ng-model="folder"
+          bi-html="renderFolder(scope)"
+        ></span>
+      </div>
+
+      <bi-dropdown bd-options="::{align: 'right'}" ng-if="::vm.folder.hasMenu(folder)">
+        <bi-toggle class="bi-align">
+          <i class="bi-action bi-icon">more_vert</i>
+        </bi-toggle>
+
+        <div bi-html="renderMenu(scope, folder)"></div>
+      </bi-dropdown>
+    </div>
 
     <bi-file-explorer-inner
       ng-if="vm.folder.isOpen(folder)"
@@ -60,7 +90,6 @@
       ng-model="file"
       title="{{::file.getName()}}"
       bi-html="renderFile(scope)"
-      bi-html-delay="{{$index === 0 ? '' : '50'}}"
     ></div>
   </li>
 </ul>
