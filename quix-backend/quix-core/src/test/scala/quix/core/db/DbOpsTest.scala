@@ -62,18 +62,18 @@ class DbOpsTest extends SpecWithJUnit with MustMatchers  {
       DbOps.search(List.empty, "foo") must beEmpty
     }
 
-    "in case of catalog match, it should return the whole catalog including schemas and tables in case of a match" in {
-      val first = Catalog("this-is-foo-catalog", List(Schema("this-is-boo-schema", Nil)))
-      val second = Catalog("this-is-boo-catalog", List(Schema("this-is-boo-schema", Nil)))
+    "search by catalog name" in {
+      val first = Catalog("this-is-foo-catalog", Nil)
+      val second = Catalog("this-is-boo-catalog", Nil)
 
       val expected = List(first)
 
       DbOps.search(List(first, second), "foo") must_=== expected
     }
 
-    "in case of schema match, it should return the catalog including only matched schemas and all tables of those schemas" in {
-      val first = Schema("this-is-foo-schema", List(Table("this-is-boo-table", Nil)))
-      val second = Schema("this-is-boo-schema", List(Table("this-is-boo-table", Nil)))
+    "search by schema name" in {
+      val first = Schema("this-is-foo-schema", Nil)
+      val second = Schema("this-is-boo-schema", Nil)
 
       val catalog = Catalog("catalog", List(first, second))
       val expected = Catalog("catalog", List(first))
@@ -81,7 +81,7 @@ class DbOpsTest extends SpecWithJUnit with MustMatchers  {
       DbOps.search(List(catalog), "foo") must contain(expected)
     }
 
-    "in case of table match, it should return the whole catalog+schema tree for that table" in {
+    "search by table name" in {
       val first = Table("this-is-foo-table", Nil)
       val second = Table("this-is-boo-table", Nil)
 

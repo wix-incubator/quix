@@ -1,7 +1,7 @@
 package quix.core.db
 
 import com.typesafe.scalalogging.LazyLogging
-import quix.api.db.{Catalog, Schema}
+import quix.api.db.Catalog
 
 object DbOps extends LazyLogging {
   def mergeNewAndOldCatalogs(newCatalogs: List[Catalog], oldCatalogs: List[Catalog]): List[Catalog] = {
@@ -23,22 +23,19 @@ object DbOps extends LazyLogging {
   }
 
   def search(catalogs: List[Catalog], query: String): List[Catalog] = {
-    catalogs.collect {
-      case catalog if catalog.name.contains(query) =>
-        catalog
+    val filtered = catalogs.map { catalog =>
+      val schemas = catalog.children
 
-      case catalog if catalog.children.exists(schema => matches(schema, query)) =>
-        catalog.copy(children = catalog.children.collect {
-          case schema if schema.name.contains(query) =>
-            schema
+      val filtered = schemas.map { schema =>
+        val tables = schema.children
+        val filtered = tables.filter(_.name.contains(query))
 
-          case schema if schema.children.exists(_.name.contains(query)) =>
-            schema.copy(children = schema.children.filter(_.name.contains(query)))
-        })
-    }
-  }
+        schema.copy(children = filtered)
+      }.filter(schema => schema.children.nonEmpty || schema.name.contains(query))
 
-  def matches(schema: Schema, query: String): Boolean = {
-    schema.name.contains(query) || schema.children.exists(_.name.contains(query))
+      catalog.copy(children = filtered)
+    }.filter(catalog => catalog.children.nonEmpty || catalog.name.contains(query))
+
+    filtered
   }
 }
