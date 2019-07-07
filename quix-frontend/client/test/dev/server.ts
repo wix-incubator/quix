@@ -9,7 +9,7 @@ import {setupMockWs} from './websocket-mock';
 
 const proxyBaseUrl = 'http://localhost:3000';
 
-export function start(port = process.env.PORT || 3000) {
+export function start(port = process.env.PORT || '3000') {
   const app = express();
   const server = http.createServer(app);
   expressWs(app, server);
@@ -32,7 +32,7 @@ export function start(port = process.env.PORT || 3000) {
   setupMockWs(app);
 
   app.all('/api/*', (req, res) => {
-    if (port === 3000) {
+    if (port === '3000' || port === '3100') {
       const [status, payload] = mock(req.path);
 
       res.status(status).json(payload);

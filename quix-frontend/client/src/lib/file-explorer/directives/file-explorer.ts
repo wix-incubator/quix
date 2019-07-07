@@ -114,14 +114,24 @@ function initScope(scope, controller: Controller, depth: number, mode: Mode) {
         scope.vm.folder.toggleEdit(folder, false);
       },
       onFolderToggle(folder: Folder) {
-        if (!scope.vm.folders.get(folder).edit.enabled) {
-          scope.vm.folder.toggleOpen(folder);
+        if (scope.vm.folders.get(folder).edit.enabled) {
+          return;
+        }
 
-          if (folder.isLazy() && scope.vm.folder.isOpen(folder)) {
+        scope.vm.folder.toggleOpen(folder);
+
+        if (scope.vm.folder.isOpen(folder)) {
+          folder.setLimit(20);
+
+          if (folder.isLazy()) {
             controller.fetchLazyFolder(folder).then(items => {
               items.forEach(item => addFile(folder, item));
               folder.setLazy(false);
+
+              inject('$timeout')(() => folder.setLimit(null), 100);
             });
+          } else {
+            inject('$timeout')(() => folder.setLimit(null), 100);
           }
         }
       },
@@ -216,7 +226,8 @@ const fileExplorerBuilder = (mode: Mode) => () => {
             scope.vm.init({
               controller,
               item: model,
-              options: scope.options
+              options: scope.options,
+              isRoot: true
             });
           })
           .then(() => {

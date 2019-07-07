@@ -16,8 +16,6 @@ export default class Controller {
   private currentFolder: Folder = null;
   private currentFile: File = null;
 
-  private readonly slots: Record<string, boolean> = {};
-
   constructor(private readonly $scope, private readonly $element, private readonly $transclude :ng.ITranscludeFunction) {
     this.instance = new Instance($scope);
     this.ngModel = $element.controller('ngModel');
@@ -38,10 +36,6 @@ export default class Controller {
       delete: !this.$scope.readonly,
       menu: !this.$scope.readonly
     });
-  }
-
-  getSlots() {
-    return this.slots;
   }
 
   getContainer() {

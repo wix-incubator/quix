@@ -23,6 +23,9 @@
   <div class="quix-empty-state bi-empty-state bi-fade-in" ng-if="vm.state.is('Result')">
     <quix-image class="bi-empty-state-image" name="no_data.svg"></quix-image>
     <div class="bi-empty-state-header">Database is empty</div>
+    <div class="bi-empty-state-content">
+      <a class="bi-link" ng-click="events.onRetryClick()">Retry</a>
+    </div>
   </div>
 
   <div class="quix-empty-state bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="db-sidebar-error">

@@ -94,6 +94,7 @@ export class Folder extends Item {
   private folders: Folder[] = [];
   private files: File[] = [];
   private lazy: boolean = false;
+  private limit: number = null;
   private readonly status = {
     open: false,
     edit: false,
@@ -248,6 +249,14 @@ export class Folder extends Item {
 
   public getLength(res = 1): number {
     return Math.max(res, ...(this.folders.map(folder => folder.getLength(res + 1))));
+  }
+
+  public setLimit(limit: number) {
+    this.limit = limit;
+  }
+
+  public getLimit() {
+    return this.limit;
   }
 
   public destroy() {
