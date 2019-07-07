@@ -43,7 +43,7 @@ class AthenaDb(queryExecutor: AsyncQueryExecutor[String, Batch], config: AthenaC
     }
 
     val task = for {columns <- executeFor(sql, mapper)}
-      yield Table(table, columns.filter(_.name.nonEmpty).distinct)
+      yield Table(table, columns.filter(_.name.trim.nonEmpty).filterNot(_.name.startsWith("# ")).distinct)
 
     val timeoutError = Task.raiseError(
       new TimeoutException(s"Failed to describe table in ${config.requestTimeout.millis.toSeconds} seconds"))
