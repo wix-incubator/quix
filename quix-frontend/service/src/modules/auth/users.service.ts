@@ -19,7 +19,7 @@ export class UsersService {
     if (!user) {
       await this.doFirstTimeLogin(userFromLogin);
     } else {
-      await this.doLogin(userFromLogin);
+      await this.doLogin(user, userFromLogin);
     }
   }
 
@@ -35,14 +35,10 @@ export class UsersService {
     return this.userRepo.save(dbUser);
   }
 
-  async doLogin(userFromLogin: IGoogleUser) {
-    const {avatar, email: id, name} = userFromLogin;
-    const dbUser: Partial<DbUser> = {
-      avatar,
-      id,
-      name,
-    };
-    return this.userRepo.save(dbUser);
+  async doLogin(user: DbUser, userFromLogin: IGoogleUser) {
+    const {avatar, name} = userFromLogin;
+    Object.assign(user, {avatar, name});
+    return this.userRepo.save(user);
   }
 
   private async createRootFolder(user: string) {

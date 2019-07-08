@@ -16,6 +16,7 @@ import {IFile, FileType} from 'shared/entities/file';
 import {DbNotebook} from './dbnotebook.entity';
 import {DbFolder} from './folder.entity';
 import {dbConf} from '../config/db-conf';
+import {IUser} from 'shared/dist';
 
 @Entity({name: 'tree_nodes'})
 export class DbFileTreeNode {
@@ -31,6 +32,8 @@ export class DbFileTreeNode {
   @Index()
   @Column(dbConf.shortTextField)
   owner!: string;
+
+  ownerDetails?: IUser;
 
   @UpdateDateColumn(dbConf.dateUpdated)
   dateUpdated!: number;

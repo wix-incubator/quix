@@ -17,6 +17,7 @@ import {NotePlugin} from './plugins/note-plugin';
 import {NotebookPlugin} from './plugins/notebook-plugin';
 import {FileTreePlugin} from './plugins/file-tree-plugin';
 import {PassportModule} from '@nestjs/passport';
+import {FavoritesPlugin} from './plugins/favorites-plugin';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import {PassportModule} from '@nestjs/passport';
     NotePlugin,
     NotebookPlugin,
     FileTreePlugin,
+    FavoritesPlugin,
   ],
   exports: [QuixEventBus, DbActionStore],
 })

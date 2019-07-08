@@ -1,5 +1,6 @@
 import {FileType, IFile, IFilePathItem} from 'shared/entities/file';
 import {DbFileTreeNode} from 'entities';
+import {extractOwnerDetails} from 'entities/utils';
 
 /**
  * @param list The list dbNodes you want to convert to a IFile
@@ -19,7 +20,7 @@ export function convertListDbNodeToIFileList(
  */
 function convertToIFile(
   id: string,
-  itemMap: Map<string, DbFileTreeNode>,
+  noteMap: Map<string, DbFileTreeNode>,
   resultMap: Map<string, IFile>,
 ) {
   const alreadyConverted = resultMap.get(id);
@@ -27,27 +28,28 @@ function convertToIFile(
     return alreadyConverted;
   }
 
-  const item = itemMap.get(id)!;
-  const {dateCreated, dateUpdated, type, owner} = item;
+  const node = noteMap.get(id)!;
+  const {dateCreated, dateUpdated, type, owner} = node;
 
   let path: IFilePathItem[];
-  if (!item.parentId) {
+  if (!node.parentId) {
     path = [];
   } else {
-    const parentFile = convertToIFile(item.parentId, itemMap, resultMap);
+    const parentFile = convertToIFile(node.parentId, noteMap, resultMap);
     path = parentFile.path.concat([{id: parentFile.id, name: parentFile.name}]);
   }
 
   const name =
-    item.type === FileType.folder ? item.folder!.name : item.notebook!.name;
+    node.type === FileType.folder ? node.folder!.name : node.notebook!.name;
 
   const result: IFile = {
-    id: item.type === FileType.folder ? id : item.notebookId!,
+    id: node.type === FileType.folder ? id : node.notebookId!,
     dateCreated,
     dateUpdated,
     type,
     name,
     owner,
+    ownerDetails: extractOwnerDetails(node),
     isLiked: false,
     path,
   };
@@ -98,6 +100,7 @@ export function convertSignleNodeToIFile(
     dateCreated,
     dateUpdated,
     owner,
+    ownerDetails: extractOwnerDetails(node),
     type,
     isLiked: false,
   };

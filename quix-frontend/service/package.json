@@ -30,6 +30,7 @@
     "appmetrics-dash": "^4.1.0",
     "cookie-parser": "^1.4.4",
     "dotenv": "^7.0.0",
+    "fp-ts": "^2.0.1",
     "google-auth-library": "^3.1.2",
     "http-proxy-middleware": "^0.19.1",
     "lodash": "^4.17.11",
@@ -87,6 +88,13 @@
     "testRegex": ".spec.ts$",
     "transform": {
       "^.+\\.ts$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfig": {
+          "target": "esnext"
+        }
+      }
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",

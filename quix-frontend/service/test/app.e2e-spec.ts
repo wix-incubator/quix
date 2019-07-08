@@ -172,7 +172,7 @@ describe('Application (e2e)', () => {
       );
     });
 
-    it('when searching notebooks,', async () => {
+    it('when searching notebooks, sanitize user', async () => {
       await driver.doLogin('user1');
 
       const [{id: rootFolder}] = await driver.as('user1').get('files');

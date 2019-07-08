@@ -1,7 +1,10 @@
+import {IUser} from '../user';
+
 export interface IEntity {
   id: string;
   name: string;
-  owner: string;
+  owner: string
+  ownerDetails?: IUser
   dateCreated: number;
   dateUpdated: number;
 }

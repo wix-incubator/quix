@@ -1,19 +1,14 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DbNote, NoteRepository} from 'entities';
-import {Repository} from 'typeorm';
-import {
-  noteReducer,
-  NoteActions,
-  NoteActionTypes,
-  INote,
-} from 'shared/entities/note';
+import {convertDbNote, convertNoteToDb} from 'entities/dbnote.entity';
+import {NoteActions, NoteActionTypes, noteReducer} from 'shared/entities/note';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {QuixHookNames} from '../types';
 
 @Injectable()
 export class NotePlugin implements EventBusPlugin {
-  name = 'notebook';
+  name = 'note';
 
   constructor(
     @InjectRepository(NoteRepository)
@@ -39,26 +34,26 @@ export class NotePlugin implements EventBusPlugin {
       if (action.type === NoteActionTypes.addNote) {
         const note = await noteReducer(undefined, action);
         if (note) {
-          return this.noteRepository.insertNewWithRank(new DbNote(note));
+          return this.noteRepository.insertNewWithRank(convertNoteToDb(note));
         }
         return;
       }
-
-      const model = await this.noteRepository.findOneOrFail(action.id);
+      const dbModel = await this.noteRepository.findOneOrFail(action.id);
 
       switch (action.type) {
         case NoteActionTypes.reorderNote: {
-          return this.noteRepository.reorder(model, action.to);
+          return this.noteRepository.reorder(dbModel, action.to);
         }
 
         case NoteActionTypes.deleteNote: {
-          return this.noteRepository.deleteOneAndOrderRank(model);
+          return this.noteRepository.deleteOneAndOrderRank(dbModel);
         }
 
         default: {
-          const newModel = noteReducer(model as INote, action);
+          const model = convertDbNote(dbModel);
+          const newModel = noteReducer(model, action);
           if (newModel && model !== newModel) {
-            return this.noteRepository.save(new DbNote(newModel));
+            return this.noteRepository.save(convertNoteToDb(newModel));
           }
         }
       }

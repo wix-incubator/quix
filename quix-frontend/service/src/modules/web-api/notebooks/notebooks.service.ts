@@ -2,9 +2,10 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {INotebook} from 'shared';
-import {DbNotebook, DbFavorites} from 'entities';
+import {DbNotebook, DbFavorites, DbUser} from 'entities';
 import {FoldersService} from '../folders/folders.service';
 import {EntityType} from 'common/entity-type.enum';
+import {convertDbNotebook} from 'entities/dbnotebook.entity';
 
 @Injectable()
 export class NotebookService {
@@ -23,6 +24,12 @@ export class NotebookService {
       .createQueryBuilder('notebook')
       .leftJoinAndSelect('notebook.fileNode', 'fileNode')
       .leftJoinAndSelect('notebook.notes', 'note')
+      .leftJoinAndMapOne(
+        'notebook.ownerDetails',
+        DbUser,
+        'user',
+        'notebook.owner = user.id',
+      )
       .where('notebook.id = :id', {id: notebookId})
       .orderBy({'note.rank': 'ASC'});
 
@@ -39,11 +46,8 @@ export class NotebookService {
     }
 
     const isLiked = !!favorite;
-    const path =
-      (await this.folderService.computePath(notebook.fileNode)) || [];
+    const path = await this.folderService.computePath(notebook.fileNode);
 
-    const {id, notes, dateCreated, dateUpdated, name, owner} = notebook;
-
-    return {id, notes, dateCreated, dateUpdated, name, owner, isLiked, path};
+    return convertDbNotebook(notebook, path, isLiked);
   }
 }

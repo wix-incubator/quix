@@ -1,22 +1,23 @@
+import {IFilePathItem, INotebook} from 'shared';
 import {
-  Column,
-  Entity,
-  Index,
-  PrimaryColumn,
-  OneToMany,
-  OneToOne,
   BeforeInsert,
   BeforeUpdate,
-  UpdateDateColumn,
+  Column,
   CreateDateColumn,
+  Entity,
+  OneToMany,
+  OneToOne,
+  PrimaryColumn,
+  UpdateDateColumn,
 } from 'typeorm';
-import {DbNote} from './dbnote.entity';
-import {DbFileTreeNode} from './filenode.entity';
-import {INote, IFilePathItem, INotebook} from 'shared';
 import {dbConf} from '../config/db-conf';
+import {convertDbNote, convertNoteToDb, DbNote} from './dbnote.entity';
+import {DbFileTreeNode} from './filenode.entity';
+import {DbUser} from './user.entity';
+import {extractOwnerDetails} from './utils';
 
 @Entity({name: 'notebooks'})
-export class DbNotebook implements INotebook {
+export class DbNotebook {
   @PrimaryColumn(dbConf.idColumn)
   id!: string;
 
@@ -26,6 +27,8 @@ export class DbNotebook implements INotebook {
   @Column(dbConf.shortTextField)
   owner!: string;
 
+  ownerDetails?: DbUser;
+
   @UpdateDateColumn(dbConf.dateUpdated)
   dateUpdated!: number;
 
@@ -33,73 +36,62 @@ export class DbNotebook implements INotebook {
   dateCreated!: number;
 
   @Column({...dbConf.json, name: 'json_content'})
-  jsonContent: any = {};
-
-  isLiked!: boolean;
+  jsonContent: any;
 
   @OneToMany(type => DbNote, n => n.notebook, {onDelete: 'CASCADE'})
-  notes!: INote[];
+  notes?: DbNote[];
 
   @OneToOne(type => DbFileTreeNode, node => node.notebook, {
     onDelete: 'CASCADE',
   })
-  fileNode!: DbFileTreeNode;
+  fileNode?: DbFileTreeNode;
 
-  path: IFilePathItem[] = [];
-
-  @BeforeUpdate()
-  @BeforeInsert()
-  updateContentOnSave() {
-    this.jsonContent = this.jsonContent || {};
-  }
-
-  constructor(base?: INotebook) {
+  constructor(base?: DbNotebook) {
     if (base) {
-      const {id, dateCreated, dateUpdated, name, notes, owner, path} = base;
+      const {id, dateCreated, dateUpdated, name, notes, owner} = base;
       this.id = id;
       this.dateCreated = dateCreated;
       this.dateUpdated = dateUpdated;
       this.name = name;
       this.notes = notes;
       this.owner = owner;
-      this.path = path;
     }
+    this.jsonContent = this.jsonContent || {};
   }
 }
 
-// export const covertDbNotebook = (dbNotebook: DbNotebook): INotebook => {
-//   const {
-//     dateCreated,
-//     dateUpdated,
-//     id,
-//     name,
-//     owner,
-//     notes,
-//     fileNode,
-//   } = dbNotebook;
+export const convertDbNotebook = (
+  dbNotebook: DbNotebook,
+  computedPath?: IFilePathItem[],
+  isLiked?: boolean,
+): INotebook => {
+  const {dateCreated, dateUpdated, id, name, owner, notes} = dbNotebook;
 
-//   return {
-//     id,
-//     dateCreated: dateCreated.valueOf(),
-//     dateUpdated: dateUpdated.valueOf(),
-//     name,
-//     owner,
-//     notes: notes.map(convertDbNote),
-//     path: [],
-//   };
-// };
+  const ownerDetails = extractOwnerDetails(dbNotebook);
 
-// export const covertNotebookToDb = (
-//   notebook: INotebook,
-// ): Partial<DbNotebook> => {
-//   const {id, name, owner, notes} = notebook;
+  return {
+    id,
+    dateCreated,
+    dateUpdated,
+    name,
+    owner,
+    isLiked: isLiked !== undefined ? isLiked : false,
+    notes: notes ? notes.map(convertDbNote) : [],
+    path: computedPath || [],
+    ownerDetails,
+  };
+};
 
-//   return {
-//     id,
-//     dateCreated: dateCreated.valueOf(),
-//     dateUpdated: dateUpdated.valueOf(),
-//     name,
-//     owner,
-//     notes,
-//   };
-// };
+export const covertNotebookToDb = (notebook: INotebook): DbNotebook => {
+  const {id, name, owner, notes, dateCreated, dateUpdated} = notebook;
+
+  return new DbNotebook({
+    id,
+    dateCreated,
+    dateUpdated,
+    name,
+    owner,
+    notes: notes.map(convertNoteToDb),
+    jsonContent: {},
+  });
+};

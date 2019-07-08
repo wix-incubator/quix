@@ -58,7 +58,8 @@ function createNote(defaultUser: string, noteName: string, notebookId: string) {
     id: uuid(),
     owner: defaultUser,
     name: noteName,
-    content: '',
+    textContent: '',
+    jsonContent: undefined,
     type: NoteType.PRESTO,
     notebookId,
     dateCreated: 1,
@@ -100,6 +101,7 @@ describe('web-api module', () => {
   let eventsRepo: Repository<DbAction>;
   let fileTreeRepo: FileTreeRepository;
   let favoritesRepo: Repository<DbFavorites>;
+  let userRepo: Repository<DbUser>;
   let folderService: FoldersService;
   let notebookService: NotebookService;
   let favoritesService: FavoritesService;
@@ -120,6 +122,7 @@ describe('web-api module', () => {
     await notebookRepo.delete({});
     await fileTreeRepo.clear();
     await favoritesRepo.clear();
+    await userRepo.clear();
     await conn.query(
       dbType === 'mysql'
         ? 'SET FOREIGN_KEY_CHECKS=1'
@@ -156,6 +159,7 @@ describe('web-api module', () => {
     fileTreeRepo = module.get(getRepositoryToken(FileTreeRepository));
     folderRepo = module.get(getRepositoryToken(DbFolder));
     favoritesRepo = module.get(getRepositoryToken(DbFavorites));
+    userRepo = module.get(getRepositoryToken(DbUser));
     folderService = module.get(FoldersService);
     notebookService = module.get(NotebookService);
     favoritesService = module.get(FavoritesService);
@@ -169,6 +173,13 @@ describe('web-api module', () => {
   describe('foldersService', () => {
     describe('getPathList', () => {
       it('get a path list with notebooks inside a folder', async () => {
+        await userRepo.save({
+          id: defaultUser,
+          name: 'some name',
+          avatar: 'http://url',
+          rootFolder: 'someId',
+        });
+
         const notebookName = 'some new notebook';
         const [notebookNode, notebook] = createNotebookNode(
           defaultUser,
@@ -238,6 +249,7 @@ describe('web-api module', () => {
           ],
           dateCreated: expect.any(Number),
           dateUpdated: expect.any(Number),
+          ownerDetails: {id: defaultUser},
           owner: defaultUser,
           type: FileType.folder,
           files: [
@@ -247,6 +259,7 @@ describe('web-api module', () => {
               dateUpdated: expect.any(Number),
               type: FileType.folder,
               name: 'folderName3',
+              ownerDetails: {id: defaultUser},
               owner: defaultUser,
               path: [
                 {
@@ -346,6 +359,57 @@ describe('web-api module', () => {
 
       expect(response!.id).toBe(notebook.id);
       expect(response!.isLiked).toBe(true);
+    });
+
+    it('get a notebook, with user details', async () => {
+      const notebookName = 'some new notebook';
+      const [notebookNode, notebook] = createNotebookNode(
+        defaultUser,
+        notebookName,
+      );
+
+      await userRepo.save({
+        id: defaultUser,
+        name: 'some name',
+        avatar: 'http://url',
+        rootFolder: 'someId',
+      });
+      await notebookRepo.save(notebook);
+      await fileTreeRepo.save(notebookNode);
+
+      const response = await notebookService.getNotebook(
+        defaultUser,
+        notebook.id,
+      );
+
+      expect(response!.id).toBe(notebook.id);
+      expect(response!.ownerDetails).toMatchObject({
+        id: defaultUser,
+        name: 'some name',
+        avatar: 'http://url',
+      });
+    });
+
+    it('get a notebook, even when user does not exist', async () => {
+      const notebookName = 'some new notebook';
+      const [notebookNode, notebook] = createNotebookNode(
+        defaultUser,
+        notebookName,
+      );
+
+      await notebookRepo.save(notebook);
+      await fileTreeRepo.save(notebookNode);
+
+      const response = await notebookService.getNotebook(
+        defaultUser,
+        notebook.id,
+      );
+
+      expect(response!.id).toBe(notebook.id);
+      expect(response!.ownerDetails).toMatchObject({
+        id: defaultUser,
+        name: '',
+      });
     });
   });
 

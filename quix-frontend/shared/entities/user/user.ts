@@ -11,3 +11,13 @@ export const createUser = (props: Partial<IUser> = {}): IUser => ({
   dateUpdated: 0,
   ...props
 });
+
+export const createEmptyIUser = (userId: string = ''): IUser => ({
+  email: userId,
+  id: userId,
+  rootFolder: '',
+  name: '',
+  avatar: '',
+  dateCreated: 0,
+  dateUpdated: 0,
+});

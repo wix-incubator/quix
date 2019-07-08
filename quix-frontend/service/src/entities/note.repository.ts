@@ -30,6 +30,10 @@ export class NoteRepository extends Repository<DbNote> {
   async reorder(note: DbNote, to: number) {
     return this.manager.transaction(async em => {
       const from = note.rank;
+      if (from === undefined) {
+        throw new Error('invalid note state, missing rank property');
+      }
+
       if (from === to) {
         return;
       }

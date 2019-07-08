@@ -7,6 +7,7 @@ import {
   createNotebook,
   NotebookActions,
   INotebook,
+  createEmptyIUser,
 } from 'shared';
 
 export class MockDataBuilder {
@@ -55,7 +56,8 @@ export class MockDataBuilder {
         name,
         path: path as IFilePathItem[],
         isLiked: false,
-        owner: '',
+        owner: user || '',
+        ownerDetails: createEmptyIUser(user),
         dateCreated: 0,
         dateUpdated: 0,
       }),

@@ -15,7 +15,7 @@ import {DbNotebook} from './dbnotebook.entity';
 import {dbConf} from '../config/db-conf';
 
 @Entity({name: 'notes'})
-export class DbNote implements IBaseNote {
+export class DbNote {
   @PrimaryColumn(dbConf.idColumn)
   id!: string;
 
@@ -43,93 +43,81 @@ export class DbNote implements IBaseNote {
   dateCreated!: number;
 
   @ManyToOne(type => DbNotebook, n => n.notes, {onDelete: 'CASCADE'})
-  notebook!: DbNotebook;
+  notebook?: DbNotebook;
 
   @Column()
   notebookId!: string;
 
   @Column({type: 'integer'})
-  rank!: number;
+  rank?: number;
 
-  content: any;
-
-  @AfterLoad()
-  updateContentOnLoad() {
-    if (this.type === NoteType.PRESTO) {
-      this.content = this.textContent;
-    } else if (this.type === NoteType.NATIVE) {
-      this.content = this.jsonContent.native;
-    }
-  }
-
-  @BeforeInsert()
-  @BeforeUpdate()
-  updateContent() {
-    this.jsonContent = this.jsonContent || {};
-    if (this.type === NoteType.PRESTO) {
-      this.textContent = this.content;
-    } else if (this.type === NoteType.NATIVE) {
-      this.jsonContent.native = this.content;
-    }
-  }
-
-  constructor(base?: INote) {
+  constructor(base?: DbNote) {
     if (base) {
-      const {
-        id,
-        dateCreated,
-        dateUpdated,
-        name,
-        owner,
-        content,
-        notebookId,
-        type,
-      } = base;
-      this.id = id;
-      this.dateCreated = dateCreated;
-      this.dateUpdated = dateUpdated;
-      this.content = content;
-      this.name = name;
-      this.notebookId = notebookId;
-      this.owner = owner;
-      this.type = type;
-      this.updateContent();
+      Object.assign(this, base);
     }
   }
 }
 
-// export const convertDbNote = (dbNote: DbNote): INote => {
-//   const {
-//     dateCreated,
-//     dateUpdated,
-//     id,
-//     name,
-//     notebookId,
-//     owner,
-//     textContent,
-//   } = dbNote;
+export const convertDbNote = (dbNote: DbNote): INote => {
+  const {
+    dateCreated,
+    dateUpdated,
+    id,
+    name,
+    notebookId,
+    owner,
+    textContent,
+    jsonContent,
+    type,
+  } = dbNote;
 
-//   return {
-//     type: NoteType.PRESTO,
-//     id,
-//     content: textContent,
-//     dateCreated: dateCreated.valueOf(),
-//     dateUpdated: dateUpdated.valueOf(),
-//     name,
-//     notebookId,
-//     owner,
-//   };
-// };
+  if (type === NoteType.NATIVE) {
+    return {
+      type,
+      id,
+      content: jsonContent,
+      dateCreated,
+      dateUpdated,
+      name,
+      notebookId,
+      owner,
+    };
+  } else {
+    return {
+      type,
+      id,
+      content: textContent,
+      dateCreated,
+      dateUpdated,
+      name,
+      notebookId,
+      owner,
+    };
+  }
+};
 
-// export const convertNoteToDb = (note: INote): Partial<DbNote> => {
-//   const {id, name, notebookId, owner, type, content} = note;
+export const convertNoteToDb = (note: INote): DbNote => {
+  const {
+    id,
+    name,
+    notebookId,
+    owner,
+    type,
+    content,
+    dateCreated,
+    dateUpdated,
+  } = note;
 
-//   return {
-//     type,
-//     id,
-//     textContent: note.type === NoteType.PRESTO ? note.content : '',
-//     name,
-//     notebookId,
-//     owner,
-//   };
-// };
+  return new DbNote({
+    type,
+    id,
+    textContent: note.type === NoteType.PRESTO ? note.content : '',
+    jsonContent: note.type === NoteType.NATIVE ? note.content : {},
+    name,
+    notebookId,
+    owner,
+    dateCreated,
+    dateUpdated,
+    rank: undefined,
+  });
+};

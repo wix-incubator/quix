@@ -11,6 +11,7 @@ import {NotebookPlugin} from './plugins/notebook-plugin';
 import {DefaultAction, BaseAction} from 'shared/entities/common/common-types';
 import {NotePlugin} from './plugins/note-plugin';
 import {FileTreePlugin} from './plugins/file-tree-plugin';
+import {FavoritesPlugin} from './plugins/favorites-plugin';
 
 @Injectable()
 export class QuixEventBus<A extends BaseAction = DefaultAction> {
@@ -21,11 +22,13 @@ export class QuixEventBus<A extends BaseAction = DefaultAction> {
     @Inject(NotebookPlugin) private notebookPlugin: EventBusPlugin,
     @Inject(NotePlugin) private notePlugin: EventBusPlugin,
     @Inject(FileTreePlugin) private fileTreePlugin: EventBusPlugin,
+    @Inject(FavoritesPlugin) private favoritesPlugin: EventBusPlugin,
   ) {
     this.bus = EventBusBuilder()
       .addPlugin(this.notebookPlugin)
       .addPlugin(this.notePlugin)
       .addPlugin(this.fileTreePlugin)
+      .addPlugin(this.favoritesPlugin)
       .addMiddleware(async (action, api, next) => {
         api.hooks
           .call(QuixHookNames.VALIDATION, action)

@@ -9,7 +9,8 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {EnvSettings} from 'config';
 import {ConfigService} from 'config';
-import {sanitizeUserEmail} from './user-sanitizer';
+import {sanitizeUserEmail, sanitizeUserName} from './user-sanitizer';
+import {IUser} from 'shared/dist';
 
 @Injectable()
 export class DemoModeInterceptor implements NestInterceptor {
@@ -33,6 +34,17 @@ function removeOwnerNested(user: string, item: any): any {
   if (typeof item === 'object') {
     if (item.owner) {
       item.owner = item.owner === user ? user : sanitizeUserEmail(item.owner);
+    }
+
+    if (item.ownerDetails) {
+      const {email, id, name} = item.ownerDetails as IUser;
+
+      item.ownerDetails = Object.assign(item.ownerDetails, {
+        name: sanitizeUserName(name),
+        id: sanitizeUserEmail(id),
+        email: sanitizeUserEmail(email),
+        avatar: 'http://quix.wix.com/assets/user.svg',
+      });
     }
 
     for (const key of Object.keys(item)) {

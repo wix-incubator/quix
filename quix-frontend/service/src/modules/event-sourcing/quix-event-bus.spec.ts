@@ -161,6 +161,20 @@ describe('event sourcing', () => {
       expect(notebook.notes).toHaveLength(1);
     });
 
+    it('create note, with content', async () => {
+      await driver.emitAsUser(eventBus, [createNotebookAction]);
+      addNoteAction = NoteActions.addNote(
+        note.id,
+        createNote(notebookId, {content: 'bla bla bla'}),
+      );
+      await driver.emitAsUser(eventBus, [addNoteAction]);
+
+      const notebook = await driver.getNotebookWithNotes(notebookId);
+
+      expect(notebook.notes).toHaveLength(1);
+      expect(notebook.notes![0].textContent).toBe('bla bla bla');
+    });
+
     it('create note with bulk actions', async () => {
       await driver.emitAsUser(eventBus, [createNotebookAction, addNoteAction]);
 
@@ -168,7 +182,7 @@ describe('event sourcing', () => {
 
       expect(notebook.notes).toHaveLength(1);
       const {id, name, notebookId: parent, type} = note;
-      expect(notebook.notes[0]).toMatchObject(
+      expect(notebook.notes![0]).toMatchObject(
         expect.objectContaining({
           id,
           name,
@@ -187,7 +201,7 @@ describe('event sourcing', () => {
       ]);
       const notebook = await driver.getNotebookWithNotes(notebookId);
 
-      expect(notebook.notes[0].name).toBe('changedName');
+      expect(notebook.notes![0].name).toBe('changedName');
     });
 
     it('delete note', async () => {
@@ -207,7 +221,7 @@ describe('event sourcing', () => {
       ]);
       const notebook = await driver.getNotebookWithNotes(notebookId);
 
-      expect(notebook.notes[0].content).toBe('select foo from bar');
+      expect(notebook.notes![0].textContent).toBe('select foo from bar');
     });
 
     it('move note between notebook', async () => {
@@ -249,7 +263,7 @@ describe('event sourcing', () => {
         const notebook = await driver.getNotebookWithNotes(notebookId);
         const doesRankMatchInsertOrder = notes.every(
           (note, index) =>
-            notebook.notes.find(n => n.id === note.id)!.rank === index,
+            notebook.notes!.find(n => n.id === note.id)!.rank === index,
         );
 
         expect(doesRankMatchInsertOrder).toBeTruthy();
@@ -272,7 +286,7 @@ describe('event sourcing', () => {
           const notebook = await driver.getNotebookWithNotes(notebookId);
           const doesRankMatchInsertOrder = filteredNotes.every(
             (note, index) =>
-              notebook.notes.find(n => n.id === note.id)!.rank === index,
+              notebook.notes!.find(n => n.id === note.id)!.rank === index,
           );
 
           expect(doesRankMatchInsertOrder).toBeTruthy();
@@ -295,7 +309,7 @@ describe('event sourcing', () => {
 
           const doesRankMatchInsertOrder = reorderdNotes.every(
             (note, index) =>
-              notebook.notes.find(n => n.id === note.id)!.rank === index,
+              notebook.notes!.find(n => n.id === note.id)!.rank === index,
           );
 
           expect(doesRankMatchInsertOrder).toBeTruthy();
