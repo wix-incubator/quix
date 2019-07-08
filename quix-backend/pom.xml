@@ -13,8 +13,8 @@
         <module>quix-api</module>
         <module>quix-core</module>
         <module>quix-modules/quix-presto-module</module>
-        <module>quix-webapps/quix-web-spring</module>
         <module>quix-modules/quix-athena-module</module>
+        <module>quix-webapps/quix-web-spring</module>
     </modules>
 
 </project>
