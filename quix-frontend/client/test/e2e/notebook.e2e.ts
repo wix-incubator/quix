@@ -72,7 +72,10 @@ describe('Notebook ::', () => {
     await gotoEditableNotebook();
 
     expect(await testkit.numOfNotes()).to.equal(1);
+    await testkit.clickAddNoteDropdown();
+    await driver.sleep(500);
     await testkit.clickAddNote();
+
     expect(await testkit.numOfNotes()).to.equal(2);
 
     const noteTestkit = await testkit.getNoteTestkit(2);

@@ -6,6 +6,12 @@ bi-simple-select {
 
   bi-dropdown {
     &.bs-custom-toggle {
+      bi-toggle {
+        i {
+          position: unset;
+        }
+      }
+
       .bd-content {
         [ng-transclude=''] {
           .bi-dropdown-menu {

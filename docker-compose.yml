@@ -7,10 +7,18 @@ services:
     depends_on:
       - presto
     environment:
+      - MODULES
       - PRESTO_API
+      - ATHENA_OUTPUT
+      - ATHENA_REGION
+      - ATHENA_DATABASE
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_KEY
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
+      - PRESTO_DB_EMPTY_TIMEOUT
+      - PRESTO_DB_REQUEST_TIMEOUT
   frontend:
     build: ./quix-frontend/
     ports:
@@ -33,6 +41,7 @@ services:
       - AUTH_TYPE
       - APPMETRICS_PORT
       - ENABLE_APPMETRICS
+      - MODULES
   db:
     image: "mysql:5.7"
     restart: always

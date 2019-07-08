@@ -72,9 +72,9 @@ ORDER BY 1
     // return {notes: [], count: 0};
     return {notes: res, count: 365};
   },
-  // '/api/db/explore': () => [500, {message: 'Failed to fetch DB tree'}],
-  // '/api/db/explore': () => [],
-  '/api/db/explore': () => [{
+  // '/api/db/presto/explore': () => [500, {message: 'Failed to fetch DB tree'}],
+  // '/api/db/presto/explore': () => [],
+  '/api/db/:type/explore': () => [{
     name: 'catalog',
     type: 'catalog',
     children: [{
@@ -91,15 +91,41 @@ ORDER BY 1
     type: 'catalog',
     children: []
   }],
-  '/api/db/explore/:schema/:catalog/:table': () => ({
-    children: [{name: 'with_a_very_looooooooooooooooong_name', dataType: 'varchar'}]
+  '/api/db/:type/explore/:catalog/:schema/:table': ({table}) => ({
+    children: [{name: `column_of_${table}`, dataType: 'varchar'}]
   }),
-  '/api/db/autocomplete': () => ({
+  '/api/db/:type/autocomplete': () => ({
     catalogs: ['catalog', 'catalog2'],
     schemas: ['schema'],
     tables: ['table'],
     columns: ['column'],
   }),
+  // '/api/db/:type/search': () => [],
+  '/api/db/:type/search': () => [{
+    name: 'catalog',
+    type: 'catalog',
+    children: [{
+      name: 'schema',
+      type: 'schema',
+      children: [{
+        name: 'table_with_a_very_looooooooooooooooong_name',
+        type: 'table',
+        children: []
+      }]
+    }]
+  }, {
+    name: 'catalog2',
+    type: 'catalog',
+    children: [{
+      name: 'schema2',
+      type: 'schema',
+      children: [{
+        name: 'table2_with_a_very_looooooooooooooooong_name',
+        type: 'table',
+        children: []
+      }]
+    }]
+  }],
 };
 
 let mockOverrides = {};

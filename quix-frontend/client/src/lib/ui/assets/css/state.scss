@@ -17,6 +17,36 @@
   @include fade('lighter');
 }
 
+// dark
+.bi-theme--dark {
+  .bi-muted {
+    @include muted('dark');
+  }
+  
+  .bi-active {
+    @include active('dark');
+  }
+  
+  .bi-hover {
+    @include hover('dark');
+  }
+}
+
+//  darker
+.bi-theme--darker {
+  .bi-muted {
+    @include muted('darker');
+  }
+  
+  .bi-active {
+    @include active('darker');
+  }
+  
+  .bi-hover {
+    @include hover('darker');
+  }
+}
+
 // lighter
 .bi-theme--lighter {
   .bi-muted {
@@ -58,35 +88,5 @@
     .bi-hover {
       @include hover('lighter');
     }
-  }
-}
-
-// dark
-.bi-theme--dark {
-  .bi-muted {
-    @include muted('dark');
-  }
-  
-  .bi-active {
-    @include active('dark');
-  }
-  
-  .bi-hover {
-    @include hover('dark');
-  }
-}
-
-//  darker
-.bi-theme--darker {
-  .bi-muted {
-    @include muted('darker');
-  }
-  
-  .bi-active {
-    @include active('darker');
-  }
-  
-  .bi-hover {
-    @include hover('darker');
   }
 }

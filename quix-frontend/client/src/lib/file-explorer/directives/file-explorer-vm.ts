@@ -69,19 +69,17 @@ export default {
     }
   },
   $init() {
-    if (this.$params.controller) {
-      this.folders = this.folders || this.createItemsVm({
-        menu: {},
-        edit: {},
-        open: {},
-        permissions: null
-      });
-
-      this.slots = {
-        menu: this.$params.controller.getSlots().menu
-      };
-
-      this.container = this.$params.controller.getContainer();
+    if (!this.$params.controller) {
+      return;
     }
+
+    this.folders = this.folders || this.createItemsVm({
+      menu: {},
+      edit: {},
+      open: {},
+      permissions: null
+    });
+
+    this.container = this.$params.controller.getContainer();
   }
 };

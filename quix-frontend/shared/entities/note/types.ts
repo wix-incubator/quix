@@ -2,7 +2,8 @@ import {IEntity} from '../common/common-types';
 
 export enum NoteType {
   PRESTO = 'presto',
-  NATIVE = 'native'
+  NATIVE = 'native',
+  ATHENA = 'athena'
 }
 
 export interface IBaseNote extends IEntity {
@@ -22,4 +23,9 @@ export interface INativeNote extends IBaseNote {
   content: {queries: string[]};
 }
 
-export type INote = INativeNote | IPrestoNote;
+export interface IAthenaNote extends IBaseNote {
+  type: NoteType.ATHENA;
+  content: string;
+}
+
+export type INote = INativeNote | IPrestoNote | IAthenaNote;

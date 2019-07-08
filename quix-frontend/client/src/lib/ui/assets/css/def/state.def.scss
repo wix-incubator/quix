@@ -59,8 +59,6 @@
 }
 
 @mixin hover($theme, $color: null) {
-  transition: color .2s, background-color .2s, border-color .2s;
-
   &:hover:not([disabled='disabled']) {
     @if ($theme == 'lighter') {
       background-color: $lighter-hover-bg;

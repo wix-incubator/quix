@@ -22,7 +22,7 @@ sealed case class SubQueryError(id: String, message: String) extends EventData
 
 sealed case class Progress(id: String, percentage: Int) extends EventData
 
-sealed case class Row(id: String, values: List[AnyRef]) extends EventData
+sealed case class Row(id: String, values: List[Any]) extends EventData
 
 sealed case class Download(id: String, url: String) extends EventData
 
@@ -52,7 +52,7 @@ object SubQueryEnd {
 }
 
 object SubQueryError {
-  def apply(id: String, message: String): ExecutionEvent = ExecutionEvent("query-error", new SubQueryError(id, message))
+  def apply(id: String, message: String): ExecutionEvent = ExecutionEvent("error", new SubQueryError(id, message))
 }
 
 object SubQueryFields {
@@ -68,7 +68,7 @@ object Error {
 }
 
 object Row {
-  def apply(id: String, values: List[AnyRef]): ExecutionEvent = ExecutionEvent("row", new Row(id, values))
+  def apply(id: String, values: List[Any]): ExecutionEvent = ExecutionEvent("row", new Row(id, values))
 }
 
 object Pong {

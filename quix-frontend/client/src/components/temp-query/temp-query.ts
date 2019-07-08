@@ -10,6 +10,7 @@ export default (app: Instance, store: Store) => () => ({
   restrict: 'E',
   template,
   scope: {
+    type: '<',
     code: '<',
     autorun: '<'
   },

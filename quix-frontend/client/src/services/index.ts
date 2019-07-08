@@ -4,9 +4,9 @@ export {confirmAction, prompt} from './dialog';
 export {StateManager} from './state';
 export {getRunners} from './runners';
 export {closePopup, openTempQuery, openSearchResults} from './popup';
-export {getFullTableName, getTableQuery} from './db';
 export {extractTextAroundMatch as extractLinesAroundMatch} from './search';
 export {browserNotificationsManager} from './notifications';
+export {sanitizeTableToken} from './db';
 
 export {
   IPermissions,

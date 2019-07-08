@@ -7,13 +7,6 @@ export default (app: Instance): IBranch => register => {
     switch (action.type) {
       case 'db.set':
         return action.db;
-      case 'db.addColumns':
-        return state.map(item => {
-          if (item.id === action.id) {
-            item.lazy = false;
-          }
-          return item;
-        }).concat(action.columns);
       default:
     }
 

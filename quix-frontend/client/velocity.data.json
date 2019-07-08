@@ -1,8 +1,13 @@
 {
   "clientTopology": {
     "staticsBaseUrl": "//localhost:3200/",
-    "quixBackendUrl": "//localhost:3000/fakeBackend",
-    "googleClientId": "",
-    "basePath": ""
-  }
+    "executeBaseUrl": "//localhost:3000/mock",
+    "apiBasePath": ""
+  },
+  "mode": {
+    "debug": true,
+    "demo": false
+  },
+  "quixConfig": "{\"modules\":[{id: \"presto\", \"components\": [\"note\", \"db\"]}, {id: \"athena\", \"components\": [\"note\", \"db\"]}],\"auth\":{\"googleClientId\":\"\"},\"clientTopology\":{\"staticsBaseUrl\":\"//localhost:3200/\",\"executeBaseUrl\":\"//localhost:3000/mock\", \"apiBasePath\": \"\"},\"mode\":{\"debug\":true,\"demo\":false}}"
 }
+

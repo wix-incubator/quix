@@ -120,7 +120,8 @@ export default function directive() {
           .readonly(scope.readonly)
           .withOptions('bsOptions', {
             typeahead: false,
-            width: null // toggle
+            width: null, // toggle
+            alignDropdown: 'left'
           })
           .withVM({
             current: null,

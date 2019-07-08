@@ -1,13 +1,12 @@
 import {mapValues} from 'lodash';
-import {inject} from '../lib/core';
+import {inject, Config} from '../lib/core';
 import {IFile, IFolder, INotebook, INote, IUser} from '../../../shared';
 
-let basePath = '';
-export const setBasePath = (newBasePath: string) => {
-  basePath = newBasePath;
-}
+export const config = new Config<{
+  apiBasePath: string;
+}>();
 
-const api = (endpoint: TemplateStringsArray) => basePath + '/api/' + endpoint[0];
+const api = (endpoint: TemplateStringsArray) => `${config.get().apiBasePath}/api/` + endpoint[0];
 
 const resource = (action: 'get' | 'query', endpoint: string, params: Record<string, any>) =>
   inject('$resource')(endpoint, mapValues(params, (v, k) => `@${k}`))[action](params).$promise;
@@ -25,9 +24,14 @@ export const search = (text: string, offset: number, total: number) => one<{coun
   offset,
   total
 });
-export const db = () => many(api`db/explore`);
-export const dbColumns = (catalog: string, schema: string, table: string) => one(api`db/explore/:catalog/:schema/:table`, {
-  catalog,
-  schema,
-  table
-});
+
+export const db = (type: string) => many(api`db/:type/explore`, {type});
+export const dbColumns = (type: string, catalog: string, schema: string, table: string) => 
+  one(api`db/:type/explore/:catalog/:schema/:table`, {
+    type,
+    catalog,
+    schema,
+    table
+  });
+
+export const dbSearch = (type: string, q: string) => many(api`db/:type/search`, {type, q});

@@ -36,23 +36,28 @@ const urlMiddleware = str => next => action => {
  */
 export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
   private readonly plugins: {[key: string]: PluginInstance<Config>} = {};
-  private appstore: Store = null;
   private readonly navigator: Navigator;
   private readonly user: User;
   private readonly menuItems: IMenuItem[] = [];
   private readonly title: string;
-  private readonly basePath: string;
+  private appstore: Store = null;
   private conf: Config;
 
   constructor(
-    private readonly id: string | {id: string; title: string; basePath: string},
+    private readonly id: string | {
+      id: string;
+      title: string;
+    },
     private readonly ngApp: angular.IModule,
     private readonly options: {
       statePrefix?: string;
       defaultUrl?: string;
-      auth?: {googleClientId: string};
+      auth?: {
+        googleClientId: string;
+      };
       homeState?: string;
       logoUrl?: string;
+      apiBasePath?: string;
     },
     private ngmodules = []
   ) {
@@ -63,10 +68,8 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
     if (typeof id === 'object') {
       this.id = id.id;
       this.title = id.title;
-      this.basePath = id.basePath;
     } else {
       this.title = id;
-      this.basePath = id;
     }
 
     this.navigator = new Navigator({
@@ -74,7 +77,7 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
       defaultUrl: options.defaultUrl || '/',
       auth: options.auth,
       homeState: options.homeState
-    }).init(this.basePath, this.user, ngApp);
+    }).init(options.apiBasePath, this.user, ngApp);
   }
 
   /**

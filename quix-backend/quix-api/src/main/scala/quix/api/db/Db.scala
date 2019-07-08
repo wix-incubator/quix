@@ -24,4 +24,6 @@ trait Db {
   def autocomplete: Task[Map[String, List[String]]]
 
   def table(catalog: String, schema: String, table: String): Task[Table]
+
+  def search(query : String): Task[List[Catalog]]
 }

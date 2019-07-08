@@ -4,7 +4,7 @@ import java.util.concurrent.{BlockingQueue, CountDownLatch}
 
 sealed trait DownloadPayload
 
-case class DownloadableRow(values: List[AnyRef]) extends DownloadPayload
+case class DownloadableRow(values: List[Any]) extends DownloadPayload
 
 case class ErrorDuringDownload(message: String) extends DownloadPayload
 

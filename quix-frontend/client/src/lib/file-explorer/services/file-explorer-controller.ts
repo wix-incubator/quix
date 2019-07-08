@@ -9,9 +9,6 @@ interface Permissions {
   delete: boolean;
 }
 
-/**
- * Will be required by <file-explorer-inner>
- */
 export default class Controller {
   private readonly ngModel: ng.INgModelController;
   private readonly $compile: ng.ICompileService;
@@ -19,14 +16,10 @@ export default class Controller {
   private currentFolder: Folder = null;
   private currentFile: File = null;
 
-  private readonly slots: Record<string, boolean> = {};
-
   constructor(private readonly $scope, private readonly $element, private readonly $transclude :ng.ITranscludeFunction) {
     this.instance = new Instance($scope);
     this.ngModel = $element.controller('ngModel');
     this.$compile = inject('$compile');
-
-    this.slots.menu = this.$transclude.isSlotFilled('menu');
   }
 
   private render(html) {
@@ -43,10 +36,6 @@ export default class Controller {
       delete: !this.$scope.readonly,
       menu: !this.$scope.readonly
     });
-  }
-
-  getSlots() {
-    return this.slots;
   }
 
   getContainer() {
@@ -79,6 +68,7 @@ export default class Controller {
 
   syncItem(item: Item, eventName: string, ...args): Controller {
     this.ngModel.$setViewValue(this.$scope.model.$clone());
+
     this.fireEvent(item, eventName, ...args);
 
     return this;
@@ -107,77 +97,31 @@ export default class Controller {
 
   renderFolder(scope) {
     return this.render(`
-      <div class="bi-spread">
-        <div class="bi-r-h bi-align bi-grow bi-fade-in">
-          <i
-            class="fe-toggle bi-action bi-icon bi-pointer"
-            ng-class="{'fe-toggle--hidden': folder.isEmpty() || options.expandAllFolders}"
-            ng-click="events.onFolderToggle(folder);"
-          >arrow_drop_down</i>
+      <span class="bi-align bi-r-h">
+        <span class="fe-icon-container" bi-html="renderFolderIcon(folder)"></span>
 
-          <span 
-            class="fe-item-name bi-r-h bi-align bi-grow bi-pointer"
-            ng-click="events.onFolderClick(folder)"
-            drag="!readonly"
-            jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
-            jqyoui-options="{
-              helper: 'clone',
-              distance: 5,
-              scroll: true,
-              appendTo: 'parent',
-              containment: options.draggable ? 'window' : vm.container
-            }"
-            ng-model="folder"
-          >
-            <span class="fe-icon-container" bi-html="renderFolderIcon(folder)"></span>
+        <span class="bi-text--ellipsis" bi-draggable="events.onDrag(folder)">
+          <span
+            ng-if="vm.folders.get(folder).edit.enabled"
+            ng-model="folder.name"
+            contenteditable="{{vm.folders.get(folder).edit.enabled}}"
+            on-change="events.onFolderRenamed(folder)"
+            on-blur="events.onFolderBlur(folder)"
+            ce-options="::{autoEdit: true}"
+          >{{folder.getName()}}</span>
 
-            <span class="bi-text--ellipsis" bi-draggable="events.onDrag(folder)">
-              <span
-                ng-if="vm.folders.get(folder).edit.enabled"
-                ng-model="folder.name"
-                contenteditable="{{vm.folders.get(folder).edit.enabled}}"
-                on-change="events.onFolderRenamed(folder)"
-                on-blur="events.onFolderBlur(folder)"
-                ce-options="::{autoEdit: true}"
-              >{{folder.getName()}}</span>
-
-              <span ng-if="!vm.folders.get(folder).edit.enabled">{{folder.getName()}}</span>
-            </span>
-          </span>
-        </div>
-
-        <bi-dropdown bd-options="::{align: 'right'}" ng-if="::vm.folder.hasMenu(folder)">
-          <bi-toggle class="bi-align">
-            <i class="bi-action bi-icon">more_vert</i>
-          </bi-toggle>
-
-          <div bi-html="renderMenu(folder)"></div>
-        </bi-dropdown>
-      </div>
+          <span ng-if="!vm.folders.get(folder).edit.enabled">{{folder.getName()}}</span>
+        </span>
+      </span>
     `)(scope);
   }
 
   renderFile(scope) {
     return this.render(`
-      <div
-        class="fe-item {{::'fe-item-depth-' + depth}} bi-spread bi-align bi-pointer"
-        drag="!readonly"
-        jqyoui-draggable="{placeholder: 'keep', containment: 'offset'}"
-        jqyoui-options="{
-          helper: 'clone',
-          distance: 5,
-          scroll: true,
-          appendTo: 'parent',
-          containment: options.draggable ? 'window' : vm.container
-        }"
-        ng-model="file"
-        title="{{::file.getName()}}"
-      >
-        <span class="fe-item-name bi-r-h bi-align">
-          <span class="fe-icon-container" bi-html="renderFileIcon(file)"></span>
-          <span class="bi-text--ellipsis" bi-draggable="events.onDrag(file)">{{file.getName()}}</span>
-        </span>
-      </div>
+      <span class="fe-item-name bi-r-h bi-align">
+        <span class="fe-icon-container" bi-html="renderFileIcon(file)"></span>
+        <span class="bi-text--ellipsis" bi-draggable="events.onDrag(file)">{{file.getName()}}</span>
+      </span>
     `)(scope);
   }
 
@@ -187,7 +131,7 @@ export default class Controller {
     if (!this.$transclude.isSlotFilled('folderIcon')) {
       html = inject('$compile')(`
         <i class="fe-icon bi-icon">folder</i>
-      `)(assign(scope.$new(), {folder}));
+      `)(assign(scope.$new(true), {folder}));
     } else {
       html = this.$transclude((_, s) => s.folder = itemToDef(folder), null, 'folderIcon');
     }
@@ -201,7 +145,7 @@ export default class Controller {
     if (!this.$transclude.isSlotFilled('fileIcon')) {
       html = inject('$compile')(`
         <i class="fe-icon bi-icon">insert_drive_file</i>
-      `)(assign(scope.$new(), {file}));
+      `)(assign(scope.$new(true), {file}));
     } else {
       html = this.$transclude((_, s) => s.file = itemToDef(file), null, 'fileIcon');
     }
@@ -254,7 +198,7 @@ export default class Controller {
             <span>Delete</span>
           </li>
         </ul>
-      `)(assign(scope.$new(), {folder}));
+      `)(assign(scope));
     } else {
       html = this.$transclude((_, s) => s.folder = itemToDef(folder), null, 'menu');
     }

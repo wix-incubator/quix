@@ -130,7 +130,8 @@
         <div class="bi-empty-state-icon">
           <i class="bi-icon bi-danger">warning</i>
         </div>
-        <div class="bi-empty-state-content bi-danger">{{::query.getError().msg}}</div>
+
+        <pre class="bi-empty-state-content bi-danger">{{::query.getError().msg}}</pre>
       </div>
 
       <div class="bi-empty-state" ng-if="::vm.result.queries.get(query).errorType === 'timeout'">
