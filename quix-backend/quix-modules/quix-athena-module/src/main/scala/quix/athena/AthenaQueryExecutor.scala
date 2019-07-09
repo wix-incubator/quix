@@ -15,20 +15,19 @@ import scala.concurrent.duration.{FiniteDuration, _}
 
 class AthenaQueryExecutor(val client: AthenaClient,
                           val initialAdvanceDelay: FiniteDuration = 100.millis,
-                          val maxAdvanceDelay: FiniteDuration = 33.seconds)
+                          val maxAdvanceDelay: FiniteDuration = 15.seconds)
   extends AsyncQueryExecutor[String, Batch] with LazyLogging {
 
   def waitLoop(queryId: String, activeQuery: ActiveQuery[String], builder: Builder[String, Batch], delay: FiniteDuration = initialAdvanceDelay): Task[QueryExecutionState] = {
     val runningStatuses = Set(QueryExecutionState.RUNNING, QueryExecutionState.QUEUED).map(_.toString)
     val failed = Set(QueryExecutionState.FAILED, QueryExecutionState.CANCELLED).map(_.toString)
 
-    val log = Task(logger.info(s"method=waitLoop event=start query-id=$queryId user=${activeQuery.user.email} delay=$delay"))
-
-    val loop = client.get(queryId).map(_.getQueryExecution).flatMap {
+    client.get(queryId).map(_.getQueryExecution).flatMap {
       case query if runningStatuses.contains(query.getStatus.getState) && !activeQuery.isCancelled =>
         for {
+          _ <- Task(logger.info(s"method=waitLoop event=not-finished query-id=$queryId user=${activeQuery.user.email} status=${query.getStatus.getState} delay=$delay"))
           _ <- builder.addSubQuery(queryId, Batch(data = List.empty, stats = Option(BatchStats(query.getStatus.getState, 0))))
-          status <- waitLoop(queryId, activeQuery, builder, delay * 2).delayExecution(delay)
+          status <- waitLoop(queryId, activeQuery, builder, maxAdvanceDelay.min(delay * 2)).delayExecution(delay)
         } yield status
 
       case query if failed.contains(query.getStatus.getState) =>
@@ -41,8 +40,6 @@ class AthenaQueryExecutor(val client: AthenaClient,
         Task.eval(logger.info(s"method=waitLoop event=finished query-id=$queryId user=${activeQuery.user.email} delay=$delay status=${query.getStatus.getState} canceled=${activeQuery.isCancelled}"))
           .map(_ => QueryExecutionState.fromValue(query.getStatus.getState))
     }
-
-    log.flatMap(_ => loop)
   }
 
   def drainResults(queryId: String, nextToken: Option[String], builder: Builder[String, Batch], query: ActiveQuery[String]): Task[Option[String]] = {
