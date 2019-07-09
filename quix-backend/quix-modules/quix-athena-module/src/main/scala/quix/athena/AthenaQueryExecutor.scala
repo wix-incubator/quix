@@ -3,7 +3,7 @@ package quix.athena
 import java.net.{ConnectException, SocketException, SocketTimeoutException}
 
 import com.amazonaws.SdkClientException
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
+import com.amazonaws.auth._
 import com.amazonaws.services.athena.AmazonAthenaClient
 import com.amazonaws.services.athena.model.{AmazonAthenaException, GetQueryResultsResult, QueryExecutionState, StartQueryExecutionResult, Row => AthenaRow}
 import com.typesafe.scalalogging.LazyLogging
@@ -231,9 +231,19 @@ class AthenaQueryExecutor(val client: AthenaClient,
 
 object AthenaQueryExecutor {
   def apply(config: AthenaConfig) = {
+    val credentials = {
+      if (config.accessKey.nonEmpty && config.secretKey.nonEmpty) {
+        new AWSCredentialsProvider {
+          override def getCredentials: AWSCredentials = new BasicAWSCredentials(config.accessKey, config.secretKey)
+
+          override def refresh(): Unit = {}
+        }
+      } else new DefaultAWSCredentialsProviderChain
+    }
+
     val athena = AmazonAthenaClient.builder
       .withRegion(config.region)
-      .withCredentials(new DefaultAWSCredentialsProviderChain)
+      .withCredentials(credentials)
       .build()
 
     val client = new AwsAthenaClient(athena, config)

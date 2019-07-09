@@ -139,7 +139,7 @@ class ModulesConfiguration extends LazyLogging {
           if (awsSecretKey.nonEmpty) System.setProperty(SECRET_KEY_SYSTEM_PROPERTY, awsAccessKeyId)
         }
 
-        AthenaConfig(output, region, database, firstEmptyStateDelay, requestTimeout)
+        AthenaConfig(output, region, database, firstEmptyStateDelay, requestTimeout, awsAccessKeyId, awsSecretKey)
       }
 
       logger.warn(s"event=[spring-config] bean=[AthenaConfig] config==$config")
