@@ -10,7 +10,7 @@
     <websocket:handlers allowed-origins="*">
         <websocket:mapping path="/api/v1/execute/presto" handler="initSqlStreamingController"/>
         <websocket:mapping path="/api/v1/execute/athena" handler="initSqlStreamingController"/>
-
+        <websocket:mapping path="/api/v1/execute/jdbc" handler="initSqlStreamingController"/>
         <websocket:handshake-handler ref="initDefaultHandshakeHandler"/>
 
         <websocket:handshake-interceptors>

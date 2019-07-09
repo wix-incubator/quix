@@ -7,6 +7,7 @@ import monix.eval.Coeval
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration, DependsOn}
 import org.springframework.core.env.Environment
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.module.ExecutionModule
 import quix.api.users.DummyUsers
@@ -19,6 +20,7 @@ import quix.presto.db.{PrestoRefreshableDb, RefreshableDbConfig}
 import quix.presto.rest.ScalaJPrestoStateClient
 import quix.web.auth.JwtUsers
 import quix.web.controllers.{DbController, DownloadController, HealthController}
+import quix.jdbc.{JdbcDataSourceFactory, JdbcQueryExecutor, JdbcQuixModule}
 
 import scala.util.control.NonFatal
 
@@ -26,6 +28,10 @@ import scala.util.control.NonFatal
 @Configuration
 class SpringConfig {
 
+}
+
+object Registry {
+  val modules = scala.collection.mutable.Map.empty[String, ExecutionModule[String, Batch]]
 }
 
 @Configuration
@@ -64,11 +70,37 @@ class AuthConfig extends LazyLogging {
 }
 
 @Configuration
-class ModulesConfiguration extends LazyLogging {
+class JdbcConfiguration extends LazyLogging {
 
-  object Registry {
-    val modules = scala.collection.mutable.Map.empty[String, ExecutionModule[String, Batch]]
+  @Bean def initJdbc(env: Environment): String = {
+
+    if (shouldConfigureJdb()) {
+      val dbUrl = env.getRequiredProperty("jdbc.url")
+      val dbUserName =  env.getRequiredProperty("jdbc.username")
+      val dbPassWord =  env.getRequiredProperty("jdbc.password")
+
+      val roDataSource = JdbcDataSourceFactory.getDriverDataSource(
+        url = dbUrl, userName = dbUserName, password = dbPassWord
+      )
+
+      val roJdbTemplateClient = new NamedParameterJdbcTemplate(roDataSource)
+      val executor = new JdbcQueryExecutor(readJdbcClient = roJdbTemplateClient)
+
+      Registry.modules.update("jdbc",JdbcQuixModule(executor))
+    }
+
+
+    def shouldConfigureJdb() = {
+      val modules = env.getProperty("modules", "").split(",")
+      modules.contains("jdbc")
+    }
+
+    "OK"
   }
+}
+
+@Configuration
+class ModulesConfiguration extends LazyLogging {
 
   @Bean def initPresto(env: Environment) = {
     val modules = env.getProperty("modules", "").split(",")
