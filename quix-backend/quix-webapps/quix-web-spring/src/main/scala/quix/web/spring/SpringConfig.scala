@@ -1,5 +1,6 @@
 package quix.web.spring
 
+import com.amazonaws.SDKGlobalConfiguration.{ACCESS_KEY_SYSTEM_PROPERTY, SECRET_KEY_SYSTEM_PROPERTY}
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Coeval
@@ -127,6 +128,16 @@ class ModulesConfiguration extends LazyLogging {
 
         val firstEmptyStateDelay = env.getProperty("athena.db.empty.timeout", classOf[Long], 1000L * 10)
         val requestTimeout = env.getProperty("athena.db.request.timeout", classOf[Long], 5000L)
+
+        val awsAccessKeyId = env.getProperty("aws.access.key.id", "")
+        val awsSecretKey = env.getProperty("aws.secret.key", "")
+
+        // if keys are not present in System properties, add them for DefaultAWSCredentialsProviderChain
+        {
+          if (awsAccessKeyId.nonEmpty) System.setProperty(ACCESS_KEY_SYSTEM_PROPERTY, awsAccessKeyId)
+
+          if (awsSecretKey.nonEmpty) System.setProperty(SECRET_KEY_SYSTEM_PROPERTY, awsAccessKeyId)
+        }
 
         AthenaConfig(output, region, database, firstEmptyStateDelay, requestTimeout)
       }
