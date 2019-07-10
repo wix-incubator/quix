@@ -1,54 +1,21 @@
 package quix.presto.db
 
 import monix.eval.Task
-import quix.api.db.{Catalog, Schema, Table}
+import quix.api.db.{Catalog, Catalogs, Schema, Table}
 import quix.api.execute.{AsyncQueryExecutor, Batch}
-import scala.concurrent.duration._
+import quix.core.executions.SingleQueryExecutor
 
-class PrestoCatalogs(val queryExecutor: AsyncQueryExecutor[String, Batch],
-                     val timeout: Long, val stalePeriod: Long,
-                     var state: State[List[Catalog]] = State(List.empty, 0L))
-  extends SingleQueryExecutor {
+class PrestoCatalogs(val queryExecutor: AsyncQueryExecutor[String, Batch])
+  extends Catalogs with SingleQueryExecutor {
+
+  override def fast: Task[List[Catalog]] = getCatalogNamesOnly
+
+  override def full: Task[List[Catalog]] =
+    inferCatalogsInSingleQuery
+      .onErrorFallbackTo(inferCatalogsOneByOne)
+      .onErrorFallbackTo(Task.now(Nil))
 
   case class RichTable(catalog: String, schema: String, name: String)
-
-  def get: Task[List[Catalog]] = {
-    state match {
-      case State(catalogs, _) if catalogs.isEmpty =>
-        for {
-          _ <- startUpdate()
-
-          catalogs <- getCatalogNamesOnly
-            .flatMap(update)
-            .timeout(timeout.millis)
-            .onErrorFallbackTo(Task.now(state.data))
-
-          _ <- inferCatalogsInSingleQuery
-            .flatMap(update)
-            .attempt.start
-        } yield catalogs
-
-      case State(_, expirationDate) if expirationDate < System.currentTimeMillis() =>
-        for {
-          _ <- startUpdate()
-          _ <- inferCatalogsInSingleQuery
-            .onErrorFallbackTo(inferCatalogsOneByOne)
-            .flatMap(update).attempt.start
-        } yield state.data
-
-      case _ => Task.now(state.data)
-    }
-  }
-
-  def startUpdate() = Task(state = state.copy(expirationDate = System.currentTimeMillis() + stalePeriod))
-
-  def update(newCatalogs: List[Catalog]): Task[List[Catalog]] = Task {
-    if (newCatalogs.nonEmpty) {
-      state = state.copy(data = newCatalogs)
-    }
-
-    newCatalogs
-  }
 
   private def inferCatalogsOneByOne = {
     for {
@@ -60,6 +27,7 @@ class PrestoCatalogs(val queryExecutor: AsyncQueryExecutor[String, Batch],
   def getCatalogNamesOnly = {
     for {
       catalogNames <- executeForSingleColumn("show catalogs")
+        .onErrorFallbackTo(Task.now(Nil))
     } yield catalogNames.map(name => Catalog(name, Nil))
   }
 

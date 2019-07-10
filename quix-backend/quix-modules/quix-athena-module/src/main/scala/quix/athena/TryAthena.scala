@@ -5,6 +5,9 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.athena.AmazonAthenaClient
 import com.typesafe.scalalogging.LazyLogging
 import monix.execution.Scheduler
+import quix.api.execute.ActiveQuery
+import quix.api.users.User
+import quix.core.results.SingleBuilder
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -21,10 +24,12 @@ object TryAthena extends LazyLogging {
     val client = new AwsAthenaClient(athena, config)
     val queryExecutor = new AthenaQueryExecutor(client)
 
-    val db = new AthenaDb(queryExecutor, config)
+    val results = new SingleBuilder[String]
 
-    val catalogs = Await.result(db.table("foo", "emr-airflow-poc", "emrpoctags").runToFuture(Scheduler.global), Duration.Inf)
+    val task = queryExecutor.runTask(new ActiveQuery[String]("id", Seq("SELECT *\nFROM default.elb_logs\nLIMIT 1000"), User("valeryf")), results)
 
-    logger.info("results = " + catalogs)
+    Await.ready(task.runToFuture(Scheduler.global), Duration.Inf)
+
+    logger.info("results = " + results.build())
   }
 }
