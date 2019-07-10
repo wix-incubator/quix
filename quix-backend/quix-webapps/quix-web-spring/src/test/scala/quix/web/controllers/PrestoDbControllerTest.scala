@@ -2,8 +2,8 @@ package quix.web.controllers
 
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
-import org.junit.{Before, Test}
 import org.junit.runner.RunWith
+import org.junit.{Before, Test}
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT
 import org.springframework.test.context.junit4.SpringRunner
@@ -19,6 +19,7 @@ class PrestoDbControllerTest extends E2EContext {
   new TestContextManager(this.getClass).prepareTestInstance(this)
   val executor = MockBeans.queryExecutor
   val db = MockBeans.db
+  val prestoCatalogs = MockBeans.catalogs
 
   @Before
   def executeBeforeEachTest = {
@@ -36,14 +37,15 @@ class PrestoDbControllerTest extends E2EContext {
   }
 
   @Test
-  def sendSinglePrestoQueryWhenDBTreeIsEmpty(): Unit = {
-    executor.withResults(List(List("catalog", "schema", "table")))
+  def sendFastPrestoQueryWhenDBTreeIsEmptyAndSlowInBackground(): Unit = {
+    executor
+      .withResults(List(List("catalog")))
+      .withResults(List(List("catalog", "schema", "table")))
 
     val catalogs = get[List[Catalog]]("api/db/presto/explore")
+    val resultOfFastQuery = Catalog("catalog", children = Nil)
+    assertThat(catalogs, Matchers.is(List(resultOfFastQuery)))
 
-    val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", children = Nil)))))
-
-    assertThat(catalogs, Matchers.is(List(catalog)))
   }
 
   @Test
@@ -57,29 +59,29 @@ class PrestoDbControllerTest extends E2EContext {
 
   @Test
   def searchByTableName(): Unit = {
-    executor.withResults(List(List("catalog", "schema", "table")))
+    val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", Nil)))))
+    prestoCatalogs.state = prestoCatalogs.state.copy(data = List(catalog), expirationDate = Long.MaxValue)
 
     val catalogs = get[List[Catalog]]("api/db/presto/search?q=table")
-
-    val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", children = Nil)))))
 
     assertThat(catalogs, Matchers.is(List(catalog)))
   }
 
   @Test
   def searchBySchemaName(): Unit = {
-    executor.withResults(List(List("catalog", "schema", "table")))
+    val catalog = Catalog("catalog", children = List(Schema("schema", children = Nil)))
+    prestoCatalogs.state = prestoCatalogs.state.copy(data = List(catalog), expirationDate = Long.MaxValue)
 
     val catalogs = get[List[Catalog]]("api/db/presto/search?q=schema")
-
-    val catalog = Catalog("catalog", children = List(Schema("schema", children = Nil)))
 
     assertThat(catalogs, Matchers.is(List(catalog)))
   }
 
   @Test
   def searchByCatalogName(): Unit = {
-    executor.withResults(List(List("catalog", "schema", "table")))
+    executor
+      .withResults(List(List("catalog")))
+      .withResults(List(List("catalog", "schema", "table")))
 
     val catalogs = get[List[Catalog]]("api/db/presto/search?q=catalog")
 
@@ -116,15 +118,18 @@ class PrestoDbControllerTest extends E2EContext {
 
     val actual = get[Map[String, List[String]]]("api/db/presto/autocomplete")
 
-    assertThat(actual.isEmpty, Matchers.is(true))
+    assertThat(actual("catalogs").isEmpty, Matchers.is(true))
+    assertThat(actual("schemas").isEmpty, Matchers.is(true))
+    assertThat(actual("tables").isEmpty, Matchers.is(true))
+    assertThat(actual("columns").isEmpty, Matchers.is(true))
   }
 
   @Test
   def handleAutoCompleteRequestWhenPrestoIsOnline(): Unit = {
-    executor
-      // will help building DbState.catalogs
-      .withResults(List(List("catalog", "schema", "table")))
-      .withResults(List(List("column1"), List("column2")))
+    val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", Nil)))))
+    prestoCatalogs.state = prestoCatalogs.state.copy(data = List(catalog), expirationDate = Long.MaxValue)
+
+    executor.withResults(List(List("column1"), List("column2")))
 
     val actual = get[Map[String, List[String]]]("api/db/presto/autocomplete")
 
@@ -136,9 +141,10 @@ class PrestoDbControllerTest extends E2EContext {
 
   @Test
   def handleAutoCompleteRequestWhenPrestoIsOnlineAndThenOffline(): Unit = {
+    val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", Nil)))))
+    prestoCatalogs.state = prestoCatalogs.state.copy(data = List(catalog), expirationDate = Long.MaxValue)
+
     executor
-      // will help building DbState.catalogs
-      .withResults(List(List("catalog", "schema", "table")))
       .withResults(List(List("column1"), List("column2")))
       .withExceptions(new Exception("presto is down!"), 100)
 
