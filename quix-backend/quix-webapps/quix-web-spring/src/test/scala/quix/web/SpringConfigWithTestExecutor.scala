@@ -26,8 +26,8 @@ object MockBeans {
   val duration = FiniteDuration(5, "seconds").toMillis
   val queryExecutor = new TestQueryExecutor
 
-  val catalogs = new PrestoCatalogs(queryExecutor, 1000L, 60000L)
-  val autocomplete = new PrestoAutocomplete(catalogs, queryExecutor, 1000L, 60000L)
-  val tables = new PrestoTables(queryExecutor, 1000L)
+  val catalogs = new PrestoCatalogs(queryExecutor, 60000L, 60000L)
+  val autocomplete = new PrestoAutocomplete(catalogs, queryExecutor, 60000L, 60000L)
+  val tables = new PrestoTables(queryExecutor, 60000L)
   val db = new PrestoRefreshableDb(catalogs, autocomplete, tables)
 }
