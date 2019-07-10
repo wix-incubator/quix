@@ -7,105 +7,48 @@ import org.specs2.specification.Scope
 import quix.api.db.{Catalog, Schema, Table}
 import quix.presto.TestQueryExecutor
 
-import scala.concurrent.duration._
-
 class PrestoCatalogsTest extends SpecWithJUnit with MustMatchers {
 
   class ctx extends Scope {
     val executor = new TestQueryExecutor
 
-    val catalogs = new PrestoCatalogs(executor, 1000, 60 * 1000L)
+    val catalogs = new PrestoCatalogs(executor)
 
-    def getCatalogs = {
-      catalogs.get.runSyncUnsafe()
+    def fastCatalogs = {
+      catalogs.fast.runSyncUnsafe()
+    }
+
+    def fullCatalogs = {
+      catalogs.full.runSyncUnsafe()
     }
   }
 
-  "PrestoCatalogs with empty state" should {
-    "if state.catalogs is empty, should fire fast 'show catalogs' query and trigger background update" in new ctx {
-      executor
-        .withResults(List(List("test-catalog")))
-        .withResults(List(List("test-catalog", "test-schema", "test-table")))
+  "PrestoCatalogs.fast" should {
+    "return only catalog names" in new ctx {
+      executor.withResults(List(List("test-catalog")))
 
-      getCatalogs must contain(Catalog("test-catalog", Nil))
-
-      eventually {
-        getCatalogs must contain(Catalog("test-catalog", List(Schema("test-schema", List(Table("test-table", List.empty))))))
-      }
+      fastCatalogs must contain(Catalog("test-catalog", Nil))
     }
 
-    "if state.catalogs is empty, but query didn't finish in time, fallback to empty state" in new ctx {
-      executor
-        .withResults(List(List("test-catalog")), "first-query-id", delay = 11.seconds)
-        .withException(new Exception("boom!"))
-
-      getCatalogs must beEmpty
-    }
-
-    "if state.catalogs is empty, and presto is down, fallback to empty list" in new ctx {
+    "fallback to empty list if presto is down" in new ctx {
       executor
         .withExceptions(new Exception("boom!"), 100)
 
-      getCatalogs must beEmpty
-    }
-
-    "if state.catalogs is empty, result of fast query should be memoized" in new ctx {
-      executor
-        .withResults(List(List("test-catalog")))
-        .withExceptions(new Exception("boom!"), 1000)
-
-      getCatalogs must contain(Catalog("test-catalog", Nil))
+      fastCatalogs must beEmpty
     }
   }
 
-  "PrestoCatalogs with non empty stale state" should {
-    "return last known state and calculate catalogs via single efficient query with fallback to less efficient in case of error" in new ctx {
-      catalogs.state = catalogs.state.copy(data = List(Catalog("foo", children = Nil)))
+  "PrestoCatalogs.full" should {
+    "return full catalogs tree if presto is live" in new ctx {
+      executor.withResults(List(List("test-catalog", "test-schema", "test-table")))
 
-      executor
-        .withException(new Exception("failure"))
-        .withResults(List(List("test-catalog")), "first-query-id")
-        .withResults(List(List("test-catalog", "test-schema", "test-table")), "second-query-id")
-
-      getCatalogs must contain(Catalog("foo", Nil))
-
-      eventually {
-        getCatalogs must contain(Catalog("test-catalog", List(Schema("test-schema", List(Table("test-table", List.empty))))))
-      }
-
+      fullCatalogs must contain(Catalog("test-catalog", List(Schema("test-schema", List(Table("test-table", List.empty))))))
     }
 
-    "calculate catalogs via efficient queries, but fallback to non-efficient in case of error" in new ctx {
-      catalogs.state = catalogs.state.copy(data = List(Catalog("foo", children = Nil)))
+    "fallback to empty list if presto is down" in new ctx {
+      executor.withExceptions(new Exception("boom!"), 100)
 
-      executor
-        .withException(new Exception("failure"))
-        .withResults(List(List("test-catalog")), "first-query-id")
-        .withException(new Exception("failure"))
-        .withResults(List(List("test-schema")), "second-query-id")
-        .withResults(List(List("test-table")), "third-query-id")
-
-      getCatalogs must contain(Catalog("foo", Nil))
-
-      eventually {
-        getCatalogs must contain(Catalog("test-catalog", List(Schema("test-schema", List(Table("test-table", List.empty))))))
-      }
-    }
-
-    "fallback to empty catalog in case of failures" in new ctx {
-      catalogs.state = catalogs.state.copy(data = List(Catalog("foo", children = Nil)))
-
-      executor
-        .withException(new Exception("failure"))
-        .withResults(List(List("test-catalog")), "first-query-id")
-        .withException(new Exception("failure"))
-        .withException(new Exception("failure"))
-
-      getCatalogs must contain(Catalog("foo", Nil))
-
-      eventually {
-        getCatalogs must contain(Catalog("test-catalog", List.empty))
-      }
+      fullCatalogs must beEmpty
     }
   }
 

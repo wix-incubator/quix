@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFIN
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.context.{TestContextManager, TestPropertySource}
 import quix.api.db.{Catalog, Kolumn, Schema, Table}
+import quix.core.db.State
 import quix.web.{E2EContext, MockBeans, SpringConfigWithTestExecutor}
 
 @RunWith(classOf[SpringRunner])
@@ -19,12 +20,13 @@ class PrestoDbControllerTest extends E2EContext {
   new TestContextManager(this.getClass).prepareTestInstance(this)
   val executor = MockBeans.queryExecutor
   val db = MockBeans.db
-  val prestoCatalogs = MockBeans.catalogs
+  val prestoCatalogs = MockBeans.refreshableCatalogs
 
   @Before
   def executeBeforeEachTest = {
     executor.clear
-    db.reset
+    MockBeans.refreshableAutocomplete.state = State(Map.empty, 0L)
+    MockBeans.refreshableCatalogs.state = State(List.empty, 0L)
   }
 
   @Test
@@ -125,48 +127,25 @@ class PrestoDbControllerTest extends E2EContext {
   }
 
   @Test
-  def handleAutoCompleteRequestWhenPrestoIsOnline(): Unit = {
-    val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", Nil)))))
-    prestoCatalogs.state = prestoCatalogs.state.copy(data = List(catalog), expirationDate = Long.MaxValue)
-
-    executor.withResults(List(List("column1"), List("column2")))
+  def handleAutoCompleteRequestWhenAutocompleteStateIsEmpty(): Unit = {
+    executor
+      .withResults(List(List("catalog1"), List("catalog2")))
+      .withResults(List(List("column1"), List("column2")))
 
     val actual = get[Map[String, List[String]]]("api/db/presto/autocomplete")
 
-    assertThat(actual("catalogs"), Matchers.is(List("catalog")))
-    assertThat(actual("schemas"), Matchers.is(List("schema")))
-    assertThat(actual("tables"), Matchers.is(List("table")))
+    assertThat(actual("catalogs"), Matchers.is(List("catalog1", "catalog2")))
     assertThat(actual("columns"), Matchers.is(List("column1", "column2")))
   }
 
   @Test
-  def handleAutoCompleteRequestWhenPrestoIsOnlineAndThenOffline(): Unit = {
-    val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", Nil)))))
-    prestoCatalogs.state = prestoCatalogs.state.copy(data = List(catalog), expirationDate = Long.MaxValue)
+  def handleAutoCompleteRequestWhenAutocompleteStateExists(): Unit = {
+    MockBeans.refreshableAutocomplete.state = State(Map("foo" -> List("boo")), Long.MaxValue)
 
-    executor
-      .withResults(List(List("column1"), List("column2")))
-      .withExceptions(new Exception("presto is down!"), 100)
+    executor.withException(new Exception("boom!"))
+    val actual = get[Map[String, List[String]]]("api/db/presto/autocomplete")
 
-    // first request goes to presto
-    {
-      val actual = get[Map[String, List[String]]]("api/db/presto/autocomplete")
-
-      assertThat(actual("catalogs"), Matchers.is(List("catalog")))
-      assertThat(actual("schemas"), Matchers.is(List("schema")))
-      assertThat(actual("tables"), Matchers.is(List("table")))
-      assertThat(actual("columns"), Matchers.is(List("column1", "column2")))
-    }
-
-    // second request from cache
-    {
-      val actual = get[Map[String, List[String]]]("api/db/presto/autocomplete")
-
-      assertThat(actual("catalogs"), Matchers.is(List("catalog")))
-      assertThat(actual("schemas"), Matchers.is(List("schema")))
-      assertThat(actual("tables"), Matchers.is(List("table")))
-      assertThat(actual("columns"), Matchers.is(List("column1", "column2")))
-    }
+    assertThat(actual("foo"), Matchers.is(List("boo")))
   }
 }
 

@@ -1,53 +1,20 @@
 package quix.presto.db
 
 import monix.eval.Task
-import quix.api.db.Catalog
+import quix.api.db.{Autocomplete, Catalog}
 import quix.api.execute.{AsyncQueryExecutor, Batch}
-
-import scala.concurrent.duration._
+import quix.core.executions.SingleQueryExecutor
 
 class PrestoAutocomplete(val catalogs: PrestoCatalogs,
-                         val queryExecutor: AsyncQueryExecutor[String, Batch],
-                         val timeout: Long, val stalePeriod: Long,
-                         var state: State[Map[String, List[String]]] = State(Map.empty, 0L))
-  extends SingleQueryExecutor {
+                         val queryExecutor: AsyncQueryExecutor[String, Batch])
+  extends Autocomplete with SingleQueryExecutor {
 
-  def get = {
-    state match {
-      case State(data, _) if data.isEmpty =>
-        for {
-          _ <- Task (state = state.copy(expirationDate = System.currentTimeMillis() + stalePeriod))
-          catalogsList <- catalogs.get
-          autocomplete <- singleQueryAutocomplete(catalogsList)
-            .timeout(timeout.millis)
-            .flatMap(update)
-            .onErrorFallbackTo(Task(Map.empty[String, List[String]]))
-
-        } yield autocomplete
-
-      case State(_, expirationDate) if expirationDate < System.currentTimeMillis() =>
-        for {
-          _ <- Task (state = state.copy(expirationDate = System.currentTimeMillis() + stalePeriod))
-          _ <- {
-            for {
-              catalogsList <- catalogs.get
-              _ <- singleQueryAutocomplete(catalogsList)
-                .flatMap(update)
-                .attempt.start
-            } yield ()
-          }
-        } yield state.data
-
-      case _ => Task.now(state.data)
-    }
+  override def fast: Task[Map[String, List[String]]] = {
+    catalogs.fast.flatMap(singleQueryAutocomplete)
   }
 
-  def update(autocomplete: Map[String, List[String]]): Task[Map[String, List[String]]] = Task {
-    if (autocomplete.nonEmpty) {
-      state = state.copy(data = autocomplete)
-    }
-
-    autocomplete
+  override def full: Task[Map[String, List[String]]] = {
+    catalogs.full.flatMap(singleQueryAutocomplete)
   }
 
   def singleQueryAutocomplete(catalogList: List[Catalog]) = {

@@ -1,15 +1,16 @@
 package quix.presto.db
 
 import monix.eval.Task
-import quix.api.db.{Kolumn, Table}
+import quix.api.db.{Kolumn, Table, Tables}
 import quix.api.execute.{AsyncQueryExecutor, Batch}
+import quix.core.executions.SingleQueryExecutor
 
 import scala.concurrent.duration._
 
 class PrestoTables(val queryExecutor: AsyncQueryExecutor[String, Batch], val timeout: Long)
-  extends SingleQueryExecutor {
+  extends Tables with SingleQueryExecutor {
 
-  def get(catalog: String, schema: String, table: String): Task[Table] = {
+  override def get(catalog: String, schema: String, table: String): Task[Table] = {
     val sql =
       s"""select column_name, type_name
          |from system.jdbc.columns

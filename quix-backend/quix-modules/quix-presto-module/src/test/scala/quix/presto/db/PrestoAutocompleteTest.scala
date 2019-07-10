@@ -4,7 +4,6 @@ import monix.execution.Scheduler.Implicits.global
 import org.specs2.matcher.MustMatchers
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
-import quix.api.db.{Catalog, Schema, Table}
 import quix.presto.TestQueryExecutor
 
 class PrestoAutocompleteTest extends SpecWithJUnit with MustMatchers {
@@ -12,57 +11,41 @@ class PrestoAutocompleteTest extends SpecWithJUnit with MustMatchers {
   class ctx extends Scope {
     val executor = new TestQueryExecutor
 
-    val catalogs = new PrestoCatalogs(executor, 1000, 60 * 1000L)
-    val autocomplete = new PrestoAutocomplete(catalogs, executor, 1000L, 60 * 1000L)
+    val catalogs = new PrestoCatalogs(executor)
+    val autocomplete = new PrestoAutocomplete(catalogs, executor)
 
-    def getAutocompleteItems = {
-      autocomplete.get.runSyncUnsafe()
+    def fastAutocomplete = autocomplete.fast.runSyncUnsafe()
+
+    def fullAutocomplete = autocomplete.full.runSyncUnsafe()
+  }
+
+  "PrestoAutocomplete.fast" should {
+
+    "use catalogs.fast as a baseline for calculating of autocomplete.fast items " in new ctx {
+      executor
+        .withResults(List(List("catalog")))
+        .withResults(List(List("column")))
+
+      val items = fastAutocomplete
+
+      items must havePair("catalogs" -> List("catalog"))
+      items must havePair("columns" -> List("column"))
     }
   }
 
-  "PrestoAutocomplete" should {
+  "PrestoAutocomplete.full" should {
 
-    "calculate autocomplete items via catalogs if present" in new ctx {
-      catalogs.state = catalogs.state.copy(
-        data = List(Catalog("catalog", List(Schema("schema", List(Table("table", Nil)))))),
-        expirationDate = Long.MaxValue
-      )
-      executor.withResults(List(List("column")))
+    "use catalogs.full as a baseline for calculating of autocomplete.full items " in new ctx {
+      executor
+        .withResults(List(List("catalog", "schema", "table")))
+        .withResults(List(List("column")))
 
-      val items = getAutocompleteItems
+      val items = fullAutocomplete
 
       items must havePair("catalogs" -> List("catalog"))
       items must havePair("schemas" -> List("schema"))
       items must havePair("tables" -> List("table"))
       items must havePair("columns" -> List("column"))
-    }
-
-    "return previous state if non-empty and execute update in background" in new ctx {
-      catalogs.state = catalogs.state.copy(
-        data = List(Catalog("catalog", List(Schema("schema", List(Table("table", Nil)))))),
-        expirationDate = Long.MaxValue
-      )
-
-      autocomplete.state = autocomplete.state.copy(data = Map("foo" -> List.empty))
-
-      executor.withResults(List(List("column")))
-
-      {
-        val items = getAutocompleteItems
-
-        items must havePair("foo" -> List.empty)
-      }
-
-      eventually {
-        val items = getAutocompleteItems
-
-        items must havePair("catalogs" -> List("catalog"))
-        items must havePair("schemas" -> List("schema"))
-        items must havePair("tables" -> List("table"))
-        items must havePair("columns" -> List("column"))
-
-        autocomplete.state.expirationDate must beGreaterThan(0L)
-      }
     }
   }
 
