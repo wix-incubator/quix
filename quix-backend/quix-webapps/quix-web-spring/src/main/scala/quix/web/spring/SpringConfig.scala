@@ -98,14 +98,12 @@ class ModulesConfiguration extends LazyLogging {
       val executions = new SequentialExecutions[String](executor)
 
       val db = {
-        import scala.concurrent.duration._
-
-        val firstEmptyStateDelay = env.getProperty("presto.db.empty.timeout", classOf[Long], 1000L * 10)
+        val emptyDbTimeout = env.getProperty("presto.db.empty.timeout", classOf[Long], 1000L * 10)
         val requestTimeout = env.getProperty("presto.db.request.timeout", classOf[Long], 5000L)
 
-        logger.info(s"event=[spring-config] bean=[RefreshableDbConfig] firstEmptyStateDelay=$firstEmptyStateDelay requestTimeout=$requestTimeout")
+        logger.info(s"event=[spring-config] bean=[RefreshableDbConfig] firstEmptyStateDelay=$emptyDbTimeout requestTimeout=$requestTimeout")
 
-        new PrestoRefreshableDb(executor, RefreshableDbConfig(firstEmptyStateDelay.millis, requestTimeout.millis))
+        PrestoRefreshableDb(executor, RefreshableDbConfig(emptyDbTimeout, requestTimeout))
       }
 
       val module = new PrestoQuixModule(executions, Some(db))
