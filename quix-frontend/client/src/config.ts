@@ -14,13 +14,20 @@ export const Search = {
 export const QuixFolder = {
   id: 'quix',
   name: 'Quix',
-  owner: 'Quix'
+  owner: 'Quix',
+  ownerDetails: {
+    name: 'Quix',
+  } as any
 };
 
 export const ExamplesNotebook = {
   id: 'examples',
   name: 'Examples',
-  owner: 'Quix'
+  owner: 'Quix',
+  ownerDetails: {
+    name: 'Quix',
+    avatar: 'http://quix.wix.com/assets/logo.png'
+  } as any
 };
 
 export const HeaderMenu = [{

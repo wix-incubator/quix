@@ -2,7 +2,11 @@
   <div class="bi-section-header">
     <div>
       <div class="bi-section-title bi-r-h bi-align bi-s-h">
-        <img class="quix-user-avatar" ng-src="{{::vm.state.value().notebook.ownerDetails.avatar}}">
+        <img
+          class="quix-user-avatar bi-fade-in"
+          ng-if="vm.state.is('Result') && vm.state.value().notebook.ownerDetails.avatar"
+          ng-src="{{::vm.state.value().notebook.ownerDetails.avatar}}"
+        >
 
         <quix-breadcrumbs
           class="bi-dont-shrink bi-fade-in"
