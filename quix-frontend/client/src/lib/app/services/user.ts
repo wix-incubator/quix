@@ -36,6 +36,7 @@ export class Permission {
 const addPrefixSlash = (s: string) => s[0] === '/' ? s : '/' + s;
 export class User {
   private email: string;
+  private name: string;
   private avatar: string;
   private loggedIn;
   private role: string;
@@ -46,8 +47,9 @@ export class User {
       .then(data => this.set(data.payload || data));
   }
 
-  set({email, avatar, role}: Record<string, string>) {
+  set({email, name, avatar, role}: Record<string, string>) {
     this.email = email;
+    this.name = name;
     this.avatar = avatar;
     this.role = role || 'user';
     this.loggedIn = true;
@@ -57,6 +59,10 @@ export class User {
 
   getEmail() {
     return this.email;
+  }
+
+  getName() {
+    return this.name;
   }
 
   getAvatar() {

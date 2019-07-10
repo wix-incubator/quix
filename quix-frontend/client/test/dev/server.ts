@@ -1,13 +1,15 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-// import request from 'request';
+import request from 'request';
 import http from 'http';
 import {renderVM} from './vm';
 import {mock, reset} from '../mocks';
 import expressWs from 'express-ws';
 import {setupMockWs} from './websocket-mock';
 
-export function start(port = process.env.PORT || 3000) {
+const proxyBaseUrl = 'http://localhost:3000';
+
+export function start(port = process.env.PORT || '3000') {
   const app = express();
   const server = http.createServer(app);
   expressWs(app, server);
@@ -30,16 +32,19 @@ export function start(port = process.env.PORT || 3000) {
   setupMockWs(app);
 
   app.all('/api/*', (req, res) => {
-    const [status, payload] = mock(req.path);
+    if (port === '3000' || port === '3100') {
+      const [status, payload] = mock(req.path);
 
-    res.status(status).json(payload);
+      res.status(status).json(payload);
+    } else {
+      const url = proxyBaseUrl + req.url;
+      req.pipe(request[req.method.toLowerCase()](url)).pipe(res);
+    }
   });
-
 
   app.get('/', (req, res) => {
     res.send(renderVM('./src/index.vm', {}));
   });
-
 
   return server.listen(port, () => {
     console.info(`Fake server is running on port ${port}`);
