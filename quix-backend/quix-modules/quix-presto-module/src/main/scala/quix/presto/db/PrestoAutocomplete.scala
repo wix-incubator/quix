@@ -16,8 +16,8 @@ class PrestoAutocomplete(val catalogs: PrestoCatalogs,
     state match {
       case State(data, _) if data.isEmpty =>
         for {
+          _ <- Task (state = state.copy(expirationDate = System.currentTimeMillis() + stalePeriod))
           catalogsList <- catalogs.get
-
           autocomplete <- singleQueryAutocomplete(catalogsList)
             .timeout(timeout.millis)
             .flatMap(update)
