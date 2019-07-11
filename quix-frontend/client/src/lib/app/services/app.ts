@@ -1,7 +1,9 @@
-import {Store} from '../../../lib/store';
+import {Store} from '../../store';
 import angular from 'angular';
 import Navigator from './navigator';
 import {User} from './user';
+import {login} from './sso';
+import {Options} from '../types';
 
 export interface IMenuItem {
   icon: string;
@@ -9,16 +11,16 @@ export interface IMenuItem {
   state?: string;
   template?: string;
   compiled?: string;
-  onToggle?(app: Instance, item: IMenuItem): any;
+  onToggle?(app: App, item: IMenuItem): any;
 }
 
-export default class Instance<Config = any> {
+export class App<Config = any> {
   private ngModule: angular.IModule;
 
   constructor(
     private readonly id: string,
     private readonly title: string,
-    private readonly logoUrl: string,
+    private readonly options: Options,
     private readonly plugins,
     private readonly user: User,
     private readonly navigator: Navigator,
@@ -32,6 +34,11 @@ export default class Instance<Config = any> {
     return this;
   }
 
+  login() {
+    return login(this.options.auth.googleClientId, this.options.apiBasePath)
+      .then(data => this.navigator.finishLogin(data));
+  }
+
   getId() {
     return this.id;
   }
@@ -41,7 +48,7 @@ export default class Instance<Config = any> {
   }
 
   getLogoUrl() {
-    return this.logoUrl;
+    return this.options.logoUrl;
   }
 
   getUser(): User {

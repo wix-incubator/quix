@@ -3,10 +3,10 @@ import './breadcrumbs.scss';
 
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {IScope} from './breadcrumbs-types';
 
-export default (app: Instance, store: Store) => () => ({
+export default (app: App, store: Store) => () => ({
   restrict: 'E',
   template,
   scope: {

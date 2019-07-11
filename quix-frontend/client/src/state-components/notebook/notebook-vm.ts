@@ -1,5 +1,5 @@
 import {StateManager} from '../../services/state';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {pluginManager} from '../../plugins';
 
 enum States {
@@ -9,7 +9,7 @@ enum States {
   Content
 }
 
-export default (app: Instance) => ({
+export default (app: App) => ({
   note: null,
   breadcrumbs: {
     enabled: true,

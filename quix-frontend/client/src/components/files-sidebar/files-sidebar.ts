@@ -3,7 +3,7 @@ import './files-sidebar.scss';
 
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {FileActions, NotebookActions, IFile} from '../../../../shared';
 import {IScope} from './files-sidebar-types';
 import {cache} from '../../store';
@@ -24,7 +24,7 @@ enum States {
   Content
 }
 
-const listenToEvents = (scope, app: Instance, store: Store, fileExplorer) => {
+const listenToEvents = (scope, app: App, store: Store, fileExplorer) => {
   fileExplorer
     .on('fileCreated', ({id, path}) => addNotebook(store, app, path, {id}), false, scope)
     .on('fileMoved', ({id, path}) => store.dispatchAndLog(NotebookActions.moveNotebook(id, path)), false, scope)
@@ -34,7 +34,7 @@ const listenToEvents = (scope, app: Instance, store: Store, fileExplorer) => {
     .on('folderMoved', ({id, path}) => store.dispatchAndLog(FileActions.moveFile(id, path)), false, scope);
 }
 
-const listenToNavChange = (scope: IScope, app: Instance, fileExplorer) => {
+const listenToNavChange = (scope: IScope, app: App, fileExplorer) => {
   app.getNavigator()
     .listen(['files', 'notebook'], 'success', ({id}: {id: string}) => {
       const file = scope.vm.state.value().files.find(f => f.id === id);
@@ -43,7 +43,7 @@ const listenToNavChange = (scope: IScope, app: Instance, fileExplorer) => {
     .otherwise(() => fileExplorer.clearActive());
 }
 
-export default (app: Instance, store: Store) => () => ({
+export default (app: App, store: Store) => () => ({
   restrict: 'E',
   template,
   scope: {},

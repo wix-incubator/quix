@@ -1,9 +1,9 @@
 import {combineReducers} from 'redux';
 import {IBranch} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {IFile, composeReducers, clientFileListReducer} from '../../../../shared';
 
-export default (app: Instance): IBranch => register => {
+export default (app: App): IBranch => register => {
   const favorites = composeReducers(
     clientFileListReducer,
     (state: IFile[] = null, action: any) => {

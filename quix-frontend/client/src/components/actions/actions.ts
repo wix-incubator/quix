@@ -4,11 +4,11 @@ import './actions.scss';
 import {isArray} from 'lodash';
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {IScope} from './actions-types';
 import {confirmAction} from '../../services';
 
-export default (app: Instance, store: Store) => () => ({
+export default (app: App, store: Store) => () => ({
   restrict: 'E',
   template,
   scope: {

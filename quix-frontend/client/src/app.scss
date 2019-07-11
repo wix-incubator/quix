@@ -6,19 +6,21 @@ body {
   background-color: $light-bg;
 }
 
-bi-app > .quix-splash {
+bi-app {
   $splashWidth: 150px;
   $splashHeight: 208px;
 
-  position: absolute;
-  width: $splashWidth;
-  height: $splashHeight;
-  top: 50%;
-  left: 50%;
-  margin: (-$splashHeight / 2) 0 0 (-$splashWidth / 2);
+  >.quix-splash {
+    position: absolute;
+    width: $splashWidth;
+    height: $splashHeight;
+    top: 50%;
+    left: 50%;
+    margin: (-$splashHeight / 2) 0 0 (-$splashWidth / 2);
+  }
 
-  img {
-    width: 100%;
+  .quix-splash-logo {
+    width: $splashWidth;
     filter: drop-shadow(2px 2px 5px $grey--400);
   }
 }

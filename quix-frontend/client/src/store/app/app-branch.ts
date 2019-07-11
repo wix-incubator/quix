@@ -1,5 +1,5 @@
 import {IBranch} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {Middleware} from 'redux';
 
 import * as Runners from '../../services/runners';
@@ -25,7 +25,7 @@ const runnerMiddleware: Middleware = () =>
     return next(action);
   }
 
-export default (app: Instance): IBranch<IApp> => register => {
+export default (app: App): IBranch<IApp> => register => {
   function appReducer(state: IApp = {runners: {}}, action): IApp {
     switch (action.type) {
       case 'app.setSearchPage':

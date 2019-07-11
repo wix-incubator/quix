@@ -2,12 +2,12 @@ import template from './header.html';
 import './header.scss';
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {IScope} from './header-types';
 import {HeaderMenu} from '../../config';
 import * as AppActions from '../../store/app/app-actions';
 
-const listenToNavChange = (scope: IScope, app: Instance, store: Store) => {
+const listenToNavChange = (scope: IScope, app: App, store: Store) => {
   const {navItems} = scope.vm;
 
   const states = navItems.reduce((res, item) => {
@@ -27,7 +27,7 @@ const listenToNavChange = (scope: IScope, app: Instance, store: Store) => {
     .otherwise(() => scope.vm.currentState = null);
 }
 
-export default (app: Instance, store: Store) => () => ({
+export default (app: App, store: Store) => () => ({
   restrict: 'E',
   template,
   scope: {},

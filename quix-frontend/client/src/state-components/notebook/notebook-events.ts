@@ -2,7 +2,7 @@ import {takeWhile} from 'lodash';
 import {utils} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {toast} from '../../lib/ui';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem, createNote} from '../../../../shared';
 import {FileType} from '../../../../shared/entities/file';
 import {IScope} from './notebook-types';
@@ -10,23 +10,23 @@ import {setNotebook, setNote, queueNote, toggleMark, unmarkAll} from '../../stor
 import {saveQueuedNotes, deleteNotebook, copyNotebook, goToFile, goToRoot, prompt, copyNote} from '../../services';
 import {removeRunner, addRunner} from '../../store/app/app-actions';
 
-export const onBreadcrumbClick = (scope: IScope, store: Store, app: Instance) => (file: IFilePathItem) => {
+export const onBreadcrumbClick = (scope: IScope, store: Store, app: App) => (file: IFilePathItem) => {
   const {notebook: {owner, path}} = scope.vm.state.value();
 
   goToFile(app, {...file, owner, type: FileType.folder, path: takeWhile(path, item => item.id !== file.id)});
 };
 
-export const onGoToRootClick = (scope: IScope, store: Store, app: Instance) => () => {
+export const onGoToRootClick = (scope: IScope, store: Store, app: App) => () => {
   goToRoot(app);
 };
 
-export const onNameChange = (scope: IScope, store: Store, app: Instance) => (file: IFile) => {
+export const onNameChange = (scope: IScope, store: Store, app: App) => (file: IFile) => {
   const {id, name} = file;
 
   store.dispatchAndLog(NotebookActions.updateName(id, name));
 }
 
-export const onDelete = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
+export const onDelete = (scope: IScope, store: Store, app: App) => (notebook: INotebook) => {
   deleteNotebook(store, app, notebook)
     .then(() => toast.showToast({
       text: `Deleted notebook "${notebook.name}"`,
@@ -34,7 +34,7 @@ export const onDelete = (scope: IScope, store: Store, app: Instance) => (noteboo
     }, 3000));
 }
 
-export const onClone = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
+export const onClone = (scope: IScope, store: Store, app: App) => (notebook: INotebook) => {
   prompt({
     title: 'Clone notebook',
     subTitle: 'Choose destintation folder',
@@ -51,7 +51,7 @@ export const onClone = (scope: IScope, store: Store, app: Instance) => (notebook
   }, 3000));
 }
 
-export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
+export const onShare = (scope: IScope, store: Store, app: App) => (notebook: INotebook) => {
   utils.copyToClipboard(app.getNavigator().getUrl(null, {id: notebook.id}));
 
   toast.showToast({
@@ -60,7 +60,7 @@ export const onShare = (scope: IScope, store: Store, app: Instance) => (notebook
   }, 3000);
 }
 
-export const onLikeToggle = (scope: IScope, store: Store, app: Instance) => (notebook: INotebook) => {
+export const onLikeToggle = (scope: IScope, store: Store, app: App) => (notebook: INotebook) => {
   const {id, isLiked} = notebook;
 
   store.dispatchAndLog(NotebookActions.toggleIsLiked(id, !isLiked))
@@ -70,23 +70,23 @@ export const onLikeToggle = (scope: IScope, store: Store, app: Instance) => (not
     }, 3000));
 }
 
-export const onSave = (scope: IScope, store: Store, app: Instance) => () => {
+export const onSave = (scope: IScope, store: Store, app: App) => () => {
   saveQueuedNotes(store);
 }
 
-export const onRun = (scope: IScope, store: Store, app: Instance) => () => {
+export const onRun = (scope: IScope, store: Store, app: App) => () => {
   saveQueuedNotes(store);
 }
 
-export const onNoteSave = (scope: IScope, store: Store, app: Instance) => () => {
+export const onNoteSave = (scope: IScope, store: Store, app: App) => () => {
   saveQueuedNotes(store);
 }
 
-export const onNoteRun = (scope: IScope, store: Store, app: Instance) => () => {
+export const onNoteRun = (scope: IScope, store: Store, app: App) => () => {
   saveQueuedNotes(store);
 }
 
-export const onNoteAdd = (scope: IScope, store: Store, app: Instance) => (type: any) => {
+export const onNoteAdd = (scope: IScope, store: Store, app: App) => (type: any) => {
   const {notebook} = scope.vm.state.value();
   const {id} = notebook;
   const note = createNote(id, {type});
@@ -98,7 +98,7 @@ export const onNoteAdd = (scope: IScope, store: Store, app: Instance) => (type: 
   vm.focusName = true;
 }
 
-export const onNoteClone = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
+export const onNoteClone = (scope: IScope, store: Store, app: App) => (note: INote) => {
   prompt({
     title: 'Clone note',
     subTitle: 'Choose destintation notebook',
@@ -112,7 +112,7 @@ export const onNoteClone = (scope: IScope, store: Store, app: Instance) => (note
   }, 3000));
 }
 
-export const onNoteShare = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
+export const onNoteShare = (scope: IScope, store: Store, app: App) => (note: INote) => {
   const {notebook} = scope.vm.state.value();
 
   utils.copyToClipboard(app.getNavigator().getUrl(null, {id: notebook.id, note: note.id}));
@@ -123,7 +123,7 @@ export const onNoteShare = (scope: IScope, store: Store, app: Instance) => (note
   }, 3000);
 }
 
-export const onNoteDelete = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
+export const onNoteDelete = (scope: IScope, store: Store, app: App) => (note: INote) => {
   store.dispatchAndLog(NoteActions.deleteNote(note.id))
     .then(() => toast.showToast({
       text: `Deleted note "${note.name}"`,
@@ -131,15 +131,15 @@ export const onNoteDelete = (scope: IScope, store: Store, app: Instance) => (not
     }, 3000));
 }
 
-export const onNoteContentChange = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
+export const onNoteContentChange = (scope: IScope, store: Store, app: App) => (note: INote) => {
   store.dispatch(queueNote(note));
 }
 
-export const onNoteNameChange = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
+export const onNoteNameChange = (scope: IScope, store: Store, app: App) => (note: INote) => {
   store.dispatchAndLog(NoteActions.updateName(note.id, note.name));
 }
 
-export const onNoteReorder = (scope: IScope, store: Store, app: Instance) => (e: any, {item}: any) => {
+export const onNoteReorder = (scope: IScope, store: Store, app: App) => (e: any, {item}: any) => {
   const {model: note, dropindex: index} = item.sortable;
 
   if (typeof index !== 'undefined') {
@@ -147,12 +147,12 @@ export const onNoteReorder = (scope: IScope, store: Store, app: Instance) => (e:
   }
 }
 
-export const onMarkToggle = (scope: IScope, store: Store, app: Instance) => (note: INote) => {
+export const onMarkToggle = (scope: IScope, store: Store, app: App) => (note: INote) => {
   store.dispatch(toggleMark(note));
 };
 
 
-export const onMarkedNotesDelete = (scope: IScope, store: Store, app: Instance) => (notes: INote[]) => {
+export const onMarkedNotesDelete = (scope: IScope, store: Store, app: App) => (notes: INote[]) => {
   store.dispatchAndLog(notes.map(note => NoteActions.deleteNote(note.id)))
     .then(() => toast.showToast({
       text: `Deleted ${notes.length} notes`,
@@ -160,7 +160,7 @@ export const onMarkedNotesDelete = (scope: IScope, store: Store, app: Instance) 
     }, 3000));
 }
 
-export const onUnmarkAll = (scope: IScope, store: Store, app: Instance) => () => {
+export const onUnmarkAll = (scope: IScope, store: Store, app: App) => () => {
   store.dispatch(unmarkAll());
 };
 
@@ -172,7 +172,7 @@ export const onRunnerDestroyed = (scope: IScope, store: Store) => (note) => {
   store.dispatch(removeRunner(note.id));
 };
 
-export const $onDestroy = (scope: IScope, store: Store, app: Instance) => () => {
+export const $onDestroy = (scope: IScope, store: Store, app: App) => () => {
   saveQueuedNotes(store);
   store.dispatch(setNotebook(null));
 }

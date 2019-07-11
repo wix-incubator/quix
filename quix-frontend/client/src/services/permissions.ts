@@ -1,4 +1,4 @@
-import {Instance} from '../lib/app';
+import {App} from '../lib/app';
 import {IEntity, IFile} from '../../../shared';
 import {isRoot} from './files';
 
@@ -24,7 +24,7 @@ export interface INotebookPermissions extends IPermissions{
   };
 }
 
-export const isOwner = (app: Instance, entity: Pick<IEntity, 'owner'>) => {
+export const isOwner = (app: App, entity: Pick<IEntity, 'owner'>) => {
   return entity.owner === app.getUser().getEmail();
 }
 
@@ -39,7 +39,7 @@ export const getDefaultPermissions = (): IPermissions => {
   };
 }
 
-export const getFolderPermissions = (app: Instance, folder: IFile): IFolderPermissions => {
+export const getFolderPermissions = (app: App, folder: IFile): IFolderPermissions => {
   const isFolderOwner = isOwner(app, folder);
   const isRootFolder = isRoot(folder);
 
@@ -60,7 +60,7 @@ export const getFolderPermissions = (app: Instance, folder: IFile): IFolderPermi
   };
 }
 
-export const getNotebookPermissions = (app: Instance, folder: IFile): INotebookPermissions => {
+export const getNotebookPermissions = (app: App, folder: IFile): INotebookPermissions => {
   const isFolderOwner = isOwner(app, folder);
 
   return {

@@ -4,13 +4,14 @@ import {srv, inject, utils} from '../../core';
 import {IBranches} from '../../../lib/store/services/store';
 import {createStore, Store} from '../../../lib/store';
 import Navigator from './navigator';
-import Instance, {IMenuItem} from './instance';
-import PluginInstance, {IPluginComponent, IStateFactory, IPluginBranches, IStateComponentFactory, IStateComponentConfig, IUrlParamListener} from './plugin-instance';
+import {App, IMenuItem} from './app';
+import {PluginBuilder, IPluginComponent, IStateFactory, IPluginBranches, IStateComponentFactory, IStateComponentConfig, IUrlParamListener} from './plugin-builder';
 import {initScopeListeners} from '../utils/scope-utils';
 import {User} from './user';
 import {LocalStorage} from '../../core/srv/local-storage';
+import {Options} from '../types';
 
-export type PluginFactory<Config> = (app: PluginInstance<Config>) => any;
+export type PluginFactory<Config> = (app: PluginBuilder<Config>) => any;
 
 const userActionToUrlParam = {};
 const urlMiddleware = str => next => action => {
@@ -34,8 +35,8 @@ const urlMiddleware = str => next => action => {
  *  - register application states
  *  - register menu items
  */
-export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
-  private readonly plugins: {[key: string]: PluginInstance<Config>} = {};
+export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
+  private readonly plugins: {[key: string]: PluginBuilder<Config>} = {};
   private readonly navigator: Navigator;
   private readonly user: User;
   private readonly menuItems: IMenuItem[] = [];
@@ -49,16 +50,7 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
       title: string;
     },
     private readonly ngApp: angular.IModule,
-    private readonly options: {
-      statePrefix?: string;
-      defaultUrl?: string;
-      auth?: {
-        googleClientId: string;
-      };
-      homeState?: string;
-      logoUrl?: string;
-      apiBasePath?: string;
-    },
+    private readonly options: Options,
     private ngmodules = []
   ) {
     super();
@@ -73,11 +65,10 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
     }
 
     this.navigator = new Navigator({
+      ...options,
       statePrefix: typeof options.statePrefix === 'undefined' ? 'auth.content.' : options.statePrefix,
       defaultUrl: options.defaultUrl || '/',
-      auth: options.auth,
-      homeState: options.homeState
-    }).init(options.apiBasePath, this.user, ngApp);
+    }).init(this.user, ngApp);
   }
 
   /**
@@ -86,8 +77,8 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
    * @param id        plugin id
    * @param factory   plugin factory
    */
-  plugin(id: string, factory: (pluginInstance: PluginInstance<Config>) => any): Builder<Config> {
-    this.plugins[id] = new PluginInstance(id, this);
+  plugin(id: string, factory: (pluginBuilder: PluginBuilder<Config>) => any): Builder<Config> {
+    this.plugins[id] = new PluginBuilder(id, this);
 
     factory(this.plugins[id]);
 
@@ -124,7 +115,7 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
    *
    * @param config    state component config
    */
-  stateComponent(config: IStateComponentConfig, app: Instance, store: Store): Builder<Config> {
+  stateComponent(config: IStateComponentConfig, app: App, store: Store): Builder<Config> {
     function fromUrl(scope, url: {[key: string]: IUrlParamListener}, params: object) {
       const actions = Object.keys(url).map(param => (url as any)[param].from(params[param]));
 
@@ -241,11 +232,11 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
   /**
    * Creates an application instance
    */
-  build(): Instance<Config> {
-    const app = new Instance<Config>(
+  build(): App<Config> {
+    const app = new App<Config>(
       this.id as string,
       this.title,
-      this.options.logoUrl,
+      this.options,
       this.plugins,
       this.user,
       this.navigator,

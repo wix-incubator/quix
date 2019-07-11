@@ -6,7 +6,7 @@ import {assign, debounce} from 'lodash';
 import hljs from 'highlight.js';
 import {initNgScope, inject} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {INote, IPrestoNote} from '../../../../shared';
 import {IScope} from './search-results-types';
 import * as Resources from '../../services/resources';
@@ -90,7 +90,7 @@ const search = ((currentSearchId = 1) => debounce((scope: IScope, text: string, 
     });
 }, 300))();
 
-export default (app: Instance, store: Store) => () => ({
+export default (app: App, store: Store) => () => ({
   restrict: 'E',
   template,
   scope: {},

@@ -3,12 +3,12 @@ import './app.scss';
 
 import {find, without} from 'lodash';
 import {initNgScope, inject} from '../../../core';
-import {IMenuItem} from '../../services/instance';
-import {Instance} from '../..';
+import {IMenuItem} from '../../services/app';
+import {App} from '../..';
 import {Apps} from '../../constants';
 
 export interface IScope extends ng.IScope {
-  app: Instance;
+  app: App;
 }
 
 function setCurrentMenuItem(scope: IScope, item: IMenuItem) {

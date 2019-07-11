@@ -1,15 +1,15 @@
 import {forEach} from 'lodash';
 import {IDirectiveFactory, IDirectiveLinkFn} from 'angular';
-import {Store, IBranch} from '../../../lib/store';
-import Builder from './builder';
-import Instance, {IMenuItem} from './instance';
-import {ServerFrameworkType} from '../../../lib/store/services/store-logger';
+import {Store, IBranch} from '../../store';
+import {Builder} from './builder';
+import {App, IMenuItem} from './app';
+import {ServerFrameworkType} from '../../store/services/store-logger';
 
-export type IComponentFactory<Config = any> = (app: Instance<Config>, store: Store) => IDirectiveFactory;
+export type IComponentFactory<Config = any> = (app: App<Config>, store: Store) => IDirectiveFactory;
 
-export type IStateFactory<Config = any> = (app: Instance<Config>, store: Store) => object;
+export type IStateFactory<Config = any> = (app: App<Config>, store: Store) => object;
 
-export type IBranchFactory<Config = any> = (app: Instance<Config>) => IBranch;
+export type IBranchFactory<Config = any> = (app: App<Config>) => IBranch;
 
 export interface IPluginComponent<Config = any> {
   name: string;
@@ -22,7 +22,7 @@ export interface IPluginBranches<Config = any> {
   server?: ServerFrameworkType;
 }
 
-export type IStateComponentFactory<Config = any> = (app: Instance<Config>, store: Store) => IStateComponentConfig;
+export type IStateComponentFactory<Config = any> = (app: App<Config>, store: Store) => IStateComponentConfig;
 
 export type IUrlParamListener = Function | {from: Function; to: Function};
 
@@ -49,7 +49,7 @@ export interface IStateComponentConfig {
 /**
  * A subset of Builder which is exposed to plugin factories
  */
-export default class PluginInstance<Config> {
+export class PluginBuilder<Config> {
   private readonly pluginStates = [];
   private readonly pluginComponents: IPluginComponent[] = [];
   private readonly pluginStateComponents: IStateComponentFactory[] = [];
@@ -64,7 +64,7 @@ export default class PluginInstance<Config> {
    *
    * @param options   ui-router state options
    */
-  state(options: Object): PluginInstance<Config> {
+  state(options: Object): PluginBuilder<Config> {
     this.builder.state(options);
     return this;
   }
@@ -89,7 +89,7 @@ export default class PluginInstance<Config> {
    * @param name      component name
    * @param factory   component factory
    */
-  component(name: string, factory: IComponentFactory): PluginInstance<Config> {
+  component(name: string, factory: IComponentFactory): PluginBuilder<Config> {
     this.pluginComponents.push({name, factory});
     return this;
   }
@@ -172,7 +172,7 @@ export default class PluginInstance<Config> {
    *
    * @param fn  will be called with app's instance after app.build() was called
    */
-  ready(fn: (app: Instance) => any) {
+  ready(fn: (app: App) => any) {
     this.builder.on('ready', fn);
   }
 
@@ -181,7 +181,7 @@ export default class PluginInstance<Config> {
    *
    * @param fn  will be called with app's instance after app.build() was called
    */
-  onPluginReady(fn: (app: Instance<Config>, store: Store) => any) {
+  onPluginReady(fn: (app: App<Config>, store: Store) => any) {
     this.builder.on(`ready|${this.id}`, fn);
   }
 }

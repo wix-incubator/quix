@@ -1,4 +1,4 @@
-import {Instance} from './lib/app';
+import {App} from './lib/app';
 import {Store} from './lib/store';
 import {isOwner} from './services';
 import {waitForEntity} from './store';
@@ -31,7 +31,7 @@ export const HeaderMenu = scope => [{
   title: 'My notebooks',
   targetState: 'files',
   activeStates: ['files', 'notebook'],
-  activeCondition: (app: Instance, store: Store, state: string, id: string) => 
+  activeCondition: (app: App, store: Store, state: string, id: string) => 
     waitForEntity(scope, store, id, state === 'files' ? 'folder' : 'notebook').then(entity => isOwner(app, entity))
 }, {
   title: 'Favorites',

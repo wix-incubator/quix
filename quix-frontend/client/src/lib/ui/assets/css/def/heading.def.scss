@@ -1,0 +1,61 @@
+@import 'colors.def';
+@import 'morph.def';
+@import 'state.def';
+
+%heading {
+  position: relative;
+
+  &:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    border-bottom: 1px solid transparent;
+    z-index: 1;
+  }
+
+  .bi-heading-content {
+    padding-left: 1em;
+    padding-right: 1em;
+    z-index: 2;
+  }
+}
+
+@mixin heading($theme) {
+  @extend %heading;
+  
+  @if ($theme == 'lighter') {
+    .bi-heading-content {
+      background-color: $lighter-bg;
+    }
+
+    &:after {
+      border-color: $lighter-border-color;
+    }
+  } @else if ($theme == 'light') {
+    .bi-heading-content {
+      background-color: $light-bg;
+    }
+
+    &:after {
+      border-color: $light-border-color;
+    }
+  } @else if ($theme == 'dark') {
+    .bi-heading-content {
+      background-color: $dark-bg;
+    }
+
+    &:after {
+      border-color: $dark-border-color;
+    }
+  } @else {
+    .bi-heading-content {
+      background-color: $darker-bg;
+    }
+
+    &:after {
+      border-color: $darker-border-color;
+    }
+  }
+}

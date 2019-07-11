@@ -1,7 +1,7 @@
 import {IModule} from 'angular';
 import {inject, srv} from '../../core';
 import {User} from './user';
-import {getAuthStates} from './auth';
+import {Options} from '../types';
 
 const EVENT_MAP = {
   start: 'stateChangeStart',
@@ -14,23 +14,38 @@ export type TEventType = 'start' | 'success' | 'visible';
 export type INavigatorCallback = (params: any, stateName: string) => any;
 
 export default class Navigator extends srv.eventEmitter.EventEmitter {
-  private states = [];
+  private readonly states = [];
   private prefix;
+  private resolveLogin: (data: any) => any;
 
-  constructor(private readonly options: {
-    statePrefix: string;
-    defaultUrl: string;
-    homeState: string;
-    auth?: {googleClientId: string};
-  }) {
+  constructor(private readonly options: Options) {
     super();
   }
 
-  init(apiBasePath: string, user: User, ngApp: IModule) {
+  init(user: User, ngApp: IModule) {
     this.prefix = this.options.statePrefix;
 
     if (this.options.auth) {
-      this.states = getAuthStates(apiBasePath, this.options.auth.googleClientId, user);
+      const self = this;
+
+      this.states.push({
+        name: 'auth',
+        options: {
+          abstract: true,
+          template: '<div class="bi-c-h bi-grow" ui-view bi-state-loader></div>',
+          resolve: {
+            user() {
+               return user.fetch(self.options.apiBasePath)
+                .catch(() => {
+                  user.toggleLoggedIn(false);
+                  return new Promise(resolve => self.resolveLogin = resolve)
+                })
+                .then((data: any) => user.set(data.payload || data));
+            }
+          }
+        }
+      });
+
       this.prefix = `auth.${this.prefix}`;
     }
 
@@ -64,6 +79,12 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
     }]);
 
     return this;
+  }
+
+  finishLogin(data: any) {
+    if (this.resolveLogin) {
+      this.resolveLogin(data);
+    }
   }
 
   getStatePrefix() {

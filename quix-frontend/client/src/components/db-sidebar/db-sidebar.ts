@@ -3,7 +3,7 @@ import './db-sidebar.scss';
 
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {IFile} from '../../../../shared';
 import {IScope} from './db-sidebar-types';
 import {cache} from '../../store';
@@ -24,7 +24,7 @@ enum States {
   Visible,
 }
 
-export default (app: Instance, store: Store) => () => ({
+export default (app: App, store: Store) => () => ({
   restrict: 'E',
   template,
   scope: {},
