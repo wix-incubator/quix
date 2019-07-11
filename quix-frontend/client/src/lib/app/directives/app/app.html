@@ -9,9 +9,9 @@
     <span>{{::app.getTitle()}}</span>
   </div>
 
-  <div class="bi-grow bi-fade-in" ng-transclude="header" ng-if="::user.isLoggedIn()"></div>
+  <div class="bi-grow bi-fade-in" ng-transclude="header" ng-if="user.isLoggedIn()"></div>
 
-  <div class="bi-fade-in" ng-if="::user.isLoggedIn()">
+  <div class="bi-fade-in" ng-if="user.isLoggedIn()">
     <div class="bi-align bi-s-h--x15">
       <bi-dropdown bd-options="::{align: 'center'}" ng-if="::vm.apps.length">
         <bi-toggle class="bi-align">
@@ -44,7 +44,7 @@
 <div class="bi-r-h">
   <div 
     class="bi-app-menu bi-theme--darker bi-dont-shrink bi-fade-in"
-    ng-if="::user.isLoggedIn() && app.getMenuItems().length"
+    ng-if="user.isLoggedIn() && app.getMenuItems().length"
   >
     <ul>
     <ul>
