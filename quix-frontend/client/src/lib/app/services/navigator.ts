@@ -36,6 +36,7 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
           resolve: {
             user() {
                return user.fetch(self.options.apiBasePath)
+                .then((() => Promise.reject()))
                 .catch(() => {
                   user.toggleLoggedIn(false);
                   return new Promise(resolve => self.resolveLogin = resolve)

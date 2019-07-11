@@ -89,8 +89,13 @@
   </div>
 
   <div class="bi-app-content bi-c-h bi-grow" ui-view>
-    <div class="bi-c-h bi-center bi-align bi-grow bi-fade-in">
-      <bi-app-login app="app"></bi-app-login>
+    <div class="bi-c-h bi-center bi-align bi-grow">
+      <div class="quix-splash bi-c bi-s-v--x3" ng-if="app.getUser().isLoggedIn() === null">
+        <img class="quix-splash-logo" ng-if="::app.getLogoUrl()" ng-src="{{::app.getLogoUrl()}}">
+        <span class="bi-center bi-text--ui bi-text--large bi-muted">Signing in...</span>
+      </div>
+
+      <bi-app-login app="app" ng-if="app.getUser().isLoggedIn() === false"></bi-app-login>
     </div>
   </div>
 </div>
