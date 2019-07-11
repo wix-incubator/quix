@@ -11,8 +11,6 @@ services:
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
-    env_file:
-      - env_example
   frontend:
     build: ./quix-frontend/
     ports:
@@ -35,8 +33,6 @@ services:
       - AUTH_TYPE
       - APPMETRICS_PORT
       - ENABLE_APPMETRICS
-    env_file:
-      - env_example
   db:
     image: "mysql:5.7"
     restart: always

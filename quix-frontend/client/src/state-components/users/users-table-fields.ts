@@ -7,7 +7,7 @@ export const initTableFields = scope => {
     filter(_, user: IUser, index, compile) {
       return compile(`
         <div class="bi-align bi-s-h">
-          <img class="quix-user-avatar" ng-src="{{::user.avatar}}"/>
+          <img class="quix-user-avatar" ng-src="{{::user.avatar}}/>
           <span>{{::user.name}}</span>
         </div>
       `, {user}, scope);
@@ -15,5 +15,21 @@ export const initTableFields = scope => {
   }, {
     name: 'id',
     title: 'email'
+  }, {
+    name: 'dateCreated',
+    title: 'Join  Date',
+    filter(_, user: IUser, index, compile) {
+      return compile(`
+        <span class="bi-text--sm bi-muted">{{::user.dateCreated | biRelativeDate}}</span>
+      `, {user}, scope);
+    }
+  }, {
+    name: 'dateUpdated',
+    title: 'Last Login',
+    filter(_, user: IUser, index, compile) {
+      return compile(`
+        <span class="bi-text--sm bi-muted">{{::user.dateUpdated | biRelativeDate}}</span>
+      `, {user}, scope);
+    }
   }];
 };
