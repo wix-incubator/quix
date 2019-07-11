@@ -49,16 +49,13 @@ const mocks = {
     createMockNote(id, {id: '1004'}),
     createMockNote(id, {id: '1005'}),
   ], {id}),
-  '/api/favorites': ({id}) => [
+  '/api/favorites': () => [
     createMockFile({id: '100', isLiked: true}),
     createMockFile({id: '101', isLiked: true})
   ],
-  '/api/search/none': () => [],
+  '/api/search/none': () => ({count: 0, notes: []}),
+  '/api/search/500': () => [500, {message: 'Search error'}],
   '/api/search/:text': ({text}) => {
-    if (text === '500') {
-      return [500, {message: 'Search error'}];
-    }
-
     const res = [createMockNote('1'), createMockNote('2'), createMockNote('3')];
     res.forEach(note => note.content = `SELECT
     date_trunc('year', shipdate) as ${text}

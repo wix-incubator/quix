@@ -17,6 +17,10 @@
   @include fade('lighter');
 }
 
+.bi-elevate {
+  @include elevate();
+}
+
 // dark
 .bi-theme--dark {
   .bi-muted {
