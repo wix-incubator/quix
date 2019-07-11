@@ -40,7 +40,10 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
                   user.toggleLoggedIn(false);
                   return new Promise(resolve => self.resolveLogin = resolve)
                 })
-                .then((data: any) => user.set(data.payload || data));
+                .then((data: any) => {
+                  user.set(data.payload || data);
+                  user.toggleLoggedIn(true);
+                });
             }
           }
         }
