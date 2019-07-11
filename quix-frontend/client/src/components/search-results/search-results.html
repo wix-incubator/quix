@@ -1,12 +1,12 @@
 <div class="bi-section bi-grow bi-theme--light">
   <div class="bi-section-header">
     <div>
-      <div class="bi-section-title bi-align bi-s-h bi-fade" ng-if="vm.state.is('Content')">
+      <div class="bi-section-title bi-align bi-s-h bi-fade" ng-if="vm.state.after('Result')">
         <i class="bi-icon">search</i>
         <span>
           <span>
             Search results 
-            <span class="bi-fade-in" ng-if="vm.state.after('Result')">
+            <span class="bi-fade-in">
               ({{vm.currentResults}} / {{vm.state.value().totalResults}})
             </span>
           </span>
@@ -17,7 +17,7 @@
     <div>
       <div
         class="quix-search-pagination bi-button-group bi-fade-in"
-        ng-if="vm.state.is('Content')"
+        ng-if="vm.state.after('Result')"
       >
         <button 
           class="bi-button"
