@@ -25,9 +25,10 @@ export default (app: App, store: Store) => ({
     setTitle();
 
     store.subscribe('users', ({users, error}) => {
+      console.log(users)
       scope.users = users;
       scope.error = error;
-    });
+    }, scope);
   },
   link: scope => {
     const conf = initNgScope(scope)

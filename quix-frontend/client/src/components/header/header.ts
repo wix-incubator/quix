@@ -8,13 +8,15 @@ import {HeaderMenu} from '../../config';
 import * as AppActions from '../../store/app/app-actions';
 
 const listenToNavChange = (scope: IScope, app: Instance, store: Store) => {
-  const states = HeaderMenu.reduce((res, item) => {
+  const {navItems} = scope.vm;
+
+  const states = navItems.reduce((res, item) => {
     return [...res, ...(item.activeStates || [item.targetState])];
   }, []);
 
   app.getNavigator()
     .listen(states, 'success', async (params, state) => {
-      const menuItem = HeaderMenu.find(item => {
+      const menuItem = navItems.find(item => {
         return (item.targetState === state || (item.activeStates && item.activeStates.indexOf(state) !== -1));
       });
 
@@ -35,7 +37,7 @@ export default (app: Instance, store: Store) => () => ({
         .withVM({
           searchText: null,
           currentState: null,
-          navItems: HeaderMenu
+          navItems: HeaderMenu(scope)
         })
         .withEvents({
           onSearch() {

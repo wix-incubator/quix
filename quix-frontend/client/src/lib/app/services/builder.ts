@@ -125,10 +125,10 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
    * @param config    state component config
    */
   stateComponent(config: IStateComponentConfig, app: Instance, store: Store): Builder<Config> {
-    function fromUrl(url: {[key: string]: IUrlParamListener}, params: object) {
+    function fromUrl(scope, url: {[key: string]: IUrlParamListener}, params: object) {
       const actions = Object.keys(url).map(param => (url as any)[param].from(params[param]));
 
-      utils.scope.safeApply(inject('$rootScope'), () => store.dispatch(actions));
+      utils.scope.safeDigest(scope, () => store.dispatch(actions));
     }
 
     const [fullStateName, paramName] = config.name.split(':');
@@ -168,9 +168,9 @@ export default class Builder<Config = any> extends srv.eventEmitter.EventEmitter
               return enrichedListener;
             }) as {[key: string]: IUrlParamListener};
 
-            fromUrl(url, inject('$location').search());
+            fromUrl(scope, url, inject('$location').search());
             inject('$timeout')(() => {
-              const cleaner = scope.$on('$locationChangeSuccess', () => fromUrl(url, inject('$location').search()));
+              const cleaner = scope.$on('$locationChangeSuccess', () => fromUrl(scope, url, inject('$location').search()));
               scope.$on('$destroy', () => cleaner());
             });
           },

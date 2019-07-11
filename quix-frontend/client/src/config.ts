@@ -27,12 +27,12 @@ export const ExamplesNotebook = {
   owner: 'Quix'
 };
 
-export const HeaderMenu = [{
+export const HeaderMenu = scope => [{
   title: 'My notebooks',
   targetState: 'files',
   activeStates: ['files', 'notebook'],
   activeCondition: (app: Instance, store: Store, state: string, id: string) => 
-    waitForEntity(store, id, state === 'files' ? 'folder' : 'notebook').then(entity => isOwner(app, entity))
+    waitForEntity(scope, store, id, state === 'files' ? 'folder' : 'notebook').then(entity => isOwner(app, entity))
 }, {
   title: 'Favorites',
   targetState: 'favorites',

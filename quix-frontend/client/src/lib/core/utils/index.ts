@@ -14,14 +14,24 @@ export function uuid() {
 }
 
 export const scope = {
-  safeApply(sc, fn) {
+  safeApply(sc, fn: Function) {
     const phase = sc.$root.$$phase;
+
     if (phase === '$apply' || phase === '$digest') {
-      if (fn && (typeof fn === 'function')) {
-        fn();
-      }
+      fn();
     } else {
       sc.$apply(fn);
+    }
+  },
+
+  safeDigest(sc, fn: Function) {
+    const phase = sc.$root.$$phase;
+
+    if (phase === '$apply' || phase === '$digest') {
+      fn();
+    } else {
+      fn();
+      sc.$digest();
     }
   }
 }

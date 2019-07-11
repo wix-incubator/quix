@@ -12,8 +12,8 @@ export default class CodeEditorInstance extends srv.eventEmitter.EventEmitter {
     super();
 
     editor.getSelection()
-      .on('select', text => safeApply(scope, this.fire('select', text)))
-      .on('deselect', text => safeApply(scope, this.fire('deselect')));
+      .on('select', text => safeApply(scope, () => this.fire('select', text)))
+      .on('deselect', () => safeApply(scope, () => this.fire('deselect')));
   }
 
   setValid(valid: boolean): CodeEditorInstance {

@@ -27,7 +27,7 @@ export default (app: App, store: Store) => ({
     store.subscribe('favorites', ({favorites, error}) => {
       scope.favorites = favorites;
       scope.error = error;
-    });
+    }, scope);
   },
   link: scope => {
     const conf = initNgScope(scope)
