@@ -2,9 +2,9 @@ import {IUser} from './types';
 import {ExtractActionTypes, ExtractActions} from '../common/actions';
 
 export const UserActions = {
-  createUser: (id: string, notebook: IUser) => ({
-    type: 'notebook.create' as const,
-    notebook,
+  createUser: (id: string, user: IUser) => ({
+    type: 'user.create' as const,
+    user,
     id,
   }),
 }
