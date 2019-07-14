@@ -8,8 +8,9 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <scala.library.version>2.12.7</scala.library.version>
+        <scala.library.version>2.12.8</scala.library.version>
         <scala.dependencies.version>2.12</scala.dependencies.version>
+        <specs.version>4.6.0</specs.version>
     </properties>
 
 
@@ -32,23 +33,11 @@
             <version>3.0.0-RC2</version>
         </dependency>
 
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.6</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jdbc</artifactId>
-            <version>4.3.22.RELEASE</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-core_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -56,7 +45,7 @@
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-junit_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -64,18 +53,32 @@
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-mock_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>wix-embedded-mysql</artifactId>
-            <version>4.1.2</version>
+            <version>4.2.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.16</version>
             <scope>test</scope>
         </dependency>
 
 
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.2.3</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -98,8 +101,6 @@
             </plugin>
         </plugins>
     </build>
-
-
 
 
 </project>
