@@ -10,6 +10,7 @@ import com.wix.mysql.config.MysqldConfig.aMysqldConfig
 import com.wix.mysql.distribution.Version.v5_6_23
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
+import org.hamcrest.text.MatchesPattern.matchesPattern
 import org.junit.runner.RunWith
 import org.junit.{After, Before, Test}
 import org.springframework.boot.test.context.SpringBootTest
@@ -17,59 +18,84 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFIN
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.context.{TestContextManager, TestPropertySource}
-import quix.web.{E2EContext, JdbTestSpringConfig, MockBeans}
-
+import quix.web.E2EContext
+import quix.web.spring.SpringConfig
 
 @RunWith(classOf[SpringRunner])
 @DirtiesContext
-@SpringBootTest(webEnvironment = DEFINED_PORT, classes = Array(classOf[JdbTestSpringConfig]))
+@SpringBootTest(webEnvironment = DEFINED_PORT, classes = Array(classOf[SpringConfig]))
 @TestPropertySource(locations = Array("classpath:test.properties"))
 class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
 
   new TestContextManager(this.getClass).prepareTestInstance(this)
-  val executor = MockBeans.queryExecutor
 
-  var startTestServer: EmbeddedMysql = _
-
-  val server = createEmbeddedMySqlServer()
+  val prod = createEmbeddedMySqlServer(2222, "prod-user", "prod-pass").start()
+  val dev = createEmbeddedMySqlServer(3333, "dev-user", "dev-pass").start()
 
 
-  def createEmbeddedMySqlServer() = {
+  def createEmbeddedMySqlServer(port: Int, user: String, pass: String) = {
     val config: MysqldConfig = aMysqldConfig(v5_6_23)
       .withCharset(UTF8)
-      .withPort(2215)
-      .withUser("wix", "wix")
+      .withPort(port)
+      .withUser(user, pass)
       .build()
 
     val embeddedServer: EmbeddedMysql.Builder = anEmbeddedMysql(config)
       .addSchema("aschema", classPathScript("db/001_init.sql"))
+
     embeddedServer
   }
 
   @Before
   def before(): Unit = {
-    executor.clear
-    startTestServer = server.start()
+    prod.reloadSchema("aschema", classPathScript("db/001_init.sql"))
+    dev.reloadSchema("aschema", classPathScript("db/001_init.sql"))
   }
 
   @After
   def after(): Unit = {
-    startTestServer.stop()
+    prod.stop()
+    dev.stop()
   }
 
   @Test(timeout = 30000)
-  def passSanity(): Unit = {
-    executor
-      .withResults(List(List("1")), queryId = "query-id", columns = List("foo"))
+  def queryProdShouldPassSanity(): Unit = {
+    val listener = execute("select * from small_table", webSocketModuleSuffix = "prod")
 
-    val listener = execute("select * from t1", webSocketModuleSuffix = "jdbc")
+    assertThat(listener.messagesJ, hasEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"query-start","data":{"id":"query-id"}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"query-details","data":{"id":"query-id","code":"select * from small_table"}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"percentage","data":{"id":"query-id","percentage":0}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"fields","data":{"id":"query-id","fields":["col1"]}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"row","data":{"id":"query-id","values":[1]}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id"}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"end","data":{"id":"query-id"}}"""))
+  }
 
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-start","data":{"id":"query-id"}}"""))
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-id","code":"select * from t1"}}"""))
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-id"}}"""))
+  @Test(timeout = 30000)
+  def queryDevShouldPassSanity(): Unit = {
+    val listener = execute("select * from small_table", webSocketModuleSuffix = "dev")
 
-
+    assertThat(listener.messagesJ, hasEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"query-start","data":{"id":"query-id"}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"query-details","data":{"id":"query-id","code":"select * from small_table"}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"percentage","data":{"id":"query-id","percentage":0}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"fields","data":{"id":"query-id","fields":["col1"]}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"row","data":{"id":"query-id","values":[1]}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id"}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"end","data":{"id":"query-id"}}"""))
   }
 
 
+  def hasEvent(e: String) = {
+    val event = e
+      .replace("*", "\\*")
+      .replace("[", "\\[")
+      .replace("]", "\\]")
+      .replace("{", "\\{")
+      .replace("}", "\\}")
+      .replaceAll("query-id", """.{36}""")
+
+    Matchers.hasItem(matchesPattern(event))
+  }
 }
