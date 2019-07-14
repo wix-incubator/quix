@@ -76,14 +76,10 @@ export const dom =  {
     return off;
   },
 
-  onKey(key, fn, sc): Function {
-    if (!dom.KEYS[key]) {
-      return;
-    }
-
+  onKey(key, fn, s?): Function {
     const document = $(window.document);
-    // tslint:disable-next-line: restrict-plus-operands
     const eventName = _.uniqueId('keydown.utils.dom.onKey.' + key);
+    const codes = (Array.isArray(key) ? key : [key]).map(k => dom.KEYS[k] || k);
 
     function off() {
       document.off(eventName);
@@ -91,19 +87,21 @@ export const dom =  {
 
     document.on(eventName, e => {
       // tslint:disable-next-line: deprecation
-      if (e.keyCode === dom.KEYS[key]) {
+      if (codes.indexOf(e.keyCode) !== -1) {
         e.preventDefault();
 
-        if (sc) {
-          sc.$apply(() => fn(off));
+        if (scope) {
+          // tslint:disable-next-line: deprecation
+          s.$apply(() => fn(off, e.keyCode));
         } else {
-          fn(off);
+          // tslint:disable-next-line: deprecation
+          fn(off, e.keyCode);
         }
       }
     });
 
-    if (sc) {
-      sc.$on('$destroy', off);
+    if (s) {
+      s.$on('$destroy', off);
     }
 
     return off;

@@ -92,6 +92,10 @@ export function biOptions() {
         return options.keyName;
       };
 
+      this.getItemName = function () {
+        return options.valueName;
+      };
+
       this.getCollection = function () {
         return options.valuesFn($scope);
       };
