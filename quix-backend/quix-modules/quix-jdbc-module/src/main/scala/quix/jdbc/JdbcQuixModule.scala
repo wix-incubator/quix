@@ -8,7 +8,7 @@ import quix.api.users.User
 import quix.core.executions.SequentialExecutions
 import quix.core.sql.PrestoSqlOps
 
-class JdbcQuixModule(val name: String, val executions: SequentialExecutions[String], val db: Option[Db] = None)
+class JdbcQuixModule(val executions: SequentialExecutions[String], val db: Option[Db] = None)
   extends ExecutionModule[String, Batch] {
 
   override def start(
@@ -25,9 +25,9 @@ class JdbcQuixModule(val name: String, val executions: SequentialExecutions[Stri
 }
 
 object JdbcQuixModule {
-  def apply(name: String, executor: AsyncQueryExecutor[String, Batch]): JdbcQuixModule = {
+  def apply(executor: AsyncQueryExecutor[String, Batch]): JdbcQuixModule = {
     val executions = new SequentialExecutions[String](executor)
 
-    new JdbcQuixModule(name, executions)
+    new JdbcQuixModule(executions)
   }
 }

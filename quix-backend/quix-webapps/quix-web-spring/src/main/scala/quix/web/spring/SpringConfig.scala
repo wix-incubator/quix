@@ -166,7 +166,7 @@ class ModulesConfiguration extends LazyLogging {
 
       val executor = new JdbcQueryExecutor(JdbcConfig(url, user, pass, driver))
 
-      Registry.modules.update(module, JdbcQuixModule(module, executor))
+      Registry.modules.update(module, JdbcQuixModule(executor))
     }
 
     def getJdbcModulesList() = {
