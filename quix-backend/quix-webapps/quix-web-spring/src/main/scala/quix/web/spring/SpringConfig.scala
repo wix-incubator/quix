@@ -81,15 +81,25 @@ class ModulesConfiguration extends LazyLogging {
           else endpoint + "/"
         }
 
-        val prestoBaseApi = addMissingSlashIfNeeded(env.getRequiredProperty("presto.api"))
+        val prestoBaseApi = addMissingSlashIfNeeded {
+          env.getProperty("modules.presto.api", env.getProperty("presto.api"))
+        }
 
         val statementsApi = prestoBaseApi + "statement"
         val healthApi = prestoBaseApi + "cluster"
         val queryInfoApi = prestoBaseApi + "query/"
 
-        val defaultCatalog = env.getProperty("modules.presto.catalog", "system")
-        val defaultSchema = env.getProperty("modules.presto.schema", "runtime")
-        val defaultSource = env.getProperty("modules.presto.source", "quix")
+        val defaultCatalog = {
+          env.getProperty("modules.presto.catalog", env.getProperty("presto.catalog", "system"))
+        }
+
+        val defaultSchema = {
+          env.getProperty("modules.presto.schema", env.getProperty("presto.schema", "runtime"))
+        }
+
+        val defaultSource = {
+          env.getProperty("modules.presto.source", env.getProperty("presto.source", "quix"))
+        }
 
         PrestoConfig(statementsApi, healthApi, queryInfoApi, defaultSchema, defaultCatalog, defaultSource)
       }
@@ -101,8 +111,15 @@ class ModulesConfiguration extends LazyLogging {
       val db = {
         import scala.concurrent.duration._
 
-        val firstEmptyStateDelay = env.getProperty("modules.presto.db.empty.timeout", classOf[Long], 1000L * 10)
-        val requestTimeout = env.getProperty("modules.presto.db.request.timeout", classOf[Long], 5000L)
+        val firstEmptyStateDelay = {
+          env.getProperty("modules.presto.db.empty.timeout", classOf[Long],
+            env.getProperty("presto.db.empty.timeout", classOf[Long], 1000L * 10))
+        }
+
+        val requestTimeout = {
+          env.getProperty("modules.presto.db.request.timeout", classOf[Long],
+            env.getProperty("presto.db.request.timeout", classOf[Long], 5000L))
+        }
 
         logger.info(s"event=[spring-config] bean=[RefreshableDbConfig] firstEmptyStateDelay=$firstEmptyStateDelay requestTimeout=$requestTimeout")
 
