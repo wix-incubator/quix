@@ -1,5 +1,24 @@
-MODULES=presto
-PRESTO_API=http://presto:8080/v1
+MODULES=presto,athena,prod,dev
+
+MODULES_PRESTO_API=http://presto:8080/v1
+MODULES_PRESTO_CATALOG=system
+MODULES_PRESTO_SCHEMA=runtime
+MODULES_PRESTO_SOURCE=quix
+
+MODULES_ATHENA_OUTPUT=http://presto:8080/v1
+MODULES_ATHENA_OUTPUT=us-east-1
+MODULES_ATHENA_DATABASE=default
+
+MODULES_PROD_DRIVER=com.mysql.jdbc.Driver
+MODULES_PROD_URL=jdbc:mysql://localhost:2222/aschema
+MODULES_PROD_USER=prod-user
+MODULES_PROD_PASS=prod-pass
+
+MODULES_DEV_DRIVER=com.mysql.jdbc.Driver
+MODULES_DEV_URL=jdbc:mysql://localhost:3333/aschema
+MODULES_DEV_USER=dev-user
+MODULES_DEV_PASS=dev-pass
+
 #fake or google
 AUTH_TYPE=fake
 AUTH_COOKIE=
