@@ -19,7 +19,7 @@ export const convert = (nodes: any[], path = [], res = []) => {
 }
 
 export const sanitizeTableToken = (token: string, quoteChar: string) => {
-  if (token.includes('.')) {
+  if (token.includes('.') || token.includes('-')) {
     return `${quoteChar}${token}${quoteChar}`;
   }
 
