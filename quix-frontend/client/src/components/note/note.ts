@@ -40,10 +40,14 @@ export default (app: App, store: Store) => () => ({
           if (scope.options.focusName) {
             scope.options.focusEditor = false;
           }
+
+          scope.vm.isFolded = scope.options.fold;
         })
         .withVM({
           editor: null,
           runner: null,
+          isFolded: false,
+          isMaximized: false,
         });
 
       initEvents(scope, conf, app, store, Events);
