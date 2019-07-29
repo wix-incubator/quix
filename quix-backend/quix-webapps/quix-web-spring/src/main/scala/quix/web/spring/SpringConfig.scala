@@ -72,9 +72,15 @@ class AuthConfig extends LazyLogging {
 class ModulesConfiguration extends LazyLogging {
 
   @Bean def initPresto(env: Environment) = {
-    val modules = env.getProperty("modules", "").split(",")
+    def getPrestoModules() = {
+      val modules = env.getProperty("modules", "").split(",")
 
-    if (modules.contains("presto")) {
+      modules.filter { module =>
+        env.getProperty(s"modules.$module.ENGINE", "") == "presto" || module == "presto"
+      }
+    }
+
+    def getPrestoModule(presto: String) = {
       val config = {
         def addMissingSlashIfNeeded(endpoint: String) = {
           if (endpoint.endsWith("/")) endpoint
@@ -82,7 +88,7 @@ class ModulesConfiguration extends LazyLogging {
         }
 
         val prestoBaseApi = addMissingSlashIfNeeded {
-          env.getProperty("modules.presto.api", env.getProperty("presto.api"))
+          env.getProperty(s"modules.$presto.api", env.getProperty("presto.api"))
         }
 
         val statementsApi = prestoBaseApi + "statement"
@@ -90,15 +96,15 @@ class ModulesConfiguration extends LazyLogging {
         val queryInfoApi = prestoBaseApi + "query/"
 
         val defaultCatalog = {
-          env.getProperty("modules.presto.catalog", env.getProperty("presto.catalog", "system"))
+          env.getProperty(s"modules.$presto.catalog", env.getProperty("presto.catalog", "system"))
         }
 
         val defaultSchema = {
-          env.getProperty("modules.presto.schema", env.getProperty("presto.schema", "runtime"))
+          env.getProperty(s"modules.$presto.schema", env.getProperty("presto.schema", "runtime"))
         }
 
         val defaultSource = {
-          env.getProperty("modules.presto.source", env.getProperty("presto.source", "quix"))
+          env.getProperty(s"modules.$presto.source", env.getProperty("presto.source", "quix"))
         }
 
         PrestoConfig(statementsApi, healthApi, queryInfoApi, defaultSchema, defaultCatalog, defaultSource)
@@ -111,12 +117,12 @@ class ModulesConfiguration extends LazyLogging {
       val db = {
 
         val emptyDbTimeout = {
-          env.getProperty("modules.presto.db.empty.timeout", classOf[Long],
+          env.getProperty(s"modules.$presto.db.empty.timeout", classOf[Long],
             env.getProperty("presto.db.empty.timeout", classOf[Long], 1000L * 10))
         }
 
         val requestTimeout = {
-          env.getProperty("modules.presto.db.request.timeout", classOf[Long],
+          env.getProperty(s"modules.$presto.db.request.timeout", classOf[Long],
             env.getProperty("presto.db.request.timeout", classOf[Long], 5000L))
         }
 
@@ -130,34 +136,47 @@ class ModulesConfiguration extends LazyLogging {
         new RefreshableDb(catalogs, autocomplete, tables)
       }
 
-      val module = new PrestoQuixModule(executions, Some(db))
-
-      Registry.modules.update("presto", module)
+      new PrestoQuixModule(executions, Some(db))
     }
+
+    for (module <- getPrestoModules())
+      Registry.modules.update(module, getPrestoModule(module))
 
     "OK"
   }
 
   @Bean def initAthena(env: Environment) = {
-    val modules = env.getProperty("modules", "").split(",")
+    def getAthenaModules() = {
+      val modules = env.getProperty("modules", "").split(",")
 
-    if (modules.contains("athena")) {
+      modules.filter { module =>
+        env.getProperty(s"modules.$module.ENGINE", "") == "athena" || module == "athena"
+      }
+    }
 
+    def getAthenaModule(athena: String) = {
       val config = {
-        val output = env.getRequiredProperty("modules.athena.output")
-        val region = env.getRequiredProperty("modules.athena.region")
-        val database = env.getProperty("modules.athena.database", "")
+        val output = env.getProperty(s"modules.$athena.output",
+          env.getProperty("athena.output", ""))
 
-        val firstEmptyStateDelay = env.getProperty("modules.athena.db.empty.timeout", classOf[Long], 1000L * 10)
-        val requestTimeout = env.getProperty("modules.athena.db.request.timeout", classOf[Long], 5000L)
+        val region = env.getProperty(s"modules.$athena.region",
+          env.getProperty("athena.region", ""))
 
-        val awsAccessKeyId = env.getProperty("aws.access.key.id", "")
-        val awsSecretKey = env.getProperty("aws.secret.key", "")
+        val database = env.getProperty(s"modules.$athena.database",
+          env.getProperty("athena.database", ""))
+
+        val firstEmptyStateDelay = env.getProperty(s"modules.$athena.db.empty.timeout", classOf[Long], 1000L * 10)
+        val requestTimeout = env.getProperty(s"modules.$athena.db.request.timeout", classOf[Long], 5000L)
+
+        val awsAccessKeyId = env.getProperty(s"modules.$athena.aws.access.key.id",
+          env.getProperty("aws.access.key.id"))
+        val awsSecretKey = env.getProperty(s"modules.$athena.aws.secret.key",
+          env.getProperty("aws.secret.key"))
 
         AthenaConfig(output, region, database, firstEmptyStateDelay, requestTimeout, awsAccessKeyId, awsSecretKey)
       }
 
-      logger.warn(s"event=[spring-config] bean=[AthenaConfig] config==$config")
+      logger.warn(s"event=[spring-config] bean=[AthenaConfig] config=$config")
 
       val executor = AthenaQueryExecutor(config)
 
@@ -168,8 +187,11 @@ class ModulesConfiguration extends LazyLogging {
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      Registry.modules.update("athena", AthenaQuixModule(executor, db))
+      AthenaQuixModule(executor, db)
     }
+
+    for (module <- getAthenaModules())
+      Registry.modules.update(module, getAthenaModule(module))
 
     "OK"
   }
