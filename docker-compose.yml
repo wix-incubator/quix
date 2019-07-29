@@ -6,19 +6,13 @@ services:
       - "8081:8081"
     depends_on:
       - presto
+    env_file:
+      - .env
     environment:
       - MODULES
-      - PRESTO_API
-      - ATHENA_OUTPUT
-      - ATHENA_REGION
-      - ATHENA_DATABASE
-      - AWS_ACCESS_KEY_ID
-      - AWS_SECRET_KEY
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
-      - PRESTO_DB_EMPTY_TIMEOUT
-      - PRESTO_DB_REQUEST_TIMEOUT
   frontend:
     build: ./quix-frontend/
     ports:
@@ -26,6 +20,8 @@ services:
     depends_on:
       - backend
       - db
+    env_file:
+      - .env
     environment:
       - DB_NAME
       - DB_USER
