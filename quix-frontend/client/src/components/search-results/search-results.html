@@ -1,23 +1,24 @@
 <div class="bi-section bi-grow bi-theme--light">
   <div class="bi-section-header">
     <div>
-      <div class="bi-section-title bi-align bi-s-h">
+      <div class="bi-section-title bi-align bi-s-h bi-fade" ng-if="vm.state.after('Result')">
         <i class="bi-icon">search</i>
         <span>
           <span>
             Search results 
-            <span class="bi-fade-in" ng-if="vm.state.after('Result')">
+            <span class="bi-fade-in">
               ({{vm.currentResults}} / {{vm.state.value().totalResults}})
             </span>
           </span>
         </span>
       </div>
     </div>
-  </div>
 
-  <div class="bi-section-controls" ng-if="vm.state.after('Result')">
     <div>
-      <div class="quix-search-pagination bi-button-group bi-fade-in">
+      <div
+        class="quix-search-pagination bi-button-group bi-fade-in"
+        ng-if="vm.state.after('Result')"
+      >
         <button 
           class="bi-button"
           ng-disabled="vm.state.value().currentPage === 1"
@@ -81,16 +82,19 @@
     ng-class="{'bi-faded': vm.state.after('Content')}"
     ng-if="vm.state.after('Result')"
   >
-    <div class="bi-c bi-s-v--x15">
+    <div class="bi-section-content-inner bi-c bi-s-v--x15">
       <div 
         class="bi-c bi-dont-shrink"
         ng-repeat="note in vm.state.value().notes track by note.id"
       >
-        <div class="bi-panel bi-dont-shrink bi-theme--lighter">
+        <div
+          class="bi-panel bi-dont-shrink bi-theme--lighter bi-pointer bi-elevate"
+          ng-click="events.onNoteClick(note)"
+        >
           <div class="bi-panel-header">
             <div class="bi-align bi-s-h--x05">
               <span class="bi-label--sm">{{::note.type}}</span>
-              <a class="bi-panel-title bi-link" ng-click="events.onNoteClick(note)">{{::note.name}}</a>
+              <a class="bi-panel-title bi-link">{{::note.name}}</a>
               <span class="bi-text--sm bi-muted">{{::note.owner}}</span>
             </div>
 

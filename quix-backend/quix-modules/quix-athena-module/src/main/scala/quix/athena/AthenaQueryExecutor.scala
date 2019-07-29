@@ -3,7 +3,7 @@ package quix.athena
 import java.net.{ConnectException, SocketException, SocketTimeoutException}
 
 import com.amazonaws.SdkClientException
-import com.amazonaws.auth.DefaultAWSCredentialsProviderChain
+import com.amazonaws.auth._
 import com.amazonaws.services.athena.AmazonAthenaClient
 import com.amazonaws.services.athena.model.{AmazonAthenaException, GetQueryResultsResult, QueryExecutionState, StartQueryExecutionResult, Row => AthenaRow}
 import com.typesafe.scalalogging.LazyLogging
@@ -15,20 +15,19 @@ import scala.concurrent.duration.{FiniteDuration, _}
 
 class AthenaQueryExecutor(val client: AthenaClient,
                           val initialAdvanceDelay: FiniteDuration = 100.millis,
-                          val maxAdvanceDelay: FiniteDuration = 33.seconds)
+                          val maxAdvanceDelay: FiniteDuration = 15.seconds)
   extends AsyncQueryExecutor[String, Batch] with LazyLogging {
 
   def waitLoop(queryId: String, activeQuery: ActiveQuery[String], builder: Builder[String, Batch], delay: FiniteDuration = initialAdvanceDelay): Task[QueryExecutionState] = {
     val runningStatuses = Set(QueryExecutionState.RUNNING, QueryExecutionState.QUEUED).map(_.toString)
     val failed = Set(QueryExecutionState.FAILED, QueryExecutionState.CANCELLED).map(_.toString)
 
-    val log = Task(logger.info(s"method=waitLoop event=start query-id=$queryId user=${activeQuery.user.email} delay=$delay"))
-
-    val loop = client.get(queryId).map(_.getQueryExecution).flatMap {
+    client.get(queryId).map(_.getQueryExecution).flatMap {
       case query if runningStatuses.contains(query.getStatus.getState) && !activeQuery.isCancelled =>
         for {
+          _ <- Task(logger.info(s"method=waitLoop event=not-finished query-id=$queryId user=${activeQuery.user.email} status=${query.getStatus.getState} delay=$delay"))
           _ <- builder.addSubQuery(queryId, Batch(data = List.empty, stats = Option(BatchStats(query.getStatus.getState, 0))))
-          status <- waitLoop(queryId, activeQuery, builder, delay * 2).delayExecution(delay)
+          status <- waitLoop(queryId, activeQuery, builder, maxAdvanceDelay.min(delay * 2)).delayExecution(delay)
         } yield status
 
       case query if failed.contains(query.getStatus.getState) =>
@@ -41,8 +40,6 @@ class AthenaQueryExecutor(val client: AthenaClient,
         Task.eval(logger.info(s"method=waitLoop event=finished query-id=$queryId user=${activeQuery.user.email} delay=$delay status=${query.getStatus.getState} canceled=${activeQuery.isCancelled}"))
           .map(_ => QueryExecutionState.fromValue(query.getStatus.getState))
     }
-
-    log.flatMap(_ => loop)
   }
 
   def drainResults(queryId: String, nextToken: Option[String], builder: Builder[String, Batch], query: ActiveQuery[String]): Task[Option[String]] = {
@@ -231,9 +228,19 @@ class AthenaQueryExecutor(val client: AthenaClient,
 
 object AthenaQueryExecutor {
   def apply(config: AthenaConfig) = {
+    val credentials = {
+      if (config.accessKey.nonEmpty && config.secretKey.nonEmpty) {
+        new AWSCredentialsProvider {
+          override def getCredentials: AWSCredentials = new BasicAWSCredentials(config.accessKey, config.secretKey)
+
+          override def refresh(): Unit = {}
+        }
+      } else new DefaultAWSCredentialsProviderChain
+    }
+
     val athena = AmazonAthenaClient.builder
       .withRegion(config.region)
-      .withCredentials(new DefaultAWSCredentialsProviderChain)
+      .withCredentials(credentials)
       .build()
 
     val client = new AwsAthenaClient(athena, config)

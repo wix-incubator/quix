@@ -3,7 +3,7 @@ import './destination-picker.scss';
 
 import {initNgScope, createNgModel} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {IFile, FileType} from '../../../../shared';
 import {IScope} from './destination-picker-types';
 import {cache} from '../../store';
@@ -16,7 +16,7 @@ enum States {
   Content
 }
 
-const listenToNavChange = (scope: IScope, app: Instance, fileExplorer) => {
+const listenToNavChange = (scope: IScope, app: App, fileExplorer) => {
   app.getNavigator()
     .listen(['files', 'notebook'], 'success', async ({id}: {id: string}, state: string) => {
       let file = await fetchFile(id) || await fetchRoot();
@@ -43,7 +43,7 @@ const listenToNavChange = (scope: IScope, app: Instance, fileExplorer) => {
     .otherwise(() => fileExplorer.clearActive());
 }
 
-export default (app: Instance, store: Store) => () => ({
+export default (app: App, store: Store) => () => ({
   restrict: 'E',
   template,
   require: 'ngModel',

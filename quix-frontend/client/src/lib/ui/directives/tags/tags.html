@@ -1,51 +1,85 @@
 <bi-dropdown
   class="bi-row-inline bi-grow"
-  bd-is-open="vm.dropdown.enabled"
+  bd-is-open="vm.options.enabled"
   bd-options="::{
     width: options.dropdownWidth,
-    minWidth: options.dropdownWidth ? null : 'toggle',
+    minWidth: options.dropdownMinWidth,
     toggleOn: 'manual'
   }"
   on-show="events.onDropdownShow()"
+  on-hide="events.onDropdownHide()"
+  readonly="::readonly"
   >
   <bi-toggle class="bi-grow">
     <div class="bi-tags-container bi-input bi-wrap bi-grow">
-      <div class="bi-tags-tag bi-r-i bi-dont-grow bi-align bi-border bi-space-h--x05" ng-repeat="tag in model">
+      <div
+        class="bi-tags-tag bi-r-i bi-dont-grow bi-align bi-border bi-space-h--x05"
+        ng-repeat="tag in model"
+      >
         <span class="bi-tags-content" bi-html="renderTag(tag)"></span>
-        <i ng-if="::!readonly" class="bi-tags-remove bi-action bi-icon bi-fade-in" ng-click="actions.removeItem($index)">close</i>
+        <i
+          ng-if="::!readonly"
+          class="bi-tags-remove bi-action bi-icon bi-fade-in"
+          ng-click="events.onOptionDelete(tag);"
+        >close</i>
       </div>
 
       <input
         class="bi-tags-input bi-input bi-grow"
         ng-if="::!readonly"
-        ng-model="vm.currentText"
+        ng-model="vm.search.text"
         ng-model-options="::{debounce: options.debounce}"
-        ng-change="events.onInputChange()"
+        ng-change="events.onSearchChange()"
+        ng-keydown="events.onSearchKeypress($event)"
+        ng-blur="events.onSearchBlur()"
+        ng-mousedown="events.onSearchMousedown()"
         placeholder="{{::placeholder || 'Enter a tag'}}"
       >
       </input>
     </div>
   </bi-toggle>
 
-  <ul
-    class="bi-dropdown-menu"
-    ng-if="(options.autocomplete && items !== null) || vm.pending"
-    bi-infinite-scroll="items"
-    bis-buffer="buffer"
+  <div
+    bi-key-nav="buffer"
+    key-nav-options="::{markFirst: true}"
+    key-nav-current-item="keyNavOption"
+    key-nav-on-select="events.onOptionSelect(item)"
   >
-    <li class="bi-center" ng-if="vm.pending">
-      <span class="bi-spinner--sm"></span>
-    </li>
-
-    <li class="bi-text--sm bi-muted" ng-if="!buffer.length && !vm.pending">
-      No suggestions
-    </li>
-
-    <li
-      ng-repeat="item in buffer"
-      ng-click="actions.addItem(item)"
+    <ul
+      class="bi-dropdown-menu"
+      bi-infinite-scroll="vm.options.filtered"
+      bis-buffer="buffer"
     >
-      <div bi-html="renderItem(item)"></div>
-    </li>
-  </ul>
+      <li
+        class="bi-muted"
+        ng-if="vm.options.falsy && model"
+        ng-show="!vm.search.enabled"
+        ng-click="events.onOptionSelect(vm.options.falsy.option)"
+        bi-html="renderOption(vm.options.falsy.option || placeholder)"
+      ></li>
+
+      <li
+        class="bi-text--sm bi-muted bi-fade-in"
+        ng-if="options.typeahead && !vm.options.filtered.length && !vm.options.deferred.loading"
+      >
+        <span ng-if="vm.search.enabled">No matches</span>
+        <span ng-if="!vm.search.enabled">Start typing to see matches</span>
+      </li>
+
+      <li class="bi-center bi-fade-in" ng-if="vm.options.deferred.loading">
+        <span class="bi-spinner--sm"></span>
+      </li>
+
+      <li
+        ng-class="{
+          selected: option === model,
+          'bi-active': option === keyNavOption
+        }"
+        ng-repeat="option in buffer"
+        ng-click="events.onOptionSelect(option)"
+        bi-html="renderOption(option)"
+        key-nav-item
+      ></li>
+    </ul>
+  </div>
 </bi-dropdown>

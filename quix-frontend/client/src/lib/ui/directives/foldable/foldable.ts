@@ -9,7 +9,7 @@ export default () => {
     template,
     transclude: true,
     scope: {
-      isFolded: '<',
+      isFolded: '=',
       stateName: '<?',
       bfOptions: '<?',
       onToggle: '&'
@@ -43,7 +43,13 @@ export default () => {
               scope.state.save();
             }
 
-            scope.onToggle({fold: scope.vm.fold.enabled});
+            inject('$timeout')(() => {
+              if (typeof scope.isFolded !== 'undefined') {
+                 scope.isFolded = scope.vm.fold.enabled;
+              }
+
+              scope.onToggle({fold: scope.vm.fold.enabled});
+            });
           }
         });
 

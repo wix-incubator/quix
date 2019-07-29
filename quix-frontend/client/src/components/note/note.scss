@@ -9,19 +9,22 @@ quix-note {
     height: 100%;
   }
 
-  [bi-maximizable] {
-    &.bm--maximized {
-      .bm-toggle {
-        margin: 0;
-      }
+  .bm--maximized {
+    top: 10px !important;
+    right: 10px !important;
+    bottom: 10px !important;
+    left: 10px !important;
+
+    .bi-panel-header,
+    .bi-panel-content {
+      padding: 0;
     }
 
-    .bm-toggle {
-      margin: 10px 10px 0;
-      z-index: 100;
+    .bi-panel-header {
+      margin-top: -10px;
     }
   }
-  
+
   .bi-panel-header {
     position: relative;
 

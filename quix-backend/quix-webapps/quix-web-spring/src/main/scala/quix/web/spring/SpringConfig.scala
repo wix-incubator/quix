@@ -10,13 +10,14 @@ import org.springframework.core.env.Environment
 import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.module.ExecutionModule
 import quix.api.users.DummyUsers
-import quix.athena.{AthenaConfig, AthenaDb, AthenaQueryExecutor, AthenaQuixModule}
+import quix.athena._
+import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
 import quix.core.download.DownloadableQueriesImpl
 import quix.core.executions.SequentialExecutions
 import quix.core.utils.JsonOps
 import quix.jdbc.{JdbcConfig, JdbcQueryExecutor, JdbcQuixModule}
 import quix.presto._
-import quix.presto.db.{PrestoRefreshableDb, RefreshableDbConfig}
+import quix.presto.db.{PrestoAutocomplete, PrestoCatalogs, PrestoTables}
 import quix.presto.rest.ScalaJPrestoStateClient
 import quix.web.auth.JwtUsers
 import quix.web.controllers.{DbController, DownloadController, HealthController}
@@ -111,7 +112,7 @@ class ModulesConfiguration extends LazyLogging {
       val db = {
         import scala.concurrent.duration._
 
-        val firstEmptyStateDelay = {
+        val emptyDbTimeout = {
           env.getProperty("modules.presto.db.empty.timeout", classOf[Long],
             env.getProperty("presto.db.empty.timeout", classOf[Long], 1000L * 10))
         }
@@ -121,9 +122,14 @@ class ModulesConfiguration extends LazyLogging {
             env.getProperty("presto.db.request.timeout", classOf[Long], 5000L))
         }
 
-        logger.info(s"event=[spring-config] bean=[RefreshableDbConfig] firstEmptyStateDelay=$firstEmptyStateDelay requestTimeout=$requestTimeout")
+        logger.info(s"event=[spring-config] bean=[RefreshableDbConfig] firstEmptyStateDelay=$emptyDbTimeout requestTimeout=$requestTimeout")
 
-        new PrestoRefreshableDb(executor, RefreshableDbConfig(firstEmptyStateDelay.millis, requestTimeout.millis))
+        val prestoCatalogs = new PrestoCatalogs(executor)
+        val catalogs = new RefreshableCatalogs(prestoCatalogs, emptyDbTimeout, 1000L * 60 * 5)
+        val autocomplete = new RefreshableAutocomplete(new PrestoAutocomplete(prestoCatalogs, executor), emptyDbTimeout, 1000L * 60 * 5)
+        val tables = new PrestoTables(executor, requestTimeout)
+
+        new RefreshableDb(catalogs, autocomplete, tables)
       }
 
       val module = new PrestoQuixModule(executions, Some(db))
@@ -157,13 +163,19 @@ class ModulesConfiguration extends LazyLogging {
           if (awsSecretKey.nonEmpty) System.setProperty(SECRET_KEY_SYSTEM_PROPERTY, awsAccessKeyId)
         }
 
-        AthenaConfig(output, region, database, firstEmptyStateDelay, requestTimeout)
+        AthenaConfig(output, region, database, firstEmptyStateDelay, requestTimeout, awsAccessKeyId, awsSecretKey)
       }
 
       logger.warn(s"event=[spring-config] bean=[AthenaConfig] config==$config")
 
       val executor = AthenaQueryExecutor(config)
-      val db = new AthenaDb(executor, config)
+
+      val athenaCatalogs = new AthenaCatalogs(executor)
+      val catalogs = new RefreshableCatalogs(athenaCatalogs, config.firstEmptyStateDelay, 1000L * 60 * 5)
+      val autocomplete = new RefreshableAutocomplete(new AthenaAutocomplete(athenaCatalogs), config.firstEmptyStateDelay, 1000L * 60 * 5)
+      val tables = new AthenaTables(executor)
+
+      val db = new RefreshableDb(catalogs, autocomplete, tables)
 
       Registry.modules.update("athena", AthenaQuixModule(executor, db))
     }

@@ -7,7 +7,7 @@ Quix is a multi-user, easy-to-use notebook manager. By utilizing [Presto](https:
 
 ## Features
 - [Query organizer](#Organize) - organize your notebooks in folders for easy access and sharing
-- [Query executor](#Execute) - execute [Presto](https://github.com/prestosql/presto) queries
+- [Query executor](#Execute) - execute multi-statement [Presto](https://github.com/prestosql/presto) queries
 - [Visualizations](#Visualize) - quickly plot time and bar series (more visualizations to follow)
 - [DB explorer](#Explore) - use the DB tree to explore your data sources
 - Search - all queries are searchable accross all users

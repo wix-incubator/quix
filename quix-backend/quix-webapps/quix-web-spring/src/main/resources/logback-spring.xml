@@ -15,7 +15,7 @@
         <file>${LOGS}/quix.log</file>
         <encoder
                 class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
-            <Pattern>%date{ISO8601} %-5level [thread] %40.40logger{40} : %m%n%ex{full}</Pattern>
+            <Pattern>%date{ISO8601} %-5level [%thread] %40.40logger{40} : %m%n%ex{full}</Pattern>
         </encoder>
 
         <rollingPolicy

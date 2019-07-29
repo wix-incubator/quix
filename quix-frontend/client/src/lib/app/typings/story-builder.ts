@@ -1,6 +1,6 @@
-import PluginInstance from '../services/plugin-instance';
+import {PluginBuilder} from '../services/plugin-builder';
 
-export interface StoryBuilder extends PluginInstance<any> {
+export interface StoryBuilder extends PluginBuilder<any> {
   story(folder: string, name: string): any;
 }
 

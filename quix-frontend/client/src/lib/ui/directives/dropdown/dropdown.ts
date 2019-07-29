@@ -87,7 +87,7 @@ function show(scope, element) {
     element.addClass(`bd-position--${position}`);
     element.addClass(`bd-align--${align}`);
 
-    scope.vm.toggleVisible(true);
+    scope.vm.toggle(true);
 
     scope.onShow();
   });
@@ -172,7 +172,14 @@ export default () => {
                   }, scope),
 
                   onBlur(element, (off, child) => {
-                    if (child && (scope.options.hideOnClick === false || child.closest('[disabled]').length)) {
+                    if (
+                        child &&
+                        (
+                          scope.options.hideOnClick === false ||
+                          child.closest('bi-toggle').length ||
+                          child.closest('[disabled]').length
+                        )
+                      ) {
                       return false;
                     }
 

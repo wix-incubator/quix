@@ -23,7 +23,7 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]]) {
   @ResponseBody
   def getCatalogsNoColumns(@PathVariable moduleId: String) = {
     getDb(moduleId).map {
-      _.catalogs.runSyncUnsafe()
+      _.getCatalogs.runSyncUnsafe()
     }.getOrElse(Nil)
   }
 
@@ -32,7 +32,7 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]]) {
   @ResponseBody
   def getTable(@PathVariable moduleId: String, @PathVariable catalog: String, @PathVariable schema: String, @PathVariable table: String) = {
     getDb(moduleId).map {
-      _.table(catalog, schema, table).runSyncUnsafe()
+      _.getTable(catalog, schema, table).runSyncUnsafe()
     }.getOrElse(Table(table, Nil))
   }
 
@@ -41,7 +41,7 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]]) {
   @ResponseBody
   def autocomplete(@PathVariable moduleId: String) = {
     getDb(moduleId).map {
-      _.autocomplete.runSyncUnsafe()
+      _.getAutocomplete.runSyncUnsafe()
     }.getOrElse(Map.empty)
   }
 

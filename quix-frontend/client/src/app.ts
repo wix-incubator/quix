@@ -32,7 +32,7 @@ create<ClientConfigHelper>({
     statePrefix: 'base',
     defaultUrl: '/home',
     homeState: 'home',
-    logoUrl: `${staticsBaseUrl}assets/logo.png`,
+    logoUrl: `${staticsBaseUrl}assets/logo_big.png`,
     apiBasePath
   }, ['bi.app', 'bi.runner', 'bi.fileExplorer'])
   .config(clientConfig)

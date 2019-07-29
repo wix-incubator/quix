@@ -1,10 +1,10 @@
 import template from './home.html';
 import './home.scss';
 
-import {IStateComponentConfig} from '../../lib/app/services/plugin-instance';
+import {IStateComponentConfig} from '../../lib/app/services/plugin-builder';
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance as App} from '../../lib/app';
+import {App} from '../../lib/app';
 import {addNotebook, goToExamples, goToRoot} from '../../services';
 
 export default (app: App, store: Store) => ({

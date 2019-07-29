@@ -1,0 +1,25 @@
+@import './def/heading.def';
+
+.bi-theme--lighter {
+  .bi-heading {
+    @include heading('lighter');
+  }
+}
+
+.bi-theme--light {
+  .bi-heading {
+    @include heading('light');
+  }
+}
+
+.bi-theme--dark {
+  .bi-heading {
+    @include heading('dark');
+  }
+}
+
+.bi-theme--darker {
+  .bi-heading {
+    @include heading('darker');
+  }
+}

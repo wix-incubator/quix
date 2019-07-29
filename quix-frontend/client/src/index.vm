@@ -15,7 +15,7 @@
       </header>
 
       <div class="quix-splash bi-c bi-s-v--x3 bi-fade-in">
-        <img src="${clientTopology.staticsBaseUrl}assets/logo_big.png">
+        <img class="quix-splash-logo" src="${clientTopology.staticsBaseUrl}assets/logo_big.png">
         <span class="bi-center bi-text--ui bi-text--large bi-muted">Loading...</span>
       </div>
     </bi-app>

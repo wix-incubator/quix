@@ -1,8 +1,8 @@
 import {combineReducers} from 'redux';
 import {IBranch} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 
-export default (app: Instance): IBranch => register => {
+export default (app: App): IBranch => register => {
   function db(state: any[] = null, action) {
     switch (action.type) {
       case 'db.set':

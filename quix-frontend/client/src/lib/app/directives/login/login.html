@@ -1,0 +1,13 @@
+<div class="bi-center">
+  <img class="quix-splash-logo" ng-if="::app.getLogoUrl()" ng-src="{{::app.getLogoUrl()}}">
+</div>
+
+<div class="bi-panel bi-theme--lighter bi-fade-in">
+  <div class="bi-panel-content bi-c-h">
+    <button
+      class="bi-button--primary bi-center"
+      ng-click="events.onLoginClick()"
+      ng-disabled="vm.pending.enabled"
+    >{{vm.pending.enabled ? 'Signing in...' : 'Sign in with Google'}}</button>
+  </div>
+</div>

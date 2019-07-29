@@ -1,12 +1,12 @@
 import {isArray, last, takeWhile} from 'lodash';
 import {Store} from '../lib/store';
-import {Instance} from '../lib/app';
+import {App} from '../lib/app';
 import {IFile, FileActions, createFolder, IFolder, IFilePathItem} from '../../../shared';
 import {FileType} from '../../../shared/entities/file';
 import {isOwner} from './permissions';
 import {cache} from '../store';
 
-export const addFolder = async (store: Store, app: Instance, parentOrPath: IFolder | IFilePathItem[], props: Partial<IFile> = {}) => {
+export const addFolder = async (store: Store, app: App, parentOrPath: IFolder | IFilePathItem[], props: Partial<IFile> = {}) => {
   let path = isArray(parentOrPath) ? parentOrPath : [...parentOrPath.path, {
     id: parentOrPath.id,
     name: parentOrPath.name
@@ -19,7 +19,7 @@ export const addFolder = async (store: Store, app: Instance, parentOrPath: IFold
   return store.dispatchAndLog(FileActions.createFile(folder.id, folder));
 }
 
-export const deleteFolder = (store: Store, app: Instance, folder: IFolder | IFile) => {
+export const deleteFolder = (store: Store, app: App, folder: IFolder | IFile) => {
   const {id} = folder;
 
   return store.dispatchAndLog(FileActions.deleteFile(id)).then(() => {
@@ -53,7 +53,7 @@ export const fetchRootPath = (): Promise<IFilePathItem[]> => {
     .then(file => file && [{id: file.id, name: file.name}] || []);
 }
 
-export const goToFile = (app: Instance, file: Pick<IFile, 'id' | 'type' | 'owner' | 'path'>, options: {
+export const goToFile = (app: App, file: Pick<IFile, 'id' | 'type' | 'owner' | 'path'>, options: {
   isNew?: boolean;
   note?: string;
 } = {
@@ -69,14 +69,14 @@ export const goToFile = (app: Instance, file: Pick<IFile, 'id' | 'type' | 'owner
   });
 }
 
-export const goToRoot = (app: Instance) => {
+export const goToRoot = (app: App) => {
   app.go('files', {
     id: null,
     isNew: false
   });
 }
 
-export const goUp = (app: Instance, file: Pick<IFile, 'id' | 'path' | 'owner'>) => {
+export const goUp = (app: App, file: Pick<IFile, 'id' | 'path' | 'owner'>) => {
   const pathItem = last(file.path);
 
   const folder = {

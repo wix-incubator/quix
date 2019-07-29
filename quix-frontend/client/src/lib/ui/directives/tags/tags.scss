@@ -18,7 +18,8 @@ bi-tags {
   .bi-tags-input {
     min-width: 50px !important;
     height: 25px !important;
-    padding: 0 5px 0 10px !important;
+    margin: 0 5px 5px 0 !important;
+    padding: 0 10px !important;
     border: 0 !important;
     background-color: transparent !important;
   }
@@ -46,6 +47,10 @@ bi-tags {
       margin-right: -4px;
       font-size: 10px;
       font-weight: bold;
+
+      &:hover {
+        background-color: darken($grey--200, 5) !important;
+      }
     }
   }
 

@@ -90,7 +90,7 @@ const search = ((currentSearchId = 1) => debounce((scope: IScope, text: string, 
     });
 }, 300))();
 
-export default (app: Instance, store: Store) => () => ({
+export default (app: App, store: Store) => () => ({
   restrict: 'E',
   template,
   scope: {},
