@@ -161,6 +161,7 @@ const computedSettingsDefaults: ComputedSettings = {
   moduleSettings: {
     presto: {
       syntax: 'ansi_sql',
+      engine: 'presto',
     },
   },
 };
@@ -171,9 +172,11 @@ const getComputedSettings = (modules: string[]): ComputedSettings => {
   const computedSettings: ComputedSettings = computedSettingsDefaults;
 
   modules.forEach(moduleName => {
-    const syntaxEnvVar = `MODULE_${moduleName}_SYNTAX`;
+    const syntaxEnvVar = `MODULE_${moduleName.toUpperCase()}_SYNTAX`;
+    const engineEnvVar = `MODULE_${moduleName.toUpperCase()}_ENGINE`;
     const syntax = process.env[syntaxEnvVar] || '';
-    computedSettings.moduleSettings[moduleName] = {syntax};
+    const engine = process.env[engineEnvVar] || '';
+    computedSettings.moduleSettings[moduleName] = {syntax, engine};
   });
   return computedSettings;
 };
@@ -201,7 +204,7 @@ export const getEnv = (): EnvSettings => {
 
 type StaticSettings = typeof envSettingsDefaults;
 interface ComputedSettings {
-  moduleSettings: Record<string, {syntax: string}>;
+  moduleSettings: Record<string, {syntax: string; engine: string}>;
 }
 
 export type EnvSettings = StaticSettings & ComputedSettings;

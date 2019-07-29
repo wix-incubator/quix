@@ -7,7 +7,7 @@ export enum ComponentTypes {
 
 interface ComponentConfigurationTypes {
   [ComponentTypes.db]: {};
-  [ComponentTypes.note]: {syntax: string};
+  [ComponentTypes.note]: {};
 }
 
 type ComponentConfiguration = {[K in ComponentTypes]?: ComponentConfigurationTypes[K]}
@@ -16,6 +16,8 @@ interface ConfigModule {
   id: string;
   name: string;
   components: ComponentConfiguration;
+  syntax: string;
+  engine: 'jdbc' | 'presto' | 'athena';
 }
 
 const defaultConfigData = {

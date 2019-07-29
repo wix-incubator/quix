@@ -60,10 +60,10 @@ export abstract class ConfigService {
         name: m,
         components: {
           [ComponentTypes.db]: {},
-          [ComponentTypes.note]: {
-            syntax: env.moduleSettings[m].syntax,
-          },
+          [ComponentTypes.note]: {},
         },
+        engine: env.moduleSettings[m].engine as any,
+        syntax: env.moduleSettings[m].syntax,
       }),
     );
 
