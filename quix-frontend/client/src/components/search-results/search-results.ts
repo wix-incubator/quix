@@ -6,7 +6,7 @@ import {assign, debounce} from 'lodash';
 import hljs from 'highlight.js';
 import {initNgScope, inject} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {INote} from '../../../../shared';
 import {IScope} from './search-results-types';
 import * as Resources from '../../services/resources';
