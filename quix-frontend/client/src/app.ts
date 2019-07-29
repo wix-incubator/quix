@@ -54,12 +54,12 @@ create<ClientConfigHelper>({
         apiBasePath
       });
 
-      clientConfig.getModulesByComponent(ComponentTypes.db).forEach(({engine}) => {
-        pluginManager.addPlugin(pluginFactory.db(engine));
+      clientConfig.getModulesByComponent(ComponentTypes.db).forEach(({id, engine}) => {
+        pluginManager.addPlugin(pluginFactory.db(id, engine));
       });
 
-      clientConfig.getModulesByComponent(ComponentTypes.note).forEach(({engine}) => {
-        pluginManager.addPlugin(pluginFactory.note(engine));
+      clientConfig.getModulesByComponent(ComponentTypes.note).forEach(({id, engine}) => {
+        pluginManager.addPlugin(pluginFactory.note(id, engine));
       });
 
       initCache(store);

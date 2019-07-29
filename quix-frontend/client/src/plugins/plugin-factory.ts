@@ -2,23 +2,27 @@ import * as DbPlugins from './db';
 import * as NotePlugins from './note';
 
 export const pluginFactory = {
-  db(engine: string) {
+  db(id: string, engine: string) {
     switch (engine) {
       case 'presto':
-        return new DbPlugins.PrestoDbPlugin(engine);
+        return new DbPlugins.PrestoDbPlugin(id);
       case 'athena':
-        return new DbPlugins.AthenaDbPlugin(engine);
+        return new DbPlugins.AthenaDbPlugin(id);
+      case 'jdbc':
+        return new DbPlugins.JdbcDbPlugin(id);
       default:
         throw new Error(`No definition for "${engine}" engine db plugin`);
     }
   },
 
-  note(engine: string) {
+  note(id: string, engine: string) {
     switch (engine) {
       case 'presto':
-        return new NotePlugins.PrestoNotePlugin(engine);
+        return new NotePlugins.PrestoNotePlugin(id);
       case 'athena':
-        return new NotePlugins.AthenaNotePlugin(engine);
+        return new NotePlugins.AthenaNotePlugin(id);
+      case 'jdbc':
+        return new NotePlugins.JdbcNotePlugin(id);
       default:
         throw new Error(`No definition for "${engine}" engine note plugin`);
     }
