@@ -35,7 +35,7 @@ class DownloadControllerTest extends E2EContext {
   @Test
   def sendSingleQuery(): Unit = {
     executor.withResults(List(List("1")), columns = List("_col0"), queryId = "query-id-1")
-    val listener = runAndDownload("select 1")
+    val listener = runAndDownload("select 1", "presto-prod")
 
     listener.await("""{"event":"query-download","data":{"id":"query-id-1","url":"/api/download/query-id-1"}}""")
 
@@ -50,7 +50,7 @@ class DownloadControllerTest extends E2EContext {
       .withResults(List(List("1")), columns = List("foo"), queryId = "query-id-1")
       .withResults(List(List("2")), columns = List("bar"), queryId = "query-id-2")
 
-    val listener = runAndDownload("select 1 as foo;\nselect 2 as bar;")
+    val listener = runAndDownload("select 1 as foo;\nselect 2 as bar;", "presto-dev")
 
     listener.await("""{"event":"query-download","data":{"id":"query-id-1","url":"/api/download/query-id-1"}}""")
     val first = getResponse("/api/download/query-id-1")

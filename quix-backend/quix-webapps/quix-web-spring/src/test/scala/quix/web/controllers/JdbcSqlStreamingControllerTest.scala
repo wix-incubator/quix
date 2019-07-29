@@ -60,7 +60,7 @@ class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
 
   @Test(timeout = 30000)
   def queryProdShouldPassSanity(): Unit = {
-    val listener = execute("select * from small_table", webSocketModuleSuffix = "prod")
+    val listener = execute("select * from small_table", module = "prod")
 
     assertThat(listener.messagesJ, hasEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-start","data":{"id":"query-id"}}"""))
@@ -74,7 +74,7 @@ class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
 
   @Test(timeout = 30000)
   def queryDevShouldPassSanity(): Unit = {
-    val listener = execute("select * from small_table", webSocketModuleSuffix = "dev")
+    val listener = execute("select * from small_table", module = "dev")
 
     assertThat(listener.messagesJ, hasEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-start","data":{"id":"query-id"}}"""))

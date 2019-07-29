@@ -18,7 +18,8 @@ class SpringConfigWithTestExecutor {
   @Primary
   def initModules: Map[String, ExecutionModule[String, Batch]] = {
     Map(
-      "presto" -> PrestoQuixModule(MockBeans.queryExecutor, Some(MockBeans.db)),
+      "presto-prod" -> PrestoQuixModule(MockBeans.queryExecutor, Some(MockBeans.db)),
+      "presto-dev" -> PrestoQuixModule(MockBeans.queryExecutor, Some(MockBeans.db)),
     )
   }
 }

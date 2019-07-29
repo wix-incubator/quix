@@ -28,7 +28,7 @@ class SqlStreamingControllerTest extends E2EContext with LazyLogging {
   @Test
   def passSanity(): Unit = {
     executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = execute("select 1")
+    val listener = execute("select 1", module = "presto-prod")
 
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-start","data":{"id":"query-id"}}"""))
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-id","code":"select 1"}}"""))
@@ -42,7 +42,7 @@ class SqlStreamingControllerTest extends E2EContext with LazyLogging {
   @Test
   def handleUnknownMessage(): Unit = {
     executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = send("ping")
+    val listener = send("ping", "prod")
 
     assertThat(listener.messagesJ, Matchers.hasItem(Matchers.containsString("Failed to handle unknown message : [ping]")))
   }
@@ -50,7 +50,7 @@ class SqlStreamingControllerTest extends E2EContext with LazyLogging {
   @Test
   def handlePingEvent(): Unit = {
     executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = send("""{"event":"ping"}""")
+    val listener = send("""{"event":"ping"}""", "prod")
 
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"pong","data":{}}"""))
   }
@@ -61,7 +61,7 @@ class SqlStreamingControllerTest extends E2EContext with LazyLogging {
       .withResults(List(List("1")), queryId = "query-1", columns = List("foo"))
       .withResults(List(List("2")), queryId = "query-2", columns = List("boo"))
 
-    val listener = execute("select 1 as foo;\nselect 2 as boo")
+    val listener = execute("select 1 as foo;\nselect 2 as boo", module = "presto-prod")
 
     // first query
     {

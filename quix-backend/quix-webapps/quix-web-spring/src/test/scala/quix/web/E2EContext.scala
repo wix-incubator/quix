@@ -11,10 +11,9 @@ import scalaj.http.Http
 trait E2EContext extends StringJsonHelpersSupport {
   val c = asyncHttpClient()
 
-  val webSocketModuleSuffixPresto = "presto"
   val jettyPort = "8888"
 
-  def get[T: Manifest](url: String , port:String = jettyPort): T = {
+  def get[T: Manifest](url: String, port: String = jettyPort): T = {
     Http(s"http://localhost:$port/" + url).asString.body.as[T]
   }
 
@@ -23,30 +22,30 @@ trait E2EContext extends StringJsonHelpersSupport {
   }
 
   def execute(sql: String, session: Map[String, String] = Map.empty,
-              webSocketModuleSuffix: String = webSocketModuleSuffixPresto, port: String = jettyPort) = {
-    startSocket(true, List(ExecutionEvent("execute", StartCommand[String](sql, session)).asJsonStr), webSocketModuleSuffix, port)
+              module: String, port: String = jettyPort) = {
+    startSocket(true, List(ExecutionEvent("execute", StartCommand[String](sql, session)).asJsonStr), module, port)
   }
 
   def send(text: String,
-           webSocketModuleSuffix: String = webSocketModuleSuffixPresto, port: String = jettyPort) = {
-    startSocket(false, List(text), webSocketModuleSuffix, port)
+           module: String, port: String = jettyPort) = {
+    startSocket(false, List(text), module, port)
   }
 
-  def runAndDownload(sql: String, webSocketModuleSuffix: String = webSocketModuleSuffixPresto, port: String = jettyPort) = {
+  def runAndDownload(sql: String, module: String, port: String = jettyPort) = {
     startSocket(false,
       List(ExecutionEvent("execute", StartCommand[String](sql, Map("mode" -> "download"))).asJsonStr),
-      webSocketModuleSuffix,
+      module,
       port
     )
   }
 
 
-  def startSocket(awaitFinish: Boolean, texts: List[String], webSocketModuleSuffix: String , port: String) = {
+  def startSocket(awaitFinish: Boolean, texts: List[String], module: String, port: String) = {
     val listener = new MyListener(texts: List[String])
 
     val handler = new WebSocketUpgradeHandler.Builder().addWebSocketListener(listener).build()
 
-    c.prepareGet(s"ws://localhost:$port/api/v1/execute/$webSocketModuleSuffix").execute(handler)
+    c.prepareGet(s"ws://localhost:$port/api/v1/execute/$module").execute(handler)
 
     while (listener.messages.isEmpty)
       Thread.sleep(10)
