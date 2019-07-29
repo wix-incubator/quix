@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
 } from 'typeorm';
-import {INote, NoteType, IBaseNote} from 'shared/entities/note';
+import {INote, IBaseNote} from 'shared/entities/note';
 import {DbNotebook} from './dbnotebook.entity';
 import {dbConf} from '../config/db-conf';
 
@@ -27,7 +27,7 @@ export class DbNote implements IBaseNote {
   textContent!: string;
 
   @Column(dbConf.shortTextField)
-  type!: NoteType;
+  type!: string;
 
   @Column(dbConf.shortTextField)
   name!: string;
@@ -55,23 +55,14 @@ export class DbNote implements IBaseNote {
 
   @AfterLoad()
   updateContentOnLoad() {
-    if (this.type === NoteType.PRESTO || this.type === NoteType.ATHENA) {
-      this.content = this.textContent;
-    } else if (this.type === NoteType.NATIVE) {
-      this.content = this.jsonContent.native;
-    }
+    this.content = this.textContent;
   }
 
   @BeforeInsert()
   @BeforeUpdate()
   updateContent() {
     this.jsonContent = this.jsonContent || {};
-
-    if (this.type === NoteType.PRESTO || this.type === NoteType.ATHENA) {
-      this.textContent = this.content;
-    } else if (this.type === NoteType.NATIVE) {
-      this.jsonContent.native = this.content;
-    }
+    this.textContent = this.content;
   }
 
   constructor(base?: INote) {

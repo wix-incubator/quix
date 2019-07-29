@@ -1,14 +1,21 @@
 // plugins: '${plugins}'  // e.g. [{id: 'presto', name: 'Presto', modules: ['note', 'db']}, {id: 'athena', name: 'Athena', modules: ['note', 'db']}], fetch some config from backend
 
-export enum ConfigComponent {
+export enum ComponentTypes {
   note = 'note',
   db = 'db'
 }
 
+interface ComponentConfigurationTypes {
+  [ComponentTypes.db]: {};
+  [ComponentTypes.note]: {syntax: string};
+}
+
+type ComponentConfiguration = {[K in ComponentTypes]?: ComponentConfigurationTypes[K]}
+
 interface ConfigModule {
   id: string;
   name: string;
-  components: ConfigComponent[];
+  components: ComponentConfiguration;
 }
 
 const defaultConfigData = {
@@ -34,7 +41,7 @@ export class ClientConfigHelper {
 
   constructor(initialConfig: Partial<ConfigData> = {}) {
     this.config = {
-      ...defaultConfigData, 
+      ...defaultConfigData,
       ...initialConfig
     };
   }
@@ -54,6 +61,11 @@ export class ClientConfigHelper {
     return this.getModules().find(m => m.id === id);
   }
 
+  getModuleComponent<C extends ComponentTypes>(id: string, component: C) {
+    const m = this.getModule(id);
+    return m && m.components[component];
+  }
+
   getModules() {
     return this.config.modules;
   }
@@ -63,15 +75,15 @@ export class ClientConfigHelper {
     return this;
   }
 
-  getModulesByComponent(component: ConfigComponent) {
-    return this.config.modules.filter(p => p.components.includes(component));
+  getModulesByComponent(component: ComponentTypes) {
+    return this.config.modules.filter(p => Object.keys(p.components).includes(component));
   }
 
-  addModuleComponent(moduleId: string, component: ConfigComponent) {
+  addModuleComponent<C extends ComponentTypes>(moduleId: string, component: C, configuration: ComponentConfigurationTypes[C]) {
     const m = this.getModule(moduleId);
 
     if (m) {
-      m.components.push(component);
+      m.components[component] = configuration;
     }
 
     return this;

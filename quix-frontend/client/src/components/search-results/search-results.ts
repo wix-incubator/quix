@@ -7,7 +7,7 @@ import hljs from 'highlight.js';
 import {initNgScope, inject} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {Instance} from '../../lib/app';
-import {INote, IPrestoNote} from '../../../../shared';
+import {INote} from '../../../../shared';
 import {IScope} from './search-results-types';
 import * as Resources from '../../services/resources';
 import * as AppActions from '../../store/app/app-actions';
@@ -35,7 +35,7 @@ const initPagination = (scope: IScope, totalResults: number, currentPage: number
     Math.max(0, totalPages - Search.PaginationEdgePages - Search.PaginationMiddlePages),
     Search.PaginationEdgePages
   );
-  
+
   const middlePages = Math.min(totalPages, Search.PaginationMiddlePages);
 
   const middleLeftBoundary = Math.min(
@@ -45,7 +45,7 @@ const initPagination = (scope: IScope, totalResults: number, currentPage: number
     ),
     Math.max(0, totalPages - Search.PaginationMiddlePages - rightEdgePages)
   );
-  
+
   scope.vm.pages = [
     ...[...(Array(leftEdgePages).keys())].map(i => i + 1),
     ...[...(Array(middlePages).keys())].map(i => i + 1 + middleLeftBoundary),
@@ -58,7 +58,7 @@ const initPagination = (scope: IScope, totalResults: number, currentPage: number
   scope.vm.state.value({currentPage: Math.min(totalPages, currentPage)});
 }
 
-const initResults = (text: string, notes: IPrestoNote[]) => {
+const initResults = (text: string, notes: INote[]) => {
   const serializer = paramSerializerFactory('sql');
 
   return notes.map<INote>(note => ({
@@ -71,7 +71,7 @@ const search = ((currentSearchId = 1) => debounce((scope: IScope, text: string, 
   const searchId = ++currentSearchId;
 
   return Resources.search(text, (page - 1) * Search.ResultsPerPage, Search.ResultsPerPage)
-    .then(({notes, count}: {notes: IPrestoNote[]; count: number}) => {
+    .then(({notes, count}: {notes: INote[]; count: number}) => {
       if (searchId === currentSearchId) {
         scope.vm.state
           .force('Result', true, {

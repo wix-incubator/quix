@@ -2,7 +2,7 @@ import {Injectable} from '@nestjs/common';
 import {ConnectionOptions} from 'typeorm';
 import * as dbConnection from './db-connection';
 import {EnvSettings, loadEnv, getEnv} from './env';
-import {ClientConfigHelper, ConfigComponent} from 'shared';
+import {ClientConfigHelper, ComponentTypes} from 'shared';
 import axios from 'axios';
 import {retry} from '../utils/retry-promise';
 
@@ -58,7 +58,12 @@ export abstract class ConfigService {
       clientConfig.addModule({
         id: m,
         name: m,
-        components: [ConfigComponent.note, ConfigComponent.db],
+        components: {
+          [ComponentTypes.db]: {},
+          [ComponentTypes.note]: {
+            syntax: env.moduleSettings[m].syntax,
+          },
+        },
       }),
     );
 

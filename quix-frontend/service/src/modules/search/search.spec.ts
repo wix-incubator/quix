@@ -3,7 +3,6 @@ import {getRepositoryToken, TypeOrmModule} from '@nestjs/typeorm';
 import 'reflect-metadata';
 import {Repository} from 'typeorm';
 import uuid from 'uuid/v4';
-import {NoteType} from 'shared/entities/note';
 import {ConfigService, ConfigModule} from 'config';
 import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from 'entities';
 import {SearchModule} from './search.module';
@@ -71,7 +70,7 @@ describe('Search', () => {
         name: 'New Note',
         owner: defaultUser,
         content: '',
-        type: NoteType.PRESTO as NoteType.PRESTO,
+        type: 'presto',
       },
       template,
     );
@@ -159,7 +158,7 @@ describe('Search', () => {
       type: 'python' as any,
     });
     const note2 = await createNote(notebook.id, {
-      type: NoteType.PRESTO,
+      type: 'presto',
     });
 
     const [result] = await searchService.search('type:presto');
@@ -175,7 +174,7 @@ describe('Search', () => {
     });
     const note2 = await createNote(notebook2.id, {
       owner: secondUser,
-      type: NoteType.PRESTO,
+      type: 'presto',
     });
     const note3 = await createNote(notebook2.id, {
       owner: secondUser,

@@ -16,7 +16,7 @@ export const loadEnv = () => {
   }
 };
 
-const envSettingsMap: {[K in keyof EnvSettings]: string} = {
+const envSettingsMap: {[K in keyof StaticSettings]: string} = {
   DbName: 'DB_NAME',
   DbUser: 'DB_USER',
   DbPass: 'DB_PASS',
@@ -64,7 +64,7 @@ const envSettingsDefaults = {
   MountPath: '',
 };
 
-export const testingDefaults: EnvSettings = {
+export const testingDefaults: StaticSettings = {
   ...envSettingsDefaults,
   DbName: 'quixtest',
   DbHost: 'localhost',
@@ -94,9 +94,9 @@ const stringListParse = (s: string | undefined) =>
   s !== undefined ? s.split(',') : undefined;
 
 const transforms: {
-  [K in keyof EnvSettings]: (
+  [K in keyof StaticSettings]: (
     s: string | undefined,
-  ) => EnvSettings[K] | undefined
+  ) => StaticSettings[K] | undefined
 } = {
   DbType: s => {
     switch (s) {
@@ -157,16 +157,34 @@ const transforms: {
   MountPath: identity,
 };
 
+const computedSettingsDefaults: ComputedSettings = {
+  moduleSettings: {
+    presto: {
+      syntax: 'ansi_sql',
+    },
+  },
+};
+
 let env: EnvSettings;
+
+const getComputedSettings = (modules: string[]): ComputedSettings => {
+  const computedSettings: ComputedSettings = computedSettingsDefaults;
+
+  modules.forEach(moduleName => {
+    const syntaxEnvVar = `MODULE_${moduleName}_SYNTAX`;
+    const syntax = process.env[syntaxEnvVar] || '';
+    computedSettings.moduleSettings[moduleName] = {syntax};
+  });
+  return computedSettings;
+};
 
 export const getEnv = (): EnvSettings => {
   loadEnv();
-  return (
-    env ||
-    (env = defaults(
+  if (!env) {
+    const staticSettings: StaticSettings = defaults(
       Object.entries(envSettingsMap).reduce(
         (settings, [key, envVar]) => {
-          settings[key] = transforms[key as keyof EnvSettings](
+          settings[key] = transforms[key as keyof StaticSettings](
             process.env[envVar],
           );
           return settings;
@@ -174,8 +192,16 @@ export const getEnv = (): EnvSettings => {
         {} as any,
       ),
       isJestTest() ? testingDefaults : envSettingsDefaults,
-    ))
-  );
+    );
+    const computedSettings = getComputedSettings(staticSettings.Modules);
+    env = {...computedSettings, ...staticSettings};
+  }
+  return env;
 };
 
-export type EnvSettings = typeof envSettingsDefaults;
+type StaticSettings = typeof envSettingsDefaults;
+interface ComputedSettings {
+  moduleSettings: Record<string, {syntax: string}>;
+}
+
+export type EnvSettings = StaticSettings & ComputedSettings;
