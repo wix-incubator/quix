@@ -48,11 +48,13 @@ class PrestoCatalogs(val queryExecutor: AsyncQueryExecutor[String, Batch])
 
   private def inferSchemaOfCatalog(catalogName: String) = {
     val fastQueryInference = inferSchemaInOneQuery(catalogName)
-    val slowQueryInference = inferSchemaOneByOne(catalogName)
+    val slowFallbackOne = inferSchemaOneByOne(catalogName)
+    val slowFallbackTwo = inferSchemaViaShowSchemas(catalogName)
     val emptyCatalog = Task.now(Catalog(catalogName, List.empty))
 
     fastQueryInference
-      .onErrorFallbackTo(slowQueryInference)
+      .onErrorFallbackTo(slowFallbackOne)
+      .onErrorFallbackTo(slowFallbackTwo)
       .onErrorFallbackTo(emptyCatalog)
   }
 
@@ -93,6 +95,27 @@ class PrestoCatalogs(val queryExecutor: AsyncQueryExecutor[String, Batch])
   def inferTablesOfSchema(catalogName: String, schemaName: String): Task[List[Table]] = {
     val sql = s"select distinct table_name from system.jdbc.tables " +
       s"where table_cat = '$catalogName' and table_schem = '$schemaName';"
+
+    val task = for {
+      tables <- executeForSingleColumn(sql)
+    } yield {
+      tables.sorted.map(name => Table(name, List.empty))
+    }
+
+    task.onErrorFallbackTo(Task.eval(List.empty))
+  }
+
+  def inferSchemaViaShowSchemas(catalogName: String): Task[Catalog] = {
+    val sql = s"show schemas from $catalogName"
+
+    for {
+      schemaNames <- executeForSingleColumn(sql)
+      schemas <- Task.traverse(schemaNames)(schema => inferTablesViaShowTables(catalogName, schema).map(tables => Schema(schema, tables)))
+    } yield Catalog(catalogName, schemas)
+  }
+
+  def inferTablesViaShowTables(catalogName: String, schemaName: String): Task[List[Table]] = {
+    val sql = s"show tables from $catalogName.$schemaName"
 
     val task = for {
       tables <- executeForSingleColumn(sql)
