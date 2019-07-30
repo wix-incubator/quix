@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Inject} from '@nestjs/common';
 import {ConnectionOptions} from 'typeorm';
 import * as dbConnection from './db-connection';
 import {EnvSettings, loadEnv, getEnv} from './env';
@@ -13,8 +13,8 @@ loadEnv();
 export abstract class ConfigService {
   private env: EnvSettings;
 
-  constructor() {
-    this.env = getEnv();
+  constructor(@Inject('GLOBAL_ENV') globalEnv: any) {
+    this.env = getEnv(globalEnv);
     /* tslint:disable-next-line */
     console.log(`****** Current Enviorment:: DbType:${this.env.DbType}/AuthType:${this.env.AuthType} ******`);
   }

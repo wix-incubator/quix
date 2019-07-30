@@ -9,6 +9,11 @@ export enum SearchTypes {
   noteName = 'name',
   content = 'content',
 }
+export type SpeciaSearchTypes =
+  | SearchTypes.noteName
+  | SearchTypes.type
+  | SearchTypes.user;
+
 export enum searchTextType {
   PHRASE,
   WORD,

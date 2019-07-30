@@ -96,7 +96,7 @@ const stringListParse = (s: string | undefined) =>
 const transforms: {
   [K in keyof StaticSettings]: (
     s: string | undefined,
-  ) => StaticSettings[K] | undefined
+  ) => StaticSettings[K] | undefined;
 } = {
   DbType: s => {
     switch (s) {
@@ -168,27 +168,32 @@ const computedSettingsDefaults: ComputedSettings = {
 
 let env: EnvSettings;
 
-const getComputedSettings = (modules: string[]): ComputedSettings => {
+const getComputedSettings = (
+  modules: string[],
+  globalEnv: Record<string, string | undefined>,
+): ComputedSettings => {
   const computedSettings: ComputedSettings = computedSettingsDefaults;
 
   modules.forEach(moduleName => {
-    const syntaxEnvVar = `MODULE_${moduleName.toUpperCase()}_SYNTAX`;
-    const engineEnvVar = `MODULE_${moduleName.toUpperCase()}_ENGINE`;
-    const syntax = process.env[syntaxEnvVar] || '';
-    const engine = process.env[engineEnvVar] || '';
+    const syntaxEnvVar = `MODULES_${moduleName.toUpperCase()}_SYNTAX`;
+    const engineEnvVar = `MODULES_${moduleName.toUpperCase()}_ENGINE`;
+    const syntax = globalEnv[syntaxEnvVar] || '';
+    const engine = globalEnv[engineEnvVar] || '';
     computedSettings.moduleSettings[moduleName] = {syntax, engine};
   });
   return computedSettings;
 };
 
-export const getEnv = (): EnvSettings => {
+export const getEnv = (
+  globalEnv: Record<string, string | undefined> = process.env,
+): EnvSettings => {
   loadEnv();
   if (!env) {
     const staticSettings: StaticSettings = defaults(
       Object.entries(envSettingsMap).reduce(
         (settings, [key, envVar]) => {
           settings[key] = transforms[key as keyof StaticSettings](
-            process.env[envVar],
+            globalEnv[envVar],
           );
           return settings;
         },
@@ -196,7 +201,10 @@ export const getEnv = (): EnvSettings => {
       ),
       isJestTest() ? testingDefaults : envSettingsDefaults,
     );
-    const computedSettings = getComputedSettings(staticSettings.Modules);
+    const computedSettings = getComputedSettings(
+      staticSettings.Modules,
+      globalEnv,
+    );
     env = {...computedSettings, ...staticSettings};
   }
   return env;
