@@ -9,7 +9,7 @@ const fakeConnection = {
   useValue: {},
 };
 
-describe.skip('AppController', () => {
+describe('AppController', () => {
   let appController: AppController;
   let app: TestingModule | null = null;
 
@@ -27,23 +27,22 @@ describe.skip('AppController', () => {
     appController = app.get<AppController>(AppController);
   }
   // beforeEach(async () => preTest());
-  afterEach(() => {
+  afterEach(async () => {
     if (app) {
-      app.close();
+      await app.close();
       app = null;
     }
   });
 
   describe('index.vm', () => {
-    it('should return valid render model', async () => {
+    it('should return valid render view model', async () => {
       await preTest();
-      expect(appController.getIndex()).toMatchObject(
-        expect.objectContaining({
-          clientTopology: {
-            staticsBaseUrl: '/',
-          },
-        }),
-      );
+      const vm = appController.getIndex();
+      expect(vm).toMatchObject({
+        clientTopology: {
+          staticsBaseUrl: '/',
+        },
+      });
     });
 
     it('should parse module configuration correctly', async () => {
@@ -51,11 +50,10 @@ describe.skip('AppController', () => {
         MODULES: 'presto,was,athena',
 
         MODULES_PRESTO_ENGINE: 'presto',
-        MODULES_PRESTO_SYNTAX: 'ansi_sql',
         MODULES_PRESTO_API: 'http://presto:8181/v1/',
 
-        MODULES_WAS_ENGINE: 'presto',
-        MODULES_WAS_SYNTAX: 'ansi_sql',
+        MODULES_WAS_ENGINE: 'jdbc',
+        MODULES_WAS_SYNTAX: 'someSqlSyntax',
         MODULES_WAS_API: 'http://presto:8181/v1/',
 
         MODULES_ATHENA_ENGINE: 'athena',
@@ -68,21 +66,43 @@ describe.skip('AppController', () => {
         expect.objectContaining({
           id: 'presto',
           engine: 'presto',
-          syntax: 'ansi_sql',
+          syntax: 'presto',
         }),
       );
       expect(quixConfig.modules).toContainEqual(
         expect.objectContaining({
           id: 'was',
-          engine: 'presto',
-          syntax: 'ansi_sql',
+          engine: 'jdbc',
+          syntax: 'someSqlSyntax',
         }),
       );
       expect(quixConfig.modules).toContainEqual(
         expect.objectContaining({
           id: 'athena',
           engine: 'athena',
-          syntax: 'ansi_sql',
+          syntax: 'athena',
+        }),
+      );
+    });
+
+    it('should parse old style configuration correctly', async () => {
+      const mockedGlobalEnv = {
+        MODULES: 'presto,athena',
+      };
+      await preTest({provide: 'GLOBAL_ENV', useValue: mockedGlobalEnv});
+      const quixConfig = JSON.parse(appController.getIndex().quixConfig);
+      expect(quixConfig.modules).toContainEqual(
+        expect.objectContaining({
+          id: 'presto',
+          engine: 'presto',
+          syntax: 'presto',
+        }),
+      );
+      expect(quixConfig.modules).toContainEqual(
+        expect.objectContaining({
+          id: 'athena',
+          engine: 'athena',
+          syntax: 'athena',
         }),
       );
     });

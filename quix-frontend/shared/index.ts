@@ -43,3 +43,4 @@ export {
 } from './entities/note';
 
 export {ClientConfigHelper, ComponentTypes} from './config-helper/config-helper'
+export {MoudleEngineToSyntaxMap, ModuleEngineType} from './config-helper/consts'

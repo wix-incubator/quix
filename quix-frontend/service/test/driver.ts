@@ -2,7 +2,7 @@
 import {INestApplication} from '@nestjs/common';
 import request from 'supertest';
 import {IGoogleUser} from 'modules/auth';
-import {testingDefaults} from 'config/env';
+import {testingDefaults} from 'config/env/consts';
 import {INotebook, INote, IFolder, IFile} from 'shared';
 
 const defaultCookie = testingDefaults.AuthCookieName;
