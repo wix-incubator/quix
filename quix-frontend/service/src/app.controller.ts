@@ -1,4 +1,11 @@
-import {Controller, Get, Render, Res, Req} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Render,
+  Res,
+  Req,
+  OnApplicationShutdown,
+} from '@nestjs/common';
 import {ConfigService, EnvSettings} from './config';
 import {InjectConnection} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
@@ -6,19 +13,27 @@ import {Response} from 'express';
 import {ClientConfigHelper} from 'shared';
 
 @Controller()
-export class AppController {
+export class AppController implements OnApplicationShutdown {
   private clientConfig: ClientConfigHelper | undefined;
+  private timer: NodeJS.Timer;
 
   constructor(
     private configService: ConfigService,
     @InjectConnection() private conn: Connection,
   ) {
     this.fetchClientConfig();
-    setInterval(() => this.fetchClientConfig.bind(this), 1000 * 60 * 10);
+    this.timer = setInterval(
+      () => this.fetchClientConfig.bind(this),
+      1000 * 60 * 10,
+    );
   }
 
   private fetchClientConfig() {
     this.configService.getClientConfig().then(c => (this.clientConfig = c));
+  }
+
+  onApplicationShutdown() {
+    clearInterval(this.timer);
   }
 
   @Get()
