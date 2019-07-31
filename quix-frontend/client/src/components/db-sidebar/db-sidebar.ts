@@ -35,18 +35,12 @@ export default (app: App, store: Store) => () => ({
       initNgScope(scope)
         .withVM({
           types: pluginManager.getPluginIdsByType('db'),
+          type: null,
           search: {
             text: null
           },
-          $export() {
-            return {type: this.type};
-          },
-          $import({type}) {
-            this.type = this.types.includes(type) && type;
-          },
           $init() {
             this.state = new StateManager(States);
-            this.type = this.type || this.types[0];
           }
         })
         .withEvents({
@@ -71,8 +65,6 @@ export default (app: App, store: Store) => () => ({
             openTempQuery(scope, scope.vm.type, query, true);
           },
           onTypeChange(type) {
-            scope.state.save();
-
             scope.vm.search.text = null;
             scope.vm.state.force('Initial');
 
@@ -100,8 +92,7 @@ export default (app: App, store: Store) => () => ({
               })
             );
           }
-        })
-        .withState('dbSidebar', 'dbSidebar', {});
+        });
 
       scope.getFolderPermissions = (folder: any) => {
         return {

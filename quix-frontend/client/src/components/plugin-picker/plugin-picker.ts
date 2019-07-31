@@ -17,11 +17,20 @@ export default (app: App, store: Store) => () => ({
   },
   link: {
     async pre(scope: IScope, element, attr, ngModel) {
-      createNgModel(scope, ngModel);
-
-      initNgScope(scope)
-        .withVM({
-          plugins: pluginManager.getPluginIdsByType(scope.type)
+      createNgModel(scope, ngModel)
+        .watchWith(() => scope.state.save())
+        .then(() => {
+          initNgScope(scope)
+          .withVM({
+            $export() {
+              return {type: scope.model};
+            },
+            $import({type}) {
+              scope.model = scope.model || (this.plugins.includes(type) ? type : this.plugins[0]);
+            },
+            plugins: pluginManager.getPluginIdsByType(scope.type)
+          })
+          .withState('pluginPicker', 'pluginPicker', {});
         });
     }
   }
