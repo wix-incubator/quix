@@ -36,10 +36,6 @@ export class AppController implements OnApplicationShutdown {
     this.configService.getClientConfig().then(c => (this.clientConfig = c));
   }
 
-  onApplicationShutdown() {
-    clearInterval(this.timer);
-  }
-
   @Get()
   @Render('index.vm')
   getIndex() {
