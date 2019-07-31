@@ -5,6 +5,7 @@ import {waitForEntity} from './store';
 
 export const DB = {
   SampleLimit: 1000,
+  RootName: '__root',
 };
 
 export const Search = {

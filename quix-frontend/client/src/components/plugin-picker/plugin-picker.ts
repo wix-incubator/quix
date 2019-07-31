@@ -14,6 +14,7 @@ export default (app: App, store: Store) => () => ({
   scope: {
     type: '@',
     onChange: '&',
+    onLoad: '&',
   },
   link: {
     async pre(scope: IScope, element, attr, ngModel) {
@@ -31,6 +32,8 @@ export default (app: App, store: Store) => () => ({
             plugins: pluginManager.getPluginIdsByType(scope.type)
           })
           .withState('pluginPicker', 'pluginPicker', {});
+
+          scope.onLoad({plugin: scope.model});
         });
     }
   }

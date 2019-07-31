@@ -1,6 +1,6 @@
 import {utils} from '../lib/core';
 
-export const convert = (nodes: any[], path = [], res = []) => {
+export const convert = (nodes: any[], {hideRoot}, path = [], res = []) => {
   nodes.forEach(node => {
     const id = utils.uuid();
 
@@ -9,9 +9,11 @@ export const convert = (nodes: any[], path = [], res = []) => {
     } else if (!node.children.length && node.type === 'table') {
       res.push({id, name: node.name, path, type: 'folder', nodeType: node.type, lazy: true});
     } else {
-      res.push({id, name: node.name, path, type: 'folder', nodeType: node.type});
+      if (!hideRoot) {
+        res.push({id, name: node.name, path, type: 'folder', nodeType: node.type});
+      }
 
-      convert(node.children, [...path, {id, name: node.name}], res);
+      convert(node.children, {hideRoot: false}, hideRoot ? path : [...path, {id, name: node.name}], res);
     }
   });
 

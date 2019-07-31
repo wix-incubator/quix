@@ -3,6 +3,7 @@
     type="db"
     ng-model="vm.type"
     ng-change="events.onTypeChange(vm.type)"
+    on-load="events.onPluginPickerLoad(plugin)"
   ></quix-plugin-picker>
 </div>
 

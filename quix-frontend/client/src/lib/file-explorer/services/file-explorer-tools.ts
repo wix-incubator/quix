@@ -36,6 +36,7 @@ export function addFile(folder: Folder, {id, name, type, path, ...data}: IItemDe
  */
 export function defToTree(items: IItemDef[], options: any): Folder {
   const root = new Folder(null, null);
+
   const itemsMap = items.reduce((res, item: IItemDef) => {
     res[item.id] = item;
     return res;
