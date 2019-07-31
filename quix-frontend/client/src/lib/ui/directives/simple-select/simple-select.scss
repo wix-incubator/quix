@@ -11,14 +11,6 @@ bi-simple-select {
           position: unset;
         }
       }
-
-      .bd-content {
-        [ng-transclude=''] {
-          .bi-dropdown-menu {
-            border-top: 1px solid $grey--300;
-          }
-        }
-      }
     }
 
     bi-toggle {
