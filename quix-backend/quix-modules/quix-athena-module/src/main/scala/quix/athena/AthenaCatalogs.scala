@@ -9,14 +9,14 @@ class AthenaCatalogs(val queryExecutor: AsyncQueryExecutor[String, Batch]) exten
 
   override def fast: Task[List[Catalog]] = {
     for {schemas <- executeForSingleColumn("show databases")}
-      yield List(Catalog("awsdatacatalog", schemas.map(schema => Schema(schema, Nil))))
+      yield List(Catalog("__root", schemas.map(schema => Schema(schema, Nil))))
   }
 
   override def full: Task[List[Catalog]] = {
     for {
       schemaNames <- executeForSingleColumn("show databases")
       schemas <- Task.traverse(schemaNames)(inferSchemaInOneQuery)
-    } yield List(Catalog("awsdatacatalog", schemas))
+    } yield List(Catalog("__root", schemas))
   }
 
   def inferSchemaInOneQuery(schemaName: String): Task[Schema] = {

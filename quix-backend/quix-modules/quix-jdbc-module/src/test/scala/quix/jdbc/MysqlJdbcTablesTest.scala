@@ -23,7 +23,7 @@ class MysqlJdbcTablesTest extends SpecWithJUnit with BeforeAll with BeforeEach w
 
   "JdbcTables.fast" should {
     "return table on valid request of single column table" in new ctx {
-      val table = tables.get("root", "aschema", "small_table").runSyncUnsafe()
+      val table = tables.get("__root", "aschema", "small_table").runSyncUnsafe()
       val columns = table.children.map(_.name)
 
       table.name must_=== "small_table"
@@ -38,7 +38,7 @@ class MysqlJdbcTablesTest extends SpecWithJUnit with BeforeAll with BeforeEach w
     }
 
     "return all columns on valid request of wide table" in new ctx {
-      val table = tables.get("root", "aschema", "wide_table").runSyncUnsafe()
+      val table = tables.get("__root", "aschema", "wide_table").runSyncUnsafe()
       val columns = table.children.map(_.name)
 
       val expected = (1 to 10).map(i => "col" + i).toList

@@ -27,7 +27,7 @@ class MysqlJdbcTest extends SpecWithJUnit with BeforeAll with BeforeEach with Af
       val catalogNames = db.map(_.name)
       val schemaNames = db.flatMap(_.children.map(_.name))
 
-      catalogNames must contain("root")
+      catalogNames must contain("__root")
       schemaNames must contain("aschema")
     }
   }
@@ -39,7 +39,7 @@ class MysqlJdbcTest extends SpecWithJUnit with BeforeAll with BeforeEach with Af
       val schemaNames = fullTree.flatMap(_.children.map(_.name))
       val tableNames = fullTree.flatMap(_.children.flatMap(_.children.map(_.name)))
 
-      catalogNames must contain("root")
+      catalogNames must contain("__root")
       schemaNames must contain("aschema")
       tableNames must contain("empty_table", "large_table", "small_table")
     }

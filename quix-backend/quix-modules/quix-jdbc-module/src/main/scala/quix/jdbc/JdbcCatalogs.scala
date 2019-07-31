@@ -33,7 +33,7 @@ class JdbcCatalogs(val config: JdbcConfig)
         // due to mysql jdbc/odbc driver legacy implementation .getCatalogs returns list of schemas
         // and .getSchemas returns empty list
         if (config.url.startsWith("jdbc:mysql")) {
-          List(Catalog("root", catalogs.map(name => Schema(name, Nil))))
+          List(Catalog("__root", catalogs.map(name => Schema(name, Nil))))
         } else catalogs.map(name => Catalog(name, Nil))
       }
     }
@@ -65,7 +65,7 @@ class JdbcCatalogs(val config: JdbcConfig)
         val table = rs.getString("TABLE_NAME")
 
         if (config.url.startsWith("jdbc:mysql")) {
-          result += RichTable("root", catalog, table)
+          result += RichTable("__root", catalog, table)
         } else
           result += RichTable(catalog, schema, table)
       }
