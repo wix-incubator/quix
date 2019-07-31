@@ -21,8 +21,14 @@ export class Plugin {
 }
 
 export class NotePlugin extends Plugin {
-  constructor (id: string) {
+  constructor (id: string, private readonly config: {
+    syntaxValidation: boolean;
+  }) {
     super(id);
+  }
+
+  getConfig() {
+    return this.config;
   }
 }
 
