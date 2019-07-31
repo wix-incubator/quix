@@ -15,7 +15,7 @@ import {ClientConfigHelper} from 'shared';
 @Controller()
 export class AppController implements OnApplicationShutdown {
   private clientConfig: ClientConfigHelper | undefined;
-  private timer: NodeJS.Timeout;
+  private timer: NodeJS.Timer;
 
   constructor(
     private configService: ConfigService,
@@ -34,6 +34,10 @@ export class AppController implements OnApplicationShutdown {
 
   private fetchClientConfig() {
     this.configService.getClientConfig().then(c => (this.clientConfig = c));
+  }
+
+  onApplicationShutdown() {
+    clearInterval(this.timer);
   }
 
   @Get()
