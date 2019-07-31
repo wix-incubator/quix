@@ -10,7 +10,7 @@ export class AthenaDbPlugin extends DbPlugin {
 
   getSampleQuery(table: IFile) {
     return `SELECT *
-FROM ${[...table.path, table].map(({name}) => sanitizeTableToken(name, '`')).join('.')}
+FROM ${[...table.path, table].map(({name}) => sanitizeTableToken(name, '"')).join('.')}
 LIMIT ${DB.SampleLimit}
     `    
   }
