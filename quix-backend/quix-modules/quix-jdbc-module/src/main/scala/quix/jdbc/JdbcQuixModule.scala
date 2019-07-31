@@ -25,9 +25,9 @@ class JdbcQuixModule(val executions: SequentialExecutions[String], val db: Optio
 }
 
 object JdbcQuixModule {
-  def apply(executor: AsyncQueryExecutor[String, Batch]): JdbcQuixModule = {
+  def apply(executor: AsyncQueryExecutor[String, Batch], db : Db): JdbcQuixModule = {
     val executions = new SequentialExecutions[String](executor)
 
-    new JdbcQuixModule(executions)
+    new JdbcQuixModule(executions, Option(db))
   }
 }

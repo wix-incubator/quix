@@ -27,3 +27,17 @@ values (1),
        (8),
        (9),
        (10);
+
+create table wide_table
+(
+    col1  INTEGER NOT NULL,
+    col2  INTEGER NOT NULL,
+    col3  INTEGER NOT NULL,
+    col4  INTEGER NOT NULL,
+    col5  INTEGER NOT NULL,
+    col6  INTEGER NOT NULL,
+    col7  INTEGER NOT NULL,
+    col8  INTEGER NOT NULL,
+    col9  INTEGER NOT NULL,
+    col10 INTEGER NOT NULL
+);

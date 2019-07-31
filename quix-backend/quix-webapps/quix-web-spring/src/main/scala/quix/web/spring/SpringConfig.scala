@@ -14,7 +14,7 @@ import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb
 import quix.core.download.DownloadableQueriesImpl
 import quix.core.executions.SequentialExecutions
 import quix.core.utils.JsonOps
-import quix.jdbc.{JdbcConfig, JdbcQueryExecutor, JdbcQuixModule}
+import quix.jdbc._
 import quix.presto._
 import quix.presto.db.{PrestoAutocomplete, PrestoCatalogs, PrestoTables}
 import quix.presto.rest.ScalaJPrestoStateClient
@@ -204,11 +204,24 @@ class ModulesConfiguration extends LazyLogging {
       val pass = env.getRequiredProperty(s"modules.$module.pass")
       val driver = env.getRequiredProperty(s"modules.$module.driver")
 
+      val emptyDbTimeout = {
+        env.getProperty(s"modules.$module.db.empty.timeout", classOf[Long],
+          env.getProperty("presto.db.empty.timeout", classOf[Long], 1000L * 10))
+      }
+
       Class.forName(driver)
 
-      val executor = new JdbcQueryExecutor(JdbcConfig(url, user, pass, driver))
+      val config = JdbcConfig(url, user, pass, driver)
+      val executor = new JdbcQueryExecutor(config)
+      val jdbcCatalogs = new JdbcCatalogs(config)
+      val tables = new JdbcTables(config)
+      val jdbcAutocomplete = new JdbcAutocomplete(jdbcCatalogs)
 
-      Registry.modules.update(module, JdbcQuixModule(executor))
+      val catalogs = new RefreshableCatalogs(jdbcCatalogs, emptyDbTimeout, 1000L * 60 * 5)
+      val autocomplete = new RefreshableAutocomplete(jdbcAutocomplete, emptyDbTimeout, 1000L * 60 * 5)
+      val db = new RefreshableDb(catalogs, autocomplete, tables)
+
+      Registry.modules.update(module, JdbcQuixModule(executor, db))
     }
 
     def getJdbcModulesList() = {
