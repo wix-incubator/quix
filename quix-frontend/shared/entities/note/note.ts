@@ -1,11 +1,11 @@
 import uuid from 'uuid/v4';
-import {INote, NoteType} from './types';
+import {INote} from './types';
 
 export const createNote = (notebookId: string, props: Partial<INote> = {}): INote => ({
   id: uuid(),
   notebookId,
   name: 'New note',
-  type: NoteType.PRESTO,
+  type: 'presto',
   content: '\n',
   owner: '',
   dateCreated: Date.now(),

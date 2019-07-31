@@ -28,12 +28,12 @@ export class AppController implements OnApplicationShutdown {
     );
   }
 
-  private fetchClientConfig() {
-    this.configService.getClientConfig().then(c => (this.clientConfig = c));
-  }
-
   onApplicationShutdown() {
     clearInterval(this.timer);
+  }
+
+  private fetchClientConfig() {
+    this.configService.getClientConfig().then(c => (this.clientConfig = c));
   }
 
   @Get()

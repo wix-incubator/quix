@@ -40,7 +40,7 @@
             <span bm-toggle></span>
           </span>  
     
-          <span class="bi-label--sm">{{::note.type}}</span>
+          <span class="bi-text--ui bi-muted">{{::note.type | biToHumanCase}}</span>
         </div>
 
         <span
@@ -81,7 +81,12 @@
         class="bi-c-h bi-grow"
         ng-model="note.content"
         ng-change="events.onContentChange()"
-        bsr-options="::{fitContent: true, params: true, focus: options.focusEditor}"
+        bsr-options="::{
+          fitContent: true,
+          params: true,
+          focus: options.focusEditor,
+          showSyntaxErrors: vm.showSyntaxErrors
+        }"
         type="note.type"
         runner="runner"
         download-file-name="getDownloadFileName(query)"

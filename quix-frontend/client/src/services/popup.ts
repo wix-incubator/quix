@@ -54,7 +54,7 @@ export const openSearchResults = (scope) => {
   return closeFn;
 }
 
-export const openTempQuery = (scope, type: string, code: string = '', autorun = false) => {
+export const openTempQuery = (scope, type?: string, code: string = '', autorun = false) => {
   return openPopup(`
     <quix-temp-query
       class="bi-c-h bi-grow"

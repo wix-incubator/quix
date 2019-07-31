@@ -26,7 +26,6 @@ import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/d
 import {FoldersService} from './folders/folders.service';
 import {NotebookService} from './notebooks/notebooks.service';
 import {FavoritesService} from './favorites/favorites.service';
-import {NoteType} from 'shared/entities/note';
 import {WebApiModule} from './web-api.module';
 import {EntityType} from 'common/entity-type.enum';
 
@@ -59,7 +58,7 @@ function createNote(defaultUser: string, noteName: string, notebookId: string) {
     owner: defaultUser,
     name: noteName,
     content: '',
-    type: NoteType.PRESTO,
+    type: 'presto',
     notebookId,
     dateCreated: 1,
     dateUpdated: 1,

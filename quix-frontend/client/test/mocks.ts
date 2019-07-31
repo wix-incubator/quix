@@ -71,23 +71,45 @@ ORDER BY 1
   },
   // '/api/db/presto/explore': () => [500, {message: 'Failed to fetch DB tree'}],
   // '/api/db/presto/explore': () => [],
-  '/api/db/:type/explore': () => [{
-    name: 'catalog',
-    type: 'catalog',
-    children: [{
-      name: 'schema',
-      type: 'schema',
-      children: [{
-        name: 'table_with_a_very_looooooooooooooooong_name',
-        type: 'table',
+  '/api/db/:type/explore': ({type}) => {
+    if (type === 'presto') {
+      return [{
+        name: 'catalog',
+        type: 'catalog',
+        children: [{
+          name: 'schema',
+          type: 'schema',
+          children: [{
+            name: 'table_with_a_very_looooooooooooooooong_name',
+            type: 'table',
+            children: []
+          }]
+        }]
+      }, {
+        name: 'catalog2',
+        type: 'catalog',
         children: []
       }]
-    }]
-  }, {
-    name: 'catalog2',
-    type: 'catalog',
-    children: []
-  }],
+    } 
+
+    return [{
+      name: '__root',
+      type: 'catalog',
+      children: [{
+        name: 'schema',
+        type: 'schema',
+        children: [{
+          name: 'table_with_a_very_looooooooooooooooong_name',
+          type: 'table',
+          children: []
+        }]
+      }, {
+        name: 'schema2',
+        type: 'schema',
+        children: []
+      }]
+    }];
+  },
   '/api/db/:type/explore/:catalog/:schema/:table': ({table}) => ({
     children: [{name: `column_of_${table}`, dataType: 'varchar'}]
   }),

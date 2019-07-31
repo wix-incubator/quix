@@ -1,0 +1,77 @@
+import {BaseConnectionOptions} from 'typeorm/connection/BaseConnectionOptions';
+
+import {StaticSettings, ComputedSettings} from './types';
+
+export const envSettingsMap: {[K in keyof StaticSettings]: string} = {
+  DbName: 'DB_NAME',
+  DbUser: 'DB_USER',
+  DbPass: 'DB_PASS',
+  DbHost: 'DB_HOST',
+  DbPort: 'DB_PORT',
+  QuixBackendInternalUrl: 'BACKEND_INTERNAL_URL',
+  QuixBackendPublicUrl: 'BACKEND_PUBLIC_URL',
+  GoogleClientId: 'GOOGLE_SSO_CLIENT_ID',
+  GoogleAuthSecret: 'GOOGLE_SSO_SECRET',
+  AuthCookieName: 'AUTH_COOKIE',
+  AuthEncKey: 'AUTH_SECRET',
+  CookieAge: 'COOKIE_MAX_AGE',
+  DbType: 'DB_TYPE',
+  AuthType: 'AUTH_TYPE',
+  AutoMigrateDb: 'DB_AUTO_MIGRATE',
+  UseMinifiedStatics: 'MINIFIED_STATICS',
+  DemoMode: 'DEMO_MODE',
+  DbDebug: 'DB_DEBUG',
+  Modules: 'MODULES',
+  HttpPort: 'HTTP_PORT',
+  MountPath: 'MOUNT_PATH',
+};
+
+export const envSettingsDefaults = {
+  DbType: 'mysql' as 'mysql' | 'sqlite',
+  AuthType: 'fake' as 'fake' | 'google',
+  DbName: 'quix',
+  DbUser: 'root',
+  DbPass: '',
+  DbHost: 'db',
+  DbPort: 3306,
+  QuixBackendInternalUrl: 'backend:8081',
+  QuixBackendPublicUrl: 'localhost:8081',
+  GoogleClientId: '',
+  GoogleAuthSecret: '',
+  AuthCookieName: '__quix',
+  AuthEncKey: '123456',
+  CookieAge: 30 * 24 * 60 * 60 * 1000 /* 30 days */,
+  AutoMigrateDb: false,
+  UseMinifiedStatics: true,
+  DemoMode: false,
+  DbDebug: ['error', 'schema', 'warn'] as BaseConnectionOptions['logging'],
+  Modules: ['presto'],
+  HttpPort: 3000,
+  MountPath: '',
+};
+
+export const testingDefaults: StaticSettings = {
+  ...envSettingsDefaults,
+  DbName: 'quixtest',
+  DbHost: 'localhost',
+  QuixBackendInternalUrl: 'localhost:8081',
+  QuixBackendPublicUrl: 'localhost:8081',
+  AuthEncKey: '',
+  DbType: 'sqlite',
+  AuthType: 'fake',
+  AutoMigrateDb: true,
+  UseMinifiedStatics: false,
+  DbDebug: false,
+  Modules: ['presto'],
+  HttpPort: 3000,
+  MountPath: '',
+};
+
+export const computedSettingsDefaults: ComputedSettings = {
+  moduleSettings: {
+    presto: {
+      syntax: 'ansi_sql',
+      engine: 'presto',
+    },
+  },
+};

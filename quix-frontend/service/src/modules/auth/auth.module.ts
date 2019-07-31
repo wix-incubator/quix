@@ -7,7 +7,7 @@ import {PassportModule} from '@nestjs/passport';
 import {JwtStrategy} from './jwt-strategy';
 import {MockStrategy} from './mock-strategy';
 import {AuthController} from './auth.controller';
-import {getEnv} from 'config/env';
+import {getEnv} from 'config/env/env';
 import {UsersService} from './users.service';
 import {TypeOrmModule} from '@nestjs/typeorm';
 import {DbUser} from 'entities';

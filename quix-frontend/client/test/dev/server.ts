@@ -43,7 +43,16 @@ export function start(port = process.env.PORT || '3000') {
   });
 
   app.get('/', (req, res) => {
-    res.send(renderVM('./src/index.vm', {}));
+    const quixConfig = {
+      modules: [
+        {id: 'presto', name: 'presto', components: {db: {}, note: {}}, engine: 'presto', syntax: 'presto'},
+        {id: 'athena', name: 'athena', components: {db: {}, note: {}}, engine: 'athena', syntax: 'athena'}
+      ],
+      auth: {googleClientId: ''},
+      clientTopology: {executeBaseUrl: 'localhost:3000/mock', staticsBaseUrl: '//localhost:3200/', apiBasePath: ''},
+      mode: {debug: true, demo: false}
+    }
+    res.send(renderVM('./src/index.vm', {quixConfig: JSON.stringify(quixConfig, null, 2)}));
   });
 
   return server.listen(port, () => {

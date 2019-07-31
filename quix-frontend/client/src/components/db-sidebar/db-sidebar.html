@@ -1,18 +1,10 @@
-<div class="bi-center bi-heading bi-fade-in" ng-if="vm.types.length > 1">
-  <bi-simple-select
+<div class="bi-center bi-heading bi-fade-in" ng-show="vm.types.length > 1">
+  <quix-plugin-picker
+    type="db"
     ng-model="vm.type"
     ng-change="events.onTypeChange(vm.type)"
-    bi-options="type as type | biToHumanCase for type in ::vm.types"
-    bs-options="::{alignDropdown: 'left'}"
-  >
-    <toggle>
-      <span class="bi-action bi-align bi-s-h--x05">
-        <span></span>
-        <span class="bi-text--ui bi-text--600">{{type | biToHumanCase}}</span>
-        <i class="bi-icon--sm">arrow_drop_down</i>
-      </span>
-    </toggle>
-  </bi-simple-select>
+    on-load="events.onPluginPickerLoad(plugin)"
+  ></quix-plugin-picker>
 </div>
 
 <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.before('Content')">

@@ -6,7 +6,7 @@ export function buildAndCopyStatics(projectDir: string, clientDir: string) {
     cwd: clientDir,
   }) as ExecOutputReturnValue;
 
-  if (build.code === -1) {
+  if (build.code) {
     process.exit(-1);
   }
 

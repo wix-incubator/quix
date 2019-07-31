@@ -6,7 +6,7 @@ import velocityEngine from './template-engine/velocity';
 import cookieParser from 'cookie-parser';
 import {createConnection} from 'typeorm';
 import {createMysqlConf} from 'config/db-connection';
-import {getEnv} from 'config/env';
+import {getEnv} from 'config/env/env';
 import {DbMetadata} from 'entities/version-metadata.entity';
 import {Logger} from '@nestjs/common';
 import {

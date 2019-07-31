@@ -7,10 +7,10 @@ import * as stateComponents from './state-components';
 import {branches, initCache} from './store';
 import UrlPattern from 'url-pattern';
 import {config as runnerConfig} from './lib/runner';
-import {config as  resourcesConfig} from './services/resources';
+import {config as resourcesConfig} from './services/resources';
 import {pluginManager, pluginFactory} from './plugins';
 import {setupNotifications} from './bootstrap';
-import {ClientConfigHelper, ConfigComponent} from '../../shared';
+import {ClientConfigHelper, ComponentTypes} from '../../shared';
 
 import './lib/file-explorer';
 
@@ -54,12 +54,12 @@ create<ClientConfigHelper>({
         apiBasePath
       });
 
-      clientConfig.getModulesByComponent(ConfigComponent.db).forEach(({id}) => {
-        pluginManager.addPlugin(pluginFactory.db(id));
+      clientConfig.getModulesByComponent(ComponentTypes.db).forEach(({id, engine}) => {
+        pluginManager.addPlugin(pluginFactory.db(id, engine));
       });
 
-      clientConfig.getModulesByComponent(ConfigComponent.note).forEach(({id}) => {
-        pluginManager.addPlugin(pluginFactory.note(id));
+      clientConfig.getModulesByComponent(ComponentTypes.note).forEach(({id, engine}) => {
+        pluginManager.addPlugin(pluginFactory.note(id, engine));
       });
 
       initCache(store);

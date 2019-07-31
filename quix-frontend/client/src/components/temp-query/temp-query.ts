@@ -5,6 +5,7 @@ import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
 import {IScope} from './temp-query-types';
+import {pluginManager} from '../../plugins';
 
 export default (app: App, store: Store) => () => ({
   restrict: 'E',
@@ -17,7 +18,10 @@ export default (app: App, store: Store) => () => ({
   link: {
     async pre(scope: IScope) {
       initNgScope(scope)
-        .withVM({})
+        .withVM({
+          type: scope.type,
+          types: pluginManager.getPluginIdsByType('note')
+        })
         .withEvents({
           onRunnerInstanceLoad(instance) {
             if (scope.autorun) {

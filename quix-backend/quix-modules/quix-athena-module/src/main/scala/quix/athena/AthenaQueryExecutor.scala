@@ -229,7 +229,7 @@ class AthenaQueryExecutor(val client: AthenaClient,
 object AthenaQueryExecutor {
   def apply(config: AthenaConfig) = {
     val credentials = {
-      if (config.accessKey.nonEmpty && config.secretKey.nonEmpty) {
+      if (config.accessKey != null && config.secretKey != null && config.accessKey.nonEmpty && config.secretKey.nonEmpty) {
         new AWSCredentialsProvider {
           override def getCredentials: AWSCredentials = new BasicAWSCredentials(config.accessKey, config.secretKey)
 

@@ -33,8 +33,6 @@ export {
 
 export {
   INote,
-  IPrestoNote,
-  INativeNote,
   NoteActions,
   NoteActionTypes,
   createNote,
@@ -44,4 +42,5 @@ export {
   clientNoteListReducer
 } from './entities/note';
 
-export {ClientConfigHelper, ConfigComponent} from './config-helper/config-helper'
+export {ClientConfigHelper, ComponentTypes} from './config-helper/config-helper'
+export {MoudleEngineToSyntaxMap, ModuleEngineType} from './config-helper/consts'

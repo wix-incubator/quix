@@ -1,7 +1,7 @@
 import {isArray} from 'lodash';
 import {Store} from '../lib/store';
 import {App} from '../lib/app';
-import {IFolder, INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem, createNote, IPrestoNote} from '../../../shared';
+import {IFolder, INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem, createNote} from '../../../shared';
 import {FileType} from '../../../shared/entities/file';
 import {fetchRootPath, goUp, goToFile} from './';
 
@@ -23,7 +23,7 @@ export const addNotebook = async (store: Store, app: App, parentOrPath: IFolder 
     NotebookActions.createNotebook(notebook.id, notebook),
     NoteActions.addNote(note.id, note)
   ])
-  .then(() => goToFile(app, {...notebook, type: FileType.notebook}, {isNew: true}));
+    .then(() => goToFile(app, {...notebook, type: FileType.notebook}, {isNew: true}));
 }
 
 export const copyNotebook = async (store: Store, app: App, parentOrPath: IFolder | IFilePathItem[], sourceNotebook: INotebook) => {
@@ -42,12 +42,12 @@ export const copyNotebook = async (store: Store, app: App, parentOrPath: IFolder
       return NoteActions.addNote(note.id, note);
     })
   ])
-  .then(() => goToFile(app, {...newNotebook, type: FileType.notebook}, {isNew: false}))
-  .then(() => newNotebook);
+    .then(() => goToFile(app, {...newNotebook, type: FileType.notebook}, {isNew: false}))
+    .then(() => newNotebook);
 }
 
 export const copyNote = async (store: Store, app: App, targetNotebook: INotebook, sourceNote: INote) => {
-  const {name, content, type} = sourceNote as IPrestoNote;
+  const {name, content, type} = sourceNote;
 
   const newNote = createNote(targetNotebook.id, {
     name: `Copy of ${name}`,

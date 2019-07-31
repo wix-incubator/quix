@@ -1,0 +1,13 @@
+  <bi-simple-select
+    ng-model="model"
+    bi-options="plugin as plugin | biToHumanCase for plugin in ::vm.plugins"
+    bs-options="::{alignDropdown: 'left'}"
+  >
+    <toggle>
+      <span class="bi-action bi-align bi-s-h--x05">
+        <span></span>
+        <span class="bi-text--ui bi-text--600">{{model | biToHumanCase}}</span>
+        <i class="bi-icon--sm">arrow_drop_down</i>
+      </span>
+    </toggle>
+  </bi-simple-select>

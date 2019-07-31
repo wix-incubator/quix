@@ -12,7 +12,7 @@ sealed case class End(id: String) extends EventData
 
 sealed case class SubQueryStart(id: String) extends EventData
 
-sealed case class SubQueryFields(id: String, fields: List[String]) extends EventData
+sealed case class SubQueryFields(id: String, fields: Seq[String]) extends EventData
 
 sealed case class SubQueryDetails[Code](id: String, code: Code) extends EventData
 
@@ -22,7 +22,7 @@ sealed case class SubQueryError(id: String, message: String) extends EventData
 
 sealed case class Progress(id: String, percentage: Int) extends EventData
 
-sealed case class Row(id: String, values: List[Any]) extends EventData
+sealed case class Row(id: String, values: Seq[Any]) extends EventData
 
 sealed case class Download(id: String, url: String) extends EventData
 
@@ -56,7 +56,7 @@ object SubQueryError {
 }
 
 object SubQueryFields {
-  def apply(id: String, fields: List[String]): ExecutionEvent = ExecutionEvent("fields", new SubQueryFields(id, fields))
+  def apply(id: String, fields: Seq[String]): ExecutionEvent = ExecutionEvent("fields", new SubQueryFields(id, fields))
 }
 
 object Progress {
@@ -68,7 +68,7 @@ object Error {
 }
 
 object Row {
-  def apply(id: String, values: List[Any]): ExecutionEvent = ExecutionEvent("row", new Row(id, values))
+  def apply(id: String, values: Seq[Any]): ExecutionEvent = ExecutionEvent("row", new Row(id, values))
 }
 
 object Pong {

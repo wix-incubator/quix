@@ -12,6 +12,7 @@ import * as Resources from '../../services/resources';
 import {openTempQuery, StateManager} from '../../services';
 import {pluginManager} from '../../plugins';
 import {debounceAsync} from '../../utils';
+import {DB} from '../../config';
 
 enum States {
   Initial,
@@ -35,21 +36,21 @@ export default (app: App, store: Store) => () => ({
       initNgScope(scope)
         .withVM({
           types: pluginManager.getPluginIdsByType('db'),
+          type: null,
+          hideRoot: false,
           search: {
             text: null
           },
-          $export() {
-            return {type: this.type};
-          },
-          $import({type}) {
-            this.type = this.types.includes(type) && type;
-          },
           $init() {
             this.state = new StateManager(States);
-            this.type = this.type || this.types[0];
           }
         })
         .withEvents({
+          onPluginPickerLoad(plugin) {
+            if (!store.getState('db.db')) {
+              cache.db.fetch(plugin);
+            }
+          },
           onFileExplorerLoad() {
             scope.vm.state.set('Visible');
           },
@@ -59,10 +60,17 @@ export default (app: App, store: Store) => () => ({
           },
           onLazyFolderFetch(folder: IFile) {
             const path = [...folder.path, {id: folder.id, name: folder.name}];
-            const [catalog, schema, table] = path.map(({name}) => name);
+            let catalog, schema, table;
+
+            if (scope.vm.hideRoot) {
+              catalog = DB.RootName;
+              [schema, table] = path.map(({name}) => name);
+            } else {
+              [catalog, schema, table] = path.map(({name}) => name);
+            }
 
             return Resources.dbColumns(scope.vm.type, catalog, schema, table)
-              .then(({children: columns}) => convert(columns, [...path]));
+              .then(({children: columns}) => convert(columns, {hideRoot: false}, [...path]));
           },
           onSelectTableRows(table: IFile) {
             const query = pluginManager.getPluginById(scope.vm.type, 'db')
@@ -71,15 +79,13 @@ export default (app: App, store: Store) => () => ({
             openTempQuery(scope, scope.vm.type, query, true);
           },
           onTypeChange(type) {
-            scope.state.save();
-
             scope.vm.search.text = null;
             scope.vm.state.force('Initial');
 
             cache.db.fetch(type);
           },
           onSearchChange(text) {
-            const {state} = scope.vm;
+            const {state, hideRoot} = scope.vm;
 
             if (!text) {
               state.set('Visible', true, {
@@ -94,14 +100,13 @@ export default (app: App, store: Store) => () => ({
             search(text)(res => state
               .set('SearchResult', !!res)
               .set('SearchContent', () => res.length, () => {
-                const filtered = convert(res);
+                const filtered = convert(res, {hideRoot});
 
                 return {dbFiltered: filtered};
               })
             );
           }
-        })
-        .withState('dbSidebar', 'dbSidebar', {});
+        });
 
       scope.getFolderPermissions = (folder: any) => {
         return {
@@ -111,21 +116,21 @@ export default (app: App, store: Store) => () => ({
 
       store.subscribe('db.db', (db: any) => {
         const isInitial = scope.vm.state.is('Initial');
+        
+        if (db) {
+          scope.vm.hideRoot = db.length === 1 && db[0] && db[0].name === DB.RootName;
+          db = db && convert(db, {hideRoot: scope.vm.hideRoot});
+        }
 
         scope.vm.state
           .force('Result', !!db, {db, dbOriginal: db})
           .set('Content', () => !!db.length)
-          .set('Visible', !isInitial);
+          .set('Visible', !isInitial)
       }, scope);
 
       store.subscribe('db.error', (error: any) => {
         scope.vm.state.force('Error', !!error, {error});
       }, scope);
-
-
-      if (!store.getState('db.db')) {
-        cache.db.fetch(scope.vm.type);
-      }
     }
   }
 });
