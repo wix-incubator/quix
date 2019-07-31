@@ -34,6 +34,7 @@
         ng-blur="events.onSearchBlur()"
         ng-mousedown="events.onSearchMousedown()"
         placeholder="{{::placeholder || 'Enter a tag'}}"
+        type="{{options.type}}"
       >
       </input>
     </div>
@@ -41,8 +42,8 @@
 
   <div
     bi-key-nav="buffer"
-    key-nav-options="::{markFirst: true}"
-    key-nav-current-item="keyNavOption"
+    key-nav-options="::{markFirst: !options.freetext}"
+    key-nav-current-item="vm.keyNavOption"
     key-nav-on-select="events.onOptionSelect(item)"
   >
     <ul
@@ -60,9 +61,14 @@
 
       <li
         class="bi-text--sm bi-muted bi-fade-in"
+        ng-class="{'bi-active': vm.search.enabled && options.freetext}"
         ng-if="options.typeahead && !vm.options.filtered.length && !vm.options.deferred.loading"
       >
-        <span ng-if="vm.search.enabled">No matches</span>
+        <span ng-if="vm.search.enabled">
+          <span class="bi-text--600" ng-if="options.freetext">{{vm.search.text}}</span>
+          <span ng-if="!options.freetext">No matches</span>
+        </span>
+
         <span ng-if="!vm.search.enabled">Start typing to see matches</span>
       </li>
 
@@ -73,7 +79,7 @@
       <li
         ng-class="{
           selected: option === model,
-          'bi-active': option === keyNavOption
+          'bi-active': option === vm.keyNavOption
         }"
         ng-repeat="option in buffer"
         ng-click="events.onOptionSelect(option)"

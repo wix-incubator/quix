@@ -2,13 +2,14 @@ import {IScope} from 'angular';
 import {assign, includes, without, uniq} from 'lodash';
 import {initNgScope, createNgModel, inject, utils} from '../../../core';
 
+
 const isNull = value => {
-  return !value && typeof value !== 'boolean';
+  return !value && typeof value !== 'boolean' && typeof value !== 'number';
 }
 
 export class DropdownList {
   private deferredId = 0;
-
+  private readonly $timeout: ng.ITimeoutService = inject('$timeout');
   constructor(
     private readonly scope: IScope,
     private readonly element: any,
@@ -38,11 +39,13 @@ export class DropdownList {
         dropdownWidth: null,
         dropdownMinWidth: 'toggle',
         debounce: 0,
+        type: 'text',
         ...config.options
       })
       .withVM({
         isCustomToggle: false,
         renderedModel: null,
+        keyNavOption: null,
         search: {
           text: null
         },
@@ -59,10 +62,9 @@ export class DropdownList {
         onSearchChange: () => {
           const {vm, options} = this.scope;
 
-          if (!this.config.isArray || options.typeahead) {
-            vm.options.toggle();
+          vm.search.toggle(true);
 
-            vm.search.toggle(true);
+          if (!this.config.isArray || options.typeahead) {
             vm.options.toggle(true);
 
             this.initOptions();
@@ -71,12 +73,18 @@ export class DropdownList {
           }
         },
         onSearchKeypress: ({key}) => {
-          if (key === 'Enter') {
-            this.applySearchText();
+          const {options, vm} = scope;
+
+          if (key === 'Enter' && options.freetext && !vm.keyNavOption) {
+            this.applySearchText(vm.search.text);
           }
         },
         onSearchBlur: () => {
-          this.applySearchText();
+          const {options, vm} = scope;
+
+          if (options.freetext) {
+            this.applySearchText(vm.search.text);
+          }
         },
         onSearchMousedown: () => {
           const {options, vm} = scope;
@@ -97,16 +105,13 @@ export class DropdownList {
           }
         },
         onDropdownHide: () => {
-          const {vm} = this.scope;
-
-          vm.search.toggle(false);
-
           this.render(scope.model);
         },
         onOptionSelect: (...options) => {
           const {vm} = this.scope;
 
           vm.options.toggle(false);
+          vm.search.toggle(false);
 
           if (this.config.isArray) {
             scope.model = uniq([...scope.model, ...options]);
@@ -116,10 +121,14 @@ export class DropdownList {
           } else {
             scope.model = options[0];
           }
+
+          if (scope.onSelect) {
+            this.$timeout(() => scope.onSelect({model: scope.model}));
+          }
         },
         onOptionDelete: option => {
           if (this.config.isArray) {
-             scope.model = without(scope.model, option);
+            scope.model = without(scope.model, option);
 
             this.render(scope.model);
           }
@@ -199,11 +208,16 @@ export class DropdownList {
     this.initOptions();
   }
 
-  private applySearchText() {
-    const {options, vm, events} = this.scope;
+  private applySearchText(text) {
+    const {vm, events} = this.scope;
 
-    if (this.config.isArray && options.freetext && vm.search.text) {
-      events.onOptionSelect(...vm.search.text.split(','));
+    if (vm.search.enabled && !isNull(text)) {
+      if (this.config.isArray) {
+        const values: string[] | number[] = typeof text === 'string' ?text.split(',') : [text];
+        events.onOptionSelect(...values);
+      } else {
+        events.onOptionSelect(text);
+      }
     }
   }
 
@@ -216,6 +230,7 @@ export class DropdownList {
 
     vm.options.filtered = collection && collection.filter(option => {
       const renderedOption = biOptions.render(option);
+      // tslint:disable-next-line: restrict-plus-operands
       const renderedOptionLowerCase = ((renderedOption || '') + '').toLowerCase();
       let falsy = false;
 
@@ -231,9 +246,10 @@ export class DropdownList {
   }
 
   public renderToggle() {
-    const{scope} = this;
+    const {scope} = this;
     const {biOptions} = this.controllers;
-    const {vm, placeholder} = scope;
+    const {vm, placeholder, options} = scope;
+    const {type} = options;
     let html;
 
     if (this.transclude.isSlotFilled('toggle')) {
@@ -257,12 +273,14 @@ export class DropdownList {
     } else {
       html = inject('$compile')(`
         <input
-          type="text"
+          type="${type}"
           class="bi-input bi-grow"
           ng-model="vm.search.text"
           ng-model-options="::{debounce: options.debounce}"
           ng-change="events.onSearchChange($event)"
           ng-mousedown="events.onSearchMousedown()"
+          ng-keydown="events.onSearchKeypress($event)"
+          ng-blur="events.onSearchBlur()"
           ng-disabled="::readonly"
           ng-required="vm.required"
           ng-readonly="::!options.typeahead"
