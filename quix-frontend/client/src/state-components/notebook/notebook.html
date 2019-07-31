@@ -30,6 +30,7 @@
           ng-disabled="!permissions.addNote"
           ng-click="permissions.addNote && events.onNoteAdd(vm.noteTypes[0])"
           data-hook="notebook-add-note"
+          tabindex="-1"
         >
           <i class="bi-icon--sm">add</i>
           <span>Add note</span>
@@ -45,6 +46,7 @@
               class="bi-button--primary"
               ng-disabled="!permissions.addNote"
               data-hook="notebook-add-note-dropdown"
+              tabindex="-1"
             >
               <i class="bi-icon--sm">add</i>
               <span>Add note</span>
