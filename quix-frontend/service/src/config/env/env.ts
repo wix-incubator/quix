@@ -129,7 +129,7 @@ const getModuleSettings = (moduleName: string, globalEnv: any) => {
 
   if (!Object.values(ModuleEngineType).includes(engine)) {
     throw new Error(
-      `Bad configuration. Missing or bad 'engine' declreation for module '${moduleName}'. Possible values: ${Object.values(
+      `Bad configuration. Missing or bad 'engine' declaration for module '${moduleName}'. Possible values: ${Object.values(
         ModuleEngineType,
       ).join(',')}`,
     );
@@ -149,7 +149,7 @@ const getModuleSettings = (moduleName: string, globalEnv: any) => {
 
   if (!syntax) {
     throw new Error(
-      `Bad configuration. Missing 'syntax' declreation for module '${moduleName}'`,
+      `Bad configuration. Missing 'syntax' declaration for module '${moduleName}'`,
     );
   }
   return {syntax, engine};
