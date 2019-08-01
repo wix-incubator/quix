@@ -8,19 +8,20 @@ bi-tags {
   @include flex(column);
 
   .bi-tags-container {
-    display: flex;
-    min-height: 36px;
-    padding: 5px 5px 0 5px;
-    background: $white;
-    height: auto;
+    display: flex !important;
+    min-height: 36px !important;
+    padding: 5px 5px 0 5px !important;
+    background: $white !important;
+    height: auto !important;
   }
 
   .bi-tags-input {
-    min-width: 50px;
-    height: 25px;
-    padding: 0 5px 0 10px;
-    border: 0;
-    background-color: transparent;
+    min-width: 50px !important;
+    height: 25px !important;
+    margin: 0 5px 5px 0 !important;
+    padding: 0 10px !important;
+    border: 0 !important;
+    background-color: transparent !important;
   }
 
   .bi-tags-tag {
@@ -46,6 +47,10 @@ bi-tags {
       margin-right: -4px;
       font-size: 10px;
       font-weight: bold;
+
+      &:hover {
+        background-color: darken($grey--200, 5) !important;
+      }
     }
   }
 

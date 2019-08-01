@@ -1,4 +1,3 @@
-import {omit} from 'lodash';
 import {IItemDef, IPathItemDef} from './';
 import {Item, Folder, File} from './file-explorer-models';
 
@@ -17,11 +16,27 @@ export function goToFile(fileDef: IItemDef, folder: Folder): File {
   return folder.getFileById(fileDef.id) || folder.getFolderById(fileDef.id);
 }
 
+export function addFolder(folder: Folder, {id, name, lazy, path, ...data}: IItemDef, options: any): Folder {
+  const childFolder = folder.addFolder(id, name, data)
+    .setLazy(lazy);
+
+  if (options.expandAllFolders && !lazy) {
+    childFolder.toggleOpen(true);
+  }
+
+  return childFolder;
+}
+
+export function addFile(folder: Folder, {id, name, type, path, ...data}: IItemDef): File {
+  return folder.addFile(id, name, type, data);
+}
+
 /**
  * Creates a tree structure from a file definition array.
  */
-export function defToTree(items: IItemDef[]): Folder {
+export function defToTree(items: IItemDef[], options: any): Folder {
   const root = new Folder(null, null);
+
   const itemsMap = items.reduce((res, item: IItemDef) => {
     res[item.id] = item;
     return res;
@@ -33,7 +48,7 @@ export function defToTree(items: IItemDef[]): Folder {
     (item.path || []).forEach((parent) => {
       const id = getId(parent);
 
-      folder = folder.getFolderById(id) || folder.addFolder(id, itemsMap[id].name, omit(itemsMap[id], 'id', 'name', 'type', 'path'));
+      folder = folder.getFolderById(id) || addFolder(folder, itemsMap[id], options);
 
       if (item.type !== 'folder') {
         folder.toggleHasFileLeaf(true);
@@ -42,10 +57,10 @@ export function defToTree(items: IItemDef[]): Folder {
 
     if (item.type === 'folder') {
       if (!folder.getFolderById(item.id)) {
-        folder.addFolder(item.id, itemsMap[item.id].name, omit(itemsMap[item.id], 'id', 'name', 'type', 'path')).setLazy(item.lazy);
+        addFolder(folder, item, options);
       }
     } else {
-      folder.addFile(item.id, item.name, item.type, omit(itemsMap[item.id], 'id', 'name', 'type', 'path'));
+      addFile(folder, item);
     }
   });
 
@@ -56,20 +71,38 @@ export function defToTree(items: IItemDef[]): Folder {
  * Creates a file definition array from a tree.
  */
 export function treeToDef(item: Item, path = [], res: IItemDef[] = []): IItemDef[] {
-  if (item instanceof File || (item as Folder).isEmpty()) {
-    res.push({
-      id: item.getId(),
-      name: item.getName(),
-      type: item.getType(),
-      path,
-      ...item.getData()
-    });
-  } else {
+  if (item.getId()) {
+    if (item instanceof Folder) {
+      res.push({
+        id: item.getId(),
+        name: item.getName(),
+        type: item.getType(),
+        path,
+        lazy: item.isLazy(),
+        ...item.getData(),
+      });
+    } else {
+      res.push({
+        id: item.getId(),
+        name: item.getName(),
+        type: item.getType(),
+        path,
+        ...item.getData(),
+      });
+    }
+  }
+
+  if (item instanceof Folder) {
+    path = !item.getId() ? path : [
+      ...path,
+      ...[{
+        id: item.getId(),
+        name: item.getName()
+      }]
+    ];
+
     (item as Folder).getFolders().forEach(folder => {
-      treeToDef(folder, path.concat([{
-        id: folder.getId(),
-        name: folder.getName()
-      }]), res);
+      treeToDef(folder, path, res);
     });
 
     (item as Folder).getFiles().forEach(file => treeToDef(file, path, res));

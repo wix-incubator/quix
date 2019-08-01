@@ -1,5 +1,6 @@
 package quix.web
 
+
 import org.asynchttpclient.Dsl.asyncHttpClient
 import org.asynchttpclient.ws.{WebSocket, WebSocketListener, WebSocketUpgradeHandler}
 import quix.api.execute.{ExecutionEvent, StartCommand}
@@ -10,30 +11,43 @@ import scalaj.http.Http
 trait E2EContext extends StringJsonHelpersSupport {
   val c = asyncHttpClient()
 
-  def get[T: Manifest](url: String): T = {
-    Http("http://localhost:8888/" + url).asString.body.as[T]
+  val jettyPort = "8888"
+
+  def get[T: Manifest](url: String, port: String = jettyPort): T = {
+    Http(s"http://localhost:$port/" + url).asString.body.as[T]
   }
 
-  def getResponse(url: String) = {
-    Http("http://localhost:8888" + url).asString
+  def getResponse(url: String, port: String = jettyPort) = {
+    Http(s"http://localhost:$port" + url).asString
   }
 
-  def execute(sql: String, session: Map[String, String] = Map.empty) =
-    startSocket(true, ExecutionEvent("execute", StartCommand[String](sql, session)).asJsonStr)
+  def execute(sql: String, session: Map[String, String] = Map.empty,
+              module: String, port: String = jettyPort) = {
+    startSocket(true, List(ExecutionEvent("execute", StartCommand[String](sql, session)).asJsonStr), module, port)
+  }
 
-  def send(text: String) = startSocket(false, text)
+  def send(text: String,
+           module: String, port: String = jettyPort) = {
+    startSocket(false, List(text), module, port)
+  }
 
-  def runAndDownload(sql: String) =
-    startSocket(false, ExecutionEvent("execute", StartCommand[String](sql, Map("mode" -> "download"))).asJsonStr)
+  def runAndDownload(sql: String, module: String, port: String = jettyPort) = {
+    startSocket(false,
+      List(ExecutionEvent("execute", StartCommand[String](sql, Map("mode" -> "download"))).asJsonStr),
+      module,
+      port
+    )
+  }
 
-  def startSocket(awaitFinish: Boolean, texts: String*) = {
-    val listener = new MyListener(texts: _*)
+
+  def startSocket(awaitFinish: Boolean, texts: List[String], module: String, port: String) = {
+    val listener = new MyListener(texts: List[String])
 
     val handler = new WebSocketUpgradeHandler.Builder().addWebSocketListener(listener).build()
 
-    c.prepareGet("ws://localhost:8888/api/v1/execute/sql").execute(handler)
+    c.prepareGet(s"ws://localhost:$port/api/v1/execute/$module").execute(handler)
 
-    while(listener.messages.isEmpty)
+    while (listener.messages.isEmpty)
       Thread.sleep(10)
 
     if (awaitFinish) {
@@ -45,7 +59,7 @@ trait E2EContext extends StringJsonHelpersSupport {
   }
 }
 
-class MyListener(payloads: String*) extends WebSocketListener with StringJsonHelpersSupport {
+class MyListener(payloads: List[String]) extends WebSocketListener with StringJsonHelpersSupport {
 
   import scala.collection.JavaConverters._
 

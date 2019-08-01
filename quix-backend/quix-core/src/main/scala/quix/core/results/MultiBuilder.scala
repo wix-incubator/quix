@@ -60,7 +60,7 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
     consumer.write(SubQueryError(queryId, e.getMessage))
   }
 
-  def sendColumns(queryId: String, names: List[BatchColumn]) = {
+  def sendColumns(queryId: String, names: Seq[BatchColumn]) = {
     val sentColumns = sentColumnsPerQuery.contains(queryId)
     if (!sentColumns && names.nonEmpty) {
       sentColumnsPerQuery += queryId

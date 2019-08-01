@@ -19,9 +19,27 @@ sealed case class Kolumn(name: String,
                          `type`: String = "column")
 
 trait Db {
-  def catalogs: Task[List[Catalog]]
+  def getCatalogs: Task[List[Catalog]]
 
-  def autocomplete: Task[Map[String, List[String]]]
+  def getAutocomplete: Task[Map[String, List[String]]]
 
-  def table(catalog: String, schema: String, table: String): Task[Table]
+  def getTable(catalog: String, schema: String, table: String): Task[Table]
+
+  def search(query: String): Task[List[Catalog]]
+}
+
+trait Catalogs {
+  def fast: Task[List[Catalog]]
+
+  def full: Task[List[Catalog]]
+}
+
+trait Autocomplete {
+  def fast: Task[Map[String, List[String]]]
+
+  def full: Task[Map[String, List[String]]]
+}
+
+trait Tables {
+  def get(catalog: String, schema: String, table: String): Task[Table]
 }

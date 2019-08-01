@@ -2,19 +2,21 @@ import template from './header.html';
 import './header.scss';
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 import {IScope} from './header-types';
 import {HeaderMenu} from '../../config';
 import * as AppActions from '../../store/app/app-actions';
 
-const listenToNavChange = (scope: IScope, app: Instance, store: Store) => {
-  const states = HeaderMenu.reduce((res, item) => {
+const listenToNavChange = (scope: IScope, app: App, store: Store) => {
+  const {navItems} = scope.vm;
+
+  const states = navItems.reduce((res, item) => {
     return [...res, ...(item.activeStates || [item.targetState])];
   }, []);
 
   app.getNavigator()
     .listen(states, 'success', async (params, state) => {
-      const menuItem = HeaderMenu.find(item => {
+      const menuItem = navItems.find(item => {
         return (item.targetState === state || (item.activeStates && item.activeStates.indexOf(state) !== -1));
       });
 
@@ -25,7 +27,7 @@ const listenToNavChange = (scope: IScope, app: Instance, store: Store) => {
     .otherwise(() => scope.vm.currentState = null);
 }
 
-export default (app: Instance, store: Store) => () => ({
+export default (app: App, store: Store) => () => ({
   restrict: 'E',
   template,
   scope: {},
@@ -35,7 +37,7 @@ export default (app: Instance, store: Store) => () => ({
         .withVM({
           searchText: null,
           currentState: null,
-          navItems: HeaderMenu
+          navItems: HeaderMenu(scope)
         })
         .withEvents({
           onSearch() {

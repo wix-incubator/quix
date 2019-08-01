@@ -4,13 +4,17 @@ bi-select,
 bi-simple-select {
   display: inline-flex;
 
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
   bi-dropdown {
     &.bs-custom-toggle {
-      .bd-content {
-        [ng-transclude=''] {
-          .bi-dropdown-menu {
-            border-top: 1px solid $grey--300;
-          }
+      bi-toggle {
+        i {
+          position: unset;
         }
       }
     }

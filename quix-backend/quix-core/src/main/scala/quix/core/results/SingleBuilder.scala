@@ -2,7 +2,7 @@ package quix.core.results
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, Builder, Batch, BatchColumn}
+import quix.api.execute.{ActiveQuery, Batch, BatchColumn, Builder}
 
 import scala.collection.mutable.ListBuffer
 
@@ -18,20 +18,20 @@ class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
     failureCause = Option(e)
   }
 
-  override def startSubQuery(queryId: String, code: Code, results: Batch) = Task {
-    addSubQuery(queryId, results)
-  }
+  override def startSubQuery(queryId: String, code: Code, results: Batch) = handleBatch(results)
 
-  override def addSubQuery(queryId: String, results: Batch) = Task {
-    results.error foreach { error =>
+  override def addSubQuery(queryId: String, results: Batch) = handleBatch(results)
+
+  def handleBatch(batch: Batch) : Task[Unit] = Task {
+    batch.error foreach { error =>
       failureCause = Option(new RuntimeException(error.message))
     }
 
     for {
-      newHeaders <- results.columns if headers.isEmpty
+      newHeaders <- batch.columns if headers.isEmpty
     } headers ++= newHeaders
 
-    rows ++= results.data
+    rows ++= batch.data
   }
 
   override def endSubQuery(queryId: String) = Task.unit
@@ -49,4 +49,6 @@ class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
   override def error(queryId: String, e: Throwable) = Task {
     failureCause = Option(e)
   }
+
+  def columns = headers.toList
 }

@@ -10,7 +10,7 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
 } from 'typeorm';
-import {INote, NoteType, IBaseNote} from 'shared/entities/note';
+import {INote, IBaseNote} from 'shared/entities/note';
 import {DbNotebook} from './dbnotebook.entity';
 import {dbConf} from '../config/db-conf';
 
@@ -27,7 +27,7 @@ export class DbNote {
   textContent!: string;
 
   @Column(dbConf.shortTextField)
-  type!: NoteType;
+  type!: string;
 
   @Column(dbConf.shortTextField)
   name!: string;
@@ -71,29 +71,16 @@ export const convertDbNote = (dbNote: DbNote): INote => {
     type,
   } = dbNote;
 
-  if (type === NoteType.NATIVE) {
-    return {
-      type,
-      id,
-      content: jsonContent,
-      dateCreated,
-      dateUpdated,
-      name,
-      notebookId,
-      owner,
-    };
-  } else {
-    return {
-      type,
-      id,
-      content: textContent,
-      dateCreated,
-      dateUpdated,
-      name,
-      notebookId,
-      owner,
-    };
-  }
+  return {
+    type,
+    id,
+    content: textContent,
+    dateCreated,
+    dateUpdated,
+    name,
+    notebookId,
+    owner,
+  };
 };
 
 export const convertNoteToDb = (note: INote): DbNote => {
@@ -111,8 +98,8 @@ export const convertNoteToDb = (note: INote): DbNote => {
   return new DbNote({
     type,
     id,
-    textContent: note.type === NoteType.PRESTO ? note.content : '',
-    jsonContent: note.type === NoteType.NATIVE ? note.content : {},
+    textContent: note.content,
+    jsonContent: {},
     name,
     notebookId,
     owner,

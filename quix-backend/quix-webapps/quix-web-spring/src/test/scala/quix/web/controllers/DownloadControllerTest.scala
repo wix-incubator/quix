@@ -6,11 +6,13 @@ import org.junit.runner.RunWith
 import org.junit.{Before, Test}
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT
+import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.context.{TestContextManager, TestPropertySource}
 import quix.web.{E2EContext, MockBeans, SpringConfigWithTestExecutor}
 
 @RunWith(classOf[SpringRunner])
+@DirtiesContext
 @SpringBootTest(webEnvironment = DEFINED_PORT, classes = Array(classOf[SpringConfigWithTestExecutor]))
 @TestPropertySource(locations = Array("classpath:test.properties"))
 class DownloadControllerTest extends E2EContext {
@@ -33,7 +35,7 @@ class DownloadControllerTest extends E2EContext {
   @Test
   def sendSingleQuery(): Unit = {
     executor.withResults(List(List("1")), columns = List("_col0"), queryId = "query-id-1")
-    val listener = runAndDownload("select 1")
+    val listener = runAndDownload("select 1", "presto-prod")
 
     listener.await("""{"event":"query-download","data":{"id":"query-id-1","url":"/api/download/query-id-1"}}""")
 
@@ -48,7 +50,7 @@ class DownloadControllerTest extends E2EContext {
       .withResults(List(List("1")), columns = List("foo"), queryId = "query-id-1")
       .withResults(List(List("2")), columns = List("bar"), queryId = "query-id-2")
 
-    val listener = runAndDownload("select 1 as foo;\nselect 2 as bar;")
+    val listener = runAndDownload("select 1 as foo;\nselect 2 as bar;", "presto-dev")
 
     listener.await("""{"event":"query-download","data":{"id":"query-id-1","url":"/api/download/query-id-1"}}""")
     val first = getResponse("/api/download/query-id-1")

@@ -10,7 +10,7 @@ import 'angular-ui-router';
 import '../core';
 import '../ui';
 
-export default angular.module('bi.app', [
+export const ngApp = angular.module('bi.app', [
   'ngResource',
   'bi.core',
   'bi.ui',

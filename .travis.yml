@@ -31,6 +31,7 @@ matrix:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - npm test
     - stage: test
+      dist: bionic
       name: "Frontend"
       language: node_js
       env: PROJECT=service
@@ -39,13 +40,6 @@ matrix:
       cache: npm
       services:
         - mysql
-      addons:
-        apt:
-          sources:
-            - mysql-5.7-trusty
-          packages:
-            - mysql-server
-            - mysql-client
       before_install:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS quixtest;'
       install:

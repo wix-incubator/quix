@@ -24,6 +24,10 @@ bi-app {
   .bi-app-sidebar {
     width: 300px;
 
+    .bi-app-sidebar-toggle {
+      margin-right: -6px;
+    }
+
     .bi-section-content {
       padding: 0;
     }

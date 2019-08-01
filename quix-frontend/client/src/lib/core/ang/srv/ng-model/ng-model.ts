@@ -60,7 +60,6 @@ export class ModelConf {
   public doThen;
 
   public opts = {
-    keepReference: false,
     watchDeep: false,
     log: false,
     feedBack: true
@@ -101,11 +100,6 @@ export class ModelConf {
     return this;
   }
 
-  keepReference(val: boolean): ModelConf {
-    this.opts.keepReference = val;
-    return this;
-  }
-
   watchDeep(val: boolean): ModelConf {
     this.opts.watchDeep = val;
     return this;
@@ -128,6 +122,8 @@ export class ModelConf {
 }
 
 export class Model<T extends OptionalCloneable<T>> {
+  private feedBack = false;
+
   constructor(private readonly scope: IScope<T>, private readonly ngModel: angular.INgModelController, private readonly conf: ModelConf) {
     this.initFormat();
 
@@ -141,73 +137,89 @@ export class Model<T extends OptionalCloneable<T>> {
     }));
   }
 
-  private shouldKeepReference(model) {
-    return _.isPlainObject(model) && (this.conf.opts.keepReference || (this.ngModel.$modelValue && this.ngModel.$modelValue.$id && this.conf.opts.keepReference !== false));
-  }
-
   private initFormat() {
     this.ngModel.$formatters.push(model => {
       if (this.conf.opts.log) {
         // tslint:disable-next-line: no-console
-        console.log('Formatting', model);
+        console.log('Formatting-from', model);
       }
 
-      model = tools.defaultsDeep(model, this.conf.template || model);
+      let res = tools.defaultsDeep(model, this.conf.template || model);
 
-      return this.conf.formatter ? this.conf.formatter(model) : model;
+      res = this.conf.formatter ? this.conf.formatter(model) : model;
+
+      if (this.conf.opts.log) {
+        // tslint:disable-next-line: no-console
+        console.log('Formatting-to', res);
+      }
+
+      return res;
     });
   }
 
   private initRender(then) {
     this.ngModel.$render = () => {
-      if (this.shouldKeepReference(this.ngModel.$viewValue)) {
-        this.scope.model = _.assign(this.ngModel.$modelValue || {}, this.ngModel.$viewValue);
-        this.ngModel.$setViewValue(this.scope.model);
-      } else {
-        this.scope.model = this.ngModel.$viewValue;
-      }
+      this.scope.model = this.ngModel.$viewValue;
 
       if (this.conf.renderer) {
         this.conf.renderer(this.scope.model);
       }
+
+      if (this.conf.opts.log) {
+        // tslint:disable-next-line: no-console
+        console.log('Rendering', this.scope.model);
+      }
+
+      this.feedBack = false;
 
       then();
     };
   }
 
   private initWatch() {
-    let first = true;
+    let isFirst = true;
 
     this.scope.$watch('model', (model, prevModel) => {
       const data = this.scope.model && this.scope.model.$clone ? this.scope.model.$clone() : _.clone(this.scope.model);
 
-      if (first) {
-        if (this.conf.opts.feedBack) {
-          this.ngModel.$setViewValue(data);
-        }
+      if (this.conf.opts.log) {
+        // tslint:disable-next-line: no-console
+        console.log('Watching', this.scope.model, data, {isFirst, feedBack: this.feedBack});
+      }
 
-        this.ngModel.$setPristine();
-      } else {
+
+      if (this.feedBack || (isFirst && this.conf.opts.feedBack)) {
         this.ngModel.$setViewValue(data);
+      }
+
+      if (isFirst) {
+        this.ngModel.$setPristine();
       }
 
       if (this.conf.watcher) {
         this.conf.watcher(model, prevModel);
       }
 
-      first = false;
+      isFirst = false;
+      this.feedBack = true;
     }, !!this.conf.opts.watchDeep);
   }
 
   private initParse() {
     this.ngModel.$parsers.push(model => {
-      const data = this.conf.parser ? this.conf.parser(model) : model;
+      if (this.conf.opts.log) {
+        // tslint:disable-next-line: no-console
+        console.log('Parsing-from', model);
+      }
 
-      if (this.shouldKeepReference(model)) {
-        return _.assign(this.ngModel.$modelValue, data);
-      } 
-        return data;
-      
+      const res = this.conf.parser ? this.conf.parser(model) : model;
+
+      if (this.conf.opts.log) {
+        // tslint:disable-next-line: no-console
+        console.log('Parsing-to', res);
+      }
+
+      return res;
     });
   }
 

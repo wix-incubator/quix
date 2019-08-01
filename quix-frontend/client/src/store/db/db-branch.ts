@@ -1,19 +1,12 @@
 import {combineReducers} from 'redux';
 import {IBranch} from '../../lib/store';
-import {Instance} from '../../lib/app';
+import {App} from '../../lib/app';
 
-export default (app: Instance): IBranch => register => {
+export default (app: App): IBranch => register => {
   function db(state: any[] = null, action) {
     switch (action.type) {
       case 'db.set':
         return action.db;
-      case 'db.addColumns':
-        return state.map(item => {
-          if (item.id === action.id) {
-            item.lazy = false;
-          }
-          return item;
-        }).concat(action.columns);
       default:
     }
 

@@ -7,6 +7,10 @@
     position: absolute;
     top: 0;
     right: 0;
+
+    &.bm-toggle-custom {
+      position: unset;
+    }
   }
 
   &.bm--maximized {
@@ -30,6 +34,10 @@
       top: 15px;
       right: 15px;
       z-index: 1000;
+
+      &.bm-toggle-custom {
+        position: unset;
+      }
     }
   }
 

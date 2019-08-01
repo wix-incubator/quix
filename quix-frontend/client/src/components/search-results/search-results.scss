@@ -8,7 +8,18 @@ quix-search-results {
   }
 
   .bi-section {
+    padding-top: 15px;
     box-shadow: inset 0 1px 6px rgba(0, 0, 0, .05);
+
+    .bi-section-header,
+    .bi-section-controls,
+    .bi-section-content-inner {
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 0;
+      padding-right: 0;
+      width: 1024px;
+    }
   }
 
   .quix-search-pagination {

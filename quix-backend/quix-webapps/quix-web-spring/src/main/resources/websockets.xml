@@ -8,8 +8,7 @@
         http://www.springframework.org/schema/websocket/spring-websocket.xsd">
 
     <websocket:handlers allowed-origins="*">
-        <websocket:mapping path="/api/v1/execute/sql" handler="initPrestoController"/>
-
+        <websocket:mapping path="/api/v1/execute/*" handler="initSqlStreamingController"/>
         <websocket:handshake-handler ref="initDefaultHandshakeHandler"/>
 
         <websocket:handshake-interceptors>

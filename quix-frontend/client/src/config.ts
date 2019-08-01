@@ -1,7 +1,12 @@
-import {Instance} from './lib/app';
+import {App} from './lib/app';
 import {Store} from './lib/store';
 import {isOwner} from './services';
 import {waitForEntity} from './store';
+
+export const DB = {
+  SampleLimit: 1000,
+  RootName: '__root',
+};
 
 export const Search = {
   ResultsPerPage: 20,
@@ -30,12 +35,12 @@ export const ExamplesNotebook = {
   } as any
 };
 
-export const HeaderMenu = [{
+export const HeaderMenu = scope => [{
   title: 'My notebooks',
   targetState: 'files',
   activeStates: ['files', 'notebook'],
-  activeCondition: (app: Instance, store: Store, state: string, id: string) => 
-    waitForEntity(store, id, state === 'files' ? 'folder' : 'notebook').then(entity => isOwner(app, entity))
+  activeCondition: (app: App, store: Store, state: string, id: string) => 
+    waitForEntity(scope, store, id, state === 'files' ? 'folder' : 'notebook').then(entity => isOwner(app, entity))
 }, {
   title: 'Favorites',
   targetState: 'favorites',

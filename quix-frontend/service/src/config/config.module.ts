@@ -6,10 +6,15 @@ const configServiceProvider = {
   useClass: DefaultConfigService,
 };
 
+const globalEnvProvider = {
+  provide: 'GLOBAL_ENV',
+  useValue: process.env,
+};
+
 @Module({
   imports: [],
   controllers: [],
-  providers: [configServiceProvider],
+  providers: [configServiceProvider, globalEnvProvider],
   exports: [configServiceProvider],
 })
 export class ConfigModule {}

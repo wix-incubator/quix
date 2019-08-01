@@ -3,8 +3,8 @@ import './users.scss';
 
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance as App} from '../../lib/app';
-import {IStateComponentConfig} from '../../lib/app/services/plugin-instance';
+import {App as App} from '../../lib/app';
+import {IStateComponentConfig} from '../../lib/app/services/plugin-builder';
 import {cache} from '../../store';
 import {initEvents} from '../../services/scope';
 import {IScope} from './users-types';
@@ -27,7 +27,7 @@ export default (app: App, store: Store) => ({
     store.subscribe('users', ({users, error}) => {
       scope.users = users;
       scope.error = error;
-    });
+    }, scope);
   },
   link: scope => {
     const conf = initNgScope(scope)

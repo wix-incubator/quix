@@ -1,5 +1,6 @@
 @import 'colors.def';
 @import 'animations.def';
+@import 'defaults.def';
 
 @mixin disabled($theme) {
   &.bi-disabled,
@@ -59,8 +60,6 @@
 }
 
 @mixin hover($theme, $color: null) {
-  transition: color .2s, background-color .2s, border-color .2s;
-
   &:hover:not([disabled='disabled']) {
     @if ($theme == 'lighter') {
       background-color: $lighter-hover-bg;
@@ -75,5 +74,18 @@
       background-color: $darker-hover-bg;
       color: $color or $darker-color;
     }
+  }
+}
+
+@mixin elevate() {
+  transition: box-shadow .3s;
+
+  &:hover {
+    box-shadow: 0 4px 8px lighten($grey--300, 3);
+  }
+
+  &:active {
+    transition: box-shadow .2s;
+    box-shadow: 0 2px 8px lighten($grey--300, 3);
   }
 }

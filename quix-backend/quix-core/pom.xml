@@ -61,6 +61,13 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.prestosql/presto-parser -->
+        <dependency>
+            <groupId>io.prestosql</groupId>
+            <artifactId>presto-parser</artifactId>
+            <version>306</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->
         <dependency>
             <groupId>org.specs2</groupId>

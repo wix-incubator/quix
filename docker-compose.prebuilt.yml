@@ -12,7 +12,7 @@ services:
       - AUTH_SECRET
       - AUTH_TYPE
     env_file:
-      - env_example
+      - env-example
   frontend:
     image: wixquix/quix-frontend:release-0.2.7
     ports:
@@ -34,7 +34,7 @@ services:
       - AUTH_SECRET
       - AUTH_TYPE
     env_file:
-      - env_example
+      - env-example
   db:
     image: "mysql:5.7"
     restart: always
@@ -42,7 +42,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
       MYSQL_DATABASE: "quix"
     volumes:
-      - "db_volume:$DB_VOLUME_PATH"
+      - "db_volume:/var/lib/mysql"
   presto:
     image: "starburstdata/presto"
     ports:

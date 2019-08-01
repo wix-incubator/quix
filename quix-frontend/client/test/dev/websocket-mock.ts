@@ -51,7 +51,7 @@ const failEvents = [
 export const setupMockWs = (app: express.Express) => {
   const router = express.Router();
 
-  router.ws('/sql', (ws, req) => {
+  router.ws('/presto', (ws, req) => {
     ws.on('message', async (msg) => {
       const payload: {data: {code: string}; event: string} = JSON.parse(msg.toString());
       const match = payload.data.code.match(/timeout=(\d+)/)
@@ -69,7 +69,7 @@ export const setupMockWs = (app: express.Express) => {
     });
   });
 
-  app.use('/fakeBackend/api/v1/execute/', router)
+  app.use('/mock/api/v1/execute/', router)
 }
 
 const promisifiedSend = (WS: WebSocket) => (data: any) => new Promise((resolve, reject) => {

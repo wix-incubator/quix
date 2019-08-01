@@ -31,8 +31,13 @@
     white-space: nowrap;
     cursor: pointer;
 
+    &.bi-active:not([disabled]),
+    &:hover:not([disabled]) {
+      background-color: $grey--50;
+    }
+
     &:not([disabled='disabled']) {
-      &.bi-active {
+      &.selected {
         &:before {
           @extend %icon;
 

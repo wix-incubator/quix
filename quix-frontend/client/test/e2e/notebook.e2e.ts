@@ -46,7 +46,7 @@ describe('Notebook ::', () => {
 
   it('should display notes if notebook has at least one note', async () => {
     await gotoEditableNotebook();
-    
+
     expect(await testkit.hasNotes()).to.be.true;
   });
 
@@ -72,7 +72,10 @@ describe('Notebook ::', () => {
     await gotoEditableNotebook();
 
     expect(await testkit.numOfNotes()).to.equal(1);
+    await testkit.clickAddNoteDropdown();
+    await driver.sleep(500);
     await testkit.clickAddNote();
+
     expect(await testkit.numOfNotes()).to.equal(2);
 
     const noteTestkit = await testkit.getNoteTestkit(2);
@@ -152,17 +155,17 @@ describe('Notebook ::', () => {
       describe('Select ::', () => {
         it('should allow to select note if user is owner', async () => {
           await gotoEditableNotebook();
-  
+
           const noteTestkit = await testkit.getNoteTestkit(1);
-  
+
           expect(await noteTestkit.isSelectEnabled()).to.be.true;
         });
-  
+
         it('should not allow to select note if user is not owner', async () => {
           await gotoReadonlyNotebook();
-  
+
           const noteTestkit = await testkit.getNoteTestkit(1);
-  
+
           expect(await noteTestkit.isSelectEnabled()).to.be.false;
         });
       });
@@ -170,19 +173,19 @@ describe('Notebook ::', () => {
       describe('Delete ::', () => {
         it('should allow to delete note if user is owner', async () => {
           await gotoEditableNotebook();
-  
+
           const noteTestkit = await testkit.getNoteTestkit(1);
           const actionsTestkit = await noteTestkit.getActionsTestkit();
-  
+
           expect(await actionsTestkit.isDeleteEnabled()).to.be.true;
         });
-  
+
         it('should not allow to delete note if user is not owner', async () => {
           await gotoReadonlyNotebook();
-  
+
           const noteTestkit = await testkit.getNoteTestkit(1);
           const actionsTestkit = await noteTestkit.getActionsTestkit();
-  
+
           expect(await actionsTestkit.isDeleteEnabled()).to.be.false;
         });
       });

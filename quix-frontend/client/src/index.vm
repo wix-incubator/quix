@@ -6,7 +6,7 @@
     <link type="image/png" href="${clientTopology.staticsBaseUrl}assets/favicon.png" rel="shortcut icon">
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:200,300,400,600,700" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="${clientTopology.staticsBaseUrl}app#if(!${debug}).min#{end}.css">
+    <link rel="stylesheet" href="${clientTopology.staticsBaseUrl}app#if(!${mode.debug}).min#{end}.css">
   </head>
   <body class="bi-c" ng-controller="app">
     <bi-app app="app">
@@ -15,20 +15,15 @@
       </header>
 
       <div class="quix-splash bi-c bi-s-v--x3 bi-fade-in">
-        <img src="${clientTopology.staticsBaseUrl}assets/logo_big.png">
+        <img class="quix-splash-logo" src="${clientTopology.staticsBaseUrl}assets/logo_big.png">
         <span class="bi-center bi-text--ui bi-text--large bi-muted">Loading...</span>
       </div>
     </bi-app>
 
     <script>
-      window.quixConfig = {
-        staticsBaseUrl: '${clientTopology.staticsBaseUrl}',
-        quixBackendUrl: '${clientTopology.quixBackendUrl}',
-        googleClientId: '${clientTopology.googleClientId}',
-        basePath: '${clientTopology.basePath}',
-      };
+      window.quixConfig = ${quixConfig};
     </script>
 
-    <script src="${clientTopology.staticsBaseUrl}app.bundle#if(!${debug}).min#{end}.js"></script>
+    <script src="${clientTopology.staticsBaseUrl}app.bundle#if(!${mode.debug}).min#{end}.js"></script>
   </body>
 </html>

@@ -1,7 +1,7 @@
 @import '../../lib/ui//assets/css/def/colors.def';
 
 quix-db-sidebar {
-  bi-file-explorer {
+  bi-file-explorer-static {
     folder-icon {
       margin: 3px 5px 0 0;
     }
@@ -9,5 +9,33 @@ quix-db-sidebar {
     file-icon {
       margin: 3px 5px 0 0;
     }
+  }
+
+  .bi-heading {
+    position: relative;
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      border-bottom: 1px solid $dark-border-color;
+      z-index: 1;
+    }
+
+    toggle {
+      padding: 0 10px;
+      background-color: $dark-bg;
+      z-index: 2;
+    }
+  }
+
+  .quix-db-search {
+    margin: 10px 12px 0 12px;
+  }
+
+  .bi-scroll {
+    padding-bottom: 300px;
   }
 }

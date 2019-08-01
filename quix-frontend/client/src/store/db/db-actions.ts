@@ -9,11 +9,3 @@ export const setError = (error: any, origin: 'user' | 'machine' = 'machine') => 
   error,
   origin
 });
-
-export const addColumns = (id, columns: any[], origin: 'user' | 'machine' = 'machine') => ({
-  type: 'db.addColumns',
-  id,
-  columns,
-  origin
-});
-

@@ -8,6 +8,9 @@ else
   BUILD_TYPE="$2"
 fi
 
+echo GIT RANGE=$GIT_RANGE
+echo BUILD_TYPE=$BUILD_TYPE
+
 declare -A PATTERN_MAP
 
 PATTERN_MAP[client]='^((quix-frontend/(client/|shared/))|\.travis\.yml)'

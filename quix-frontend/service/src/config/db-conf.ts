@@ -1,5 +1,5 @@
 import {ColumnOptions} from 'typeorm';
-import {getEnv} from './env';
+import {getEnv} from './env/env';
 import {FileType} from 'shared/entities/file';
 import {ContentSearch, searchTextType} from 'modules/search/types';
 import {escape} from 'mysql';

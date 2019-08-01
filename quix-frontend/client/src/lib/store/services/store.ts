@@ -277,24 +277,22 @@ export class Store<S = any> {
    * @param branch  e.g. "notebook.folders"
    * @param fn      handler
    */
-  subscribe(branch: string, fn: (state, store?) => void, scope?): Function {
+  subscribe(branch: string, fn: (state, store?) => void, scope): Function {
     const applyScope = scope || inject('$rootScope');
     let state = this.getState(branch);
 
-    scopeUtils.safeApply(applyScope, () => fn(state, this.store));
+    scopeUtils.safeDigest(applyScope, () => fn(state, this.store));
 
     const unsubscribe = this.store.subscribe(() => {
       const newState = this.getState(branch);
 
       if (newState !== state) {
-        scopeUtils.safeApply(applyScope, () => fn(newState, this));
+        scopeUtils.safeDigest(applyScope, () => fn(newState, this));
         state = newState;
       }
     });
 
-    if (scope) {
-      scope.$on('$destroy', unsubscribe);
-    }
+    scope.$on('$destroy', unsubscribe);
 
     return unsubscribe;
   }

@@ -21,8 +21,8 @@ const insertGoogleSdk = () => {
   return insertScript('https://apis.google.com/js/platform.js');
 };
 
-const authenticate = (prefix: string, code?: string) => {
-  const url = (prefix ? prefix : '') + '/api/authenticate' + (code ? `?code=${code}` : '');
+const authenticate = (apiBasePath: string, code?: string) => {
+  const url = (apiBasePath ? apiBasePath : '') + '/api/authenticate' + (code ? `?code=${code}` : '');
   return inject('$resource')(url).get().$promise;
 };
 
@@ -30,20 +30,25 @@ export const init = () => {
   return insertGoogleSdk();
 };
 
-export const login = async (clientId, prefix?: string) => {
+export const login = async (clientId, apiBasePath?: string): Promise<any> => {
   await init();
 
   const deferred = inject('$q').defer();
 
   $(() => gapi.load('auth2', () => {
-    const auth2 = gapi.auth2.init({
-      client_id: clientId,
-      scope: 'email profile',
-    });
+    try {
+      const auth2 = gapi.auth2.init({
+        client_id: clientId,
+        scope: 'email profile',
+      });
 
-    auth2.grantOfflineAccess().then(res => authenticate(prefix, res.code)
-      .then(deferred.resolve)
-      .catch(deferred.reject));
+      auth2.grantOfflineAccess().then(res => authenticate(apiBasePath, res.code)
+        .then(deferred.resolve)
+        .catch(deferred.reject));
+    } catch(e) {
+      console.error(e);
+      deferred.reject(e);
+    }
   }));
 
   return deferred.promise;

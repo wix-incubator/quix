@@ -2,8 +2,8 @@ import template from './base.html';
 
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance as App} from '../../lib/app';
-import {IStateComponentConfig} from '../../lib/app/services/plugin-instance';
+import {App as App} from '../../lib/app';
+import {IStateComponentConfig} from '../../lib/app/services/plugin-builder';
 import {setSearchText, setSearchPage} from '../../store/app/app-actions';
 import {openSearchResults, openTempQuery, closePopup, hasQueuedNotes} from '../../services';
 

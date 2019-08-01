@@ -56,7 +56,7 @@ function sendSocketData(socket, code, user, transformers, mode = 'stream') {
 export class Runner extends srv.eventEmitter.EventEmitter {
   private readonly mode: string;
   private readonly version: number;
-  private readonly baseUrl: string;
+  private readonly executeBaseUrl: string;
   private socket: RunnerSocket;
   private readonly events: RunnerEvents;
   private readonly state = new RunnerState();
@@ -74,7 +74,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
 
     this.mode = options.mode;
     this.version = options.version || 1;
-    this.baseUrl = options.baseUrl;
+    this.executeBaseUrl = options.executeBaseUrl;
     this.events = new RunnerEvents(this);
 
     this.events
@@ -105,7 +105,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
 
       this.getEvents().register('query-download', (data) => {
         if (data.url) {
-          this.fire('downloadFile', `${this.baseUrl}${data.url}`, this, this.getCurrentQuery());
+          this.fire('downloadFile', `${this.executeBaseUrl}${data.url}`, this, this.getCurrentQuery());
         }
       })
 
@@ -274,7 +274,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
   }
 
   public run(code, user?): Runner {
-    this.socket = new RunnerSocket(this.type, this.version, this.baseUrl);
+    this.socket = new RunnerSocket(this.type, this.version, this.executeBaseUrl);
     this.code = code;
 
     initSocket(this.socket, this.events, this.transformers, this.scope, this.logEvents);
@@ -308,15 +308,15 @@ export class Runner extends srv.eventEmitter.EventEmitter {
 export default function create(type: RunnerType, scope, {
   mode = 'stream',
   version = null,
-  baseUrl = config.get().prestoUrl
+  executeBaseUrl = config.get().executeBaseUrl,
 } = {
     mode: 'stream',
     version: null,
-    baseUrl: config.get().prestoUrl
+    executeBaseUrl: config.get().executeBaseUrl,
 }) {
-  if (!baseUrl) {
-    throw new Error('Missing base url definition');
+  if (!executeBaseUrl) {
+    throw new Error('Missing execute url definition');
   }
 
-  return new Runner(type, scope, {mode, version, baseUrl});
+  return new Runner(type, scope, {mode, version, executeBaseUrl});
 }

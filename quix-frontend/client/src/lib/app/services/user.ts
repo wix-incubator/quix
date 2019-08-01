@@ -34,6 +34,7 @@ export class Permission {
 }
 
 const addPrefixSlash = (s: string) => s[0] === '/' ? s : '/' + s;
+
 export class User {
   private email: string;
   private name: string;
@@ -42,8 +43,8 @@ export class User {
   private role: string;
   private readonly permission = new Permission();
 
-  fetch(appId?: string) {
-    return inject('$resource')(`${appId ? addPrefixSlash(appId) : ''}/api/user`).get().$promise
+  fetch(apiBasePath?: string) {
+    return inject('$resource')(`${apiBasePath ? addPrefixSlash(apiBasePath) : ''}/api/user`).get().$promise
       .then(data => this.set(data.payload || data));
   }
 
@@ -52,7 +53,7 @@ export class User {
     this.name = name;
     this.avatar = avatar;
     this.role = role || 'user';
-    this.loggedIn = true;
+    this.loggedIn = null;
 
     return this;
   }
@@ -79,5 +80,9 @@ export class User {
 
   isLoggedIn() {
     return this.loggedIn;
+  }
+
+  toggleLoggedIn(loggedIn) {
+    return this.loggedIn = loggedIn;
   }
 }

@@ -49,16 +49,13 @@ const mocks = {
     createMockNote(id, {id: '1004'}),
     createMockNote(id, {id: '1005'}),
   ], {id}),
-  '/api/favorites': ({id}) => [
+  '/api/favorites': () => [
     createMockFile({id: '100', isLiked: true}),
     createMockFile({id: '101', isLiked: true})
   ],
-  '/api/search/none': () => [],
+  '/api/search/none': () => ({count: 0, notes: []}),
+  '/api/search/500': () => [500, {message: 'Search error'}],
   '/api/search/:text': ({text}) => {
-    if (text === '500') {
-      return [500, {message: 'Search error'}];
-    }
-
     const res = [createMockNote('1'), createMockNote('2'), createMockNote('3')];
     res.forEach(note => note.content = `SELECT
     date_trunc('year', shipdate) as ${text}
@@ -72,9 +69,58 @@ ORDER BY 1
     // return {notes: [], count: 0};
     return {notes: res, count: 365};
   },
-  // '/api/db/explore': () => [500, {message: 'Failed to fetch DB tree'}],
-  // '/api/db/explore': () => [],
-  '/api/db/explore': () => [{
+  // '/api/db/presto/explore': () => [500, {message: 'Failed to fetch DB tree'}],
+  // '/api/db/presto/explore': () => [],
+  '/api/db/:type/explore': ({type}) => {
+    if (type === 'presto') {
+      return [{
+        name: 'catalog',
+        type: 'catalog',
+        children: [{
+          name: 'schema',
+          type: 'schema',
+          children: [{
+            name: 'table_with_a_very_looooooooooooooooong_name',
+            type: 'table',
+            children: []
+          }]
+        }]
+      }, {
+        name: 'catalog2',
+        type: 'catalog',
+        children: []
+      }]
+    } 
+
+    return [{
+      name: '__root',
+      type: 'catalog',
+      children: [{
+        name: 'schema',
+        type: 'schema',
+        children: [{
+          name: 'table_with_a_very_looooooooooooooooong_name',
+          type: 'table',
+          children: []
+        }]
+      }, {
+        name: 'schema2',
+        type: 'schema',
+        children: []
+      }]
+    }];
+  },
+  '/api/db/:type/explore/:catalog/:schema/:table': ({table}) => ({
+    children: [{name: `column_of_${table}`, dataType: 'varchar'}]
+  }),
+  '/api/db/:type/autocomplete': () => ({
+    catalogs: ['catalog', 'catalog2'],
+    schemas: ['schema'],
+    tables: ['table'],
+    columns: ['column'],
+  }),
+  // '/api/db/:type/search': () => [],
+  '/api/db/:type/search': () => [{
     name: 'catalog',
     type: 'catalog',
     children: [{
@@ -89,17 +135,16 @@ ORDER BY 1
   }, {
     name: 'catalog2',
     type: 'catalog',
-    children: []
+    children: [{
+      name: 'schema2',
+      type: 'schema',
+      children: [{
+        name: 'table2_with_a_very_looooooooooooooooong_name',
+        type: 'table',
+        children: []
+      }]
+    }]
   }],
-  '/api/db/explore/:schema/:catalog/:table': () => ({
-    children: [{name: 'with_a_very_looooooooooooooooong_name', dataType: 'varchar'}]
-  }),
-  '/api/db/autocomplete': () => ({
-    catalogs: ['catalog', 'catalog2'],
-    schemas: ['schema'],
-    tables: ['table'],
-    columns: ['column'],
-  }),
 };
 
 let mockOverrides = {};

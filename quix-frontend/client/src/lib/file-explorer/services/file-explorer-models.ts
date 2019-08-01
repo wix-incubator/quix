@@ -1,4 +1,4 @@
-import {find, pull} from 'lodash';
+import {pull} from 'lodash';
 import {utils, srv} from '../../core';
 
 const {uuid} = utils;
@@ -8,7 +8,12 @@ export class Item {
   private parent: Folder;
   private readonly eventEmitter;
 
-  constructor(private readonly id: string, private readonly name: string, private readonly type: string, private readonly data = {}) {
+  constructor(
+    private readonly id: string,
+    private readonly name: string,
+    private readonly type: string,
+    private readonly data = {}
+  ) {
     this.eventEmitter = new EventEmitter();
   }
 
@@ -69,7 +74,7 @@ export class Item {
   }
 
   public trigger(name, ...args) {
-    this.eventEmitter.trigger(name, ...args);
+    this.eventEmitter.triggerStream(name, ...args);
   }
 }
 
@@ -85,9 +90,11 @@ export class File extends Item {
 }
 
 export class Folder extends Item {
+  private pool: Record<string, Folder | File> = {};
   private folders: Folder[] = [];
   private files: File[] = [];
   private lazy: boolean = false;
+  private limit: number = null;
   private readonly status = {
     open: false,
     edit: false,
@@ -96,6 +103,12 @@ export class Folder extends Item {
 
   constructor(id: string, name: string, data = {}) {
     super(id, name, 'folder', data);
+  }
+
+  public setPool(pool: Record<string, Folder | File>): Folder {
+    this.pool = pool;
+
+    return this;
   }
 
   public setFolders(folders: Folder[]): Folder {
@@ -116,16 +129,16 @@ export class Folder extends Item {
     return this;
   }
 
-  public isLazy(lazy: boolean = false): boolean {
+  public isLazy(): boolean {
     return this.lazy;
   }
 
   public getFolderById(id: string): Folder {
-    return find(this.folders, (folder: Folder) => folder.getId() === id);
+    return this.pool[id] as Folder;
   }
 
   public getFileById(id: string): File {
-    return find(this.files, (file: File) => file.getId() === id);
+    return this.pool[id] as File;
   }
 
   public getFolders(): Folder[] {
@@ -150,6 +163,7 @@ export class Folder extends Item {
     folder.setParent(this);
 
     this.folders.push(folder);
+    this.pool[folder.getId()] = folder;
 
     return folder;
   }
@@ -160,6 +174,7 @@ export class Folder extends Item {
     file.setParent(this);
 
     this.files.push(file);
+    this.pool[file.getId()] = file;
 
     return file;
   }
@@ -167,11 +182,17 @@ export class Folder extends Item {
   public removeFile(file: File): File {
     pull(this.files, file);
 
+    // tslint:disable-next-line: no-dynamic-delete
+    delete this.pool[file.getId()];
+
     return file;
   }
 
   public removeFolder(folder: Folder): Folder {
     pull(this.folders, folder);
+
+    // tslint:disable-next-line: no-dynamic-delete
+    delete this.pool[folder.getId()];
 
     return folder;
   }
@@ -230,14 +251,23 @@ export class Folder extends Item {
     return Math.max(res, ...(this.folders.map(folder => folder.getLength(res + 1))));
   }
 
+  public setLimit(limit: number) {
+    this.limit = limit;
+  }
+
+  public getLimit() {
+    return this.limit;
+  }
+
   public destroy() {
     this.getParent().removeFolder(this);
   }
 
   public $clone(): Folder {
-    const folder = new Folder(this.getId(), this.getName());
+    const folder = new Folder(this.getId(), this.getName(), this.getData());
 
     return folder
+      .setPool(this.pool)
       .setFolders(this.getFolders())
       .setFiles(this.getFiles())
       .setLazy(this.lazy);

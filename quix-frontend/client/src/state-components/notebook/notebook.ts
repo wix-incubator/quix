@@ -3,7 +3,7 @@ import './notebook.scss';
 
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {Instance as App} from '../../lib/app';
+import {App as App} from '../../lib/app';
 // import {IStateComponentConfig} from '../../lib/app/services/plugin-instance';
 import {cache} from '../../store';
 import {initEvents} from '../../services/scope';
@@ -51,7 +51,7 @@ export default (app: App, store: Store) => ({
   link: scope => {
     const conf = initNgScope(scope)
       .withOptions('$stateOptions', {isNew: false})
-      .withVM(VM());
+      .withVM(VM(app));
 
     initEvents(scope, conf, app, store, Events);
   }

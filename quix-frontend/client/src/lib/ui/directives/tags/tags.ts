@@ -1,78 +1,24 @@
-import {includes, uniq, assign} from 'lodash';
-import {initNgScope, createNgModel, utils, inject} from '../../../core';
-
 import template from './tags.html';
 import './tags.scss';
+
+import {DropdownList} from '../common/dropdown-list';
 
 export interface IScope extends ng.IScope {
   model: any[];
 }
 
-function renderItemTransclusion(scope, transclude, biOptions, item) {
-  if (transclude.isSlotFilled('item')) {
-    return transclude((_, tScope) => {
-      tScope.item = item;
+function renderTag(transclude, biOptions, tag) {
+  let html;
 
-      Object.defineProperty(tScope, 'highlight', {
-        get() {
-          return scope.vm.currentText;
-        }
-      });
-    }, null, 'item');
-  }
-
-  const childScope = assign(scope.$new(), {
-    text: biOptions.render(item)
-  });
-
-  return inject('$compile')(`
-    <div ng-bind-html="text | biHighlight:vm.currentText"></div>
-  `)(childScope);
-}
-
-function renderTagTransclusion(transclude, biOptions, tag) {
   if (transclude.isSlotFilled('tag')) {
-    return transclude((_, tScope) => {
-      tScope.tag = tag;
+    html = transclude((_, tscope) => {
+      tscope.tag = tag;
     }, null, 'tag');
+  } else {
+    html = biOptions.render(tag);
   }
 
-  return biOptions.render(tag);
-}
-
-function format(model: string[], biOptions) {
-  return model ? model.map(item => biOptions.format(item)) : [];
-}
-
-function parse(model: any[], biOptions) {
-  return model.map(item => biOptions.parse(item));
-}
-
-function render(scope, model: any[], biOptions) {
-  scope.vm.current = model.map(item => biOptions.render(item));
-
-  initItems(scope, biOptions);
-}
-
-function validate(attrs) {
-  return {
-    required(model) {
-      if (!attrs.required) {
-        return true;
-      }
-
-      return !!(model && model.length);
-    }
-  };
-}
-
-function initItems(scope, biOptions, text?) {
-  const items = scope.vm.deferred ? null : scope.collection;
-
-  scope.items = items && items.filter(item => {
-    const rendered = biOptions.render(item);
-    return !includes(scope.vm.current, rendered) && (!text || includes(rendered, text));
-  });
+  return {html};
 }
 
 export default function directive(): ng.IDirective {
@@ -81,125 +27,28 @@ export default function directive(): ng.IDirective {
     require: ['ngModel', 'biOptions'],
     restrict: 'E',
     transclude: {
-      item: '?item',
-      tag: '?tag'
+      tag: '?tag',
+      opt: '?opt',
     },
     scope: {
       btOptions: '=',
-      onAutocomplete: '&',
-      onInputChange: '&',
+      onTypeahead: '&',
       readonly: '=',
       placeholder: '@'
     },
 
     link: {
-      pre(scope: IScope, element, attrs, ctrls: [ng.INgModelController, any], transclude) {
-        const [ngModel, biOptions] = ctrls;
-        scope.items = null;
+      pre(scope: IScope, element, attrs, [ngModel, biOptions]: [ng.INgModelController, any], transclude) {
+        scope.renderTag = tag => renderTag(transclude, biOptions, tag);
 
-        createNgModel(scope, ngModel)
-          .formatWith(model => format(model, biOptions))
-          .parseWith(model => parse(model, biOptions))
-          .renderWith(model => render(scope, model, biOptions))
-          .validateWith(() => validate(attrs))
-          .watchDeep(true)
-          .feedBack(false);
-
-        initNgScope(scope)
-          .readonly(scope.readonly)
-          .withOptions('btOptions', {
+        return new DropdownList(scope, element, attrs, {ngModel, biOptions}, transclude, {
+          optionsAlias: 'btOptions',
+          isArray: true,
+          options: {
             freetext: false,
-            autocomplete: true,
-            dropdownWidth: null,
-            debounce: 0
-          })
-          .withVM({
-            current: null,
-            currentText: '',
-            pending: false,
-            deferred: false,
-            dropdown: {}
-          })
-          .withEditableEvents({
-            onDropdownShow() {
-              return scope.onAutocomplete();
-            },
-            onInputChange() {
-              initItems(scope, biOptions, scope.vm.currentText);
-
-              scope.onInputChange({text: scope.vm.currentText});
-            }
-          })
-          .withEditableActions({
-            addItem(...args) {
-              scope.model = uniq(scope.model.concat(args.filter(s => !!s)));
-              scope.vm.currentText = '';
-
-              render(scope, scope.model, biOptions);
-
-              element.find('input').trigger('focus');
-            },
-            removeItem(itemIndex: number) {
-              scope.model = scope.model.filter((_, index) => index !== itemIndex);
-              render(scope, scope.model, biOptions);
-            }
-          })
-          .thenIfNotReadonly(() => {
-            element.
-              on('keypress blur', 'input', e => {
-                // enter
-                if (e.key === 'Enter' || e.type === 'focusout') {
-                  if ((e.type === 'focusout' && scope.options.autocomplete) || !scope.options.freetext || !scope.vm.currentText) {
-                    return;
-                  }
-
-                  utils.scope.safeApply(scope, () => {
-                    scope.actions.addItem(...scope.vm.currentText.split(','));
-                    scope.vm.dropdown.toggle(false);
-                  });
-                } else {
-                  scope.vm.dropdown.toggle(true);
-                }
-              })
-              .on('mouseup', 'input', () => {
-                if (!scope.vm.deferred) {
-                  scope.vm.dropdown.toggle(true);
-                }
-              });
-          });
-
-        let deferredId = 0;
-        biOptions.watch(collection => {
-          if (collection && collection.then) {
-            collection.deferredId = ++deferredId;
-            scope.vm.deferred = true;
-            scope.vm.pending = true;
-
-            collection.then(c => {
-              if (collection.deferredId !== deferredId) {
-                return;
-              }
-
-              scope.deferredCollection = c;
-              scope.vm.pending = false;
-            });
-          } else {
-            scope.deferredCollection = collection;
+            typeahead: true,
           }
         });
-
-        scope.$watch('deferredCollection', collection => {
-          if (!collection) {
-            return;
-          }
-
-          scope.collection = collection;
-          
-          initItems(scope, biOptions);
-        });
-
-        scope.renderTag = tag => ({html: renderTagTransclusion(transclude, biOptions, tag)});
-        scope.renderItem = item => ({html: renderItemTransclusion(scope, transclude, biOptions, item)});
       }
     }
   };

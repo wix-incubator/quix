@@ -1,8 +1,10 @@
 @import './def/defaults.def';
 @import './def/colors.def';
+@import './def/state.def';
 
 .bi-home-action {
-  transition: box-shadow .3s;
+  @include elevate();
+
   display: flex;
   height: 300px;
   flex-direction: column;
@@ -13,17 +15,10 @@
   cursor: pointer;
 
   &:hover {
-    box-shadow: $default-box-shadow;
-
     .bi-icon,
     span {
       color: $primary !important;
     }
-  }
-
-  &:active {
-    transition: box-shadow .1s;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, .175);
   }
 
   .bi-icon {

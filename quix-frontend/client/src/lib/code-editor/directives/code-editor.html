@@ -40,7 +40,14 @@
           <div class="bi-form--vertical bi-fade-in" ng-if="vm.param.current === 'custom'">
             <div class="bi-form-row">
               <div class="bi-form-label--required">Name</div>
-              <input class="bi-form-input bi-input" ng-model="be.value.key" ng-pattern="/^[a-zA-Z_]+$/" placeholder="Custom param name" required="true" bi-focus>
+              <input
+                class="bi-form-input bi-input"
+                ng-model="be.value.key"
+                ng-pattern="/^[a-zA-Z_]+$/"
+                placeholder="Enter name"
+                required="true"
+                bi-focus
+              >
             </div>
 
             <div class="bi-form-row">

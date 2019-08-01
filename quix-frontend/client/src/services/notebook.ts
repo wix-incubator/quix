@@ -1,7 +1,7 @@
 import {isArray} from 'lodash';
 import {Store} from '../lib/store';
-import {Instance} from '../lib/app';
-import {IFolder, INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem, createNote, IPrestoNote} from '../../../shared';
+import {App} from '../lib/app';
+import {IFolder, INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem, createNote} from '../../../shared';
 import {FileType} from '../../../shared/entities/file';
 import {fetchRootPath, goUp, goToFile} from './';
 
@@ -14,7 +14,7 @@ const resolvePath = async (parentOrPath: IFolder | IFilePathItem[]) => {
   return path.length ? path : fetchRootPath();
 }
 
-export const addNotebook = async (store: Store, app: Instance, parentOrPath: IFolder | IFilePathItem[], props: Partial<INotebook> = {}) => {
+export const addNotebook = async (store: Store, app: App, parentOrPath: IFolder | IFilePathItem[], props: Partial<INotebook> = {}) => {
   const path = await resolvePath(parentOrPath);
   const notebook = createNotebook(path, {...props, owner: app.getUser().getEmail()});
   const note = createNote(notebook.id);
@@ -23,10 +23,10 @@ export const addNotebook = async (store: Store, app: Instance, parentOrPath: IFo
     NotebookActions.createNotebook(notebook.id, notebook),
     NoteActions.addNote(note.id, note)
   ])
-  .then(() => goToFile(app, {...notebook, type: FileType.notebook}, {isNew: true}));
+    .then(() => goToFile(app, {...notebook, type: FileType.notebook}, {isNew: true}));
 }
 
-export const copyNotebook = async (store: Store, app: Instance, parentOrPath: IFolder | IFilePathItem[], sourceNotebook: INotebook) => {
+export const copyNotebook = async (store: Store, app: App, parentOrPath: IFolder | IFilePathItem[], sourceNotebook: INotebook) => {
   const {name, notes} = sourceNotebook;
   const path = await resolvePath(parentOrPath);
 
@@ -42,12 +42,12 @@ export const copyNotebook = async (store: Store, app: Instance, parentOrPath: IF
       return NoteActions.addNote(note.id, note);
     })
   ])
-  .then(() => goToFile(app, {...newNotebook, type: FileType.notebook}, {isNew: false}))
-  .then(() => newNotebook);
+    .then(() => goToFile(app, {...newNotebook, type: FileType.notebook}, {isNew: false}))
+    .then(() => newNotebook);
 }
 
-export const copyNote = async (store: Store, app: Instance, targetNotebook: INotebook, sourceNote: INote) => {
-  const {name, content, type} = sourceNote as IPrestoNote;
+export const copyNote = async (store: Store, app: App, targetNotebook: INotebook, sourceNote: INote) => {
+  const {name, content, type} = sourceNote;
 
   const newNote = createNote(targetNotebook.id, {
     name: `Copy of ${name}`,
@@ -61,7 +61,7 @@ export const copyNote = async (store: Store, app: Instance, targetNotebook: INot
     .then(() => newNote);
 }
 
-export const deleteNotebook = async (store: Store, app: Instance, notebook: INotebook) => {
+export const deleteNotebook = async (store: Store, app: App, notebook: INotebook) => {
   const {id} = notebook;
 
   store.dispatchAndLog(NotebookActions.deleteNotebook(id)).then(() => goUp(app, notebook));
@@ -77,7 +77,7 @@ export const hasQueuedNotes = (store: Store) => {
   return store.getState('notebook.queue.size') > 0;
 }
 
-export const goToExamples = (app: Instance) => {
+export const goToExamples = (app: App) => {
   app.go('notebook', {
     id: 'examples',
     isNew: false

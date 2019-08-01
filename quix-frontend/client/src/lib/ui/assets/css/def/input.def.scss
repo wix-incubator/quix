@@ -43,3 +43,39 @@
     }
   }
 }
+
+@mixin input($theme) {
+  @extend %input;
+
+  @if ($theme == 'lighter') {
+    color: $lighter-color;
+    background-color: $white;
+
+    &::placeholder {
+      color: $lighter-muted-color;
+    }
+  } @else if ($theme == 'light') {
+    color: $light-color;
+    background-color: $white;
+
+    &::placeholder {
+      color: $light-muted-color;
+    }
+  } @else if ($theme == 'dark') {
+    border: none;
+    color: $dark-color;
+    background-color: lighten($dark-hover-bg, 3);
+
+    &::placeholder {
+      color: $dark-muted-color;
+    }
+  } @else {
+    border: none;
+    color: $darker-color;
+    background-color: lighten($darker-hover-bg, 3);
+
+    &::placeholder {
+      color: $darker-muted-color;
+    }
+  }
+}

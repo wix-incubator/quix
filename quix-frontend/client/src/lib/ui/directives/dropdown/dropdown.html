@@ -1,16 +1,17 @@
+<!--  TOGGLE -->
 <div
   class="bi-row bi-grow"
   ng-transclude="toggle"
   ng-mouseenter="options.toggleOn === 'hover' && actions.show()"
   ng-mouseleave="options.toggleOn === 'hover' && options.hideOn === 'hover' && actions.hide()"
-  ng-mousedown="options.toggleOn === 'hover' && actions.hide()"
-  ng-click="options.toggleOn === 'click' && actions.toggle()"
+  ng-mousedown="options.toggleOn === 'hover' ? actions.hide() : options.toggleOn === 'click' && actions.toggle()"
   ng-class="{
     'bt-readonly': readonly,
     'bt-caret': options.caret && !readonly
   }"
 ></div>
 
+<!-- CONTENT -->
 <div
   class="bd-content bi-theme--lighter"
   ng-if="vm.enabled"

@@ -9,9 +9,9 @@
     <span>{{::app.getTitle()}}</span>
   </div>
 
-  <div class="bi-grow bi-fade-in" ng-transclude="header" ng-if="::user.isLoggedIn()"></div>
+  <div class="bi-grow bi-fade-in" ng-transclude="header" ng-if="user.isLoggedIn()"></div>
 
-  <div class="bi-fade-in" ng-if="::user.isLoggedIn()">
+  <div class="bi-fade-in" ng-if="user.isLoggedIn()">
     <div class="bi-align bi-s-h--x15">
       <bi-dropdown bd-options="::{align: 'center'}" ng-if="::vm.apps.length">
         <bi-toggle class="bi-align">
@@ -44,7 +44,7 @@
 <div class="bi-r-h">
   <div 
     class="bi-app-menu bi-theme--darker bi-dont-shrink bi-fade-in"
-    ng-if="::user.isLoggedIn() && app.getMenuItems().length"
+    ng-if="user.isLoggedIn() && app.getMenuItems().length"
   >
     <ul>
     <ul>
@@ -73,7 +73,7 @@
   >
     <div class="bi-section-header">
       <div class="bi-section-title">{{vm.menu.current.name}}</div>
-      <div>
+      <div class="bi-app-sidebar-toggle">
         <i 
           class="bi-action bi-icon"
           ng-click="events.onMenuItemToggle(vm.menu.current)"
@@ -89,13 +89,13 @@
   </div>
 
   <div class="bi-app-content bi-c-h bi-grow" ui-view>
-    <div class="bi-c-h bi-grow bi-center bi-align bi-theme--light">
-      <div class="bi-empty-state--loading bi-fade-in">
-        <div class="bi-empty-state-content bi-c-h">
-          <div class="bi-center">Logging you in via Google OAuth</div>
-          <div class="bi-center bi-danger bi-fade-in" ng-if="vm.loginHint.enabled">(Please make sure you've enabled the login popup)</div>
-       </div>
+    <div class="bi-c-h bi-center bi-align bi-grow">
+      <div class="quix-splash bi-c bi-s-v--x3" ng-if="app.getUser().isLoggedIn() === null">
+        <img class="quix-splash-logo" ng-if="::app.getLogoUrl()" ng-src="{{::app.getLogoUrl()}}">
+        <span class="bi-center bi-text--ui bi-text--large bi-muted">Signing in...</span>
       </div>
+
+      <bi-app-login app="app" ng-if="app.getUser().isLoggedIn() === false"></bi-app-login>
     </div>
   </div>
 </div>
