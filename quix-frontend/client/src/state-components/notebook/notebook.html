@@ -124,6 +124,7 @@
 
   <div 
     class="quix-note-container bi-section-content--list bi-s-v--x15"
+    ng-class="::{'quix-note-container--editable': !!permissions.note.edit}"
     ng-if="vm.state.is('Content')"
     data-hook="notebook-content"
     ui-sortable="{
