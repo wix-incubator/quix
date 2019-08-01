@@ -105,6 +105,7 @@ export class DropdownList {
           }
         },
         onDropdownHide: () => {
+          scope.vm.search.toggle(false);
           this.render(scope.model);
         },
         onOptionSelect: (...options) => {
