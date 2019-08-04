@@ -10,6 +10,11 @@
     <properties>
         <scala.library.version>2.12.7</scala.library.version>
         <scala.dependencies.version>2.12</scala.dependencies.version>
+        <bigquery.version>1.84.0</bigquery.version>
+        <specs.version>4.5.1</specs.version>
+        <scala.maven.plugin.version>3.3.2</scala.maven.plugin.version>
+        <scala.logging.version>3.9.2</scala.logging.version>
+        <logback-classic.version>1.2.3</logback-classic.version>
     </properties>
 
     <dependencies>
@@ -28,29 +33,28 @@
         <dependency>
             <groupId>com.google.cloud</groupId>
             <artifactId>google-cloud-bigquery</artifactId>
-            <version>1.84.0</version>
+            <version>${bigquery.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.typesafe.scala-logging/scala-logging -->
         <dependency>
             <groupId>com.typesafe.scala-logging</groupId>
             <artifactId>scala-logging_${scala.dependencies.version}</artifactId>
-            <version>3.9.2</version>
+            <version>${scala.logging.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>${logback-classic.version}</version>
         </dependency>
-
 
         <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-core_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -58,7 +62,7 @@
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-junit_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -66,7 +70,7 @@
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-mock_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -79,7 +83,7 @@
                 <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>${scala.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
