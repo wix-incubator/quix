@@ -1,15 +1,19 @@
 package quix.bigquery
 
-import java.io.ByteArrayInputStream
+import java.io.{ByteArrayInputStream, IOException, Reader, StringReader}
 import java.net.URI
+import java.security.{KeyFactory, NoSuchAlgorithmException, PrivateKey}
+import java.security.spec.{InvalidKeySpecException, PKCS8EncodedKeySpec}
 import java.util.UUID
 
 import com.google.api.client.http.HttpTransport
 import com.google.api.client.http.javanet.NetHttpTransport
+import com.google.api.client.util.{PemReader, SecurityUtils}
 import com.google.auth.http.HttpTransportFactory
 import com.google.auth.oauth2.{GoogleCredentials, OAuth2Utils, ServiceAccountCredentials}
 import com.google.cloud.ServiceOptions
 import com.google.cloud.bigquery.{BigQueryOptions, JobId, JobInfo, QueryJobConfiguration, QueryResponse}
+import com.google.cloud.http.HttpTransportOptions.DefaultHttpTransportFactory
 import com.google.common.collect.Lists
 import org.specs2.matcher.{MustMatchers, Scope}
 import org.specs2.mock.Mockito
@@ -24,10 +28,24 @@ class BigQueryClientTest  extends SpecWithJUnit with MustMatchers with Mockito {
   "BigQueryClientTest" should {
     "init" in new ctx{
   //GOOGLE_APPLICATION_CREDENTIALS=/Users/liora/work/quix/wixgamma-4a0a605d2650.json
-      val json = """<json content>""".stripMargin
 
-      val credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(json.getBytes()))
-        .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"))
+
+
+      val credentials = ServiceAccountCredentials
+        .newBuilder()
+        .setClientEmail("quix-bigquery@wixgamma.iam.gserviceaccount.com")
+        .setClientId("103124064733425158349")
+        .setHttpTransportFactory(new DefaultHttpTransportFactory)
+        .setPrivateKey(privateKeyFromPkcs8( """<private key here>""".stripMargin))
+        .setPrivateKeyId("4a0a605d26505c0ff6e4ba3d8e6b9504de4ad6be")
+        .setProjectId("wixgamma")
+        .setScopes(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"))
+        .setServiceAccountUser(null)
+        .setTokenServerUri(new URI("https://oauth2.googleapis.com/token"))
+        .build()
+
+//      val credentials = GoogleCredentials.fromStream(new ByteArrayInputStream(json.getBytes()))
+//        .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"))
 
       val client  = new GoogleBigQueryClient
       val bigquery = client.init(credentials)
@@ -75,4 +93,23 @@ class BigQueryClientTest  extends SpecWithJUnit with MustMatchers with Mockito {
     }
 
   }
+
+
+  def privateKeyFromPkcs8(privateKeyPkcs8: String): PrivateKey = {
+    val reader = new StringReader(privateKeyPkcs8)
+    val section = PemReader.readFirstSectionAndClose(reader, "PRIVATE KEY")
+    if (section == null) throw new IOException("Invalid PKCS#8 data.")
+    else {
+      val bytes = section.getBase64DecodedBytes
+      val keySpec = new PKCS8EncodedKeySpec(bytes)
+      try {
+        val keyFactory = SecurityUtils.getRsaKeyFactory
+        keyFactory.generatePrivate(keySpec)
+      } catch {
+        case var7@(_: InvalidKeySpecException | _: NoSuchAlgorithmException) =>
+          throw new IOException("Unexpected exception reading PKCS#8 data", var7)
+      }
+    }
+  }
+
 }
