@@ -10,6 +10,7 @@ import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.module.ExecutionModule
 import quix.api.users.DummyUsers
 import quix.athena._
+import quix.bigquery._
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
 import quix.core.download.DownloadableQueriesImpl
 import quix.core.executions.SequentialExecutions
@@ -192,6 +193,57 @@ class ModulesConfiguration extends LazyLogging {
 
     for (module <- getAthenaModules())
       Registry.modules.update(module, getAthenaModule(module))
+
+    "OK"
+  }
+
+  @Bean def initBigquery(env: Environment) = {
+    def getBigqueryModules() = {
+      val modules = env.getProperty("modules", "").split(",")
+
+      modules.filter { module =>
+        env.getProperty(s"modules.$module.ENGINE", "") == "bigquery" || module == "bigquery"
+      }
+    }
+
+    def getBigqueryModule(bigquery: String) = {
+      val config = {
+        val output = env.getProperty(s"modules.$bigquery.output",
+          env.getProperty("athena.output", ""))
+
+        val region = env.getProperty(s"modules.$bigquery.region",
+          env.getProperty("athena.region", ""))
+
+        val database = env.getProperty(s"modules.$bigquery.database",
+          env.getProperty("athena.database", ""))
+
+        val firstEmptyStateDelay = env.getProperty(s"modules.$bigquery.db.empty.timeout", classOf[Long], 1000L * 10)
+        val requestTimeout = env.getProperty(s"modules.$bigquery.db.request.timeout", classOf[Long], 5000L)
+
+        val awsAccessKeyId = env.getProperty(s"modules.$bigquery.aws.access.key.id",
+          env.getProperty("aws.access.key.id"))
+        val awsSecretKey = env.getProperty(s"modules.$bigquery.aws.secret.key",
+          env.getProperty("aws.secret.key"))
+
+        AthenaConfig(output, region, database, firstEmptyStateDelay, requestTimeout, awsAccessKeyId, awsSecretKey)
+      }
+
+      logger.warn(s"event=[spring-config] bean=[AthenaConfig] config=$config")
+
+      val executor = AthenaQueryExecutor(config)
+
+      val athenaCatalogs = new AthenaCatalogs(executor)
+      val catalogs = new RefreshableCatalogs(athenaCatalogs, config.firstEmptyStateDelay, 1000L * 60 * 5)
+      val autocomplete = new RefreshableAutocomplete(new AthenaAutocomplete(athenaCatalogs), config.firstEmptyStateDelay, 1000L * 60 * 5)
+      val tables = new AthenaTables(executor)
+
+      val db = new RefreshableDb(catalogs, autocomplete, tables)
+
+      BigqueryQuixModule(executor, db)
+    }
+
+    for (module <- getBigqueryModules())
+      Registry.modules.update(module, getBigqueryModule(module))
 
     "OK"
   }
