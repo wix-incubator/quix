@@ -225,17 +225,17 @@ class ModulesConfiguration extends LazyLogging {
         val awsSecretKey = env.getProperty(s"modules.$bigquery.aws.secret.key",
           env.getProperty("aws.secret.key"))
 
-        AthenaConfig(output, region, database, firstEmptyStateDelay, requestTimeout, awsAccessKeyId, awsSecretKey)
+        BigqueryConfig(output, region, database, firstEmptyStateDelay, requestTimeout, awsAccessKeyId, awsSecretKey)
       }
 
       logger.warn(s"event=[spring-config] bean=[AthenaConfig] config=$config")
 
-      val executor = AthenaQueryExecutor(config)
+      val executor = BigqueryQueryExecutor(config)
 
-      val athenaCatalogs = new AthenaCatalogs(executor)
-      val catalogs = new RefreshableCatalogs(athenaCatalogs, config.firstEmptyStateDelay, 1000L * 60 * 5)
-      val autocomplete = new RefreshableAutocomplete(new AthenaAutocomplete(athenaCatalogs), config.firstEmptyStateDelay, 1000L * 60 * 5)
-      val tables = new AthenaTables(executor)
+      val bigqueryCatalogs = new BigqueryCatalogs(executor)
+      val catalogs = new RefreshableCatalogs(bigqueryCatalogs, config.firstEmptyStateDelay, 1000L * 60 * 5)
+      val autocomplete = new RefreshableAutocomplete(new BigqueryAutocomplete(bigqueryCatalogs), config.firstEmptyStateDelay, 1000L * 60 * 5)
+      val tables = new BigqueryTables(executor)
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
