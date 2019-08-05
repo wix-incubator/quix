@@ -1,11 +1,15 @@
-package quix.bigquery
+package quix.bigquery.db
 
 import monix.eval.Task
 import quix.api.db._
 import quix.api.execute.{AsyncQueryExecutor, Batch}
 import quix.core.executions.SingleQueryExecutor
 
-class BigQueryTables1(val queryExecutor: AsyncQueryExecutor[String, Batch]) extends Tables with SingleQueryExecutor {
+import scala.concurrent.duration._
+
+class BigQueryTables(val queryExecutor: AsyncQueryExecutor[String, Batch],
+                     val timeout: Long) extends Tables with SingleQueryExecutor {
+
   override def get(catalog: String, schema: String, table: String): Task[Table] = {
     val sql = s"describe `$schema`.`$table`"
 
@@ -17,7 +21,10 @@ class BigQueryTables1(val queryExecutor: AsyncQueryExecutor[String, Batch]) exte
         }
     }
 
-    for {columns <- executeFor(sql, mapper)}
-      yield Table(table, columns.filter(_.name.trim.nonEmpty).filterNot(_.name.startsWith("# ")).distinct)
+    for {
+      columns <- executeFor(sql, mapper)
+        .timeout(timeout.millis)
+        .onErrorFallbackTo(Task(Nil))
+    } yield Table(table, columns.filter(_.name.trim.nonEmpty).filterNot(_.name.startsWith("# ")).distinct)
   }
 }

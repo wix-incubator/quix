@@ -1,11 +1,16 @@
 package quix.bigquery
 
+
+import java.io.{IOException, StringReader}
+import java.security.spec.{InvalidKeySpecException, PKCS8EncodedKeySpec}
+import java.security.{NoSuchAlgorithmException, PrivateKey}
 import java.util.UUID
 
+import com.google.api.client.util.{PemReader, SecurityUtils}
 import com.google.cloud.bigquery.{BigQueryOptions, JobId, JobInfo, QueryJobConfiguration}
 import com.typesafe.scalalogging.LazyLogging
 
-object TryBigQuery extends LazyLogging {
+object TryBigQueryOnTable extends LazyLogging {
 
   def main(args: Array[String]): Unit = {
 
@@ -20,8 +25,8 @@ object TryBigQuery extends LazyLogging {
     /**
       * Enter your full query. For example:
       * "SELECT count(*) FROM `organization.dataset.table`;"
-       */
-    val query = "SELECT count(*) FROM `wixgamma.babynames.names2010`;"
+      */
+    val query = ""
     val queryConfig = QueryJobConfiguration.newBuilder(query).build
 
     // Create a job ID so that we can safely retry.
@@ -41,5 +46,22 @@ object TryBigQuery extends LazyLogging {
     // Get the results.
     val result = queryJob.getQueryResults()
     System.out.printf(s"Result: ${result.getValues}")
+  }
+
+  def privateKeyFromPkcs8(privateKeyPkcs8: String): PrivateKey = {
+    val reader = new StringReader(privateKeyPkcs8)
+    val section = PemReader.readFirstSectionAndClose(reader, "PRIVATE KEY")
+    if (section == null) throw new IOException("Invalid PKCS#8 data.")
+    else {
+      val bytes = section.getBase64DecodedBytes
+      val keySpec = new PKCS8EncodedKeySpec(bytes)
+      try {
+        val keyFactory = SecurityUtils.getRsaKeyFactory
+        keyFactory.generatePrivate(keySpec)
+      } catch {
+        case var7@(_: InvalidKeySpecException | _: NoSuchAlgorithmException) =>
+          throw new IOException("Unexpected exception reading PKCS#8 data", var7)
+      }
+    }
   }
 }

@@ -11,6 +11,7 @@ import quix.api.module.ExecutionModule
 import quix.api.users.DummyUsers
 import quix.athena._
 import quix.bigquery._
+import quix.bigquery.db.{BigQueryAutocomplete, BigQueryCatalogs, BigQueryTables}
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
 import quix.core.download.DownloadableQueriesImpl
 import quix.core.executions.SequentialExecutions
@@ -208,38 +209,67 @@ class ModulesConfiguration extends LazyLogging {
 
     def getBigQueryModule(bigquery: String) = {
       val config = {
-        val output = env.getProperty(s"modules.$bigquery.output",
-          env.getProperty("athena.output", ""))
+        val confType = env.getProperty(s"modules.$bigquery.type",
+          env.getProperty("bigquery.type", ""))
 
-        val region = env.getProperty(s"modules.$bigquery.region",
-          env.getProperty("athena.region", ""))
+        val projectId = env.getProperty(s"modules.$bigquery.project_id",
+          env.getProperty("bigquery.project_id", ""))
 
-        val database = env.getProperty(s"modules.$bigquery.database",
-          env.getProperty("athena.database", ""))
+        val clientEmail = env.getProperty(s"modules.$bigquery.client_email",
+          env.getProperty("bigquery.client_email", ""))
+
+        val clientId = env.getProperty(s"modules.$bigquery.client_id",
+          env.getProperty("bigquery.client_id", ""))
+
+        val authUri = env.getProperty(s"modules.$bigquery.auth_uri",
+          env.getProperty("bigquery.auth_uri", ""))
+
+        val tokenUri = env.getProperty(s"modules.$bigquery.token_uri",
+          env.getProperty("bigquery.token_uri", ""))
+
+        val authProviderX509CertUrl = env.getProperty(s"modules.$bigquery.auth_provider_x509_cert_url",
+          env.getProperty("bigquery.auth_provider_x509_cert_url", ""))
+
+        val clientX509CertUrl = env.getProperty(s"modules.$bigquery.client_x509_cert_url",
+          env.getProperty("bigquery.client_x509_cert_url", ""))
 
         val firstEmptyStateDelay = env.getProperty(s"modules.$bigquery.db.empty.timeout", classOf[Long], 1000L * 10)
         val requestTimeout = env.getProperty(s"modules.$bigquery.db.request.timeout", classOf[Long], 5000L)
 
-        val awsAccessKeyId = env.getProperty(s"modules.$bigquery.aws.access.key.id",
-          env.getProperty("aws.access.key.id"))
-        val awsSecretKey = env.getProperty(s"modules.$bigquery.aws.secret.key",
-          env.getProperty("aws.secret.key"))
+        val privateKeyId = env.getProperty(s"modules.$bigquery.private_key_id",
+          env.getProperty("bigquery.private_key_id", ""))
 
-        BigQueryConfig1(output, region, database, firstEmptyStateDelay, requestTimeout, awsAccessKeyId, awsSecretKey)
+        val privateKey = env.getProperty(s"modules.$bigquery.private_key",
+          env.getProperty("bigquery.private_key", ""))
+
+        BigQueryConfig(
+          confType = confType,
+          projectId = projectId,
+          clientEmail = clientEmail,
+          clientId = clientId,
+          authUri = authUri,
+          tokenUri = tokenUri,
+          authProviderX509CertUrl = authProviderX509CertUrl,
+          clientX509CertUrl = clientX509CertUrl,
+          firstEmptyStateDelay = firstEmptyStateDelay,
+          requestTimeout = requestTimeout,
+          privateKeyId = privateKeyId,
+          privateKey = privateKey
+        )
       }
 
-      logger.warn(s"event=[spring-config] bean=[AthenaConfig] config=$config")
+      logger.warn(s"event=[spring-config] bean=[BigQueryConfig] config=$config")
 
-      val executor = BigqueryQueryExecutor(config)
+      val executor = BigQueryQueryExecutor(config)
 
-      val bigQueryCatalogs = new BigQueryCatalogs1(executor)
-      val catalogs = new RefreshableCatalogs(bigQueryCatalogs, config.firstEmptyStateDelay, 1000L * 60 * 5)
-      val autocomplete = new RefreshableAutocomplete(new BigQueryAutocomplete1(bigQueryCatalogs), config.firstEmptyStateDelay, 1000L * 60 * 5)
-      val tables = new BigQueryTables1(executor)
+      val bigQueryCatalogs = new BigQueryCatalogs(executor)
+      val catalogs = new RefreshableCatalogs(bigQueryCatalogs, config.requestTimeout, config.firstEmptyStateDelay)
+      val autocomplete = new RefreshableAutocomplete(new BigQueryAutocomplete(bigQueryCatalogs, executor), config.requestTimeout, config.firstEmptyStateDelay)
+      val tables = new BigQueryTables(executor, config.requestTimeout)
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      BigqueryQuixModule(executor, db)
+      BigQueryQuixModule(executor, db)
     }
 
     for (module <- getBigQueryModules())

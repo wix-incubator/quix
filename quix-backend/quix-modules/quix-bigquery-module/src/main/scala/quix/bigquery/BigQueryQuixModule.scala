@@ -8,7 +8,7 @@ import quix.api.users.User
 import quix.core.executions.SequentialExecutions
 import quix.core.sql.PrestoSqlOps
 
-class BigQueryQuixModule1(val executions: SequentialExecutions[String], val db: Option[Db] = None) extends ExecutionModule[String, Batch] {
+class BigQueryQuixModule(val executions: SequentialExecutions[String], val db: Option[Db] = None) extends ExecutionModule[String, Batch] {
 
   override def start(command: StartCommand[String], id: String, user: User, resultBuilder: Builder[String, Batch]): Task[Unit] = {
     val sqls = PrestoSqlOps.splitToStatements(command.code)
@@ -19,11 +19,9 @@ class BigQueryQuixModule1(val executions: SequentialExecutions[String], val db: 
   }
 }
 
-object BigqueryQuixModule {
-  def apply(executor: AsyncQueryExecutor[String, Batch], db: Db): BigQueryQuixModule1 = {
+object BigQueryQuixModule {
+  def apply(executor: AsyncQueryExecutor[String, Batch], db: Db): BigQueryQuixModule = {
     val executions = new SequentialExecutions[String](executor)
-    new BigQueryQuixModule1(executions, Some(db))
+    new BigQueryQuixModule(executions, Some(db))
   }
 }
-
-
