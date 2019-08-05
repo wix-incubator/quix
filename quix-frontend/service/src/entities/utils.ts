@@ -1,5 +1,5 @@
 import {IUser} from 'shared';
-import {DbUser, dbUserToUser} from './user.entity';
+import {DbUser, dbUserToUser} from './user/user.entity';
 import {
   fromNullable,
   getOrElse,

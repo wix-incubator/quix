@@ -8,8 +8,8 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
 } from 'typeorm';
-import {dbConf} from '../config/db-conf';
-import {DbFileTreeNode} from './filenode.entity';
+import {dbConf} from '../../config/db-conf';
+import {DbFileTreeNode} from '../filenode/filenode.entity';
 
 @Entity({name: 'folders'})
 export class DbFolder {

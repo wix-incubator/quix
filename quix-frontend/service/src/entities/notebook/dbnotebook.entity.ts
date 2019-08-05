@@ -10,11 +10,11 @@ import {
   PrimaryColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import {dbConf} from '../config/db-conf';
-import {convertDbNote, convertNoteToDb, DbNote} from './dbnote.entity';
-import {DbFileTreeNode} from './filenode.entity';
-import {DbUser} from './user.entity';
-import {extractOwnerDetails} from './utils';
+import {dbConf} from '../../config/db-conf';
+import {convertDbNote, convertNoteToDb, DbNote} from '../note/dbnote.entity';
+import {DbFileTreeNode} from '../filenode/filenode.entity';
+import {DbUser} from '../user/user.entity';
+import {extractOwnerDetails} from '../utils';
 
 @Entity({name: 'notebooks'})
 export class DbNotebook {

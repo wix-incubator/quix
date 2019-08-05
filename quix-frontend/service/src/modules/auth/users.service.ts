@@ -3,7 +3,7 @@ import {QuixEventBus} from 'modules/event-sourcing/quix-event-bus';
 import {Repository} from 'typeorm';
 import {DbUser} from 'entities';
 import {InjectRepository} from '@nestjs/typeorm';
-import {dbUserToUser} from 'entities/user.entity';
+import {dbUserToUser} from 'entities/user/user.entity';
 import {IGoogleUser} from './types';
 import {FileActions, createFolder} from 'shared/entities/file';
 import uuid from 'uuid/v4';

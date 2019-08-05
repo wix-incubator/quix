@@ -10,8 +10,8 @@ import {
   createEmptyIUser,
 } from 'shared';
 
-export class MockDataBuilder {
-  constructor(private defaultUser?: string) {}
+class BaseMockDataBuilder<S extends string | never> {
+  constructor(protected defaultUser: S) {}
 
   createNotebook = createNotebook.bind(this);
 
@@ -64,5 +64,16 @@ export class MockDataBuilder {
       user,
     };
     return [id, action] as const;
+  }
+}
+export class E2EMockDataBuilder extends BaseMockDataBuilder<never> {
+  constructor() {
+    super(undefined as never);
+  }
+}
+
+export class MockDataBuilder extends BaseMockDataBuilder<string> {
+  constructor(defaultUser: string) {
+    super(defaultUser);
   }
 }

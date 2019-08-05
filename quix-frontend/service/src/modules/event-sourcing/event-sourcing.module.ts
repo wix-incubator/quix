@@ -1,6 +1,5 @@
 import {Module} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {ConfigModule} from '../../config/config.module';
 import {
   DbFileTreeNode,
   DbFolder,
@@ -16,7 +15,6 @@ import {DbAction} from './infrastructure/action-store/entities/db-action.entity'
 import {NotePlugin} from './plugins/note-plugin';
 import {NotebookPlugin} from './plugins/notebook-plugin';
 import {FileTreePlugin} from './plugins/file-tree-plugin';
-import {PassportModule} from '@nestjs/passport';
 import {FavoritesPlugin} from './plugins/favorites-plugin';
 
 @Module({
@@ -31,8 +29,6 @@ import {FavoritesPlugin} from './plugins/favorites-plugin';
       NoteRepository,
       DbFavorites,
     ]),
-    ConfigModule,
-    PassportModule,
   ],
   controllers: [],
   providers: [

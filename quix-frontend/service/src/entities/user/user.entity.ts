@@ -5,7 +5,7 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
 } from 'typeorm';
-import {dbConf} from '../config/db-conf';
+import {dbConf} from '../../config/db-conf';
 import {IUser} from 'shared';
 
 @Entity({name: 'users'})

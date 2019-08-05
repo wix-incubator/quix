@@ -6,11 +6,12 @@ import {
   UseGuards,
   HttpCode,
 } from '@nestjs/common';
-import {DefaultAction} from 'shared/entities/common/common-types';
+import {AnyAction} from 'shared/entities/common/common-types';
 import {BaseActionValidation} from '../event-sourcing/base-action-validation';
 import {QuixEventBus} from '../event-sourcing/quix-event-bus';
 import {User, IGoogleUser} from 'modules/auth';
 import {AuthGuard} from '@nestjs/passport';
+import {IAction} from 'modules/event-sourcing/infrastructure/types';
 
 @Controller('/api/events')
 export class EventsController {
@@ -21,16 +22,17 @@ export class EventsController {
   @UsePipes(BaseActionValidation)
   @HttpCode(200)
   async pushEvents(
-    @Body() action: DefaultAction | DefaultAction[],
+    @Body() userAction: AnyAction | AnyAction[],
     @User() user: IGoogleUser,
   ) {
-    if (Array.isArray(action)) {
-      action.forEach(singleAction =>
+    if (Array.isArray(userAction)) {
+      const actions: IAction[] = userAction.map(singleAction =>
         Object.assign(singleAction, {user: user.email}),
       );
+      return this.eventBus.emit(actions);
     } else {
-      action.user = user.email;
+      const action: IAction = {...userAction, user: user.email};
+      return this.eventBus.emit(action);
     }
-    return this.eventBus.emit(action);
   }
 }

@@ -5,7 +5,7 @@ import {ConfigService, EnvSettings} from '../src/config';
 import nock from 'nock';
 import {IGoogleUser} from '../src/modules/auth/types';
 import {E2EDriver} from './driver';
-import {MockDataBuilder} from './builder';
+import {E2EMockDataBuilder} from './builder';
 import cookieParser = require('cookie-parser');
 import {sanitizeUserEmail} from 'common/user-sanitizer';
 
@@ -34,7 +34,7 @@ const user2profile: IGoogleUser = {
 describe('Application (e2e)', () => {
   let app: INestApplication;
   let driver: E2EDriver;
-  let builder: MockDataBuilder;
+  let builder: E2EMockDataBuilder;
 
   const beforeAndAfter = () => {
     beforeEach(async () => {
@@ -49,7 +49,7 @@ describe('Application (e2e)', () => {
       app.use(cookieParser());
       await app.init();
       driver = new E2EDriver(app);
-      builder = new MockDataBuilder();
+      builder = new E2EMockDataBuilder();
     });
 
     afterEach(() => {

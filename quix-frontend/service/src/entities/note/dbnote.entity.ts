@@ -11,8 +11,8 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import {INote, IBaseNote} from 'shared/entities/note';
-import {DbNotebook} from './dbnotebook.entity';
-import {dbConf} from '../config/db-conf';
+import {DbNotebook} from '../notebook/dbnotebook.entity';
+import {dbConf} from '../../config/db-conf';
 
 @Entity({name: 'notes'})
 export class DbNote {

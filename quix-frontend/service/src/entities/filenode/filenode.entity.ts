@@ -13,9 +13,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import {IFile, FileType} from 'shared/entities/file';
-import {DbNotebook} from './dbnotebook.entity';
-import {DbFolder} from './folder.entity';
-import {dbConf} from '../config/db-conf';
+import {DbNotebook} from '../notebook/dbnotebook.entity';
+import {DbFolder} from '../folder/folder.entity';
+import {dbConf} from '../../config/db-conf';
 import {IUser} from 'shared/dist';
 
 @Entity({name: 'tree_nodes'})

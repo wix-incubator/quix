@@ -12,6 +12,7 @@ import {QuixEventBusDriver} from './quix-event-bus.driver';
 import {range, reject, find} from 'lodash';
 import {EntityType} from 'common/entity-type.enum';
 import {MockDataBuilder} from 'test/builder';
+import {IAction} from './infrastructure/types';
 
 jest.setTimeout(30000);
 
@@ -28,7 +29,7 @@ describe('event sourcing', () => {
 
   beforeAll(async () => {
     driver = await QuixEventBusDriver.create(defaultUser);
-    ({eventBus, module, mockBuilder} = await driver);
+    ({eventBus, module, mockBuilder} = driver);
   });
 
   beforeEach(() => driver.clearDb());
@@ -38,7 +39,7 @@ describe('event sourcing', () => {
 
   describe('notebooks::', () => {
     let id: string;
-    let createAction: NotebookActions;
+    let createAction: IAction<NotebookActions>;
 
     beforeEach(() => {
       [id, createAction] = mockBuilder.createNotebookAction();

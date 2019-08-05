@@ -14,7 +14,7 @@ export class DbAction<T = IEventData, N extends string = string>
   data!: T;
 
   @Column(dbConf.shortTextField)
-  user?: string;
+  user!: string;
 
   @Index()
   @Column({...dbConf.eventsTimestamp, primary: true, name: 'date_created'})

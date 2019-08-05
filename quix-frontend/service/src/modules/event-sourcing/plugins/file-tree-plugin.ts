@@ -8,8 +8,9 @@ import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {QuixHookNames} from '../types';
 import {last} from 'lodash';
 import {FileType} from 'shared/entities/file';
-import {FileTreeRepository} from 'entities/filenode.repository';
+import {FileTreeRepository} from 'entities/filenode/filenode.repository';
 import {BadAction} from 'errors';
+import {IAction} from '../infrastructure/types';
 
 @Injectable()
 export class FileTreePlugin implements EventBusPlugin {
@@ -31,7 +32,7 @@ export class FileTreePlugin implements EventBusPlugin {
 
     api.hooks.listen(
       QuixHookNames.VALIDATION,
-      async (action: FileActions | NotebookActions, hookApi) => {
+      async (action: IAction<FileActions | NotebookActions>, hookApi) => {
         switch (action.type) {
           case FileActionTypes.createFile: {
             const {file} = action;
@@ -65,7 +66,7 @@ export class FileTreePlugin implements EventBusPlugin {
 
     api.hooks.listen(
       QuixHookNames.PROJECTION,
-      async (action: FileActions | NotebookActions, hookApi) => {
+      async (action: IAction<FileActions | NotebookActions>, hookApi) => {
         switch (action.type) {
           case FileActionTypes.createFile: {
             const {file} = action;
@@ -74,14 +75,14 @@ export class FileTreePlugin implements EventBusPlugin {
 
             Object.assign(folder, {
               id: file.id,
-              owner: (action as any).user,
+              owner: action.user,
               name: file.name,
             });
             const node = new DbFileTreeNode();
 
             Object.assign(node, {
               id: file.id,
-              owner: (action as any).user,
+              owner: action.user,
               parent: parent ? new DbFileTreeNode(parent.id) : undefined,
               folder,
             });
@@ -120,15 +121,8 @@ export class FileTreePlugin implements EventBusPlugin {
             return this.fileTreeNodeRepo.moveTree(fileNode, parentNode);
           }
 
-          case FileActionTypes.toggleIsLiked: {
-            // const {id} = action;
-            // const folder = await this.folderRepo.findOne(id);
-            // if (folder) {
-            //   folder.isLiked = action.isLiked;
-            //   return this.folderRepo.save(folder);
-            // }
-            // throw new Error(`Can't find folder`);
-          }
+          case FileActionTypes.toggleIsLiked:
+            break;
 
           case FileActionTypes.deleteFile: {
             const fileNode: DbFileTreeNode = hookApi.context.get().fileNode;

@@ -1,21 +1,22 @@
 import {Injectable} from '@nestjs/common';
-import {InjectRepository, InjectEntityManager} from '@nestjs/typeorm';
-import {DbNotebook, DbFileTreeNode, DbFavorites} from 'entities';
-import {Repository, EntityManager} from 'typeorm';
-import {
-  notebookReducer,
-  NotebookActionTypes,
-  NotebookActions,
-} from 'shared/entities/notebook';
-import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
-import {QuixHookNames} from '../types';
-import {last} from 'lodash';
-import {FileType} from 'shared/entities/file';
-import {FileTreeRepository} from 'entities/filenode.repository';
+import {InjectEntityManager} from '@nestjs/typeorm';
+import {DbFavorites, DbFileTreeNode, DbNotebook} from 'entities';
+import {FileTreeRepository} from 'entities/filenode/filenode.repository';
 import {
   convertDbNotebook,
   covertNotebookToDb,
-} from 'entities/dbnotebook.entity';
+} from 'entities/notebook/dbnotebook.entity';
+import {last} from 'lodash';
+import {FileType} from 'shared/entities/file';
+import {
+  NotebookActions,
+  NotebookActionTypes,
+  notebookReducer,
+} from 'shared/entities/notebook';
+import {EntityManager} from 'typeorm';
+import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
+import {IAction} from '../infrastructure/types';
+import {QuixHookNames} from '../types';
 
 @Injectable()
 export class NotebookPlugin implements EventBusPlugin {
@@ -32,17 +33,20 @@ export class NotebookPlugin implements EventBusPlugin {
 
     api.setEventFilter(type => handledEvents.includes(type));
 
-    api.hooks.listen(QuixHookNames.VALIDATION, (action: NotebookActions) => {
-      switch (action.type) {
-        case NotebookActionTypes.updateName:
-        case NotebookActionTypes.deleteNotebook:
-        case NotebookActionTypes.createNotebook:
-      }
-    });
+    api.hooks.listen(
+      QuixHookNames.VALIDATION,
+      (action: IAction<NotebookActions>) => {
+        switch (action.type) {
+          case NotebookActionTypes.updateName:
+          case NotebookActionTypes.deleteNotebook:
+          case NotebookActionTypes.createNotebook:
+        }
+      },
+    );
 
     api.hooks.listen(
       QuixHookNames.PROJECTION,
-      async (action: NotebookActions) =>
+      async (action: IAction<NotebookActions>) =>
         this.em.transaction(async transactionManager => {
           await this.projectNotebook(action, transactionManager);
           await this.projectFileTree(action, transactionManager);
@@ -51,7 +55,10 @@ export class NotebookPlugin implements EventBusPlugin {
     );
   };
 
-  private async projectNotebook(action: NotebookActions, tm: EntityManager) {
+  private async projectNotebook(
+    action: IAction<NotebookActions>,
+    tm: EntityManager,
+  ) {
     const dbModel =
       action.type === NotebookActionTypes.createNotebook
         ? undefined
@@ -68,7 +75,10 @@ export class NotebookPlugin implements EventBusPlugin {
     }
   }
 
-  private async projectFileTree(action: NotebookActions, tm: EntityManager) {
+  private async projectFileTree(
+    action: IAction<NotebookActions>,
+    tm: EntityManager,
+  ) {
     switch (action.type) {
       case NotebookActionTypes.createNotebook: {
         const {notebook} = action;
@@ -77,7 +87,7 @@ export class NotebookPlugin implements EventBusPlugin {
 
         node.id = notebook.id;
         node.notebookId = notebook.id;
-        node.owner = (action as any).user;
+        node.owner = action.user;
         node.type = FileType.notebook;
         node.parent = parent ? new DbFileTreeNode(parent.id) : undefined;
 
@@ -86,7 +96,10 @@ export class NotebookPlugin implements EventBusPlugin {
     }
   }
 
-  private async projectFavorites(action: NotebookActions, tm: EntityManager) {
+  private async projectFavorites(
+    action: IAction<NotebookActions>,
+    tm: EntityManager,
+  ) {
     switch (action.type) {
       case NotebookActionTypes.deleteNotebook: {
         return tm.delete(DbFavorites, {

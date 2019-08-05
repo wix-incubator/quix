@@ -5,7 +5,7 @@ import {INotebook} from 'shared';
 import {DbNotebook, DbFavorites, DbUser} from 'entities';
 import {FoldersService} from '../folders/folders.service';
 import {EntityType} from 'common/entity-type.enum';
-import {convertDbNotebook} from 'entities/dbnotebook.entity';
+import {convertDbNotebook} from 'entities/notebook/dbnotebook.entity';
 
 @Injectable()
 export class NotebookService {
