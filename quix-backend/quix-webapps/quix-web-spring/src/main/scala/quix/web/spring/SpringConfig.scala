@@ -197,8 +197,8 @@ class ModulesConfiguration extends LazyLogging {
     "OK"
   }
 
-  @Bean def initBigquery(env: Environment) = {
-    def getBigqueryModules() = {
+  @Bean def initBigQuery(env: Environment) = {
+    def getBigQueryModules() = {
       val modules = env.getProperty("modules", "").split(",")
 
       modules.filter { module =>
@@ -206,7 +206,7 @@ class ModulesConfiguration extends LazyLogging {
       }
     }
 
-    def getBigqueryModule(bigquery: String) = {
+    def getBigQueryModule(bigquery: String) = {
       val config = {
         val output = env.getProperty(s"modules.$bigquery.output",
           env.getProperty("athena.output", ""))
@@ -225,25 +225,25 @@ class ModulesConfiguration extends LazyLogging {
         val awsSecretKey = env.getProperty(s"modules.$bigquery.aws.secret.key",
           env.getProperty("aws.secret.key"))
 
-        BigqueryConfig(output, region, database, firstEmptyStateDelay, requestTimeout, awsAccessKeyId, awsSecretKey)
+        BigQueryConfig1(output, region, database, firstEmptyStateDelay, requestTimeout, awsAccessKeyId, awsSecretKey)
       }
 
       logger.warn(s"event=[spring-config] bean=[AthenaConfig] config=$config")
 
       val executor = BigqueryQueryExecutor(config)
 
-      val bigqueryCatalogs = new BigqueryCatalogs(executor)
-      val catalogs = new RefreshableCatalogs(bigqueryCatalogs, config.firstEmptyStateDelay, 1000L * 60 * 5)
-      val autocomplete = new RefreshableAutocomplete(new BigqueryAutocomplete(bigqueryCatalogs), config.firstEmptyStateDelay, 1000L * 60 * 5)
-      val tables = new BigqueryTables(executor)
+      val bigQueryCatalogs = new BigQueryCatalogs1(executor)
+      val catalogs = new RefreshableCatalogs(bigQueryCatalogs, config.firstEmptyStateDelay, 1000L * 60 * 5)
+      val autocomplete = new RefreshableAutocomplete(new BigQueryAutocomplete1(bigQueryCatalogs), config.firstEmptyStateDelay, 1000L * 60 * 5)
+      val tables = new BigQueryTables1(executor)
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
       BigqueryQuixModule(executor, db)
     }
 
-    for (module <- getBigqueryModules())
-      Registry.modules.update(module, getBigqueryModule(module))
+    for (module <- getBigQueryModules())
+      Registry.modules.update(module, getBigQueryModule(module))
 
     "OK"
   }

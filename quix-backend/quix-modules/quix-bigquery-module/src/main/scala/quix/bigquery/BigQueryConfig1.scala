@@ -1,6 +1,6 @@
 package quix.bigquery
 
-case class BigqueryConfig(output: String,
+case class BigQueryConfig1(output: String,
                         region: String,
                         database: String,
                         firstEmptyStateDelay : Long,

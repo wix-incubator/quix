@@ -5,7 +5,7 @@ import quix.api.db._
 import quix.api.execute.{AsyncQueryExecutor, Batch}
 import quix.core.executions.SingleQueryExecutor
 
-class BigqueryTables(val queryExecutor: AsyncQueryExecutor[String, Batch]) extends Tables with SingleQueryExecutor {
+class BigQueryTables1(val queryExecutor: AsyncQueryExecutor[String, Batch]) extends Tables with SingleQueryExecutor {
   override def get(catalog: String, schema: String, table: String): Task[Table] = {
     val sql = s"describe `$schema`.`$table`"
 

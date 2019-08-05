@@ -17,7 +17,7 @@ import java.util.UUID
 
 import scala.concurrent.duration.{FiniteDuration, _}
 
-class BigqueryQueryExecutor(val initialAdvanceDelay: FiniteDuration = 100.millis,
+class BigQueryQueryExecutor1(val initialAdvanceDelay: FiniteDuration = 100.millis,
                             val maxAdvanceDelay: FiniteDuration = 15.seconds)
   extends AsyncQueryExecutor[String, Batch] with LazyLogging {
 
@@ -29,8 +29,8 @@ class BigqueryQueryExecutor(val initialAdvanceDelay: FiniteDuration = 100.millis
 
 
 object BigqueryQueryExecutor {
-  def apply(config: BigqueryConfig) = {
+  def apply(config: BigQueryConfig1) = {
 
-    new BigqueryQueryExecutor()
+    new BigQueryQueryExecutor1()
   }
 }

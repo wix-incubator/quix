@@ -3,7 +3,7 @@ package quix.bigquery
 import monix.eval.Task
 import quix.api.db.{Autocomplete, Catalog, Catalogs}
 
-class BigqueryAutocomplete(val catalogs: Catalogs) extends Autocomplete {
+class BigQueryAutocomplete1(val catalogs: Catalogs) extends Autocomplete {
 
   override def fast: Task[Map[String, List[String]]] = catalogs.fast.map(extractAutoCompleteItems)
 

@@ -7,7 +7,7 @@ import com.typesafe.scalalogging.LazyLogging
 
 import scala.collection.JavaConverters._
 
-object TryBigQuery extends LazyLogging {
+object TryBigQueryOnWeb extends LazyLogging {
 
   def main(args: Array[String]): Unit = {
 
