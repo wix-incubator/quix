@@ -13,6 +13,18 @@ export const setSearchPage = (searchPage: number, origin: 'user' | 'machine' = '
   origin
 });
 
+export const setImportType = (importType: string, origin: 'user' | 'machine' = 'machine') => ({
+  type: 'app.setImportType',
+  importType,
+  origin
+});
+
+export const setImportValue = (importValue: string, origin: 'user' | 'machine' = 'machine') => ({
+  type: 'app.setImportValue',
+  importValue,
+  origin
+});
+
 export const addRunner = (id: string, runner: Runner, note: INote, notebook: INotebook, origin: 'user' | 'machine' = 'machine') => ({
   type: 'app.addRunner',
   id,

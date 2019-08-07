@@ -3,7 +3,7 @@ import './files.scss';
 
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {App as App} from '../../lib/app';
+import {App} from '../../lib/app';
 import {IStateComponentConfig} from '../../lib/app/services/plugin-builder';
 import {cache} from '../../store';
 import {initEvents} from '../../services/scope';

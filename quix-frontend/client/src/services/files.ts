@@ -43,6 +43,11 @@ export const fetchFile = (id: string): Promise<IFile> => {
     .then(files => files.find(file => file.id === id));
 }
 
+export const fetchFileByName = (name: string): Promise<IFile> => {
+  return cache.files.get()
+    .then(files => files.find(file => file.name === name));
+}
+
 export const fetchFileParent = (id: string): Promise<IFile> => {
   return fetchFile(id)
     .then(file => fetchFile(last<any>(file.path).id));
