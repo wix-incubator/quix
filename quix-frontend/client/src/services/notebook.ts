@@ -1,11 +1,12 @@
 import {isArray} from 'lodash';
 import {Store} from '../lib/store';
 import {App} from '../lib/app';
-import {IFolder, INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem, createNote} from '../../../shared';
-import {FileType} from '../../../shared/entities/file';
+import {INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem, createNote} from '../../../shared';
+import {FileType, IFile} from '../../../shared/entities/file';
 import {fetchRootPath, goUp, goToFile} from './';
+import { createFileByNamePath as addFileByNamePath } from './files';
 
-const resolvePath = async (parentOrPath: IFolder | IFilePathItem[]) => {
+const resolvePath = async (parentOrPath: IFile | IFilePathItem[]) => {
   const path = isArray(parentOrPath) ? parentOrPath : [...parentOrPath.path, {
     id: parentOrPath.id,
     name: parentOrPath.name
@@ -14,19 +15,45 @@ const resolvePath = async (parentOrPath: IFolder | IFilePathItem[]) => {
   return path.length ? path : fetchRootPath();
 }
 
-export const addNotebook = async (store: Store, app: App, parentOrPath: IFolder | IFilePathItem[], props: Partial<INotebook> = {}) => {
+export const addNotebook = async (store: Store, app: App, parentOrPath: IFile | IFilePathItem[], props: Partial<INotebook> = {}): Promise<INotebook> => {
   const path = await resolvePath(parentOrPath);
   const notebook = createNotebook(path, {...props, owner: app.getUser().getEmail()});
   const note = createNote(notebook.id);
 
-  store.dispatchAndLog([
+  return store.dispatchAndLog([
     NotebookActions.createNotebook(notebook.id, notebook),
     NoteActions.addNote(note.id, note)
   ])
-    .then(() => goToFile(app, {...notebook, type: FileType.notebook}, {isNew: true}));
+    .then(() => goToFile(app, {...notebook, type: FileType.notebook}, {isNew: true}))
+    .then(() => notebook);
 }
 
-export const copyNotebook = async (store: Store, app: App, parentOrPath: IFolder | IFilePathItem[], sourceNotebook: INotebook) => {
+export const addNote = async (
+  store: Store,
+  app: App,
+  notebookId: string,
+  type: string,
+  props: Partial<INote> = {},
+  onCreate?: (note: INote) => void,
+): Promise<INote> => {
+  const note = createNote(notebookId, {...props, type});
+
+  onCreate(note);
+  
+  return store.dispatchAndLog(NoteActions.addNote(note.id, note))
+    .then(() => note);
+}
+
+export const addNotebookByNamePath = async (store: Store, app: App, namePath: string[]): Promise<INotebook> => {
+  return addFileByNamePath<INotebook>(
+    store,
+    app,
+    namePath,
+    (name, parent) => addNotebook(store, app, parent, {name})
+  );
+}
+
+export const copyNotebook = async (store: Store, app: App, parentOrPath: IFile | IFilePathItem[], sourceNotebook: INotebook) => {
   const {name, notes} = sourceNotebook;
   const path = await resolvePath(parentOrPath);
 

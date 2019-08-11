@@ -3,6 +3,10 @@ import {Store} from './lib/store';
 import {isOwner} from './services';
 import {waitForEntity} from './store';
 
+export const Time = {
+  Format: 'YYYY/MM/DD HH:mm',
+};
+
 export const DB = {
   SampleLimit: 1000,
   RootName: '__root',
@@ -14,6 +18,10 @@ export const Search = {
   MaxPaginationButtons: 10,
   PaginationEdgePages: 2,
   PaginationMiddlePages: 5
+};
+
+export const Import = {
+  FolderName: '__imports__'
 };
 
 export const QuixFolder = {

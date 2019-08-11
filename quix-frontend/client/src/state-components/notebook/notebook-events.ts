@@ -3,12 +3,13 @@ import {utils} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {toast} from '../../lib/ui';
 import {App} from '../../lib/app';
-import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem, createNote} from '../../../../shared';
+import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem} from '../../../../shared';
 import {FileType} from '../../../../shared/entities/file';
 import {IScope} from './notebook-types';
 import {setNotebook, setNote, queueNote, toggleMark, unmarkAll} from '../../store/notebook/notebook-actions';
 import {saveQueuedNotes, deleteNotebook, copyNotebook, goToFile, goToRoot, prompt, copyNote} from '../../services';
 import {removeRunner, addRunner} from '../../store/app/app-actions';
+import { addNote } from '../../services/notebook';
 
 export const onBreadcrumbClick = (scope: IScope, store: Store, app: App) => (file: IFilePathItem) => {
   const {notebook: {owner, path}} = scope.vm.state.value();
@@ -88,14 +89,11 @@ export const onNoteRun = (scope: IScope, store: Store, app: App) => () => {
 
 export const onNoteAdd = (scope: IScope, store: Store, app: App) => (type: any) => {
   const {notebook} = scope.vm.state.value();
-  const {id} = notebook;
-  const note = createNote(id, {type});
-  
-  store.dispatchAndLog(NoteActions.addNote(note.id, note));
-  store.dispatch(setNote(note));
-  
-  const vm = scope.vm.notes.get(note);
-  vm.focusName = true;
+
+  addNote(store, app, notebook.id, type, {}, note => {
+    scope.vm.notes.get(note).focusName = true;
+    store.dispatch(setNote(note));
+  });
 }
 
 export const onNoteClone = (scope: IScope, store: Store, app: App) => (note: INote) => {

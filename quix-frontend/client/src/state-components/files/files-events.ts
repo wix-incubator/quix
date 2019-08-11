@@ -59,17 +59,16 @@ export const onGoToRootClick = (scope: IScope, store: Store, app: App) => () => 
   goToRoot(app);
 };
 
-export const onFolderAdd = (scope: IScope, store: Store, app: App) => async () => {
+export const onFolderAdd = (scope: IScope, store: Store, app: App) => () => {
   const {folder} = scope.vm.state.value();
-  const {file} = await addFolder(store, app, folder);
-
-  utils.scope.safeApply(scope, () => {
-    scope.vm.files.get(file).isNew = true;
-  });
+  
+  addFolder(store, app, folder)
+    .then(newFolder => scope.vm.files.get(newFolder).isNew = true);
 };
 
 export const onNotebookAdd = (scope: IScope, store: Store, app: App) => () => {
   const {folder} = scope.vm.state.value();
+
   addNotebook(store, app, folder);
 };
 

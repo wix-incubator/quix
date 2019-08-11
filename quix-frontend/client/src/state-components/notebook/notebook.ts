@@ -4,7 +4,7 @@ import './notebook.scss';
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
-// import {IStateComponentConfig} from '../../lib/app/services/plugin-instance';
+import {IStateComponentConfig} from '../../lib/app/services/plugin-builder';
 import {cache} from '../../store';
 import {initEvents} from '../../services/scope';
 import {IScope} from './notebook-types';
@@ -55,4 +55,4 @@ export default (app: App, store: Store) => ({
 
     initEvents(scope, conf, app, store, Events);
   }
-}) as any;
+}) as IStateComponentConfig;

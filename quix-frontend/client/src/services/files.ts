@@ -1,12 +1,17 @@
 import {isArray, last, takeWhile} from 'lodash';
 import {Store} from '../lib/store';
 import {App} from '../lib/app';
-import {IFile, FileActions, createFolder, IFolder, IFilePathItem} from '../../../shared';
+import {IFile, FileActions, createFolder, IFilePathItem} from '../../../shared';
 import {FileType} from '../../../shared/entities/file';
 import {isOwner} from './permissions';
 import {cache} from '../store';
 
-export const addFolder = async (store: Store, app: App, parentOrPath: IFolder | IFilePathItem[], props: Partial<IFile> = {}) => {
+export const addFolder = async (
+  store: Store,
+  app: App,
+  parentOrPath: IFile | IFilePathItem[],
+  props: Partial<IFile> = {}
+): Promise<IFile> => {
   let path = isArray(parentOrPath) ? parentOrPath : [...parentOrPath.path, {
     id: parentOrPath.id,
     name: parentOrPath.name
@@ -16,10 +21,11 @@ export const addFolder = async (store: Store, app: App, parentOrPath: IFolder | 
 
   const folder = createFolder(path, {...props, owner: app.getUser().getEmail()});
 
-  return store.dispatchAndLog(FileActions.createFile(folder.id, folder));
+  return store.dispatchAndLog(FileActions.createFile(folder.id, folder))
+    .then(() => folder);
 }
 
-export const deleteFolder = (store: Store, app: App, folder: IFolder | IFile) => {
+export const deleteFolder = (store: Store, app: App, folder: IFile) => {
   const {id} = folder;
 
   return store.dispatchAndLog(FileActions.deleteFile(id)).then(() => {
@@ -43,9 +49,32 @@ export const fetchFile = (id: string): Promise<IFile> => {
     .then(files => files.find(file => file.id === id));
 }
 
-export const fetchFileByName = (name: string): Promise<IFile> => {
+export const fetchFileByName = (name: string, parent?: IFile): Promise<IFile> => {
   return cache.files.get()
-    .then(files => files.find(file => file.name === name));
+    .then(files => files.find(file => file.name === name && (!parent || (file.path.length && last<IFile>(file.path).id === parent.id))));
+}
+
+export const createFileByNamePath = <T>(
+  store: Store,
+  app: App,
+  namePath: string[],
+  fileCreator: (name: string, parent: IFile) => Promise<T>): Promise<T> => {
+    return namePath.reduce<Promise<IFile>>(async (res, name, index) => {
+      const parent = await res;
+      let file = await fetchFileByName(name, parent);
+
+      if (!file) {
+        const isFolder = index < namePath.length - 1;
+
+        if (isFolder) {
+          file = file || await addFolder(store, app, parent, {name});
+        } else {
+          file = fileCreator(name, parent) as any;
+        }
+      }
+
+      return file;
+    }, fetchRoot()) as unknown as Promise<T>;
 }
 
 export const fetchFileParent = (id: string): Promise<IFile> => {
