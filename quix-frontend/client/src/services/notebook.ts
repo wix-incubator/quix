@@ -15,7 +15,12 @@ const resolvePath = async (parentOrPath: IFile | IFilePathItem[]) => {
   return path.length ? path : fetchRootPath();
 }
 
-export const addNotebook = async (store: Store, app: App, parentOrPath: IFile | IFilePathItem[], props: Partial<INotebook> = {}): Promise<INotebook> => {
+export const addNotebook = async (
+  store: Store,
+  app: App,
+  parentOrPath: IFile | IFilePathItem[],
+  props: Partial<INotebook> = {}
+): Promise<INotebook> => {
   const path = await resolvePath(parentOrPath);
   const notebook = createNotebook(path, {...props, owner: app.getUser().getEmail()});
   const note = createNote(notebook.id);
@@ -23,9 +28,7 @@ export const addNotebook = async (store: Store, app: App, parentOrPath: IFile | 
   return store.dispatchAndLog([
     NotebookActions.createNotebook(notebook.id, notebook),
     NoteActions.addNote(note.id, note)
-  ])
-    .then(() => goToFile(app, {...notebook, type: FileType.notebook}, {isNew: true}))
-    .then(() => notebook);
+  ]).then(() => notebook);
 }
 
 export const addNote = async (
@@ -38,7 +41,9 @@ export const addNote = async (
 ): Promise<INote> => {
   const note = createNote(notebookId, {...props, type});
 
-  onCreate(note);
+  if (onCreate) {
+    onCreate(note);
+  }
   
   return store.dispatchAndLog(NoteActions.addNote(note.id, note))
     .then(() => note);
@@ -102,6 +107,10 @@ export const saveQueuedNotes = (store: Store) => {
 
 export const hasQueuedNotes = (store: Store) => {
   return store.getState('notebook.queue.size') > 0;
+}
+
+export const goToNotebook = (app: App, notebook: INotebook, options?: {isNew?: boolean; note?: string}) => {
+  return goToFile(app, {...notebook, type: FileType.notebook}, options);
 }
 
 export const goToExamples = (app: App) => {

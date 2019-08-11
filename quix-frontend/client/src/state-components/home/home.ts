@@ -6,6 +6,7 @@ import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
 import {addNotebook, goToExamples, goToRoot} from '../../services';
+import { goToNotebook } from '../../services/notebook';
 
 export default (app: App, store: Store) => ({
   name: 'home',
@@ -20,7 +21,8 @@ export default (app: App, store: Store) => ({
           goToRoot(app);
         },
         onNotebookAdd() {
-          addNotebook(store, app, []);
+          addNotebook(store, app, [])
+            .then(notebook => goToNotebook(app, notebook, {isNew: true}));
         },
         onExamplesClick() {
           goToExamples(app);

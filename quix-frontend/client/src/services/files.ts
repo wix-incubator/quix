@@ -96,7 +96,7 @@ export const goToFile = (app: App, file: Pick<IFile, 'id' | 'type' | 'owner' | '
 }) => {
   const id = isRoot(file) && isOwner(app, file) ? null : file.id;
 
-  app.go(file && file.type === FileType.notebook ? 'notebook' : 'files', {
+  return app.go(file && file.type === FileType.notebook ? 'notebook' : 'files', {
     id,
     isNew: options.isNew,
     note: options.note

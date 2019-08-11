@@ -7,23 +7,36 @@ import {App} from '../../lib/app';
 import {IStateComponentConfig} from '../../lib/app/services/plugin-builder';
 import {setImportType, setImportValue} from '../../store/app/app-actions';
 import { Import, Time } from '../../config';
-import { addNotebookByNamePath, addNote } from '../../services/notebook';
+import { addNotebookByNamePath, addNote, goToNotebook } from '../../services/notebook';
+import { showToast } from '../../lib/ui/services/toast';
+import { pluginManager } from '../../plugins';
 
-const importNote = async (app: App, store: Store, {type, value}) => {
+const importNote = async (scope, app: App, store: Store, {type, value}) => {
   if (!type || !value) {
+    app.getNavigator().goHome();
     return;
   }
 
-  const noteName = moment().format(Time.Format);
+  if (!pluginManager.getPluginById(type, 'note')) {
+    scope.error = `"${type}" doesn't match any known note type`;
+    return;
+  }
+
   const notebook = await addNotebookByNamePath(store, app, [Import.FolderName, type]);
   const note = await addNote(store, app, notebook.id, type, {
-    name: noteName,
+    name: moment().format(Time.Format),
     extraContent: {
       value
     }
   });
 
-  app.go('notebook', {id: notebook.id, note: note.id});
+  goToNotebook(app, notebook, {note: note.id});
+  
+  showToast({
+    text: `Imported a "${type}" note`,
+    type: 'success',
+    hideDelay: 3000,
+  });
 }
 
 const destroy = (store: Store) => store.dispatch([
@@ -39,7 +52,7 @@ export default (app: App, store: Store) => ({
     importValue: setImportValue,
   },
   scope: {
-    import: (scope, imp) => importNote(app, store, imp),
+    import: (scope, imp) => importNote(scope, app, store, imp),
   },
   controller: (scope, params, {syncUrl}) => {
     syncUrl();

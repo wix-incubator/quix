@@ -1,1 +1,16 @@
-importing
+<div class="bi-align bi-center bi-grow">
+  <div class="bi-center">
+    <div class="bi-empty-state--loading bi-fade-in" ng-if="!error">
+      <div class="bi-empty-state-content">Importing note...</div>
+    </div>
+    <div class="quix-empty-state bi-empty-state bi-fade-in" ng-if="error" data-hook="import-error">
+      <quix-image class="bi-empty-state-image" name="error_404.svg"></quix-image>
+      <div class="bi-empty-state-header">
+        Failed to import note
+      </div>
+      <div class="bi-empty-state-content">
+        {{::error}}
+      </div>
+    </div>
+  </div>
+</div>

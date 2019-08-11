@@ -16,6 +16,7 @@ import {
   StateManager,
   goToFile
 } from '../../services';
+import { goToNotebook } from '../../services/notebook';
 
 enum States {
   Initial,
@@ -67,7 +68,8 @@ export default (app: App, store: Store) => () => ({
             goToFile(app, folder);
           }, 
           onNotebookAdd() {
-            addNotebook(store, app, []);
+            addNotebook(store, app, [])
+              .then(notebook => goToNotebook(app, notebook, {isNew: true}));
           }
         });
 

@@ -6,7 +6,7 @@ import {App} from '../../lib/app';
 import {IScope} from './files-types';
 import {IFile, FileActions, NotebookActions} from '../../../../shared';
 import {FileType, IFilePathItem} from '../../../../shared/entities/file';
-import {addNotebook} from '../../services/notebook';
+import {addNotebook, goToNotebook} from '../../services/notebook';
 import {addFolder, deleteFolder, goToFile, goToRoot} from '../../services/files';
 import {setFolder, toggleMark, unmarkAll} from '../../store/folder/folder-actions';
 
@@ -69,7 +69,8 @@ export const onFolderAdd = (scope: IScope, store: Store, app: App) => () => {
 export const onNotebookAdd = (scope: IScope, store: Store, app: App) => () => {
   const {folder} = scope.vm.state.value();
 
-  addNotebook(store, app, folder);
+  addNotebook(store, app, folder)
+    .then(notebook => goToNotebook(app, notebook, {isNew: true}));
 };
 
 export const onMarkToggle = (scope: IScope, store: Store, app: App) => (file: IFile) => {
