@@ -1,4 +1,4 @@
-import {Column, Entity, Index, PrimaryColumn} from 'typeorm';
+import {Column, Entity, Index} from 'typeorm';
 import {IAction, IEventData} from '../../types';
 import {IDBAction} from '../types';
 import {dbConf} from '../../../../../config/db-conf';

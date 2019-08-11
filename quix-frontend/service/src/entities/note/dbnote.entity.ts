@@ -16,7 +16,7 @@ import {dbConf} from '../../config/db-conf';
 
 @Entity({name: 'notes'})
 export class DbNote {
-  @PrimaryColumn(dbConf.idColumn)
+  @PrimaryColumn({...dbConf.idColumn})
   id!: string;
 
   @Column({...dbConf.json, name: 'json_content'})

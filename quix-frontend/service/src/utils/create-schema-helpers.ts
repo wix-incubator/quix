@@ -20,7 +20,7 @@ export async function checkSchemaVersion(conn: Connection, logger: Logger) {
   }
 }
 
-export async function createIntialSchmeaIfNeeded(
+export async function createInitialSchemaIfNeeded(
   conn: Connection,
   dbName: string,
   logger: Logger,

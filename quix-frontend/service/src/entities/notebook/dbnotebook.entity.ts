@@ -18,7 +18,7 @@ import {extractOwnerDetails} from '../utils';
 
 @Entity({name: 'notebooks'})
 export class DbNotebook {
-  @PrimaryColumn(dbConf.idColumn)
+  @PrimaryColumn({...dbConf.idColumn})
   id!: string;
 
   @Column(dbConf.shortTextField)

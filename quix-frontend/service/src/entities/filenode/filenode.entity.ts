@@ -3,11 +3,8 @@ import {
   Entity,
   Index,
   PrimaryColumn,
-  TreeParent,
-  TreeChildren,
   OneToOne,
   JoinColumn,
-  Tree,
   ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
@@ -16,7 +13,7 @@ import {IFile, FileType} from 'shared/entities/file';
 import {DbNotebook} from '../notebook/dbnotebook.entity';
 import {DbFolder} from '../folder/folder.entity';
 import {dbConf} from '../../config/db-conf';
-import {IUser} from 'shared/dist';
+import {IUser} from 'shared';
 
 @Entity({name: 'tree_nodes'})
 export class DbFileTreeNode {
@@ -26,7 +23,7 @@ export class DbFileTreeNode {
       Object.assign(this, rest);
     }
   }
-  @PrimaryColumn(dbConf.idColumn)
+  @PrimaryColumn({...dbConf.idColumn})
   id!: string;
 
   @Index()

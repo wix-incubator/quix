@@ -10,7 +10,7 @@ import {map} from 'rxjs/operators';
 import {EnvSettings} from 'config';
 import {ConfigService} from 'config';
 import {sanitizeUserEmail, sanitizeUserName} from './user-sanitizer';
-import {IUser} from 'shared/dist';
+import {IUser} from 'shared';
 
 @Injectable()
 export class DemoModeInterceptor implements NestInterceptor {

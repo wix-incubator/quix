@@ -6,3 +6,4 @@ export {FileTreeRepository} from './filenode/filenode.repository';
 export {NoteRepository} from './note/note.repository';
 export {DbUser} from './user/user.entity';
 export {DbFavorites} from './favorites/favorites.entity';
+export {DbMetadata} from './version-metadata.entity';

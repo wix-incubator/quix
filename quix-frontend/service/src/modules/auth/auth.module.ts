@@ -71,6 +71,6 @@ export class AuthModule {
         providers: [fakeAuthServiceProvider, MockStrategy],
       };
     }
-    throw new Error('AuthModule:: Unkown auth type');
+    throw new Error('AuthModule:: Unknown auth type');
   }
 }

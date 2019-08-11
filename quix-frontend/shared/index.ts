@@ -1,6 +1,5 @@
 export {IEntity} from './entities/common/common-types';
 export {composeReducers} from './entities/common/create-reducer';
-export {IUser, createUser, createEmptyIUser} from './entities/user';
 
 export {
   INotebook,
@@ -41,6 +40,10 @@ export {
   noteListReducer,
   clientNoteListReducer
 } from './entities/note';
+
+export {
+  IUser, createEmptyIUser, createUser, UserActionTypes, UserActions
+} from './entities/user';
 
 export {ClientConfigHelper, ComponentTypes} from './config-helper/config-helper'
 export {MoudleEngineToSyntaxMap, ModuleEngineType} from './config-helper/consts'

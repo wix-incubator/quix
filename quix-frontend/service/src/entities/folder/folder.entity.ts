@@ -13,7 +13,7 @@ import {DbFileTreeNode} from '../filenode/filenode.entity';
 
 @Entity({name: 'folders'})
 export class DbFolder {
-  @PrimaryColumn(dbConf.idColumn)
+  @PrimaryColumn({...dbConf.idColumn})
   id!: string;
 
   @Column(dbConf.shortTextField)

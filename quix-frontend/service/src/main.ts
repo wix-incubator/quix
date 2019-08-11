@@ -11,7 +11,7 @@ import {DbMetadata} from 'entities/version-metadata.entity';
 import {Logger} from '@nestjs/common';
 import {
   checkSchemaVersion,
-  createIntialSchmeaIfNeeded,
+  createInitialSchemaIfNeeded,
   isMasterProcess,
 } from './utils/create-schema-helpers';
 import {retry} from './utils/retry-promise';
@@ -27,7 +27,7 @@ async function bootstrap() {
         .forNtimes(5)
         .andWaitXmilliseconds(2000);
 
-      await createIntialSchmeaIfNeeded(conn, env.DbName, logger);
+      await createInitialSchemaIfNeeded(conn, env.DbName, logger);
       await checkSchemaVersion(conn, logger);
 
       await conn.close();

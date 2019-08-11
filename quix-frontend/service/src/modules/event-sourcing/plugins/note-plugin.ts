@@ -16,6 +16,7 @@ export class NotePlugin implements EventBusPlugin {
   constructor(
     @InjectRepository(NoteRepository)
     private noteRepository: NoteRepository,
+    @InjectRepository(NotebookRepository)
     private notebookRepository: NotebookRepository,
   ) {}
 

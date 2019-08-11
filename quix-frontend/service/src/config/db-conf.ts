@@ -5,7 +5,7 @@ import {ContentSearch, searchTextType} from 'modules/search/types';
 import {escape} from 'mysql';
 import {EntityType} from 'common/entity-type.enum';
 
-/* A comptability layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
+/* A compatibility layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
 interface DbColumnConf {
   json: ColumnOptions;
   shortTextField: ColumnOptions;

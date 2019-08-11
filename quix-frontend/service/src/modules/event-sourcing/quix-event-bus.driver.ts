@@ -15,6 +15,7 @@ import {
   DbNotebook,
   FileTreeRepository,
   DbFavorites,
+  DbUser,
 } from 'entities';
 import {MockDataBuilder} from '../../../test/builder';
 import {Connection, Repository} from 'typeorm';
@@ -56,6 +57,7 @@ export class QuixEventBusDriver {
               DbNotebook,
               DbAction,
               DbFavorites,
+              DbUser,
             ]),
           inject: [ConfigService],
         }),

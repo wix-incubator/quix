@@ -19,7 +19,7 @@ export class DbUser {
   @Column(dbConf.userAvatar)
   avatar?: string;
 
-  @Column({...dbConf.idColumn, name: 'root_folder'})
+  @Column({...dbConf.idColumn, name: 'root_folder', unique: false})
   rootFolder!: string;
 
   @Column({...dbConf.json, name: 'json_content'})
@@ -30,9 +30,13 @@ export class DbUser {
 
   @CreateDateColumn(dbConf.dateCreated)
   dateCreated!: number;
+
+  constructor(base: Partial<DbUser>) {
+    Object.assign(this, base);
+  }
 }
 
-export const dbUserToUser = (dbuser: DbUser): IUser => {
+export const dbUserToUser = (dbUser: DbUser): IUser => {
   const {
     jsonContent,
     avatar,
@@ -41,7 +45,7 @@ export const dbUserToUser = (dbuser: DbUser): IUser => {
     id,
     dateCreated,
     dateUpdated,
-  } = dbuser;
+  } = dbUser;
   return {
     id,
     avatar: avatar || '',
@@ -51,4 +55,9 @@ export const dbUserToUser = (dbuser: DbUser): IUser => {
     dateCreated,
     dateUpdated,
   };
+};
+
+export const userToDbUser = (user: IUser) => {
+  const {avatar, email, id, name, rootFolder} = user;
+  return new DbUser({avatar, id, name, rootFolder});
 };
