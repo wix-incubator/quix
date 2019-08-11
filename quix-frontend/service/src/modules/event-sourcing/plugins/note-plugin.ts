@@ -1,11 +1,13 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DbNote, NoteRepository} from 'entities';
+import {DbNote, NoteRepository, DbNotebook} from 'entities';
 import {convertDbNote, convertNoteToDb} from 'entities/note/dbnote.entity';
 import {NoteActions, NoteActionTypes, noteReducer} from 'shared/entities/note';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {QuixHookNames} from '../types';
 import {IAction} from '../infrastructure/types';
+import {extractEventNames, assertOwner} from './utils';
+import {NotebookRepository} from 'entities/notebook/notebook.repository';
 
 @Injectable()
 export class NotePlugin implements EventBusPlugin {
@@ -14,22 +16,33 @@ export class NotePlugin implements EventBusPlugin {
   constructor(
     @InjectRepository(NoteRepository)
     private noteRepository: NoteRepository,
+    private notebookRepository: NotebookRepository,
   ) {}
 
   registerFn: EventBusPluginFn = api => {
-    const handledEvents: string[] = Object.entries(NoteActionTypes).map(
-      ([_, s]) => s,
-    );
+    const handledEvents: string[] = extractEventNames(NoteActionTypes);
+
     api.setEventFilter(type => handledEvents.includes(type));
+
     api.hooks.listen(
       QuixHookNames.VALIDATION,
-      (action: IAction<NoteActions>) => {
+      async (action: IAction<NoteActions>) => {
+        let entity: DbNotebook | DbNote | null = null;
         switch (action.type) {
           case NoteActionTypes.addNote:
+            entity = await this.notebookRepository.findOneOrFail(
+              action.note.notebookId,
+            );
+
+            break;
           case NoteActionTypes.deleteNote:
           case NoteActionTypes.move:
           case NoteActionTypes.updateContent:
           case NoteActionTypes.updateName:
+            entity = await this.noteRepository.findOneOrFail(action.id);
+        }
+        if (entity) {
+          assertOwner(entity, action);
         }
       },
     );

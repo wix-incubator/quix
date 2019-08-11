@@ -7,7 +7,6 @@ export interface IBaseNote extends Omit<IEntity, 'ownerDetails'> {
   type: string;
   content: any;
   owner: string;
-  rank?: number; //TODO: TEMP, SHOULD BE REMOVED @aviad
 }
 
 export type INote = IBaseNote;

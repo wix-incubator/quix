@@ -17,6 +17,7 @@ import {EntityManager} from 'typeorm';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {IAction} from '../infrastructure/types';
 import {QuixHookNames} from '../types';
+import {assertOwner} from './utils';
 
 @Injectable()
 export class NotebookPlugin implements EventBusPlugin {
@@ -35,10 +36,14 @@ export class NotebookPlugin implements EventBusPlugin {
 
     api.hooks.listen(
       QuixHookNames.VALIDATION,
-      (action: IAction<NotebookActions>) => {
+      async (action: IAction<NotebookActions>) => {
         switch (action.type) {
           case NotebookActionTypes.updateName:
-          case NotebookActionTypes.deleteNotebook:
+          case NotebookActionTypes.deleteNotebook: {
+            const notebook = await this.em.findOneOrFail(DbNotebook, action.id);
+            assertOwner(notebook, action);
+            break;
+          }
           case NotebookActionTypes.createNotebook:
         }
       },

@@ -19,7 +19,7 @@ export const NoteActions = {
     id,
     newNotebookId
   }),
-  
+
   addNote: (id: string, note: INote) => {
     return {
       type: 'note.create' as const,
