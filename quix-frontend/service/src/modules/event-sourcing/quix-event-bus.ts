@@ -59,7 +59,7 @@ export class QuixEventBus<A extends IAction = IAction> {
   }
 
   async emit(action: A | A[]): Promise<void> {
-    this.logger.log(`got action ${JSON.stringify(action)}`);
+    // this.logger.log(`got action ${JSON.stringify(action)}`);
     if (Array.isArray(action)) {
       for (const a of action) {
         await this.bus.emit(a);

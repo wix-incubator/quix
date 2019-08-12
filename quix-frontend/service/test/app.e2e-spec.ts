@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import {Test, TestingModule} from '@nestjs/testing';
 import {AppModule} from './../src/app.module';
-import {INestApplication} from '@nestjs/common';
+import {INestApplication, Logger} from '@nestjs/common';
 import {ConfigService, EnvSettings} from '../src/config';
 import nock from 'nock';
 import {IGoogleUser} from '../src/modules/auth/types';
@@ -51,9 +51,14 @@ describe('Application (e2e)', () => {
       app.use(cookieParser());
       await app.init();
 
+      const configService: ConfigService = moduleFixture.get(ConfigService);
       const conn: Connection = moduleFixture.get(getConnectionToken());
-      await conn.dropDatabase();
-      await conn.runMigrations();
+      if (configService.getDbType() === 'mysql') {
+        await conn.dropDatabase();
+        await conn.runMigrations();
+      } else {
+        await conn.synchronize();
+      }
 
       driver = new E2EDriver(app);
       builder = new E2EMockDataBuilder();
