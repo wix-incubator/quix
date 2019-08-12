@@ -1,14 +1,10 @@
-import { AsyncSeriesHook } from 'tapable';
 import { TModuleComponentType, ModuleEngineType } from '../../../../shared/dist';
 import { Plugin, TPluginMap, resolvePluginType } from './plugin-types';
 
-export class PluginManager {
+export class PluginManager<H> {
   private readonly pool: Plugin[] = [];
-  public readonly hooks = {
-    import: new AsyncSeriesHook(['store', 'note', 'questionId']),
-  };
 
-  constructor(private readonly pluginFactory: any) { }
+  constructor(private readonly pluginFactory: any, public readonly hooks: H) { }
 
   private getPluginById<T extends TModuleComponentType>(id: string, type: T): TPluginMap[T] {
     const PluginClass = resolvePluginType(type);
