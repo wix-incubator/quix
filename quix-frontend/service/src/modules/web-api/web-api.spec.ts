@@ -414,9 +414,23 @@ describe('web-api module', () => {
 
   describe('favorites service', () => {
     it('get favorites per user', async () => {
+      const secondUser = 'secondUser@foo.com';
+      await userRepo.save({
+        id: defaultUser,
+        name: 'some name',
+        avatar: 'http://url',
+        rootFolder: 'someId',
+      });
+      await userRepo.save({
+        id: secondUser,
+        name: '2ndUser',
+        avatar: 'http://url',
+        rootFolder: 'someId2',
+      });
+
       const notebook = createNotebook(defaultUser);
       const favorite = createFavorite(
-        defaultUser,
+        secondUser,
         notebook.id,
         EntityType.Notebook,
       );
@@ -424,7 +438,7 @@ describe('web-api module', () => {
       await notebookRepo.save(notebook);
       await favoritesRepo.save(favorite);
 
-      const response = await favoritesService.getFavoritesForUser(defaultUser);
+      const response = await favoritesService.getFavoritesForUser(secondUser);
 
       expect(response).toEqual([
         {
@@ -432,6 +446,10 @@ describe('web-api module', () => {
           name: notebook.name,
           type: FileType.notebook,
           owner: notebook.owner,
+          ownerDetails: expect.objectContaining({
+            id: defaultUser,
+            name: 'some name',
+          }),
           isLiked: true,
           path: [],
           dateCreated: notebook.dateCreated,
