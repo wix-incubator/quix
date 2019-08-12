@@ -1,10 +1,18 @@
-export enum ModuleEngineType {
-  PRESTO = 'presto',
-  ATHENA = 'athena',
-  JDBC = 'jdbc'
+export type TModuleComponentType = 'note' | 'db';
+
+export enum ModuleComponentType {
+  Note = 'note',
+  Db = 'db',
 }
 
-export const MoudleEngineToSyntaxMap = {
+export enum ModuleEngineType {
+  Presto = 'presto',
+  Athena = 'athena',
+  Jdbc = 'jdbc',
+  Rupert = 'rupert',
+}
+
+export const ModuleEngineToSyntaxMap = {
   presto: 'presto',
-  athena: 'athena'
+  athena: 'athena',
 }

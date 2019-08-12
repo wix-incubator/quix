@@ -1,8 +1,8 @@
 import {NotePlugin} from '../../services/plugins';
 
 export class AthenaNotePlugin extends NotePlugin {
-  constructor(name: string) {
-    super(name, {
+  constructor(name: string, hooks: any) {
+    super(name, hooks, {
       syntaxValidation: true,
     });
   }

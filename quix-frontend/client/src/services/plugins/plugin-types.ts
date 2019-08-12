@@ -1,17 +1,15 @@
-import {IFile} from '../../../../shared';
+import { IFile, TModuleComponentType } from '../../../../shared';
 
-export type PluginType = 'note' | 'db';
-
-export const resolvePluginType = (type: PluginType) => {
+export const resolvePluginType = (type: TModuleComponentType) => {
   if (PluginMap[type]) {
     return PluginMap[type];
   }
 
-  throw new Error(`Unsupported plugin type "${type}"`);
+  throw new Error(`"${type}" doesn't mach any known plugin type`);
 }
 
 export class Plugin {
-  constructor (protected readonly id: string) {
+  constructor (protected readonly id: string, hooks: any) {
     
   }
 
@@ -21,10 +19,10 @@ export class Plugin {
 }
 
 export class NotePlugin extends Plugin {
-  constructor (id: string, private readonly config: {
+  constructor (id: string, hooks: any, private readonly config: {
     syntaxValidation: boolean;
   }) {
-    super(id);
+    super(id, hooks);
   }
 
   getConfig() {
@@ -33,8 +31,8 @@ export class NotePlugin extends Plugin {
 }
 
 export class DbPlugin extends Plugin {
-  constructor (id: string) {
-    super(id);
+  constructor (id: string, hooks: any) {
+    super(id, hooks);
   }
 
   getSampleQuery(table: IFile): string {
@@ -43,8 +41,8 @@ export class DbPlugin extends Plugin {
 }
 
 export const PluginMap = {
-  'note': NotePlugin,
-  'db': DbPlugin,
+  note: NotePlugin,
+  db: DbPlugin,
 }
 
 export type TPluginMap = {[K in keyof typeof PluginMap]: InstanceType<typeof PluginMap[K]>}

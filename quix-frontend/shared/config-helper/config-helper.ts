@@ -1,23 +1,18 @@
-// plugins: '${plugins}'  // e.g. [{id: 'presto', name: 'Presto', modules: ['note', 'db']}, {id: 'athena', name: 'Athena', modules: ['note', 'db']}], fetch some config from backend
-
-export enum ComponentTypes {
-  note = 'note',
-  db = 'db'
-}
+import { ModuleEngineType, ModuleComponentType } from './consts';
 
 interface ComponentConfigurationTypes {
-  [ComponentTypes.db]: {};
-  [ComponentTypes.note]: {};
+  [ModuleComponentType.Db]: {};
+  [ModuleComponentType.Note]: {};
 }
 
-type ComponentConfiguration = {[K in ComponentTypes]?: ComponentConfigurationTypes[K]}
+type ComponentConfiguration = {[K in ModuleComponentType]?: ComponentConfigurationTypes[K]}
 
 interface ConfigModule {
   id: string;
   name: string;
   components: ComponentConfiguration;
   syntax: string;
-  engine: 'jdbc' | 'presto' | 'athena';
+  engine: ModuleEngineType;
 }
 
 const defaultConfigData = {
@@ -63,7 +58,7 @@ export class ClientConfigHelper {
     return this.getModules().find(m => m.id === id);
   }
 
-  getModuleComponent<C extends ComponentTypes>(id: string, component: C) {
+  getModuleComponent<C extends ModuleComponentType>(id: string, component: C) {
     const m = this.getModule(id);
     return m && m.components[component];
   }
@@ -77,11 +72,11 @@ export class ClientConfigHelper {
     return this;
   }
 
-  getModulesByComponent(component: ComponentTypes) {
+  getModulesByComponent(component: ModuleComponentType) {
     return this.config.modules.filter(p => Object.keys(p.components).includes(component));
   }
 
-  addModuleComponent<C extends ComponentTypes>(moduleId: string, component: C, configuration: ComponentConfigurationTypes[C]) {
+  addModuleComponent<C extends ModuleComponentType>(moduleId: string, component: C, configuration: ComponentConfigurationTypes[C]) {
     const m = this.getModule(moduleId);
 
     if (m) {

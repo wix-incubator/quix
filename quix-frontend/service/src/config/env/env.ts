@@ -10,7 +10,7 @@ import {
   testingDefaults,
   envSettingsDefaults,
 } from './consts';
-import {ModuleEngineType, MoudleEngineToSyntaxMap} from 'shared';
+import {ModuleEngineType, ModuleEngineToSyntaxMap} from 'shared';
 
 let enviormentLoaded = false;
 export const loadEnv = () => {
@@ -118,10 +118,10 @@ const getModuleSettings = (moduleName: string, globalEnv: any) => {
   if (engine === undefined) {
     switch (moduleName) {
       case 'presto':
-        engine = ModuleEngineType.PRESTO;
+        engine = ModuleEngineType.Presto;
         break;
       case 'athena':
-        engine = ModuleEngineType.ATHENA;
+        engine = ModuleEngineType.Athena;
         break;
       default:
     }
@@ -136,11 +136,11 @@ const getModuleSettings = (moduleName: string, globalEnv: any) => {
   }
 
   switch (engine) {
-    case ModuleEngineType.PRESTO:
-      syntax = MoudleEngineToSyntaxMap[ModuleEngineType.PRESTO];
+    case ModuleEngineType.Presto:
+      syntax = ModuleEngineToSyntaxMap[ModuleEngineType.Presto];
       break;
-    case ModuleEngineType.ATHENA:
-      syntax = MoudleEngineToSyntaxMap[ModuleEngineType.ATHENA];
+    case ModuleEngineType.Athena:
+      syntax = ModuleEngineToSyntaxMap[ModuleEngineType.Athena];
       break;
     default: {
       syntax = globalEnv[syntaxEnvVar] as string;

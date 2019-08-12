@@ -1,7 +1,7 @@
 import template from './import.html';
 
 import moment from 'moment';
-import {initNgScope} from '../../lib/core';
+import {initNgScope, utils} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
 import {IStateComponentConfig} from '../../lib/app/services/plugin-builder';
@@ -24,19 +24,20 @@ const importNote = async (scope, app: App, store: Store, {type, value}) => {
 
   const notebook = await addNotebookByNamePath(store, app, [Import.FolderName, type]);
   const note = await addNote(store, app, notebook.id, type, {
-    name: moment().format(Time.Format),
-    extraContent: {
-      value
-    }
+    name: moment().format(Time.Format)
   });
 
-  goToNotebook(app, notebook, {note: note.id});
-  
-  showToast({
-    text: `Imported a "${type}" note`,
-    type: 'success',
-    hideDelay: 3000,
-  });
+  pluginManager.hooks.import.promise(store, note, value)
+    .then(() => {
+      goToNotebook(app, notebook, {note: note.id});
+
+      showToast({
+        text: `Imported a "${type}" note`,
+        type: 'success',
+        hideDelay: 3000,
+      });
+    })
+    .catch(e => utils.scope.safeDigest(scope, () => scope.error = e));
 }
 
 const destroy = (store: Store) => store.dispatch([

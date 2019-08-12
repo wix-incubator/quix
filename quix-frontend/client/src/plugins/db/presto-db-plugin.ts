@@ -4,8 +4,8 @@ import {DB} from '../../config';
 import {sanitizeTableToken} from '../../services';
 
 export class PrestoDbPlugin extends DbPlugin {
-  constructor(name: string) {
-    super(name);
+  constructor(name: string, hooks: any) {
+    super(name, hooks);
   }
 
   getSampleQuery(table: IFile) {

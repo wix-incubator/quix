@@ -1,37 +1,44 @@
-import {Plugin, PluginType, TPluginMap, resolvePluginType} from './plugin-types';
+import { AsyncSeriesHook } from 'tapable';
+import { TModuleComponentType, ModuleEngineType } from '../../../../shared/dist';
+import { Plugin, TPluginMap, resolvePluginType } from './plugin-types';
 
 export class PluginManager {
   private readonly pool: Plugin[] = [];
+  public readonly hooks = {
+    import: new AsyncSeriesHook(['store', 'note', 'questionId']),
+  };
 
-  private getPluginById<T extends PluginType>(id: string, type: T): TPluginMap[T] {
+  constructor(private readonly pluginFactory: any) { }
+
+  private getPluginById<T extends TModuleComponentType>(id: string, type: T): TPluginMap[T] {
     const PluginClass = resolvePluginType(type);
 
     return this.pool.find(p => p.getId() === id && p instanceof PluginClass) as any;
   }
 
-  private getPluginsByType<T extends PluginType>(type: T) {
+  private getPluginsByType<T extends TModuleComponentType>(type: T) {
     const pluginClass = resolvePluginType(type);
 
     return this.pool.filter(p => p instanceof pluginClass);
   }
 
-  private getPluginIdsByType<T extends PluginType>(type: T) {
+  private getPluginIdsByType<T extends TModuleComponentType>(type: T) {
     return this.getPluginsByType(type).map(p => p.getId());
   }
 
-  addPlugin(plugin: Plugin) {
-    this.pool.push(plugin);
+  add<T extends TModuleComponentType>(type: T) {
+    return (id: string, engine: ModuleEngineType) => this.pool.push(this.pluginFactory[type](id, engine, this.hooks));
   }
 
-  get<T extends PluginType>(type: T) {
+  get<T extends TModuleComponentType>(type: T) {
    return (id: string) => this.getPluginById(id, type);
   }
 
-  all<T extends PluginType>(type: T) {
+  all<T extends TModuleComponentType>(type: T) {
    return this.getPluginsByType(type);
   }
 
-  ids<T extends PluginType>(type: T) {
+  ids<T extends TModuleComponentType>(type: T) {
    return this.getPluginIdsByType(type);
   }
 }

@@ -52,7 +52,7 @@ describe('AppController', () => {
         MODULES_PRESTO_ENGINE: 'presto',
         MODULES_PRESTO_API: 'http://presto:8181/v1/',
 
-        MODULES_WAS_ENGINE: 'jdbc',
+        MODULES_WAS_ENGINE: 'Note',
         MODULES_WAS_SYNTAX: 'someSqlSyntax',
         MODULES_WAS_API: 'http://presto:8181/v1/',
 
@@ -72,7 +72,7 @@ describe('AppController', () => {
       expect(quixConfig.modules).toContainEqual(
         expect.objectContaining({
           id: 'was',
-          engine: 'jdbc',
+          engine: 'Note',
           syntax: 'someSqlSyntax',
         }),
       );

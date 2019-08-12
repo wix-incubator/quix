@@ -1,9 +1,9 @@
 import {IScope as ngIscope} from 'angular';
-import {PluginType} from '../../services/plugins';
+import {ModuleComponentType} from '../../../../shared';
 
 export interface IScope extends ngIscope {
   vm: any;
   model: string;
-  pluginType: PluginType;
+  pluginType: ModuleComponentType;
   onChange: Function;
 }

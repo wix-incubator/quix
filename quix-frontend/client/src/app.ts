@@ -8,9 +8,9 @@ import {branches, initCache} from './store';
 import UrlPattern from 'url-pattern';
 import {config as runnerConfig} from './lib/runner';
 import {config as resourcesConfig} from './services/resources';
-import {pluginManager, pluginFactory} from './plugins';
+import {pluginManager} from './plugins';
 import {setupNotifications} from './bootstrap';
-import {ClientConfigHelper, ComponentTypes} from '../../shared';
+import {ClientConfigHelper, ModuleComponentType} from '../../shared';
 
 import './lib/file-explorer';
 
@@ -54,12 +54,12 @@ create<ClientConfigHelper>({
         apiBasePath
       });
 
-      clientConfig.getModulesByComponent(ComponentTypes.db).forEach(({id, engine}) => {
-        pluginManager.addPlugin(pluginFactory.db(id, engine));
+      clientConfig.getModulesByComponent(ModuleComponentType.Db).forEach(({id, engine}) => {
+        pluginManager.add(ModuleComponentType.Db)(id, engine);
       });
 
-      clientConfig.getModulesByComponent(ComponentTypes.note).forEach(({id, engine}) => {
-        pluginManager.addPlugin(pluginFactory.note(id, engine));
+      clientConfig.getModulesByComponent(ModuleComponentType.Note).forEach(({id, engine}) => {
+        pluginManager.add(ModuleComponentType.Note)(id, engine);
       });
 
       initCache(store);

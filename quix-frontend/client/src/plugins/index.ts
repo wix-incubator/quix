@@ -1,4 +1,4 @@
+import {pluginFactory} from './plugin-factory';
 import {PluginManager} from '../services/plugins';
-export * from './plugin-factory';
 
-export const pluginManager = new PluginManager();
+export const pluginManager = new PluginManager(pluginFactory);
