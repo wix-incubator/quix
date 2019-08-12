@@ -23,7 +23,7 @@ export default (app: App, store: Store) => () => ({
         .then(() => {
           initNgScope(scope)
           .withVM({
-            plugins: pluginManager.getPluginIdsByType(scope.type),
+            plugins: pluginManager.ids(scope.type),
             $export() {
               return {type: scope.model};
             },

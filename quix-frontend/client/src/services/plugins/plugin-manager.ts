@@ -1,25 +1,37 @@
 import {Plugin, PluginType, TPluginMap, resolvePluginType} from './plugin-types';
 
 export class PluginManager {
-  private readonly plugins: Plugin[] = [];
+  private readonly pool: Plugin[] = [];
 
-  addPlugin(plugin: Plugin) {
-    this.plugins.push(plugin);
-  }
-
-  getPluginById<T extends PluginType>(id: string, type: T): TPluginMap[T] {
+  private getPluginById<T extends PluginType>(id: string, type: T): TPluginMap[T] {
     const PluginClass = resolvePluginType(type);
 
-    return this.plugins.find(p => p.getId() === id && p instanceof PluginClass) as any;
+    return this.pool.find(p => p.getId() === id && p instanceof PluginClass) as any;
   }
 
-  getPluginsByType<T extends PluginType>(type: T) {
+  private getPluginsByType<T extends PluginType>(type: T) {
     const pluginClass = resolvePluginType(type);
 
-    return this.plugins.filter(p => p instanceof pluginClass);
+    return this.pool.filter(p => p instanceof pluginClass);
   }
 
-  getPluginIdsByType(type: PluginType) {
+  private getPluginIdsByType<T extends PluginType>(type: T) {
     return this.getPluginsByType(type).map(p => p.getId());
+  }
+
+  addPlugin(plugin: Plugin) {
+    this.pool.push(plugin);
+  }
+
+  get<T extends PluginType>(type: T) {
+   return (id: string) => this.getPluginById(id, type);
+  }
+
+  all<T extends PluginType>(type: T) {
+   return this.getPluginsByType(type);
+  }
+
+  ids<T extends PluginType>(type: T) {
+   return this.getPluginIdsByType(type);
   }
 }

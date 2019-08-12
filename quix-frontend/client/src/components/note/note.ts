@@ -50,7 +50,7 @@ export default (app: App, store: Store) => () => ({
           isFolded: false,
           isMaximized: false,
           $init() {
-            const plugin = pluginManager.getPluginById(scope.note.type, 'note');
+            const plugin = pluginManager.get('note')(scope.note.type);
             this.showSyntaxErrors = plugin.getConfig().syntaxValidation;
           }
         });

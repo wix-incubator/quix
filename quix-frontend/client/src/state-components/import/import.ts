@@ -17,7 +17,7 @@ const importNote = async (scope, app: App, store: Store, {type, value}) => {
     return;
   }
 
-  if (!pluginManager.getPluginById(type, 'note')) {
+  if (!pluginManager.get('note')(type)) {
     scope.error = `"${type}" doesn't match any known note type`;
     return;
   }

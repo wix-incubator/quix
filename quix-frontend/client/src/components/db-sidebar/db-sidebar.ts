@@ -35,7 +35,7 @@ export default (app: App, store: Store) => () => ({
 
       initNgScope(scope)
         .withVM({
-          types: pluginManager.getPluginIdsByType('db'),
+          types: pluginManager.ids('db'),
           type: null,
           hideRoot: false,
           search: {
@@ -73,7 +73,7 @@ export default (app: App, store: Store) => () => ({
               .then(({children: columns}) => convert(columns, {hideRoot: false}, [...path]));
           },
           onSelectTableRows(table: IFile) {
-            const query = pluginManager.getPluginById(scope.vm.type, 'db')
+            const query = pluginManager.get('db')(scope.vm.type)
               .getSampleQuery(table);
 
             openTempQuery(scope, scope.vm.type, query, true);

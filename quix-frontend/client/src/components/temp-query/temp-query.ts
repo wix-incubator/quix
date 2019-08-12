@@ -20,7 +20,7 @@ export default (app: App, store: Store) => () => ({
       initNgScope(scope)
         .withVM({
           type: scope.type,
-          types: pluginManager.getPluginIdsByType('note')
+          types: pluginManager.ids('note')
         })
         .withEvents({
           onRunnerInstanceLoad(instance) {
