@@ -38,6 +38,8 @@ services:
       - APPMETRICS_PORT
       - ENABLE_APPMETRICS
       - MODULES
+      - RUPERT_API_URL
+      - RUPERT_API_KEY
   db:
     image: "mysql:5.7"
     restart: always
