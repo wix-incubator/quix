@@ -24,6 +24,8 @@ export const envSettingsMap: {[K in keyof StaticSettings]: string} = {
   Modules: 'MODULES',
   HttpPort: 'HTTP_PORT',
   MountPath: 'MOUNT_PATH',
+  RupertApiUrl: 'RUPERT_API_URL',
+  RupertApiKey: 'RUPERT_API_KEY',
 };
 
 export const envSettingsDefaults = {
@@ -48,6 +50,8 @@ export const envSettingsDefaults = {
   Modules: ['presto'],
   HttpPort: 3000,
   MountPath: '',
+  RupertApiUrl: '',
+  RupertApiKey: '',
 };
 
 export const testingDefaults: StaticSettings = {

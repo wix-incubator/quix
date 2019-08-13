@@ -106,6 +106,8 @@ const transforms: {
   Modules: stringListParse,
   HttpPort: numberParse,
   MountPath: identity,
+  RupertApiKey: identity,
+  RupertApiUrl: identity,
 };
 
 const getModuleSettings = (moduleName: string, globalEnv: any) => {
