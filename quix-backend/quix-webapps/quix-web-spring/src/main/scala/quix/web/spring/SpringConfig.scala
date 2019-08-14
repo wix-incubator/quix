@@ -76,7 +76,7 @@ class ModulesConfiguration extends LazyLogging {
       val modules = env.getProperty("modules", "").split(",")
 
       modules.filter { module =>
-        env.getProperty(s"modules.$module.ENGINE", "") == "presto" || module == "presto"
+        env.getProperty(s"modules.$module.engine", "") == "presto" || module == "presto"
       }
     }
 
@@ -150,7 +150,7 @@ class ModulesConfiguration extends LazyLogging {
       val modules = env.getProperty("modules", "").split(",")
 
       modules.filter { module =>
-        env.getProperty(s"modules.$module.ENGINE", "") == "athena" || module == "athena"
+        env.getProperty(s"modules.$module.engine", "") == "athena" || module == "athena"
       }
     }
 
