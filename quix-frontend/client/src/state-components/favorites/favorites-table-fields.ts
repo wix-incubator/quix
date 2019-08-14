@@ -8,7 +8,6 @@ export const initTableFields = scope => {
         <div class="bi-align bi-s-h">
           <i class="bi-icon bi-muted">insert_drive_file</i>
           <span>{{::file.name}}</span>
-          <span class="bi-text--sm bi-muted">{{::path}}</span>
         </div>
       `, {file}, scope);
     }
@@ -21,6 +20,14 @@ export const initTableFields = scope => {
   //   }
   }, {
     name: 'owner',
+    filter(_, file: IFile, index, compile) {
+      return compile(`
+        <div class="bi-align bi-s-h">
+        <img class="quix-user-avatar" ng-src="{{::file.ownerDetails.avatar}}"/>
+          <span>{{::file.ownerDetails.name}}</span>
+        </div>
+      `, {file}, scope);
+    }
   }, {
     name: 'liked',
     title: ' ',

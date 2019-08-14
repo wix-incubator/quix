@@ -7,9 +7,7 @@ export default () => createNotebook([{
   id: QuixFolder.id,
   name: QuixFolder.name
 }], {
-  id: 'examples',
-  name: 'Examples',
-  owner: ExamplesNotebook.owner,
+  ...ExamplesNotebook,
   notes: [
     addNote('simple', 'Simple query', `-- Hit "Run" to execute the query
 

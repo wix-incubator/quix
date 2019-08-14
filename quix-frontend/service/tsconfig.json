@@ -6,31 +6,63 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "noErrorTruncation": true,
-    "target": "es2017",
+    "target": "esnext",
     "sourceMap": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "outDir": "./dist",
     "baseUrl": "./",
     "strict": true,
-    "typeRoots":  ["./node_modules/@types", "./src/types/3rd-party"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/types/3rd-party"
+    ],
     "paths": {
-      "shared/*": ["../shared/*"],
-      "shared": ["../shared"],
-      "entities/*": ["./src/entities/*"],
-      "entities": ["./src/entities"],
-      "modules/*": ["./src/modules/*"],
-      "config/*": ["./src/config/*"],
-      "config": ["./src/config"],
-      "common/*": ["./src/common/*"],
-      "errors": ["./src/errors"],
-      "global-types": ["./src/types"],
-      "utils/*": ["./src/utils/*"]
+      "shared/*": [
+        "../shared/*"
+      ],
+      "shared": [
+        "../shared"
+      ],
+      "entities/*": [
+        "./src/entities/*"
+      ],
+      "entities": [
+        "./src/entities"
+      ],
+      "modules/*": [
+        "./src/modules/*"
+      ],
+      "config/*": [
+        "./src/config/*"
+      ],
+      "config": [
+        "./src/config"
+      ],
+      "common/*": [
+        "./src/common/*"
+      ],
+      "errors": [
+        "./src/errors"
+      ],
+      "global-types": [
+        "./src/types"
+      ],
+      "utils/*": [
+        "./src/utils/*"
+      ]
     }
   },
-  "references": [{
-    "path": "../shared"
-  }],
-  "include": ["src/**/*.ts", "test/**/*.ts"],
-  "exclude": ["node_modules"]
+  "references": [
+    {
+      "path": "../shared"
+    }
+  ],
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

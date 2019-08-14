@@ -1,6 +1,5 @@
 import {Module} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {ConfigModule} from '../../config/config.module';
 import {
   DbFileTreeNode,
   DbFolder,
@@ -9,6 +8,7 @@ import {
   FileTreeRepository,
   NoteRepository,
   DbFavorites,
+  DbUser,
 } from 'entities';
 import {QuixEventBus} from './quix-event-bus';
 import {DbActionStore} from './infrastructure/action-store';
@@ -16,7 +16,9 @@ import {DbAction} from './infrastructure/action-store/entities/db-action.entity'
 import {NotePlugin} from './plugins/note-plugin';
 import {NotebookPlugin} from './plugins/notebook-plugin';
 import {FileTreePlugin} from './plugins/file-tree-plugin';
-import {PassportModule} from '@nestjs/passport';
+import {FavoritesPlugin} from './plugins/favorites-plugin';
+import {UserPlugin} from './plugins/user-plugin';
+import {NotebookRepository} from 'entities/notebook/notebook.repository';
 
 @Module({
   imports: [
@@ -29,9 +31,9 @@ import {PassportModule} from '@nestjs/passport';
       FileTreeRepository,
       NoteRepository,
       DbFavorites,
+      NotebookRepository,
+      DbUser,
     ]),
-    ConfigModule,
-    PassportModule,
   ],
   controllers: [],
   providers: [
@@ -40,6 +42,8 @@ import {PassportModule} from '@nestjs/passport';
     NotePlugin,
     NotebookPlugin,
     FileTreePlugin,
+    FavoritesPlugin,
+    UserPlugin,
   ],
   exports: [QuixEventBus, DbActionStore],
 })

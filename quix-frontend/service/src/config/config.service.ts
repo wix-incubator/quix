@@ -1,10 +1,8 @@
-import {Injectable, Inject} from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import {ConnectionOptions} from 'typeorm';
 import * as dbConnection from './db-connection';
 import {EnvSettings, loadEnv, getEnv} from './env';
 import {ClientConfigHelper, ModuleComponentType} from 'shared';
-import axios from 'axios';
-import {retry} from '../utils/retry-promise';
 
 export type DbTypes = 'mysql' | 'sqlite';
 
@@ -16,7 +14,7 @@ export abstract class ConfigService {
   constructor(@Inject('GLOBAL_ENV') globalEnv: any) {
     this.env = getEnv(globalEnv);
     /* tslint:disable-next-line */
-    console.log(`****** Current Enviorment:: DbType:${this.env.DbType}/AuthType:${this.env.AuthType} ******`);
+    console.log(`****** Current Environment:: DbType:${this.env.DbType}/AuthType:${this.env.AuthType} ******`);
   }
 
   getEnvSettings(): EnvSettings {
@@ -28,12 +26,12 @@ export abstract class ConfigService {
     return env.DbType;
   }
 
-  getDbConnection(entites: any[]): ConnectionOptions {
+  getDbConnection(entities: any[]): ConnectionOptions {
     switch (this.env.DbType) {
       case 'sqlite':
-        return dbConnection.createInMemConf(entites, this.env);
+        return dbConnection.createInMemConf(entities, this.getEnvSettings());
       case 'mysql': {
-        return dbConnection.createMysqlConf(entites, this.env);
+        return dbConnection.createMysqlConf(entities, this.getEnvSettings());
       }
     }
   }

@@ -8,12 +8,12 @@ import {
 } from './types';
 import {ContextFactory} from './context';
 import {Dictionary} from '../../../../types';
-import {BaseAction, DefaultAction} from 'shared/entities/common/common-types';
+import {IAction} from '../types';
 
 export class RegisterApi {
   constructor(private descriptor: PluginDescriptor) {}
   hooks = {
-    listen: <A extends BaseAction = DefaultAction>(
+    listen: <A extends IAction = IAction>(
       name: string,
       fn: HookFn<A>,
     ): RegisterApi => {
@@ -41,7 +41,7 @@ export class MiddlewareApi implements IMiddlewareApi {
   }
 
   hooks = {
-    call: <A extends BaseAction = DefaultAction>(
+    call: <A extends IAction = IAction>(
       name: string,
       action: A,
       extraContext?: Dictionary<any>,

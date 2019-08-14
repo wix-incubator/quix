@@ -10,9 +10,9 @@ import {DbFileTreeNode} from './filenode.entity';
 import {dbConf} from 'config/db-conf';
 import assert from 'assert';
 import {FileType} from 'shared';
-import {DbNotebook} from './dbnotebook.entity';
-import {DbFolder} from './folder.entity';
-import {DbFavorites} from './favorites.entity';
+import {DbNotebook} from '../notebook/dbnotebook.entity';
+import {DbFolder} from '../folder/folder.entity';
+import {DbFavorites} from '../favorites/favorites.entity';
 /**
  * This custom repository saves a tree structure in sql, using path enumeration/materialized path.
  * We don't use the built in solution by typeorm as it doesn't support moving/deletions yet.
@@ -58,9 +58,7 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
         .then(parent => parent.mpath)
         .catch(() => {
           throw new Error(
-            `saving file item ${item.id}:: Can't find parent node ${
-              item.parentId
-            }`,
+            `saving file item ${item.id}:: Can't find parent node ${item.parentId}`,
           );
         });
     }

@@ -13,7 +13,7 @@ describe('event bus', () => {
       const spy = jest.fn();
       const bus = EventBusBuilder().build();
       bus.on('foo.create', spy);
-      await bus.emit({type: 'foo.create', id: '1'});
+      await bus.emit({type: 'foo.create', id: '1', user: 'foo'});
       expect(spy.mock.calls).toHaveLength(1);
     });
   });
@@ -30,11 +30,11 @@ describe('event bus', () => {
       const bus = EventBusBuilder()
         .addMiddleware(spy)
         .build();
-      await bus.emit({type: 'foo.create', id: '1'});
+      await bus.emit({type: 'foo.create', id: '1', user: 'foo'});
 
       expect(spy.mock.calls).toHaveLength(1);
       expect(spy.mock.calls[0]).toMatchObject(
-        exptectedMiddlewareArgs({type: 'foo.create', id: '1'}),
+        exptectedMiddlewareArgs({type: 'foo.create', id: '1', user: 'foo'}),
       );
     });
 
@@ -43,7 +43,7 @@ describe('event bus', () => {
       const bus = EventBusBuilder()
         .addMiddleware(spy)
         .build({timeout: 300});
-      const rv = bus.emit({type: 'foo.create', id: '1'});
+      const rv = bus.emit({type: 'foo.create', id: '1', user: 'foo'});
 
       return rv.catch((e: Error) => {
         expect(e.message).toEqual('Event Bus: timeout');
@@ -56,7 +56,7 @@ describe('event bus', () => {
           throw new Error('Some Error msg');
         })
         .build();
-      const rv = bus.emit({type: 'foo.create', id: '1'});
+      const rv = bus.emit({type: 'foo.create', id: '1', user: 'foo'});
 
       return rv.catch((e: Error) => {
         expect(e.message).toEqual('Some Error msg');
@@ -71,7 +71,7 @@ describe('event bus', () => {
         .addMiddleware(middleware1)
         .addMiddleware(middleware2)
         .build();
-      await bus.emit({type: 'foo.create', id: '1'});
+      await bus.emit({type: 'foo.create', id: '1', user: 'foo'});
 
       expect(middleware2.mock.calls).toHaveLength(1);
       expect(middleware2.mock.calls[0]).toMatchObject(
@@ -89,11 +89,16 @@ describe('event bus', () => {
         .addMiddleware(middleware1)
         .addMiddleware(middleware2)
         .build();
-      await bus.emit({type: 'foo.create', id: '1'});
+      await bus.emit({type: 'foo.create', id: '1', user: 'foo'});
 
       expect(middleware2.mock.calls).toHaveLength(1);
       expect(middleware2.mock.calls[0]).toMatchObject(
-        exptectedMiddlewareArgs({type: 'foo.create', id: '1', foo: 'bar'}),
+        exptectedMiddlewareArgs({
+          type: 'foo.create',
+          id: '1',
+          foo: 'bar',
+          user: 'foo',
+        }),
       );
     });
 
@@ -103,7 +108,7 @@ describe('event bus', () => {
           next(new Error('Some Error msg'));
         })
         .build();
-      const rv = bus.emit({type: 'foo.create', id: '1'});
+      const rv = bus.emit({type: 'foo.create', id: '1', user: 'foo'});
 
       return rv.catch((e: Error) => {
         expect(e.message).toEqual('Some Error msg');
@@ -120,7 +125,7 @@ describe('event bus', () => {
         .addMiddleware(middleware2, {priority: 1})
         .addMiddleware(middleware1, {priority: 0})
         .build();
-      await bus.emit({type: 'foo.create', id: '1'});
+      await bus.emit({type: 'foo.create', id: '1', user: 'foo'});
 
       expect(middleware2.mock.calls).toHaveLength(1);
       expect(middleware2.mock.calls[0]).toMatchObject(
@@ -175,7 +180,7 @@ describe('event bus', () => {
     });
 
     it('middleware should be able to call plugin hooks', async () => {
-      const action = {type: 'bla', id: '1'};
+      const action = {type: 'bla', id: '1', user: 'foo'};
       const bus = busBuilder.build();
       await bus.emit(action);
 
@@ -188,7 +193,7 @@ describe('event bus', () => {
 
     describe('hook failure/errors', () => {
       it('on error, emit() should return rejected promise', async () => {
-        const action = {type: 'doError', id: '1'};
+        const action = {type: 'doError', id: '1', user: 'foo'};
         const bus = busBuilder.build();
         const error: Error = await bus.emit(action).catch(e => e);
         expect(error.message).toBe('some validation failed');

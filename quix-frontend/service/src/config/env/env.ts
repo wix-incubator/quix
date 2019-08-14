@@ -12,15 +12,15 @@ import {
 } from './consts';
 import {ModuleEngineType, ModuleEngineToSyntaxMap} from 'shared';
 
-let enviormentLoaded = false;
+let environmentLoaded = false;
 export const loadEnv = () => {
-  if (!enviormentLoaded) {
+  if (!environmentLoaded) {
     if (isJestTest()) {
       dotenv.config({path: path.resolve(process.cwd(), '.testenv')});
     } else {
       dotenv.config();
     }
-    enviormentLoaded = true;
+    environmentLoaded = true;
   }
 };
 
@@ -47,7 +47,7 @@ const stringListParse = (s: string | undefined) =>
 const transforms: {
   [K in keyof StaticSettings]: (
     s: string | undefined,
-  ) => StaticSettings[K] | undefined
+  ) => StaticSettings[K] | undefined;
 } = {
   DbType: s => {
     switch (s) {
@@ -116,7 +116,7 @@ const getModuleSettings = (moduleName: string, globalEnv: any) => {
   let engine = globalEnv[engineEnvVar];
   let syntax: string = '';
 
-  /* backwords comptability */
+  /* backwards compatibility */
   if (engine === undefined) {
     switch (moduleName) {
       case 'presto':
