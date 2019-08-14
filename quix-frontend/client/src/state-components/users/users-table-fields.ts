@@ -7,14 +7,13 @@ export const initTableFields = scope => {
     filter(_, user: IUser, index, compile) {
       return compile(`
         <div class="bi-align bi-s-h">
-          <img class="quix-user-avatar" ng-src="{{::user.avatar}}/>
+          <img class="quix-user-avatar" ng-src="{{::user.avatar}}"/>
           <span>{{::user.name}}</span>
         </div>
       `, {user}, scope);
     }
   }, {
-    name: 'id',
-    title: 'email'
+    name: 'email',
   }, {
     name: 'dateCreated',
     title: 'Join  Date',
