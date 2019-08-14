@@ -7,8 +7,8 @@ export const initTableFields = scope => {
       return compile(`
         <div class="bi-align bi-s-h">
           <i class="bi-icon bi-muted">insert_drive_file</i>
+          <img class="quix-user-avatar" ng-src="{{::file.ownerDetails.avatar}}/>
           <span>{{::file.name}}</span>
-          <span class="bi-text--sm bi-muted">{{::path}}</span>
         </div>
       `, {file}, scope);
     }
