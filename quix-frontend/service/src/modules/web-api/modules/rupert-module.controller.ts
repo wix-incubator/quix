@@ -21,7 +21,7 @@ export class ModulesController {
   async getQuestion(@Param('id') questionId: string) {
     try {
       const {RupertApiUrl, RupertApiKey} = this.configService.getEnvSettings();
-      const url = `${RupertApiUrl}/question/${questionId}`;
+      const url = `${RupertApiUrl}/question/${questionId}?source=quix`;
       const authHeader = `Basic ${new Buffer(RupertApiKey + ':').toString(
         'base64',
       )}`;
