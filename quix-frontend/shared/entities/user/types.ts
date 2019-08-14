@@ -4,4 +4,6 @@ export interface IUser {
   name: string;
   avatar: string;
   rootFolder: string;
+  dateUpdated: number;
+  dateCreated: number;
 }

@@ -18,10 +18,10 @@ export const FileActions = {
     id,
     path: newPath
   }),
-  
+
   updateName: (id: string, name: string) => ({
     type: 'file.update.name' as const,
-    id, 
+    id,
     name
   }),
 

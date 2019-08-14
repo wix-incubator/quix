@@ -13,6 +13,7 @@ import {
   DbNotebook,
   DbUser,
   DbFavorites,
+  DbMetadata,
 } from './entities';
 import {DbAction} from './modules/event-sourcing/infrastructure/action-store/entities/db-action.entity';
 import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
@@ -30,6 +31,7 @@ import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
           DbAction,
           DbUser,
           DbFavorites,
+          DbMetadata,
         ]),
       inject: [ConfigService],
     }),

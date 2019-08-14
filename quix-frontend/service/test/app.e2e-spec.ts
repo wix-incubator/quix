@@ -1,22 +1,24 @@
+import 'reflect-metadata';
 import {Test, TestingModule} from '@nestjs/testing';
 import {AppModule} from './../src/app.module';
-import {INestApplication} from '@nestjs/common';
+import {INestApplication, Logger} from '@nestjs/common';
 import {ConfigService, EnvSettings} from '../src/config';
 import nock from 'nock';
 import {IGoogleUser} from '../src/modules/auth/types';
 import {E2EDriver} from './driver';
-import {MockDataBuilder} from './builder';
+import {E2EMockDataBuilder} from './builder';
 import cookieParser = require('cookie-parser');
 import {sanitizeUserEmail} from 'common/user-sanitizer';
+import {getConnectionToken} from '@nestjs/typeorm';
+import {Connection} from 'typeorm';
+import './custom-matchers';
 
-// TODO: run this on mysql, need to reset db between tests
-process.env.DB_TYPE = 'sqlite';
 let envSettingsOverride: Partial<EnvSettings> = {};
 
 class E2EConfigService extends ConfigService {
-  getEnvSettings() {
+  getEnvSettings(): EnvSettings {
     const env = super.getEnvSettings();
-    return {...env, ...envSettingsOverride};
+    return {...env, AutoMigrateDb: false, ...envSettingsOverride};
   }
 }
 
@@ -34,7 +36,7 @@ const user2profile: IGoogleUser = {
 describe('Application (e2e)', () => {
   let app: INestApplication;
   let driver: E2EDriver;
-  let builder: MockDataBuilder;
+  let builder: E2EMockDataBuilder;
 
   const beforeAndAfter = () => {
     beforeEach(async () => {
@@ -48,11 +50,21 @@ describe('Application (e2e)', () => {
       app = moduleFixture.createNestApplication();
       app.use(cookieParser());
       await app.init();
+
+      const configService: ConfigService = moduleFixture.get(ConfigService);
+      const conn: Connection = moduleFixture.get(getConnectionToken());
+      if (configService.getDbType() === 'mysql') {
+        await conn.dropDatabase();
+        await conn.runMigrations();
+      } else {
+        await conn.synchronize();
+      }
+
       driver = new E2EDriver(app);
-      builder = new MockDataBuilder();
+      builder = new E2EMockDataBuilder();
     });
 
-    afterEach(() => {
+    afterEach(async () => {
       envSettingsOverride = {};
       return app.close();
     });
@@ -79,7 +91,7 @@ describe('Application (e2e)', () => {
     });
   });
 
-  describe('user list', () => {
+  describe('User list', () => {
     beforeAndAfter();
 
     beforeEach(() => {
@@ -92,21 +104,43 @@ describe('Application (e2e)', () => {
       let users = await driver.as('user1').get('users');
 
       expect(users).toHaveLength(1);
-
       await driver.doLogin('user2');
 
       users = await driver.as('user1').get('users');
-
-      expect(users).toMatchObject([
+      expect(users).toMatchArrayAnyOrder([
         {
           id: user1profile.email,
           name: user1profile.name,
           rootFolder: expect.any(String),
+          dateCreated: expect.any(Number),
+          dateUpdated: expect.any(Number),
         },
         {
           id: user2profile.email,
           name: user2profile.name,
           rootFolder: expect.any(String),
+          dateCreated: expect.any(Number),
+          dateUpdated: expect.any(Number),
+        },
+      ]);
+      expect(users[0].dateCreated - Date.now()).toBeLessThan(2000); // Within 2 seconds
+    });
+
+    it('should update details on login', async () => {
+      await driver.doLogin('user1');
+
+      driver.addUser('user1', {...user1profile, name: 'new name'});
+
+      await driver.doLogin('user1');
+
+      const users = await driver.as('user1').get('users');
+      expect(users).toMatchArrayAnyOrder([
+        {
+          id: user1profile.email,
+          name: 'new name',
+          rootFolder: expect.any(String),
+          dateCreated: expect.any(Number),
+          dateUpdated: expect.any(Number),
         },
       ]);
     });
@@ -132,7 +166,7 @@ describe('Application (e2e)', () => {
 
       users = await driver.as('user1').get('users');
 
-      expect(users).toMatchObject([
+      expect(users).toMatchArrayAnyOrder([
         {
           id: user1profile.email,
           name: user1profile.name,
@@ -169,7 +203,7 @@ describe('Application (e2e)', () => {
       );
     });
 
-    it('when searching notebooks,', async () => {
+    it('when searching notebooks, sanitize user', async () => {
       await driver.doLogin('user1');
 
       const [{id: rootFolder}] = await driver.as('user1').get('files');
@@ -196,3 +230,7 @@ describe('Application (e2e)', () => {
     });
   });
 });
+
+function resolveIn(n: number = 1000) {
+  return new Promise(resolve => setTimeout(resolve, n));
+}

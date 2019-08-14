@@ -1,7 +1,8 @@
 import {MigrationInterface, QueryRunner} from 'typeorm';
 import {DbMetadata} from '../entities/version-metadata.entity';
-import {CURRENT_QUIX_SCHEMA_VERSION, QUIX_SCHEMA} from '../consts';
+import {QUIX_SCHEMA} from '../consts';
 const PREVIOUS_QUIX_SCHEMA = 0;
+const CURRENT_QUIX_SCHEMA_VERSION = 1;
 
 export class VersionMetadata1558528771648 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {

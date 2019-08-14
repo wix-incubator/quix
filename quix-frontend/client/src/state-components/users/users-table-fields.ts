@@ -13,7 +13,22 @@ export const initTableFields = scope => {
       `, {user}, scope);
     }
   }, {
-    name: 'id',
-    title: 'email'
+    name: 'email',
+  }, {
+    name: 'dateCreated',
+    title: 'Join  Date',
+    filter(_, user: IUser, index, compile) {
+      return compile(`
+        <span class="bi-text--sm bi-muted">{{::user.dateCreated | biRelativeDate}}</span>
+      `, {user}, scope);
+    }
+  }, {
+    name: 'dateUpdated',
+    title: 'Last Login',
+    filter(_, user: IUser, index, compile) {
+      return compile(`
+        <span class="bi-text--sm bi-muted">{{::user.dateUpdated | biRelativeDate}}</span>
+      `, {user}, scope);
+    }
   }];
 };

@@ -1,4 +1,4 @@
-import {Column, Entity, Index, PrimaryColumn} from 'typeorm';
+import {Column, Entity, Index} from 'typeorm';
 import {IAction, IEventData} from '../../types';
 import {IDBAction} from '../types';
 import {dbConf} from '../../../../../config/db-conf';
@@ -14,7 +14,7 @@ export class DbAction<T = IEventData, N extends string = string>
   data!: T;
 
   @Column(dbConf.shortTextField)
-  user?: string;
+  user!: string;
 
   @Index()
   @Column({...dbConf.eventsTimestamp, primary: true, name: 'date_created'})

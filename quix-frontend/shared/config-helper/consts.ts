@@ -4,7 +4,7 @@ export enum ModuleEngineType {
   JDBC = 'jdbc'
 }
 
-export const MoudleEngineToSyntaxMap = {
+export const ModuleEngineToSyntaxMap = {
   presto: 'presto',
   athena: 'athena'
 }

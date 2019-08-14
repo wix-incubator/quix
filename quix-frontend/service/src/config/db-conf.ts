@@ -5,7 +5,7 @@ import {ContentSearch, searchTextType} from 'modules/search/types';
 import {escape} from 'mysql';
 import {EntityType} from 'common/entity-type.enum';
 
-/* A comptability layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
+/* A compatibility layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
 interface DbColumnConf {
   json: ColumnOptions;
   shortTextField: ColumnOptions;
@@ -29,12 +29,15 @@ const MySqlConf: DbColumnConf = {
   shortTextField: {type: 'varchar', length: 64},
   noteContent: {type: 'mediumtext', nullable: true},
   dateUpdated: {
-    transformer: {from: (d: Date) => d.valueOf(), to: () => undefined},
+    transformer: {
+      from: (d?: Date) => d && d.valueOf(),
+      to: () => undefined,
+    },
     readonly: true,
     name: 'date_updated',
   },
   dateCreated: {
-    transformer: {from: (d: Date) => d.valueOf(), to: () => undefined},
+    transformer: {from: (d?: Date) => d && d.valueOf(), to: () => undefined},
     readonly: true,
     name: 'date_created',
   },

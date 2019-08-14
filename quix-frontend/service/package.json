@@ -17,7 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --runInBand --config ./test/jest-e2e.js"
+    "test:e2e": "npm run test:e2e:sqlite && npm run test:e2e:mysql",
+    "test:e2e:sqlite": "jest --runInBand --config ./test/jest-e2e.js",
+    "test:e2e:mysql": "DB_TYPE=mysql jest --runInBand --config ./test/jest-e2e.js"
   },
   "dependencies": {
     "@nest-middlewares/helmet": "^5.1.1",
@@ -31,6 +33,7 @@
     "axios": "^0.19.0",
     "cookie-parser": "^1.4.4",
     "dotenv": "^7.0.0",
+    "fp-ts": "^2.0.1",
     "google-auth-library": "^3.1.2",
     "http-proxy-middleware": "^0.19.1",
     "lodash": "^4.17.15",
@@ -88,6 +91,13 @@
     "testRegex": ".spec.ts$",
     "transform": {
       "^.+\\.ts$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfig": {
+          "target": "esnext"
+        }
+      }
     },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",

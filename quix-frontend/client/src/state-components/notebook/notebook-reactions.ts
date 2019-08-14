@@ -9,7 +9,7 @@ export function setNotebook(scope: IScope, notebook: INotebook) {
         scope.vm.breadcrumbs.folders = [...notebook.path, {id: notebook.id, name: notebook.name}];
 
         if (!scope.permissions.edit) {
-          scope.vm.breadcrumbs.folders[0].name = `${notebook.owner}'s notebooks`;
+          scope.vm.breadcrumbs.folders[0].name = `${notebook.ownerDetails.name}'s notebooks`;
         }
 
         scope.vm.breadcrumbs.reload();

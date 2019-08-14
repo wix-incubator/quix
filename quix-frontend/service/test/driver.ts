@@ -3,12 +3,12 @@ import {INestApplication} from '@nestjs/common';
 import request from 'supertest';
 import {IGoogleUser} from 'modules/auth';
 import {testingDefaults} from 'config/env/consts';
-import {INotebook, INote, IFolder, IFile} from 'shared';
+import {INotebook, INote, IFolder, IFile, IUser} from 'shared';
 
 const defaultCookie = testingDefaults.AuthCookieName;
 
 interface GetFunctionTypeHelper {
-  (url: 'users'): Promise<IGoogleUser[]>;
+  (url: 'users'): Promise<IUser[]>;
   (url: 'files'): Promise<IFile[]>;
   (url: 'files', id: string): Promise<IFolder>;
   (url: 'note', id: string): Promise<INote>;
