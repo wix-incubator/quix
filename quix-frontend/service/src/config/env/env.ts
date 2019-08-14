@@ -47,7 +47,7 @@ const stringListParse = (s: string | undefined) =>
 const transforms: {
   [K in keyof StaticSettings]: (
     s: string | undefined,
-  ) => StaticSettings[K] | undefined
+  ) => StaticSettings[K] | undefined;
 } = {
   DbType: s => {
     switch (s) {
@@ -141,6 +141,9 @@ const getModuleSettings = (moduleName: string, globalEnv: any) => {
       break;
     case ModuleEngineType.ATHENA:
       syntax = MoudleEngineToSyntaxMap[ModuleEngineType.ATHENA];
+      break;
+    case ModuleEngineType.BIGQUERY:
+      syntax = MoudleEngineToSyntaxMap[ModuleEngineType.BIGQUERY];
       break;
     default: {
       syntax = globalEnv[syntaxEnvVar] as string;
