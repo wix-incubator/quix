@@ -1,8 +1,9 @@
 import * as DbPlugins from './db';
 import * as NotePlugins from './note';
+import { ModuleEngineType } from '../../../shared';
 
 export const pluginFactory = {
-  db(id: string, engine: string) {
+  db(id: string, engine: ModuleEngineType) {
     switch (engine) {
       case 'presto':
         return new DbPlugins.PrestoDbPlugin(id);
@@ -10,12 +11,14 @@ export const pluginFactory = {
         return new DbPlugins.AthenaDbPlugin(id);
       case 'jdbc':
         return new DbPlugins.JdbcDbPlugin(id);
+      case 'bigquery':
+        return new DbPlugins.BigQueryDbPlugin(id);
       default:
         throw new Error(`No definition for "${engine}" engine db plugin`);
     }
   },
 
-  note(id: string, engine: string) {
+  note(id: string, engine: ModuleEngineType) {
     switch (engine) {
       case 'presto':
         return new NotePlugins.PrestoNotePlugin(id);
@@ -23,6 +26,8 @@ export const pluginFactory = {
         return new NotePlugins.AthenaNotePlugin(id);
       case 'jdbc':
         return new NotePlugins.JdbcNotePlugin(id);
+      case 'bigquery':
+        return new NotePlugins.BigQueryNotePlugin(id);
       default:
         throw new Error(`No definition for "${engine}" engine note plugin`);
     }
