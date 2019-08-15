@@ -47,7 +47,6 @@ export function start(port = process.env.PORT || '3000') {
       modules: [
         {id: 'presto', name: 'presto', components: {db: {}, note: {}}, engine: 'presto', syntax: 'presto'},
         {id: 'athena', name: 'athena', components: {db: {}, note: {}}, engine: 'athena', syntax: 'presto'},
-        {id: 'rupert', name: 'rupert', components: {note: {}}, engine: 'rupert', syntax: 'presto'},
       ],
       auth: {googleClientId: ''},
       clientTopology: {executeBaseUrl: 'localhost:3000/mock', staticsBaseUrl: '//localhost:3200/', apiBasePath: ''},

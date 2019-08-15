@@ -21,7 +21,7 @@ export default (app: App, store: Store) => ({
           goToRoot(app);
         },
         onNotebookAdd() {
-          addNotebook(store, app, [])
+          addNotebook(store, app, [], {addNote: true})
             .then(notebook => goToNotebook(app, notebook, {isNew: true}));
         },
         onExamplesClick() {

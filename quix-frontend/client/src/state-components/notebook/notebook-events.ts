@@ -90,7 +90,7 @@ export const onNoteRun = (scope: IScope, store: Store, app: App) => () => {
 export const onNoteAdd = (scope: IScope, store: Store, app: App) => (type: any) => {
   const {notebook} = scope.vm.state.value();
 
-  addNote(store, app, notebook.id, type, {}, note => {
+  addNote(store, notebook.id, type, {}, note => {
     scope.vm.notes.get(note).focusName = true;
     store.dispatch(setNote(note));
   });

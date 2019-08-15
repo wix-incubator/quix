@@ -19,21 +19,23 @@ export const addNotebook = async (
   store: Store,
   app: App,
   parentOrPath: IFile | IFilePathItem[],
+  options: {addNote: boolean},
   props: Partial<INotebook> = {}
 ): Promise<INotebook> => {
   const path = await resolvePath(parentOrPath);
   const notebook = createNotebook(path, {...props, owner: app.getUser().getEmail()});
-  const note = createNote(notebook.id);
+  const actions: any[] = [NotebookActions.createNotebook(notebook.id, notebook)];
 
-  return store.dispatchAndLog([
-    NotebookActions.createNotebook(notebook.id, notebook),
-    NoteActions.addNote(note.id, note)
-  ]).then(() => notebook);
+  if (options.addNote) {
+    const note = createNote(notebook.id);
+    actions.push(NoteActions.addNote(note.id, note));
+  }
+
+  return store.dispatchAndLog(actions).then(() => notebook);
 }
 
 export const addNote = async (
   store: Store,
-  app: App,
   notebookId: string,
   type: string,
   props: Partial<INote> = {},
@@ -54,7 +56,7 @@ export const addNotebookByNamePath = async (store: Store, app: App, namePath: st
     store,
     app,
     namePath,
-    (name, parent) => addNotebook(store, app, parent, {name})
+    (name, parent) => addNotebook(store, app, parent, {addNote: false}, {name})
   );
 }
 

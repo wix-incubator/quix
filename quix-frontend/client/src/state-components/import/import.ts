@@ -23,7 +23,7 @@ const importNote = async (scope, app: App, store: Store, {type, value}) => {
   }
 
   const notebook = await addNotebookByNamePath(store, app, [Import.FolderName, type]);
-  const note = await addNote(store, app, notebook.id, type, {
+  const note = await addNote(store, notebook.id, type, {
     name: moment().format(Time.Format)
   });
 

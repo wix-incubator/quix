@@ -69,7 +69,7 @@ export const onFolderAdd = (scope: IScope, store: Store, app: App) => () => {
 export const onNotebookAdd = (scope: IScope, store: Store, app: App) => () => {
   const {folder} = scope.vm.state.value();
 
-  addNotebook(store, app, folder)
+  addNotebook(store, app, folder, {addNote: true})
     .then(notebook => goToNotebook(app, notebook, {isNew: true}));
 };
 
