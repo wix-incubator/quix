@@ -59,6 +59,7 @@
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "ng-csv": "^0.3.6",
+    "popper.js": "^1.15.0",
     "redux": "^3.7.2",
     "sql-formatter": "^2.3.2",
     "transducers.js": "^0.3.2",
