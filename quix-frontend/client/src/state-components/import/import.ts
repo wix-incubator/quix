@@ -29,7 +29,7 @@ const importNote = async (scope, app: App, store: Store, {type, value}) => {
 
   pluginManager.hooks.import.promise(store, note, value)
     .then(() => {
-      goToNotebook(app, notebook, {note: note.id});
+      goToNotebook(app, notebook, {note: note.id}, {location: 'replace'});
 
       showToast({
         text: `Imported a "${type}" note`,

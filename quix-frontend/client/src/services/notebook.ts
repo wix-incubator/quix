@@ -111,8 +111,13 @@ export const hasQueuedNotes = (store: Store) => {
   return store.getState('notebook.queue.size') > 0;
 }
 
-export const goToNotebook = (app: App, notebook: INotebook, options?: {isNew?: boolean; note?: string}) => {
-  return goToFile(app, {...notebook, type: FileType.notebook}, options);
+export const goToNotebook = (
+  app: App,
+  notebook: INotebook,
+  params?: {isNew?: boolean; note?: string},
+  options?: any,
+) => {
+  return goToFile(app, {...notebook, type: FileType.notebook}, params, options);
 }
 
 export const goToExamples = (app: App) => {

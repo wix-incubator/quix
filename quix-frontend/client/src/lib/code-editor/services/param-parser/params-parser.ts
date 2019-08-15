@@ -66,19 +66,6 @@ export class ParamParser {
     }, {});
   }
 
-  /**
-   * Embeds params into text
-   */
-  private embed(text, params: IParam[], replacer: IParamReplacer = defaultReplacer): string {
-    const embeded = this.serializer.extract(text);
-
-    if (!embeded) {
-      return params.length ? replacer(text, text, `${this.serializer.embed(text, params)}${text}`) : text;
-    }
-
-    return replacer(text, embeded, params.length ? this.serializer.embed(text, params) : '');  
-  }
-
   /**********************************************
    * PUBLIC
    **********************************************/
@@ -102,6 +89,19 @@ export class ParamParser {
     }
 
     return res;
+  }
+
+  /**
+   * Embeds params into text
+   */
+  public embed(text, params: IParam[], replacer: IParamReplacer = defaultReplacer): string {
+    const embeded = this.serializer.extract(text);
+
+    if (!embeded) {
+      return params.length ? replacer(text, text, `${this.serializer.embed(text, params)}${text}`) : text;
+    }
+
+    return replacer(text, embeded, params.length ? this.serializer.embed(text, params) : '');  
   }
 
   /**

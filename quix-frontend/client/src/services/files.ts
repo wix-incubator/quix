@@ -87,20 +87,25 @@ export const fetchRootPath = (): Promise<IFilePathItem[]> => {
     .then(file => file && [{id: file.id, name: file.name}] || []);
 }
 
-export const goToFile = (app: App, file: Pick<IFile, 'id' | 'type' | 'owner' | 'path'>, options: {
-  isNew?: boolean;
-  note?: string;
-} = {
-  isNew: false,
-  note: null
-}) => {
+export const goToFile = (
+  app: App,
+  file: Pick<IFile, 'id' | 'type' | 'owner' | 'path'>,
+  params: {
+    isNew?: boolean;
+    note?: string;
+  } = {
+    isNew: false,
+    note: null
+  },
+  options?: any,
+) => {
   const id = isRoot(file) && isOwner(app, file) ? null : file.id;
 
   return app.go(file && file.type === FileType.notebook ? 'notebook' : 'files', {
     id,
-    isNew: options.isNew,
-    note: options.note
-  });
+    isNew: params.isNew,
+    note: params.note
+  }, options);
 }
 
 export const goToRoot = (app: App) => {
