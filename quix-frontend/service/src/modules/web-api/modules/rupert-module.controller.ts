@@ -26,6 +26,8 @@ export class ModulesController {
         'base64',
       )}`;
 
+      console.log('SENDING RUPERT REQUEST', url, authHeader);
+
       const res = await fetch(url, {
         headers: {
           Authorization: authHeader,
@@ -38,6 +40,7 @@ export class ModulesController {
 
       return res;
     } catch (e) {
+      console.log(e);
       throw new HttpException('Bad Gateway', HttpStatus.BAD_GATEWAY);
     }
   }

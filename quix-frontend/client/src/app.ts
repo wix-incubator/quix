@@ -10,7 +10,7 @@ import {config as runnerConfig} from './lib/runner';
 import {config as resourcesConfig} from './services/resources';
 import {pluginManager} from './plugins';
 import {setupNotifications} from './bootstrap';
-import {ClientConfigHelper, ModuleComponentType} from '../../shared';
+import {ClientConfigHelper, ModuleComponentType, ModuleEngineType} from '../../shared';
 
 import './lib/file-explorer';
 
@@ -61,6 +61,8 @@ create<ClientConfigHelper>({
       clientConfig.getModulesByComponent(ModuleComponentType.Note).forEach(({id, engine}) => {
         pluginManager.add(ModuleComponentType.Note)(id, engine);
       });
+
+      pluginManager.add(ModuleComponentType.Note)('rupert', ModuleEngineType.Rupert);
 
       initCache(store);
       setupNotifications(staticsBaseUrl);
