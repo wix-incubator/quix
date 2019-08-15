@@ -1,8 +1,16 @@
-import moment from 'moment';
 import { INote, ModuleEngineType, NoteActions } from '../../../../shared';
 import { Store } from '../../lib/store';
 import { NotePlugin} from '../../services/plugins';
-import { Time } from '../../config';
+
+const generateNoteContent = ({requestor, question, queries}) => `/**
+Submitted by: ${requestor}
+Question: "${question}"
+*/
+
+${queries.map(query => `-- ${query.title}
+${query.sql}
+`).join('\n\n')}
+`
 
 export class RupertNotePlugin extends NotePlugin {
   constructor(name: string, hooks: any) {
@@ -14,20 +22,7 @@ export class RupertNotePlugin extends NotePlugin {
       if (note.type === ModuleEngineType.Rupert) {
         return fetch(`api/module/rupert/question/${encodeURIComponent(questionId)}`)
           .then(res => res.ok ? res.json() : Promise.reject('Rupert returned an error'))
-          .then(({requestor, question, queries}) => {
-            return store.dispatchAndLog(NoteActions.updateContent(note.id, `
-              /**
-                Question submitted by: ${requestor}
-                Result generated on: ${moment.utc().format(Time.Format)} UTC
-                Question: "${question}"
-              */
-
-              ${queries.map(query => `
-                // ${query.title}
-                ${query.sql}
-              `).join('\n\n')}
-            `));
-          });
+          .then(({data})=> store.dispatchAndLog(NoteActions.updateContent(note.id, generateNoteContent(data))));
       }
 
       return Promise.resolve();

@@ -1,3 +1,4 @@
+import fetch from 'node-fetch';
 import {
   Param,
   Controller,
@@ -26,21 +27,20 @@ export class ModulesController {
         'base64',
       )}`;
 
-      console.log('SENDING RUPERT REQUEST', url, authHeader);
-
       const res = await fetch(url, {
         headers: {
           Authorization: authHeader,
         },
-      });
+      }).then(r => {
+        if (!r.ok) {
+          throw new HttpException(r.statusText, r.status);
+        }
 
-      if (!res.ok) {
-        throw new HttpException(res.statusText, res.status);
-      }
+        return r.json();
+      });
 
       return res;
     } catch (e) {
-      console.log(e);
       throw new HttpException('Bad Gateway', HttpStatus.BAD_GATEWAY);
     }
   }
