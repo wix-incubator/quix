@@ -24,28 +24,22 @@
     </bi-toggle>
     
     <ul class="bi-dropdown-menu">
-      <li class="bi-align bi-s-h" ng-click="events.onDelete()">
+      <li class="bi-align bi-s-h" ng-click="events.onDelete()" data-hook="actions-delete">
         <i class="bi-icon--sm">delete</i>
         <span>Delete {{::type}}</span>
       </li>
     </ul>
   </bi-dropdown>
 
-  <bi-tooltip ng-if="permissions.delete && options.bulk" data-hook="actions-delete">
-    <bi-toggle>
-      <i 
-        class="bi-action"
-        ng-class="::{
-          'bi-icon': !options.compact,
-          'bi-icon--sm': options.compact
-        }"
-        ng-click="$event.stopPropagation(); events.onDelete()"
-      >
-        {{::options.bulk ? 'delete_sweep' : 'delete'}}
-      </i>
-    </bi-toggle>
-    Delete {{::type}}
-  </bi-tooltip>
+  <button
+    class="bi-button--danger"
+    ng-if="permissions.delete && options.bulk"
+    ng-click="events.onDelete()"
+    data-hook="actions-delete"
+  >
+    <i class="bi-icon--sm">delete_sweep</i>
+    <span>Delete {{::type}}s</span>
+</button>
     
   <bi-tooltip ng-if="::permissions.clone">
     <bi-toggle>
