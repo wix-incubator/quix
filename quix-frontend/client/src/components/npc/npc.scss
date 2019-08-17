@@ -1,0 +1,39 @@
+@import '../../lib/ui//assets/css/def/colors.def';
+@import '../../lib/ui//assets/css/def/animations.def';
+
+quix-npc {
+  @keyframes quix-note-npc {
+    from {
+      left: 100%;
+    }
+
+    to {
+      left: -35px;
+    }
+  }
+
+  position: relative;
+  display: flex;
+  height: 30px;
+  overflow: hidden;
+
+  .quix-npc-container {
+    animation: quix-note-npc 70s linear infinite;
+    position: absolute;
+    top: 1px;
+    left: 100%;
+
+    img {
+      width: 35px;
+    }
+
+    .quix-npc-phrase {
+      position: absolute;
+      top: 0;
+      left: 30px;
+      font-family: 'Bangers';
+      font-size: 9px;
+      white-space: nowrap;
+    }
+  }
+}
