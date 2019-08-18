@@ -23,7 +23,11 @@ function createRenderer(scope: IScope, element) {
 }
 
 function load(scope: IScope, element) {
-  scope.viz = scope.viz || new ChartViz(scope.data, createRenderer(scope, element), scope.fields);
+  scope.viz = scope.viz || new ChartViz(scope.data, createRenderer(scope, element), {
+    fields: scope.fields,
+    xMeta: 'all',
+  });
+
   scope.viz.filter().draw();
 }
 

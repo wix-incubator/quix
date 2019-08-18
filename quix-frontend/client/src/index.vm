@@ -26,5 +26,6 @@
     </script>
 
     <script src="${clientTopology.staticsBaseUrl}app.bundle#if(!${mode.debug}).min#{end}.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   </body>
 </html>

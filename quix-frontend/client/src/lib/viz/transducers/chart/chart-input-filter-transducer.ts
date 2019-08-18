@@ -1,7 +1,7 @@
 import {pick} from 'lodash';
 import {compose, map} from 'transducers.js';
 import {IFilterData, IMeta} from '../../services/chart/chart-conf';
-import {ungroup, parseFloats, parseDates, sort} from '../';
+import {ungroup, parseFloats, sort} from '../';
 import {IInputItem} from '../../services/viz-conf';
 import {isDimension} from '../../services/chart/chart-utils';
 
@@ -22,7 +22,6 @@ export const inputFilterTransducer = (filter: IFilterData, meta: IMeta) => {
 
   return compose(
     map(input => pick(input, all)),
-    parseDates(meta.dates),
     parseFloats(meta.values),
     ungroup({fields, values, aggType: filter.aggType}),
     sortByContext(filter, meta)
