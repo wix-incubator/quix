@@ -4,6 +4,7 @@ import {IFilterData, IMeta} from '../../services/chart/chart-conf';
 import {ungroup, parseFloats, sort} from '../';
 import {IInputItem} from '../../services/viz-conf';
 import {isDimension} from '../../services/chart/chart-utils';
+import {parseDates} from '../parse-dates-transducer';
 
 function sortByContext(filter: IFilterData, meta: IMeta) {
   return sort((a: IInputItem, b: IInputItem) => {
@@ -22,6 +23,7 @@ export const inputFilterTransducer = (filter: IFilterData, meta: IMeta) => {
 
   return compose(
     map(input => pick(input, all)),
+    parseDates(meta.dates),
     parseFloats(meta.values),
     ungroup({fields, values, aggType: filter.aggType}),
     sortByContext(filter, meta)
