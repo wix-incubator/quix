@@ -3,7 +3,7 @@ import * as NotePlugins from './note';
 import { ModuleEngineType } from '../../../shared';
 
 export const pluginFactory = {
-  db(id: string, engine: ModuleEngineType) {
+  db(id: string, engine: string) {
     switch (engine) {
       case 'presto':
         return new DbPlugins.PrestoDbPlugin(id);
@@ -18,7 +18,7 @@ export const pluginFactory = {
     }
   },
 
-  note(id: string, engine: ModuleEngineType) {
+  note(id: string, engine: string) {
     switch (engine) {
       case 'presto':
         return new NotePlugins.PrestoNotePlugin(id);
