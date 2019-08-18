@@ -26,7 +26,7 @@ function getDefaults(filterMeta: IFilterMeta, fields: string[]): IFilterData {
 }
 
 export class ChartFilter extends VizFilter<IMeta, IFilterMeta, IFilterData> {
-  constructor(private readonly fields?: string[]) {
+  constructor(private readonly fields: string[], private readonly xMeta: 'all' | 'dimensions') {
     super();
   }
 
@@ -36,7 +36,7 @@ export class ChartFilter extends VizFilter<IMeta, IFilterMeta, IFilterData> {
       dimensions: meta.dimensions,
       values: meta.values,
       dates: meta.dates,
-      x: meta.all,
+      x: meta[this.xMeta],
       y: meta.values,
       group: [...meta.dimensions, ...meta.values]
     };

@@ -1,22 +1,21 @@
 <div class="bi-r bi-s-h--x05">
   <span class="quix-checkbox" ng-if="permissions.edit && !vm.isMaximized" data-hook="note-select">
-      <i
-        class="bi-action bi-icon bi-fade-in checked"
-        ng-if="marked"
-        ng-click="$event.stopPropagation(); events.onMarkToggle()"
-      >
-        check_box_outline
-      </i>
-      <i
-        class="bi-action bi-icon bi-fade-in"
-        ng-if="!marked"
-        ng-click="$event.stopPropagation(); events.onMarkToggle()"
-      >
-        check_box_outline_blank
-      </i>
-    </span>
+    <i
+      class="bi-action bi-icon bi-fade-in checked"
+      ng-if="marked"
+      ng-click="$event.stopPropagation(); events.onMarkToggle()"
+    >
+      check_box_outline
+    </i>
+    <i
+      class="bi-action bi-icon bi-fade-in"
+      ng-if="!marked"
+      ng-click="$event.stopPropagation(); events.onMarkToggle()"
+    >
+      check_box_outline_blank
+    </i>
+  </span>
     
-
   <bi-foldable 
     class="bi-theme--lighter bi-c-h bi-grow"
     is-folded="vm.isFolded"
@@ -99,7 +98,11 @@
           on-runner-created="events.onRunnerCreated(runner)"
           on-runner-destroyed="events.onRunnerDestroyed(runner)"
           readonly="!permissions.edit"
-        ></bi-sql-runner>
+        >
+          <controls>
+            <quix-npc ng-if="runner.running"></quix-npc>
+          </controls>
+        </bi-sql-runner>
       </div>
     </div>
   </bi-foldable>

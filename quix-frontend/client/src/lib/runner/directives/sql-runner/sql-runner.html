@@ -17,6 +17,7 @@
 >
   <editor class="bi-c-h">
     <bi-code-editor
+      class="bi-c-h"
       ng-model="model.value"
       bce-options="::{
         focus: options.focus,
@@ -38,39 +39,44 @@
         <i class="bi-icon bi-disabled">keyboard</i>
       </bi-toggle>
 
-    <table>
-      <tr>
-        <th>
-          <span class="bi-tag--sm">{{::getCtrlKeyName()}} + Enter</span>
-        </th>
-        <th>
-          Run note
-        </th>
-      </tr>
-      <tr>
-        <th>
-          <span class="bi-tag--sm">{{::getCtrlKeyName()}} + S</span>
-        </th>
-        <th>
-          Save note
-        </th>
-      </tr>
-      <tr>
-        <th>
-          <span class="bi-tag--sm">Ctrl + Space</span>
-        </th>
-        <th>
-          Toggle autocompletion
-        </th>
-      </tr>
-      <tr ng-if="::options.params">
-        <th>
-          <span class="bi-tag--sm">$</span>
-        </th>
-        <th>
-          Insert parameteres
-        </th>
-      </tr>
-    </table>
-  </bi-tooltip>
+      <table>
+        <tr>
+          <th>
+            <span class="bi-tag--sm">{{::getCtrlKeyName()}} + Enter</span>
+          </th>
+          <th>
+            Run note
+          </th>
+        </tr>
+        <tr>
+          <th>
+            <span class="bi-tag--sm">{{::getCtrlKeyName()}} + S</span>
+          </th>
+          <th>
+            Save note
+          </th>
+        </tr>
+        <tr>
+          <th>
+            <span class="bi-tag--sm">Ctrl + Space</span>
+          </th>
+          <th>
+            Toggle autocompletion
+          </th>
+        </tr>
+        <tr ng-if="::options.params">
+          <th>
+            <span class="bi-tag--sm">$</span>
+          </th>
+          <th>
+            Insert parameteres
+          </th>
+        </tr>
+      </table>
+    </bi-tooltip>
+  </run-hint>
+       
+  <controls ng-transclude="controls"></controls>
 </bi-runner>
+
+

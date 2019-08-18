@@ -10,3 +10,4 @@ export {default as quixDestinationPicker} from './destination-picker/destination
 export {default as quixPluginPicker} from './plugin-picker/plugin-picker';
 export {default as quixMeta} from './meta/meta';
 export {default as quixImage} from './image/image';
+export {default as quixNpc} from './npc/npc';

@@ -1,4 +1,5 @@
 import {initNgScope, inject, utils} from '../../../core';
+import Popper from 'popper.js';
 
 import './dropdown.scss';
 import template from './dropdown.html';
@@ -6,56 +7,71 @@ import template from './dropdown.html';
 const {onKey, onBlur} = utils.dom;
 let instances = [];
 
+function setClasses(element, popperActualPlacement) {
+  const [position_, align_] = popperActualPlacement.split('-');
+  let parsedAlign = '';
+  if (!align_) {
+    parsedAlign = 'center';
+  }
+  else if (align_ === 'start') {
+    parsedAlign = 'left';
+  } else {
+    parsedAlign = 'right'
+  }
+  element.removeClass(['top', 'bottom', 'left', 'right'].map(pos => `bd-position--${pos}`).join(' '));
+  element.addClass(`bd-position--${position_}`);
+  element.addClass(`bd-align--${parsedAlign}`);
+}
+
 function show(scope, element) {
-  instances = instances.filter(instance => {
-    instance.hide();
-    return false;
-  });
+  if (scope.options.hideOthers) {
+    instances = instances.filter(instance => {
+      instance.hide();
+      return false;
+    });
+  }
+
 
   instances.push({hide: () => scope.actions.hide(true)});
 
   scope.vm.toggleEnabled(true);
-
-  return inject('$timeout')(() => {
+  const timeout = inject('$timeout')
+  return timeout(() => timeout(() => {
     const content = element.find('.bd-content');
-    let {position} = scope.options;
-    const {align} = scope.options;
+    const {position, align} = scope.options;
 
-    let {top, left, right} = element.offset();
     let width = 'auto';
     let minWidth = 'auto';
 
-    if (top + element.height() + content.height() > window.innerHeight) {
-      position = 'top';
-    }
-
-    // if (left + element.width() + content.width() > window.innerWidth) {
-    //   align = 'right';
-    // }
-
+    let popperPlacement = position;
     switch (align) {
-      case 'right':
-        right = document.body.clientWidth - (left + element.width()) as any;
-        left = 'initial';
+      case 'left':
+        popperPlacement += '-start'
         break;
       case 'center':
-        left += ((element.width() - content.width()) / 2);
-        right = 'initial';
-        break;
-      default:
-        right = 'initial';
-    }
-
-    switch (position) {
-      case 'top':
-        // tslint:disable-next-line: restrict-plus-operands
-        top -= content.height();
         break;
       case 'right':
-        left += element.width();
+        popperPlacement += '-end';
         break;
       default:
-        top += element.height();
+    }
+    if (!scope.popper) {
+      scope.popper = new Popper(element.get(0), content.get(0), {
+        placement: popperPlacement,
+        positionFixed: true,
+        modifiers: {
+          preventOverflow: {
+            boundariesElement: 'viewport',
+            priority: ['bottom', 'top']
+          }
+        },
+        onCreate(data) {
+          setClasses(element, data.placement)
+        },
+        onUpdate(data) {
+          setClasses(element, data.placement)
+        }
+      });
     }
 
     switch (scope.options.minWidth) {
@@ -75,26 +91,24 @@ function show(scope, element) {
     }
 
     content.css({
-      top,
-      left,
-      right,
-      bottom: 'initial',
       width,
       minWidth
     });
 
-    element.removeClass(['top', 'bottom', 'left', 'right'].map(pos => `bd-position--${pos}`).join(' '));
-    element.addClass(`bd-position--${position}`);
-    element.addClass(`bd-align--${align}`);
-
     scope.vm.toggle(true);
 
     scope.onShow();
-  });
+  }))
 }
+
 
 function hide(scope, mute = false) {
   scope.vm.toggle(false);
+
+  if (scope.popper) {
+    scope.popper.destroy();
+    scope.popper = null;
+  }
 
   if (!mute) {
     scope.onHide();
@@ -132,6 +146,7 @@ export default () => {
             toggleOn: 'click',  /* click|hover|manual */
             hideOn: 'hover',    /* click|hover */
             hideOnClick: true,
+            hideOthers: true,
             delay: {
               show: 0
             },
@@ -173,13 +188,13 @@ export default () => {
 
                   onBlur(element, (off, child) => {
                     if (
-                        child &&
-                        (
-                          scope.options.hideOnClick === false ||
-                          child.closest('bi-toggle').length ||
-                          child.closest('[disabled]').length
-                        )
-                      ) {
+                      child &&
+                      (
+                        scope.options.hideOnClick === false ||
+                        child.closest('bi-toggle').length ||
+                        child.closest('[disabled]').length
+                      )
+                    ) {
                       return false;
                     }
 
@@ -199,6 +214,12 @@ export default () => {
         scope.$watch('bdIsOpen', (isOpen, prev) => {
           if (isOpen !== prev && isOpen !== scope.vm.enabled) {
             scope.actions.toggle(isOpen);
+          }
+        });
+        scope.$on('$destroy', () => {
+          if (scope.popper) {
+            scope.popper.destroy();
+            scope.popper = null;
           }
         });
       }

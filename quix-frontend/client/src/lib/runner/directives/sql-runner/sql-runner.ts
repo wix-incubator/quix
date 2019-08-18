@@ -42,7 +42,8 @@ export default () => {
     template,
     require: 'ngModel',
     transclude: {
-      actions: '?actions'
+      actions: '?actions',
+      controls: '?controls'
     },
     scope: {
       version: '=',

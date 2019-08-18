@@ -6,7 +6,7 @@ export class Viz<InputItem, Meta, Data, FilterMeta, FilterData> {
   constructor (
     private readonly data: VizData<InputItem, Meta, Data, FilterData>,
     private readonly fltr: VizFilter<Meta, FilterMeta, FilterData>,
-    private readonly renderer: IRenderer<Meta, Data, FilterData>
+    private readonly renderer: IRenderer<Meta, Data, FilterData>,
   ) {}
 
   private initFilter() {

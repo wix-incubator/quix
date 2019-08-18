@@ -1,3 +1,4 @@
+/* tslint:disable:no-non-null-assertion */
 import 'reflect-metadata';
 import {Test, TestingModule} from '@nestjs/testing';
 import {AppModule} from './../src/app.module';
@@ -24,13 +25,14 @@ class E2EConfigService extends ConfigService {
 
 const user1profile: IGoogleUser = {
   email: 'testing@quix.com',
-  id: '11',
+  id: '111111111',
   name: 'Testing User',
 };
 const user2profile: IGoogleUser = {
   email: 'secondUser@quix.com',
-  id: '22',
+  id: '222222222',
   name: 'second User',
+  avatar: 'http://seconduseravatar.png',
 };
 
 describe('Application (e2e)', () => {
@@ -146,7 +148,7 @@ describe('Application (e2e)', () => {
     });
   });
 
-  describe('Demo Mode', () => {
+  fdescribe('Demo Mode', () => {
     beforeEach(() => {
       envSettingsOverride.DemoMode = true;
     });
@@ -155,15 +157,30 @@ describe('Application (e2e)', () => {
       driver.addUser('user1', user1profile).addUser('user2', user2profile);
     });
 
+    const expectObject = (json: object) => ({
+      toNotLeakUserData(user: IGoogleUser) {
+        expect(JSON.stringify(json)).toEqual(
+          expect.not.stringContaining(user2profile.email),
+        );
+        expect(JSON.stringify(json)).toEqual(
+          expect.not.stringContaining(user2profile.name!),
+        );
+        expect(JSON.stringify(json)).toEqual(
+          expect.not.stringContaining(user2profile.id!),
+        );
+        expect(JSON.stringify(json)).toEqual(
+          expect.not.stringContaining(user2profile.avatar!),
+        );
+      },
+    });
+
     it('user list should not contain private information', async () => {
       await driver.doLogin('user1');
 
       let users = await driver.as('user1').get('users');
-
       expect(users).toHaveLength(1);
 
       await driver.doLogin('user2');
-
       users = await driver.as('user1').get('users');
 
       expect(users).toMatchArrayAnyOrder([
@@ -178,6 +195,7 @@ describe('Application (e2e)', () => {
           rootFolder: expect.any(String),
         },
       ]);
+      expectObject(users).toNotLeakUserData(user2profile);
     });
 
     it('when fetching other user notebook, user name should be hidden', async () => {
@@ -201,6 +219,7 @@ describe('Application (e2e)', () => {
       expect(notebookFromServer.owner).toBe(
         sanitizeUserEmail(user1profile.email),
       );
+      expectObject(notebookFromServer).toNotLeakUserData(user1profile);
     });
 
     it('when searching notebooks, sanitize user', async () => {
@@ -227,6 +246,7 @@ describe('Application (e2e)', () => {
       expect(searchResults.notes[0].owner).toBe(
         sanitizeUserEmail(user1profile.email),
       );
+      expectObject(searchResults).toNotLeakUserData(user1profile);
     });
   });
 });
