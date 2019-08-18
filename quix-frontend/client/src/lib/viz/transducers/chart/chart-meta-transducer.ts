@@ -34,10 +34,4 @@ export class Meta {
   }
 }
 
-/**
- * Creates a meta object
- *
- * @input   IPathInputItem[]
- * @output  [{input: IPathInputItem[], meta: IMeta}]
- */
 export const metaTransducer = () => xform => new Meta(xform);

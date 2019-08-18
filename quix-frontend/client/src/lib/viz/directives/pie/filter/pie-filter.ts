@@ -1,7 +1,7 @@
 import {initNgScope, createNgModel} from '../../../../core';
 import {IFilterData, IFilterMeta} from '../../../services/chart/chart-conf';
 
-import * as template from './pie-filter.html';
+import template from './pie-filter.html';
 import './pie-filter.scss';
 
 export interface IScope {
@@ -28,7 +28,8 @@ export default () => {
 
     link: {
       pre(scope: IScope, element, attr, ngModel) {
-        createNgModel(scope as any, ngModel).watchDeep(true);
+        createNgModel(scope as any, ngModel)
+          .watchDeep(true);
 
         initNgScope(scope).withEvents({
           onReset() {
