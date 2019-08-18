@@ -1,6 +1,5 @@
 import * as DbPlugins from './db';
 import * as NotePlugins from './note';
-import { ModuleEngineType } from '../../../shared';
 
 export const pluginFactory = {
   db(id: string, engine: string) {
