@@ -1,8 +1,9 @@
+import { App } from '../../lib/app';
 import {NotePlugin} from '../../services/plugins';
 
 export class PrestoNotePlugin extends NotePlugin {
-  constructor(name: string, hooks: any) {
-    super(name, hooks, {
+  constructor(app: App, name: string, hooks: any) {
+    super(app, name, hooks, {
       syntaxValidation: true,
       canCreate: true,
     });

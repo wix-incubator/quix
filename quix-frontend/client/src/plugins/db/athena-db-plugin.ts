@@ -1,11 +1,13 @@
+import { App } from '../../lib/app';
 import {DbPlugin} from '../../services/plugins';
 import {DB} from '../../config';
 import {IFile} from '../../../../shared';
 import {sanitizeTableToken} from '../../services';
 
+
 export class AthenaDbPlugin extends DbPlugin {
-  constructor(name: string, hooks: any) {
-    super(name, hooks);
+  constructor(app: App, name: string, hooks: any) {
+    super(app, name, hooks);
   }
 
   getSampleQuery(table: IFile) {

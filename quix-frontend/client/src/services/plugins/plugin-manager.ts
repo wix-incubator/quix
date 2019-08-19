@@ -1,3 +1,4 @@
+import { App } from '../../lib/app';
 import { TModuleComponentType, ModuleEngineType } from '../../../../shared/dist';
 import { Plugin, TPluginMap, resolvePluginType } from './plugin-types';
 
@@ -20,9 +21,9 @@ export class PluginManager<H> {
 
   module<T extends TModuleComponentType>(type: T) {
     return {
-      plugin: (id: string, engine?: ModuleEngineType) => {
+      plugin: (id: string, engine?: ModuleEngineType, app? :App,) => {
         if (engine) {
-          this.pool.push(this.pluginFactory[type](id, engine, this.hooks));
+          this.pool.push(this.pluginFactory[type](app, id, engine, this.hooks));
         }
           
         return this.getPluginById(id, type);

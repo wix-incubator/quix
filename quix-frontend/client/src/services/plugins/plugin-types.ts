@@ -1,4 +1,5 @@
 import { IFile, TModuleComponentType } from '../../../../shared';
+import { App } from '../../lib/app';
 
 export const resolvePluginType = (type: TModuleComponentType) => {
   if (PluginMap[type]) {
@@ -11,7 +12,7 @@ export const resolvePluginType = (type: TModuleComponentType) => {
 export class Plugin {
   protected type: string;
 
-  constructor (protected readonly id: string, hooks: any) {
+  constructor (app: App, protected readonly id: string, hooks: any) {
     this.type = id;    
   }
 
@@ -25,11 +26,11 @@ export class Plugin {
 }
 
 export class NotePlugin extends Plugin {
-  constructor (id: string, hooks: any, private readonly config: {
+  constructor (app: App, id: string, hooks: any, private readonly config: {
     syntaxValidation: boolean;
     canCreate: boolean;
   }) {
-    super(id, hooks);
+    super(app, id, hooks);
   }
 
   getConfig() {
@@ -38,8 +39,8 @@ export class NotePlugin extends Plugin {
 }
 
 export class DbPlugin extends Plugin {
-  constructor (id: string, hooks: any) {
-    super(id, hooks);
+  constructor (app: App, id: string, hooks: any) {
+    super(app, id, hooks);
   }
 
   getSampleQuery(table: IFile): string {
