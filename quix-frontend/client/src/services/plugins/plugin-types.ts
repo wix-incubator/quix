@@ -27,6 +27,7 @@ export class Plugin {
 export class NotePlugin extends Plugin {
   constructor (id: string, hooks: any, private readonly config: {
     syntaxValidation: boolean;
+    canCreate: boolean;
   }) {
     super(id, hooks);
   }

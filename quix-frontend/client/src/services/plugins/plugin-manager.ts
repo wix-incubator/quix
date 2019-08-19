@@ -12,10 +12,10 @@ export class PluginManager<H> {
     return this.pool.find(p => p.getId() === id && p instanceof PluginClass) as any;
   }
 
-  private getPluginsByType<T extends TModuleComponentType>(type: T) {
-    const pluginClass = resolvePluginType(type);
+  private getPluginsByType<T extends TModuleComponentType>(type: T): TPluginMap[T][] {
+    const PluginClass = resolvePluginType(type);
 
-    return this.pool.filter(p => p instanceof pluginClass);
+    return this.pool.filter(p => p instanceof PluginClass) as any;
   }
 
   module<T extends TModuleComponentType>(type: T) {

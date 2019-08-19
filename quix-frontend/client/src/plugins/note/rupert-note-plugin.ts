@@ -25,6 +25,7 @@ export class RupertNotePlugin extends NotePlugin {
   constructor(name: string, hooks: any) {
     super(name, hooks, {
       syntaxValidation: true,
+      canCreate: false,
     });
 
     this.type = 'presto';
