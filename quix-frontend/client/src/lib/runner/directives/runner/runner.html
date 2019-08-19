@@ -74,7 +74,7 @@
     <div class="bi-fade-in" ng-if="!vm.runner.enabled" ng-transclude="runHint"></div>
   </div>
 
-  <div class="bi-grow" ng-transclude="controls" ng-if="runner.running"></div>
+  <div class="bi-grow" ng-transclude="controls" ng-if="runner.running && !vm.tabs.isEnabled()"></div>
 
   <div class="br-tabs bi-r bi-fade-in" ng-if="vm.tabs.isEnabled()">
     <div
