@@ -26,6 +26,8 @@ export class RupertNotePlugin extends NotePlugin {
     super(name, hooks, {
       syntaxValidation: true,
     });
+
+    this.type = 'presto';
     
     hooks.import.tapPromise('RupertNotePlugin', (store: Store, note: INote, questionId: string) => {
       if (note.type === ModuleEngineType.Rupert) {

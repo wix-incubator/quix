@@ -55,14 +55,14 @@ create<ClientConfigHelper>({
       });
 
       clientConfig.getModulesByComponent(ModuleComponentType.Db).forEach(({id, engine}) => {
-        pluginManager.add(ModuleComponentType.Db)(id, engine);
+        pluginManager.module(ModuleComponentType.Db).plugin(id, engine);
       });
 
       clientConfig.getModulesByComponent(ModuleComponentType.Note).forEach(({id, engine}) => {
-        pluginManager.add(ModuleComponentType.Note)(id, engine);
+        pluginManager.module(ModuleComponentType.Note).plugin(id, engine);
       });
 
-      pluginManager.add(ModuleComponentType.Note)('rupert', ModuleEngineType.Rupert);
+      pluginManager.module(ModuleComponentType.Note).plugin('rupert', ModuleEngineType.Rupert);
 
       initCache(store);
       setupNotifications(staticsBaseUrl);

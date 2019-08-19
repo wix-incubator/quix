@@ -9,12 +9,18 @@ export const resolvePluginType = (type: TModuleComponentType) => {
 }
 
 export class Plugin {
+  protected type: string;
+
   constructor (protected readonly id: string, hooks: any) {
-    
+    this.type = id;    
   }
 
   public getId() {
     return this.id;
+  }
+
+  public getType() {
+    return this.type;
   }
 }
 

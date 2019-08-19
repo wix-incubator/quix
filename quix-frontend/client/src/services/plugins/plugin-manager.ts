@@ -18,23 +18,19 @@ export class PluginManager<H> {
     return this.pool.filter(p => p instanceof pluginClass);
   }
 
-  private getPluginIdsByType<T extends TModuleComponentType>(type: T) {
-    return this.getPluginsByType(type).map(p => p.getId());
-  }
+  module<T extends TModuleComponentType>(type: T) {
+    return {
+      plugin: (id: string, engine?: ModuleEngineType) => {
+        if (engine) {
+          this.pool.push(this.pluginFactory[type](id, engine, this.hooks));
+        }
+          
+        return this.getPluginById(id, type);
+      },
 
-  add<T extends TModuleComponentType>(type: T) {
-    return (id: string, engine: ModuleEngineType) => this.pool.push(this.pluginFactory[type](id, engine, this.hooks));
-  }
-
-  get<T extends TModuleComponentType>(type: T) {
-   return (id: string) => this.getPluginById(id, type);
-  }
-
-  all<T extends TModuleComponentType>(type: T) {
-   return this.getPluginsByType(type);
-  }
-
-  ids<T extends TModuleComponentType>(type: T) {
-   return this.getPluginIdsByType(type);
+      plugins: () => {
+        return this.getPluginsByType(type)
+      }
+    };
   }
 }

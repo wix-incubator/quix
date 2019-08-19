@@ -26,7 +26,7 @@ export default (app: App) => ({
       focusName: false
     });
 
-    this.noteTypes = pluginManager.ids('note');
+    this.noteTypes = pluginManager.module('note').plugins().map(plugin => plugin.getId())
     this.state = new StateManager(States);
     this.marked.map = {};
     this.marked.list = [];
