@@ -60,8 +60,12 @@ describe('event sourcing', () => {
     });
 
     it('update name', async () => {
+      const note = createNote(id);
+      const addNoteAction = NoteActions.addNote(note.id, note);
+
       await driver.emitAsUser(eventBus, [
         createAction,
+        addNoteAction,
         NotebookActions.updateName(id, 'newName'),
       ]);
 
