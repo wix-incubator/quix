@@ -24,7 +24,7 @@
     </bi-toggle>
     
     <ul class="bi-dropdown-menu">
-      <li class="bi-align bi-s-h" ng-click="events.onDelete()" data-hook="actions-delete">
+      <li class="bi-align bi-s-h" ng-click="$event.stopPropagation(); events.onDelete()" data-hook="actions-delete">
         <i class="bi-icon--sm bi-muted">delete</i>
         <span>Delete {{::type}}</span>
       </li>
