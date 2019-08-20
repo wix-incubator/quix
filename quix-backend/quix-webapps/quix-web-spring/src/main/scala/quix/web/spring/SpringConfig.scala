@@ -1,6 +1,12 @@
 package quix.web.spring
 
+import java.io.ByteArrayInputStream
+import java.nio.file.{Files, Paths}
+import java.util.Base64
+
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
+import com.google.auth.oauth2.ServiceAccountCredentials
+import com.google.cloud.bigquery.BigQueryOptions
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Coeval
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -10,6 +16,8 @@ import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.module.ExecutionModule
 import quix.api.users.DummyUsers
 import quix.athena._
+import quix.bigquery._
+import quix.bigquery.db.{BigQueryAutocomplete, BigQueryCatalogs, BigQueryTables}
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
 import quix.core.download.DownloadableQueriesImpl
 import quix.core.executions.SequentialExecutions
@@ -196,6 +204,61 @@ class ModulesConfiguration extends LazyLogging {
     "OK"
   }
 
+  @Bean def initBigQuery(env: Environment) = {
+    def getBigQueryModules() = {
+      val modules = env.getProperty("modules", "").split(",")
+
+      modules.filter { module =>
+        env.getProperty(s"modules.$module.engine", "") == "bigquery" || module == "bigquery"
+      }
+    }
+
+    def getBigQueryModule(bigquery: String) = {
+      val config = {
+        val credentialsBase64 = env.getProperty(s"modules.$bigquery.credentials_base64")
+        val credentialsFile = env.getProperty(s"modules.$bigquery.credentials_file")
+
+        val credentials = if (credentialsBase64 != null && credentialsBase64.nonEmpty) {
+          Base64.getDecoder.decode(credentialsBase64.getBytes("UTF-8"))
+        } else if (credentialsFile != null && credentialsFile.nonEmpty && Files.exists(Paths.get(credentialsFile))) {
+          Files.readAllBytes(Paths.get(credentialsFile))
+        } else throw new IllegalArgumentException("Missing BigQuery credentials data")
+
+        BigQueryConfig(
+          credentials,
+          firstEmptyStateDelay = env.getProperty(s"modules.$bigquery.db.empty.timeout", classOf[Long], 1000L * 10),
+          requestTimeout = env.getProperty(s"modules.$bigquery.db.request.timeout", classOf[Long], 5000L)
+        )
+      }
+
+      logger.warn(s"event=[spring-config] bean=[BigQueryConfig] config=$config")
+
+      val executor = BigQueryQueryExecutor(config)
+
+      val credentials = ServiceAccountCredentials.fromStream(new ByteArrayInputStream(config.credentialBytes))
+
+      val bigQuery = BigQueryOptions
+        .newBuilder()
+        .setCredentials(credentials)
+        .build()
+        .getService
+
+      val bigQueryCatalogs = new BigQueryCatalogs(config, bigQuery)
+      val catalogs = new RefreshableCatalogs(bigQueryCatalogs, config.requestTimeout, config.firstEmptyStateDelay)
+      val autocomplete = new RefreshableAutocomplete(new BigQueryAutocomplete(bigQueryCatalogs, executor), config.requestTimeout, config.firstEmptyStateDelay)
+      val tables = new BigQueryTables(executor, config.requestTimeout)
+
+      val db = new RefreshableDb(catalogs, autocomplete, tables)
+
+      BigQueryQuixModule(executor, db)
+    }
+
+    for (module <- getBigQueryModules())
+      Registry.modules.update(module, getBigQueryModule(module))
+
+    "OK"
+  }
+
   @Bean def initJdbc(env: Environment): String = {
 
     for (module <- getJdbcModulesList()) {
@@ -236,7 +299,7 @@ class ModulesConfiguration extends LazyLogging {
   }
 
   @Bean
-  @DependsOn(Array("initPresto", "initAthena", "initJdbc"))
+  @DependsOn(Array("initPresto", "initAthena", "initJdbc", "initBigQuery"))
   def initKnownModules: Map[String, ExecutionModule[String, Batch]] = {
     logger.info(s"event=[spring-config] bean=[initKnownModules] modules=[${Registry.modules.keySet.toList.sorted}]")
 

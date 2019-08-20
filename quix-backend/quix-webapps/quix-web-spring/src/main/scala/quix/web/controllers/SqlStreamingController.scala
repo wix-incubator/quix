@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.{CancelableFuture, Scheduler}
-import org.springframework.web.socket.handler.TextWebSocketHandler
+import org.springframework.web.socket.handler.{ConcurrentWebSocketSessionDecorator, TextWebSocketHandler}
 import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSession}
 import quix.api.execute._
 import quix.api.module.ExecutionModule
@@ -42,7 +42,8 @@ class SqlStreamingController(val modules: Map[String, ExecutionModule[String, Ba
         handlePingMessage(socket)
 
       case ExecutionEvent("execute", command: StartCommand[String]) =>
-        handleExecutionMessage(socket, command, user)
+        val threadSafeSocket = new ConcurrentWebSocketSessionDecorator(socket, 1000, 1024 * 1024 )
+        handleExecutionMessage(threadSafeSocket, command, user)
 
       case _ =>
         handleUnknownMessage(socket, message.getPayload, user)

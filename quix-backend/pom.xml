@@ -15,6 +15,7 @@
         <module>quix-modules/quix-presto-module</module>
         <module>quix-modules/quix-athena-module</module>
         <module>quix-modules/quix-jdbc-module</module>
+        <module>quix-modules/quix-bigquery-module</module>
         <module>quix-webapps/quix-web-spring</module>
     </modules>
 
