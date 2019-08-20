@@ -1,4 +1,4 @@
-#MODULES=presto,athena,prod
+#MODULES=presto,athena,prod,bq
 MODULES=presto
 
 
@@ -24,6 +24,9 @@ MODULES_PRESTO_DB_REQUEST_TIMEOUT=10000
 #MODULES_PROD_PASS=prod-pass
 #MODULES_PROD_SYNTAX=mysql
 
+#MODULES_BQ_ENGINE=bigquery
+#MODULES_BQ_SYNTAX=ansi_sql
+#MODULES_BIGQUERY_CREDENTIALS_BASE64= BASE64 of credentials.json
 
 #fake or google
 AUTH_TYPE=fake
