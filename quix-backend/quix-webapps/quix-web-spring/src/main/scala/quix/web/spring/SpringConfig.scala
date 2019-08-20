@@ -1,6 +1,12 @@
 package quix.web.spring
 
+import java.io.ByteArrayInputStream
+import java.nio.file.{Files, Paths}
+import java.util.Base64
+
 import com.fasterxml.jackson.databind.{DeserializationFeature, ObjectMapper}
+import com.google.auth.oauth2.ServiceAccountCredentials
+import com.google.cloud.bigquery.BigQueryOptions
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Coeval
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -78,7 +84,7 @@ class ModulesConfiguration extends LazyLogging {
       val modules = env.getProperty("modules", "").split(",")
 
       modules.filter { module =>
-        env.getProperty(s"modules.$module.ENGINE", "") == "presto" || module == "presto"
+        env.getProperty(s"modules.$module.engine", "") == "presto" || module == "presto"
       }
     }
 
@@ -152,7 +158,7 @@ class ModulesConfiguration extends LazyLogging {
       val modules = env.getProperty("modules", "").split(",")
 
       modules.filter { module =>
-        env.getProperty(s"modules.$module.ENGINE", "") == "athena" || module == "athena"
+        env.getProperty(s"modules.$module.engine", "") == "athena" || module == "athena"
       }
     }
 
@@ -203,58 +209,25 @@ class ModulesConfiguration extends LazyLogging {
       val modules = env.getProperty("modules", "").split(",")
 
       modules.filter { module =>
-        env.getProperty(s"modules.$module.ENGINE", "") == "bigquery" || module == "bigquery"
+        env.getProperty(s"modules.$module.engine", "") == "bigquery" || module == "bigquery"
       }
     }
 
     def getBigQueryModule(bigquery: String) = {
       val config = {
-        val confType = env.getProperty(s"modules.$bigquery.type",
-          env.getProperty("bigquery.type", ""))
+        val credentialsBase54 = env.getProperty(s"modules.$bigquery.credentials_base64")
+        val credentialsFile = env.getProperty(s"modules.$bigquery.credentials_file")
 
-        val projectId = env.getProperty(s"modules.$bigquery.project_id",
-          env.getProperty("bigquery.project_id", ""))
-
-        val clientEmail = env.getProperty(s"modules.$bigquery.client_email",
-          env.getProperty("bigquery.client_email", ""))
-
-        val clientId = env.getProperty(s"modules.$bigquery.client_id",
-          env.getProperty("bigquery.client_id", ""))
-
-        val authUri = env.getProperty(s"modules.$bigquery.auth_uri",
-          env.getProperty("bigquery.auth_uri", ""))
-
-        val tokenUri = env.getProperty(s"modules.$bigquery.token_uri",
-          env.getProperty("bigquery.token_uri", ""))
-
-        val authProviderX509CertUrl = env.getProperty(s"modules.$bigquery.auth_provider_x509_cert_url",
-          env.getProperty("bigquery.auth_provider_x509_cert_url", ""))
-
-        val clientX509CertUrl = env.getProperty(s"modules.$bigquery.client_x509_cert_url",
-          env.getProperty("bigquery.client_x509_cert_url", ""))
-
-        val firstEmptyStateDelay = env.getProperty(s"modules.$bigquery.db.empty.timeout", classOf[Long], 1000L * 10)
-        val requestTimeout = env.getProperty(s"modules.$bigquery.db.request.timeout", classOf[Long], 5000L)
-
-        val privateKeyId = env.getProperty(s"modules.$bigquery.private_key_id",
-          env.getProperty("bigquery.private_key_id", ""))
-
-        val privateKey = env.getProperty(s"modules.$bigquery.private_key",
-          env.getProperty("bigquery.private_key", ""))
+        val credentials = if (credentialsBase54 != null && credentialsBase54.nonEmpty) {
+          Base64.getDecoder.decode(credentialsBase54.getBytes("UTF-8"))
+        } else if (credentialsFile != null && credentialsFile.nonEmpty && Files.exists(Paths.get(credentialsFile))) {
+          Files.readAllBytes(Paths.get(credentialsFile))
+        } else throw new IllegalArgumentException("Missing BigQuery credentials data")
 
         BigQueryConfig(
-          confType = confType,
-          projectId = projectId,
-          clientEmail = clientEmail,
-          clientId = clientId,
-          authUri = authUri,
-          tokenUri = tokenUri,
-          authProviderX509CertUrl = authProviderX509CertUrl,
-          clientX509CertUrl = clientX509CertUrl,
-          firstEmptyStateDelay = firstEmptyStateDelay,
-          requestTimeout = requestTimeout,
-          privateKeyId = privateKeyId,
-          privateKey = privateKey
+          credentials,
+          firstEmptyStateDelay = env.getProperty(s"modules.$bigquery.db.empty.timeout", classOf[Long], 1000L * 10),
+          requestTimeout = env.getProperty(s"modules.$bigquery.db.request.timeout", classOf[Long], 5000L)
         )
       }
 
@@ -262,7 +235,15 @@ class ModulesConfiguration extends LazyLogging {
 
       val executor = BigQueryQueryExecutor(config)
 
-      val bigQueryCatalogs = new BigQueryCatalogs(executor)
+      val credentials = ServiceAccountCredentials.fromStream(new ByteArrayInputStream(config.credentialBytes))
+
+      val bigQuery = BigQueryOptions
+        .newBuilder()
+        .setCredentials(credentials)
+        .build()
+        .getService
+
+      val bigQueryCatalogs = new BigQueryCatalogs(config, bigQuery)
       val catalogs = new RefreshableCatalogs(bigQueryCatalogs, config.requestTimeout, config.firstEmptyStateDelay)
       val autocomplete = new RefreshableAutocomplete(new BigQueryAutocomplete(bigQueryCatalogs, executor), config.requestTimeout, config.firstEmptyStateDelay)
       val tables = new BigQueryTables(executor, config.requestTimeout)
@@ -318,7 +299,7 @@ class ModulesConfiguration extends LazyLogging {
   }
 
   @Bean
-  @DependsOn(Array("initPresto", "initAthena", "initJdbc"))
+  @DependsOn(Array("initPresto", "initAthena", "initJdbc", "initBigQuery"))
   def initKnownModules: Map[String, ExecutionModule[String, Batch]] = {
     logger.info(s"event=[spring-config] bean=[initKnownModules] modules=[${Registry.modules.keySet.toList.sorted}]")
 

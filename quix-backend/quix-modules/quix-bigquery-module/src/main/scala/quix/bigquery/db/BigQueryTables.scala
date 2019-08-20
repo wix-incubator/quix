@@ -11,14 +11,14 @@ class BigQueryTables(val queryExecutor: AsyncQueryExecutor[String, Batch],
                      val timeout: Long) extends Tables with SingleQueryExecutor {
 
   override def get(catalog: String, schema: String, table: String): Task[Table] = {
-    val sql = s"describe `$schema`.`$table`"
+    val sql =
+      s"""SELECT column_name, data_type
+         |FROM `$schema.INFORMATION_SCHEMA.COLUMNS` WHERE table_name='$table'
+       """.stripMargin
 
     val mapper: List[String] => Kolumn = {
-      case List(nameAndType) =>
-        nameAndType.split("\\s+") match {
-          case Array(name, kind) => Kolumn(name, kind)
-          case _ => Kolumn(nameAndType, "unknown")
-        }
+      case List(name, kind) => Kolumn(name, kind)
+      case row => Kolumn(row.mkString, "unknown")
     }
 
     for {

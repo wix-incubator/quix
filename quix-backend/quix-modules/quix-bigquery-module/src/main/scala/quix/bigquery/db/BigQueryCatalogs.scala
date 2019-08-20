@@ -1,32 +1,34 @@
 package quix.bigquery.db
 
+import com.google.cloud.bigquery.{BigQuery, DatasetId}
 import monix.eval.Task
 import quix.api.db.{Catalog, Catalogs, Schema, Table}
-import quix.api.execute.{AsyncQueryExecutor, Batch}
-import quix.core.executions.SingleQueryExecutor
+import quix.bigquery.BigQueryConfig
 
-class BigQueryCatalogs(val queryExecutor: AsyncQueryExecutor[String, Batch]) extends Catalogs with SingleQueryExecutor {
+import scala.collection.JavaConverters._
+
+class BigQueryCatalogs(config: BigQueryConfig, val bigquery: BigQuery) extends Catalogs {
 
   override def fast: Task[List[Catalog]] = {
-    for {schemas <- executeForSingleColumn("show databases")}
-      yield List(Catalog("__root", schemas.map(schema => Schema(schema, Nil))))
+    for {
+      datasets <- Task(bigquery.listDatasets()).map(_.iterateAll().asScala.toList)
+    } yield List(Catalog("__root", datasets.map(ds => Schema(ds.getDatasetId.getDataset, Nil))))
   }
 
   override def full: Task[List[Catalog]] = {
     for {
-      schemaNames <- executeForSingleColumn("show databases")
-      schemas <- Task.traverse(schemaNames)(inferSchemaInOneQuery)
+      datasets <- Task(bigquery.listDatasets()).map(_.iterateAll().asScala.toList)
+      schemas <- Task.traverse(datasets.map(_.getDatasetId))(inferSchemaInOneQuery)
     } yield List(Catalog("__root", schemas))
   }
 
-  def inferSchemaInOneQuery(schemaName: String): Task[Schema] = {
-    val sql = s"show tables in `$schemaName`"
-
+  def inferSchemaInOneQuery(datasetId: DatasetId): Task[Schema] = {
     for {
-      tablesNames <- executeForSingleColumn(sql)
+      dataset <- Task(bigquery.getDataset(datasetId))
+      tables <- Task(dataset.list().iterateAll().asScala.toList)
     } yield {
-      val tables = tablesNames.map(table => Table(table, List()))
-      Schema(schemaName, tables.sortBy(_.name))
+      val tablesNames = tables.map(table => Table(table.getTableId.getTable, List()))
+      Schema(datasetId.getDataset, tablesNames.sortBy(_.name))
     }
   }
 }

@@ -14,18 +14,17 @@ class BigQueryQueryExecutorTest extends SpecWithJUnit with MustMatchers with Moc
 
   class ctx extends Scope {
 
-    val bigQuery = mock[BigQueryClient]
-    val executor = new BigQueryQueryExecutor(bigQuery)
+    val client = mock[BigQueryClient]
+    val executor = new BigQueryQueryExecutor(client, 1000L)
     val query = new ActiveQuery[String]("query-id", Seq("select 1"), User("bigquery-test"))
     val builder = spy(new SingleBuilder[String])
-
   }
 
   "BigQueryQueryExecutor" should {
     "notify builder on exceptions in client.init" in new ctx {
       // mock
       val exception = new RuntimeException("boom!")
-      bigQuery.init(query) returns Task.raiseError(exception)
+      client.init(query) returns Task.raiseError(exception)
 
       // call
       executor.initClient(query, builder).runToFuture

@@ -3,8 +3,6 @@ package quix.web
 import org.springframework.context.annotation.{Bean, Configuration, Import, Primary}
 import quix.api.execute.Batch
 import quix.api.module.ExecutionModule
-import quix.bigquery.db.{BigQueryAutocomplete, BigQueryCatalogs, BigQueryTables}
-import quix.bigquery.{BigQueryQuixModule, BigQueryTestQueryExecutor}
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
 import quix.presto.db.{PrestoAutocomplete, PrestoCatalogs, PrestoTables}
 import quix.presto.{PrestoQuixModule, TestQueryExecutor}
@@ -21,9 +19,7 @@ class SpringConfigWithTestExecutor {
   def initModules: Map[String, ExecutionModule[String, Batch]] = {
     Map(
       "presto-prod" -> PrestoQuixModule(MockBeans.queryExecutor, Some(MockBeans.db)),
-      "presto-dev" -> PrestoQuixModule(MockBeans.queryExecutor, Some(MockBeans.db)),
-      "bigquery-prod" -> BigQueryQuixModule(BigQueryMockBeans.bigQueryQueryExecutor, BigQueryMockBeans.bigQueryDb),
-      "bigquery-dev" -> BigQueryQuixModule(BigQueryMockBeans.bigQueryQueryExecutor, BigQueryMockBeans.bigQueryDb),
+      "presto-dev" -> PrestoQuixModule(MockBeans.queryExecutor, Some(MockBeans.db))
     )
   }
 }
@@ -40,19 +36,4 @@ object MockBeans {
   val refreshableAutocomplete = new RefreshableAutocomplete(autocomplete, 60000, 60000)
 
   val db = new RefreshableDb(refreshableCatalogs, refreshableAutocomplete, tables)
-}
-
-
-object BigQueryMockBeans {
-  val duration = FiniteDuration(5, "seconds").toMillis
-  val bigQueryQueryExecutor = new BigQueryTestQueryExecutor
-
-  val bigQueryCatalogs = new BigQueryCatalogs(bigQueryQueryExecutor)
-  val bigQueryAutocomplete = new BigQueryAutocomplete(bigQueryCatalogs, bigQueryQueryExecutor)
-  val bigQueryTables = new BigQueryTables(bigQueryQueryExecutor, 60000)
-
-  val bigQueryRefreshableCatalogs = new RefreshableCatalogs(bigQueryCatalogs, 60000, 6000)
-  val bigQueryRefreshableAutocomplete = new RefreshableAutocomplete(bigQueryAutocomplete, 60000, 60000)
-
-  val bigQueryDb = new RefreshableDb(bigQueryRefreshableCatalogs, bigQueryRefreshableAutocomplete, bigQueryTables)
 }

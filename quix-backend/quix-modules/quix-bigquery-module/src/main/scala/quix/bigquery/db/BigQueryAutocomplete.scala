@@ -13,7 +13,6 @@ class BigQueryAutocomplete(val catalogs: Catalogs,
 
   def extractAutoCompleteItems(catalogList: List[Catalog]): Map[String, List[String]] = {
     Map(
-      "catalogs" -> catalogList.map(_.name),
       "schemas" -> catalogList.flatMap(_.children.map(_.name)),
       "tables" -> catalogList.flatMap(_.children.flatMap(_.children.map(_.name)))
     )
