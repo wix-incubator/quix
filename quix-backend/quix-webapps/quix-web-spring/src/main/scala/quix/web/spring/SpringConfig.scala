@@ -215,11 +215,11 @@ class ModulesConfiguration extends LazyLogging {
 
     def getBigQueryModule(bigquery: String) = {
       val config = {
-        val credentialsBase54 = env.getProperty(s"modules.$bigquery.credentials_base64")
+        val credentialsBase64 = env.getProperty(s"modules.$bigquery.credentials_base64")
         val credentialsFile = env.getProperty(s"modules.$bigquery.credentials_file")
 
-        val credentials = if (credentialsBase54 != null && credentialsBase54.nonEmpty) {
-          Base64.getDecoder.decode(credentialsBase54.getBytes("UTF-8"))
+        val credentials = if (credentialsBase64 != null && credentialsBase64.nonEmpty) {
+          Base64.getDecoder.decode(credentialsBase64.getBytes("UTF-8"))
         } else if (credentialsFile != null && credentialsFile.nonEmpty && Files.exists(Paths.get(credentialsFile))) {
           Files.readAllBytes(Paths.get(credentialsFile))
         } else throw new IllegalArgumentException("Missing BigQuery credentials data")
