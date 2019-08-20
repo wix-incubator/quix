@@ -13,6 +13,7 @@ export default (app: App, store: Store) => () => ({
   require: 'ngModel',
   scope: {
     type: '@',
+    filter: '&',
     onChange: '&',
     onLoad: '&',
   },
@@ -23,7 +24,10 @@ export default (app: App, store: Store) => () => ({
         .then(() => {
           initNgScope(scope)
           .withVM({
-            plugins: pluginManager.module(scope.type).plugins().map(plugin => plugin.getId()),
+            plugins: pluginManager.module(scope.type)
+              .plugins()
+              .filter(plugin => !scope.filter() || scope.filter()(plugin))
+              .map(plugin => plugin.getId()),
             $export() {
               return {type: scope.model};
             },

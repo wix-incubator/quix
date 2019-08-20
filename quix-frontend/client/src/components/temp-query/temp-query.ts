@@ -5,7 +5,7 @@ import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
 import {IScope} from './temp-query-types';
-import {pluginManager} from '../../plugins';
+import { NotePlugin } from '../../services/plugins';
 
 export default (app: App, store: Store) => () => ({
   restrict: 'E',
@@ -20,7 +20,9 @@ export default (app: App, store: Store) => () => ({
       initNgScope(scope)
         .withVM({
           type: scope.type,
-          types: pluginManager.module('note').plugins().map(plugin => plugin.getId())
+          pluginFilter(plugin: NotePlugin) {
+            return plugin.getConfig().canCreate;
+          }
         })
         .withEvents({
           onRunnerInstanceLoad(instance) {
