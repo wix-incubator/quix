@@ -69,7 +69,7 @@ describe('Search', () => {
         id: uuid(),
         name: 'New Note',
         owner: defaultUser,
-        content: '',
+        textContent: '',
         type: 'presto',
       },
       template,
@@ -78,11 +78,12 @@ describe('Search', () => {
       id: base.id,
       owner: base.owner,
       type: base.type,
-      content: base.content,
+      textContent: base.textContent,
       name: base.name,
       dateCreated: 1,
       dateUpdated: 1,
       notebookId,
+      jsonContent: undefined,
     });
     note.rank = 0;
     return noteRepo.save(note);
@@ -93,7 +94,7 @@ describe('Search', () => {
     return Promise.all(
       range(count).map(() => {
         return createNote(notebookId, {
-          content: baseString + chance.paragraph(),
+          textContent: baseString + chance.paragraph(),
         });
       }),
     );
@@ -118,10 +119,10 @@ describe('Search', () => {
   it('should get note by content', async () => {
     const notebook = await createNotebook();
     const note = await createNote(notebook.id, {
-      content: 'select someColumn from someCatalog.someTable',
+      textContent: 'select someColumn from someCatalog.someTable',
     });
     const note2 = await createNote(notebook.id, {
-      content: 'select someColumn from someCatalog.someOtherTable',
+      textContent: 'select someColumn from someCatalog.someOtherTable',
     });
 
     await noteRepo.save(note2);
@@ -137,10 +138,10 @@ describe('Search', () => {
   it('should get note by content, partial keywords', async () => {
     const notebook = await createNotebook();
     const note = await createNote(notebook.id, {
-      content: 'select someColumn from someCatalog.someTable',
+      textContent: 'select someColumn from someCatalog.someTable',
     });
     const note2 = await createNote(notebook.id, {
-      content: 'select someColumn from someCatalog.someOtherTable',
+      textContent: 'select someColumn from someCatalog.someOtherTable',
     });
 
     await noteRepo.save(note2);
@@ -190,10 +191,10 @@ describe('Search', () => {
   it('full phrase search', async () => {
     const notebook = await createNotebook();
     const note = await createNote(notebook.id, {
-      content: 'select col1, col2, col3 from foo where col1 = 1',
+      textContent: 'select col1, col2, col3 from foo where col1 = 1',
     });
     const note2 = await createNote(notebook.id, {
-      content: 'select col1, col2, col3 from foo where col2 = 1',
+      textContent: 'select col1, col2, col3 from foo where col2 = 1',
     });
 
     const [result] = await searchService.search(`col1 = 1`);

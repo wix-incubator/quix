@@ -5,8 +5,7 @@ export enum ModuleEngineType {
   BIGQUERY = 'bigquery'
 }
 
-//TODO: go over this
-export const MoudleEngineToSyntaxMap = {
+export const ModuleEngineToSyntaxMap = {
   presto: 'presto',
   athena: 'athena',
   bigquery: 'ansisql'

@@ -1,7 +1,13 @@
-<div class="bi-section bi-grow">
+<div class="bi-section bi-c-h bi-grow">
   <div class="bi-section-header">
     <div>
-      <div class="bi-section-title">
+      <div class="bi-section-title bi-r-h bi-align bi-s-h">
+        <img
+          class="quix-user-avatar bi-fade-in"
+          ng-if="vm.state.is('Result') && vm.state.value().notebook.ownerDetails.avatar"
+          ng-src="{{::vm.state.value().notebook.ownerDetails.avatar}}"
+        >
+
         <quix-breadcrumbs
           class="bi-dont-shrink bi-fade-in"
           ng-if="vm.breadcrumbs.enabled"
@@ -124,6 +130,7 @@
 
   <div 
     class="quix-note-container bi-section-content--list bi-s-v--x15"
+    ng-class="::{'quix-note-container--editable': !!permissions.note.edit}"
     ng-if="vm.state.is('Content')"
     data-hook="notebook-content"
     ui-sortable="{

@@ -1,12 +1,6 @@
 import {IMeta, IFilterData} from '../../services/chart/chart-conf';
-import * as echarts from 'echarts/lib/echarts';
-import 'echarts/lib/chart/pie'
-import 'echarts/lib/component/tooltip'
-import 'echarts/lib/component/title'
-import 'echarts/lib/component/legend'
-import { default as essos } from '../theme';
 
-echarts.registerTheme('essos', essos);
+declare const Plotly;
 
 export class PieRenderer {
   private chart = null;
@@ -20,41 +14,38 @@ export class PieRenderer {
   }
 
   public draw(data: any[], filteredMeta: IMeta, meta: IMeta, filter: IFilterData) {
-    const size = Math.min(this.container.width(),  this.container.height());
+    const xAxisType = 'pie';
 
-    this.chart = echarts.init(this.container.get(0), 'essos');
-    this.chart.clear();
+    data = data.map(serie => ({
+      ...serie,
+      type: xAxisType,
+      labels: serie.x,
+      values: serie.y,
+    }));
 
-    this.chart.setOption({
-      title: {
-        text: null
+    const layout = {
+      margin: {
+        l: 30,
+        r: 30,
+        b: 30,
+        t: 30,
+        pad: 4,
       },
       legend: {
-        show: data.length > 1,
-        data: data.map(series => series.name),
-        bottom: true
+        'orientation': 'v',
       },
-      series: data.map((series, i) => {
-        const slice = 100 / (data.length * 2);
+    };
 
-        return {
-          ...series,
-          type: 'pie',
-          radius: size / (data.length * 4),
-          center: [`${(slice * (2 * i + 1))}%`, '50%'],
-          animationType: 'scale',
-          animationEasing: 'elasticOut',
-          animationDelay() {
-            return Math.random() * 200;
-          },
-        }
-      })
+    if (this.chart) {
+      this.destroy();
+    }
+
+    this.chart = Plotly.newPlot(this.container.get(0), data, layout, {
+      displaylogo: false,
     });
-
-    this.chart.resize();
   }
 
   public destroy() {
-    this.chart.dispose();
+    Plotly.purge(this.container.get(0));
   }
 }

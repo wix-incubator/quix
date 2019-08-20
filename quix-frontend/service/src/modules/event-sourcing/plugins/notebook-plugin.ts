@@ -1,51 +1,57 @@
 import {Injectable} from '@nestjs/common';
-import {InjectRepository, InjectEntityManager} from '@nestjs/typeorm';
-import {DbNotebook, DbFileTreeNode, DbFavorites} from 'entities';
-import {Repository, EntityManager} from 'typeorm';
+import {InjectEntityManager} from '@nestjs/typeorm';
+import {DbFavorites, DbFileTreeNode, DbNotebook} from 'entities';
+import {FileTreeRepository} from 'entities/filenode/filenode.repository';
 import {
-  notebookReducer,
-  NotebookActionTypes,
-  NotebookActions,
-} from 'shared/entities/notebook';
-import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
-import {QuixHookNames} from '../types';
+  convertDbNotebook,
+  covertNotebookToDb,
+} from 'entities/notebook/dbnotebook.entity';
 import {last} from 'lodash';
 import {FileType} from 'shared/entities/file';
-import {FileTreeRepository} from 'entities/filenode.repository';
-import {EntityType} from 'common/entity-type.enum';
+import {
+  NotebookActions,
+  NotebookActionTypes,
+  notebookReducer,
+} from 'shared/entities/notebook';
+import {EntityManager} from 'typeorm';
+import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
+import {IAction} from '../infrastructure/types';
+import {QuixHookNames} from '../types';
+import {assertOwner} from './utils';
 
 @Injectable()
 export class NotebookPlugin implements EventBusPlugin {
   name = 'notebook';
 
-  constructor(
-    @InjectRepository(DbNotebook)
-    private notebookRepoistory: Repository<DbNotebook>,
-    @InjectEntityManager() private em: EntityManager,
-  ) {}
+  constructor(@InjectEntityManager() private em: EntityManager) {}
 
   registerFn: EventBusPluginFn = api => {
     const handledEvents: string[] = [
       NotebookActionTypes.createNotebook,
       NotebookActionTypes.deleteNotebook,
       NotebookActionTypes.updateName,
-      NotebookActionTypes.toggleIsLiked,
     ];
 
     api.setEventFilter(type => handledEvents.includes(type));
 
-    api.hooks.listen(QuixHookNames.VALIDATION, (action: NotebookActions) => {
-      switch (action.type) {
-        case NotebookActionTypes.updateName:
-        case NotebookActionTypes.deleteNotebook:
-        case NotebookActionTypes.createNotebook:
-        case NotebookActionTypes.toggleIsLiked:
-      }
-    });
+    api.hooks.listen(
+      QuixHookNames.VALIDATION,
+      async (action: IAction<NotebookActions>) => {
+        switch (action.type) {
+          case NotebookActionTypes.updateName:
+          case NotebookActionTypes.deleteNotebook: {
+            const notebook = await this.em.findOneOrFail(DbNotebook, action.id);
+            assertOwner(notebook, action);
+            break;
+          }
+          case NotebookActionTypes.createNotebook:
+        }
+      },
+    );
 
     api.hooks.listen(
       QuixHookNames.PROJECTION,
-      async (action: NotebookActions) =>
+      async (action: IAction<NotebookActions>) =>
         this.em.transaction(async transactionManager => {
           await this.projectNotebook(action, transactionManager);
           await this.projectFileTree(action, transactionManager);
@@ -54,22 +60,30 @@ export class NotebookPlugin implements EventBusPlugin {
     );
   };
 
-  private async projectNotebook(action: NotebookActions, tm: EntityManager) {
-    const model =
+  private async projectNotebook(
+    action: IAction<NotebookActions>,
+    tm: EntityManager,
+  ) {
+    const dbModel =
       action.type === NotebookActionTypes.createNotebook
         ? undefined
         : await tm.findOne(DbNotebook, action.id);
 
+    const model = dbModel ? convertDbNotebook(dbModel) : undefined;
+
     const newModel = notebookReducer(model, action);
 
     if (newModel && model !== newModel) {
-      return tm.save(new DbNotebook(newModel));
+      return tm.save(covertNotebookToDb(newModel));
     } else if (action.type === NotebookActionTypes.deleteNotebook) {
       await tm.delete(DbNotebook, {id: action.id});
     }
   }
 
-  private async projectFileTree(action: NotebookActions, tm: EntityManager) {
+  private async projectFileTree(
+    action: IAction<NotebookActions>,
+    tm: EntityManager,
+  ) {
     switch (action.type) {
       case NotebookActionTypes.createNotebook: {
         const {notebook} = action;
@@ -78,7 +92,7 @@ export class NotebookPlugin implements EventBusPlugin {
 
         node.id = notebook.id;
         node.notebookId = notebook.id;
-        node.owner = (action as any).user;
+        node.owner = action.user;
         node.type = FileType.notebook;
         node.parent = parent ? new DbFileTreeNode(parent.id) : undefined;
 
@@ -87,21 +101,11 @@ export class NotebookPlugin implements EventBusPlugin {
     }
   }
 
-  private async projectFavorites(action: NotebookActions, tm: EntityManager) {
+  private async projectFavorites(
+    action: IAction<NotebookActions>,
+    tm: EntityManager,
+  ) {
     switch (action.type) {
-      case NotebookActionTypes.toggleIsLiked: {
-        const favorite = {
-          entityId: action.id,
-          entityType: EntityType.Notebook,
-          owner: (action as any).user,
-        };
-
-        if (action.isLiked) {
-          return tm.save(Object.assign(new DbFavorites(), favorite));
-        } else {
-          return tm.delete(DbFavorites, favorite);
-        }
-      }
       case NotebookActionTypes.deleteNotebook: {
         return tm.delete(DbFavorites, {
           entityId: action.id,

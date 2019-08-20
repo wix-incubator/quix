@@ -141,7 +141,7 @@ export class Model<T extends OptionalCloneable<T>> {
     this.ngModel.$formatters.push(model => {
       if (this.conf.opts.log) {
         // tslint:disable-next-line: no-console
-        console.log('Formatting-from', model);
+        console.log('Formatting from', model);
       }
 
       let res = tools.defaultsDeep(model, this.conf.template || model);
@@ -150,7 +150,7 @@ export class Model<T extends OptionalCloneable<T>> {
 
       if (this.conf.opts.log) {
         // tslint:disable-next-line: no-console
-        console.log('Formatting-to', res);
+        console.log('Formatted to', res);
       }
 
       return res;
@@ -209,14 +209,14 @@ export class Model<T extends OptionalCloneable<T>> {
     this.ngModel.$parsers.push(model => {
       if (this.conf.opts.log) {
         // tslint:disable-next-line: no-console
-        console.log('Parsing-from', model);
+        console.log('Parsing from', model);
       }
 
       const res = this.conf.parser ? this.conf.parser(model) : model;
 
       if (this.conf.opts.log) {
         // tslint:disable-next-line: no-console
-        console.log('Parsing-to', res);
+        console.log('Parsed', res);
       }
 
       return res;

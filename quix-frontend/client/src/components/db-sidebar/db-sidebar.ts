@@ -89,7 +89,7 @@ export default (app: App, store: Store) => () => ({
 
             if (!text) {
               state.set('Visible', true, {
-                dbFiltered: null,
+                dbFiltered: [],
               });
 
               return;

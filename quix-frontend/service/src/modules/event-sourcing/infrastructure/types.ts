@@ -1,3 +1,4 @@
+import {BaseAction} from 'shared/entities/common/common-types';
 export interface IEventData {
   [key: string]: any;
 }
@@ -8,11 +9,11 @@ export interface HasId {
 
 interface ServerFields {
   dateCreated?: Date;
-  user?: string;
+  user: string;
 }
 
-export type IAction<T = IEventData, N = string> = {
+export type IAction<T = IEventData, N extends string = string> = BaseAction & {
   type: N;
-  id: string;
+  ethereal?: boolean;
 } & T &
   ServerFields;

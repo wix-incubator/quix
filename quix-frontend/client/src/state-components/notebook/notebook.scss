@@ -3,5 +3,9 @@
 quix-notebook {
   .quix-note-container {
     position: relative;
+
+    &.quix-note-container--editable {
+      padding-left: 8px;
+    }
   }
 }

@@ -18,16 +18,22 @@ const mocks = {
   '/api/events': () =>[200],
   '/api/users': () =>[
     createMockUser({
-      id: 'valeryf@wix.com',
+      id: 'valery@wix.com',
+      email: 'valery@wix.com',
       avatar: 'https://lh4.googleusercontent.com/-W0WqulhKa-E/AAAAAAAAAAI/AAAAAAAAAsI/YUf_DDZhNCQ/s96-c/photo.jpg',
       name: 'Valery Frolov',
-      rootFolder: '6c98fe9a-39f7-4674-b003-70f9061bbee5'
+      rootFolder: '6c98fe9a-39f7-4674-b003-70f9061bbee5',
+      dateCreated: Date.now(),
+      dateUpdated: Date.now(),
     }),
     createMockUser({
-      id: 'antonp@wix.com',
+      id: 'anton@wix.com',
+      email: 'anton@wix.com',
       avatar: 'https://lh4.googleusercontent.com/-PhbzLtqaoGo/AAAAAAAAAAI/AAAAAAAAAlM/QQPR22nvo7o/s96-c/photo.jpg',
       name: 'Anton Podolsky',
-      rootFolder: 'de6908dd-7f1e-4803-ab0d-5f9d6a496609'
+      rootFolder: 'de6908dd-7f1e-4803-ab0d-5f9d6a496609',
+      dateCreated: Date.now(),
+      dateUpdated: Date.now(),
     }),
   ],
   // '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],
@@ -43,15 +49,40 @@ const mocks = {
   '/api/notebook/404': () => [404, {message: 'Notebook not found'}],
   '/api/notebook/500': () => [500, {message: 'Couldn\'t fetch notebook'}],
   '/api/notebook/:id': ({id}) => createMockNotebook([
-    createMockNote(id, {id: '1001', name: 'Runnable (success)', content: 'do success timeout=200'}),
-    createMockNote(id, {id: '1002', name: 'Runnable (error)', content: 'do error'}),
-    createMockNote(id, {id: '1003'}),
+    createMockNote(id, {id: '1001', name: 'Runnable', content: 'do success'}),
+    createMockNote(id, {id: '1002', name: 'Runnable (timeout)', content: 'do success timeout=200'}),
+    createMockNote(id, {id: '1003', name: 'Runnable (error)', content: 'do error'}),
     createMockNote(id, {id: '1004'}),
     createMockNote(id, {id: '1005'}),
+    createMockNote(id, {id: '1006'}),
   ], {id}),
   '/api/favorites': () => [
-    createMockFile({id: '100', isLiked: true}),
-    createMockFile({id: '101', isLiked: true})
+    createMockFile({
+      id: '100',
+      isLiked: true,
+      ownerDetails: {
+        id: 'valery@wix.com',
+        email: 'valery@wix.com',
+        avatar: 'https://lh4.googleusercontent.com/-W0WqulhKa-E/AAAAAAAAAAI/AAAAAAAAAsI/YUf_DDZhNCQ/s96-c/photo.jpg',
+        name: 'Valery Frolov',
+        rootFolder: '6c98fe9a-39f7-4674-b003-70f9061bbee5',
+        dateCreated: Date.now(),
+        dateUpdated: Date.now(),
+      }
+    }),
+    createMockFile({
+      id: '101',
+      isLiked: true,
+      ownerDetails: {
+        id: 'anton@wix.com',
+        email: 'anton@wix.com',
+        avatar: 'https://lh4.googleusercontent.com/-PhbzLtqaoGo/AAAAAAAAAAI/AAAAAAAAAlM/QQPR22nvo7o/s96-c/photo.jpg',
+        name: 'Anton Podolsky',
+        rootFolder: 'de6908dd-7f1e-4803-ab0d-5f9d6a496609',
+        dateCreated: Date.now(),
+        dateUpdated: Date.now(),
+      }
+    })
   ],
   '/api/search/none': () => ({count: 0, notes: []}),
   '/api/search/500': () => [500, {message: 'Search error'}],

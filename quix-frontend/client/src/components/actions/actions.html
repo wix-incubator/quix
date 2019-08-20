@@ -7,7 +7,11 @@
     'bi-s-h': options.compact
   }"
 >
-  <bi-tooltip ng-if="permissions.delete" data-hook="actions-delete">
+  <bi-dropdown
+    ng-if="permissions.delete && !options.bulk"
+    bd-options="::{align: 'right'}"
+    data-hook="actions-menu"
+  >
     <bi-toggle>
       <i 
         class="bi-action"
@@ -15,13 +19,27 @@
           'bi-icon': !options.compact,
           'bi-icon--sm': options.compact
         }"
-        ng-click="$event.stopPropagation(); events.onDelete()"
-      >
-        {{::options.bulk ? 'delete_sweep' : 'delete'}}
-      </i>
+        ng-click="$event.stopPropagation();"
+      >more_horiz</i>
     </bi-toggle>
-    Delete {{::type}}
-  </bi-tooltip>
+    
+    <ul class="bi-dropdown-menu">
+      <li class="bi-align bi-s-h" ng-click="$event.stopPropagation(); events.onDelete()" data-hook="actions-delete">
+        <i class="bi-icon--sm bi-muted">delete</i>
+        <span>Delete {{::type}}</span>
+      </li>
+    </ul>
+  </bi-dropdown>
+
+  <button
+    class="bi-button--danger"
+    ng-if="permissions.delete && options.bulk"
+    ng-click="events.onDelete()"
+    data-hook="actions-delete"
+  >
+    <i class="bi-icon--sm">delete_sweep</i>
+    <span>Delete {{::type}}s</span>
+  </button>
     
   <bi-tooltip ng-if="::permissions.clone">
     <bi-toggle>

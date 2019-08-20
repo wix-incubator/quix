@@ -27,10 +27,14 @@ export class ChartData extends VizData<IInputItem, IMeta, IData, IFilterData> {
 
         res[serieIndexes[key]] = res[serieIndexes[key]] || {
           name: key,
-          data: []
+          x: [],
+          y: [],
         };
 
-        res[serieIndexes[key]].data.push([item[filter.x], item[yField]]);
+        const {x, y} = res[serieIndexes[key]];
+
+        x.push(item[filter.x]);
+        y.push(item[yField]);
       });
 
       return res;

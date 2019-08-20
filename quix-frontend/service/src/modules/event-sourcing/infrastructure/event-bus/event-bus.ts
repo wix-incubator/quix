@@ -1,13 +1,12 @@
 import {EventEmitter} from 'events';
 import {defer} from 'utils/deferred-promise';
-// import {IAction} from '../types';
 import {
   EventBusMiddlewareDescriptor,
   PluginDescriptor,
   EventBusNextFn,
 } from './types';
 import {MiddlewareApi} from './api';
-import {BaseAction, DefaultAction} from 'shared/entities/common/common-types';
+import {IAction} from '../types';
 
 /**
  * @name EventBus
@@ -32,7 +31,7 @@ export class EventBus {
   }
   private emitter = new EventEmitter();
 
-  emit<A extends BaseAction = DefaultAction>(action: A) {
+  emit<A extends IAction = IAction>(action: A) {
     const {promise, reject, resolve} = defer();
     const context: any = {};
 

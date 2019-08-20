@@ -3,5 +3,5 @@ export function isJestTest() {
 }
 
 export function isTsNode() {
-  return !!require.extensions['.ts'];
+  return !!require.extensions['.ts'] || __filename.slice(-2) === 'ts';
 }

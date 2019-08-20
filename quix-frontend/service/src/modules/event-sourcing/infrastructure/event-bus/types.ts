@@ -1,13 +1,13 @@
 import {RegisterApi, MiddlewareApi} from './api';
 import {Context} from './context';
-import {DefaultAction, BaseAction} from 'shared/entities/common/common-types';
+import {IAction} from '../types';
 
-export type EventBusMiddleware = <A extends BaseAction = DefaultAction>(
+export type EventBusMiddleware = <A extends IAction = IAction>(
   action: A,
   api: MiddlewareApi,
   next: EventBusNextFn,
 ) => any;
-export type EventBusNextFn = <A extends BaseAction = DefaultAction>(
+export type EventBusNextFn = <A extends IAction = IAction>(
   action?: A | Error,
 ) => void;
 export type EventBusPluginFn = (api: RegisterApi) => void;
@@ -49,7 +49,7 @@ export type Plugins = Map<string, PluginDescriptor>;
 /**** PluginApi ****/
 export interface IPluginApi {
   hooks: {
-    call<A extends BaseAction = DefaultAction>(
+    call<A extends IAction = IAction>(
       name: string,
       action: A,
       extraContext?: Record<string, any>,
@@ -58,12 +58,12 @@ export interface IPluginApi {
 }
 
 /**** Hooks ****/
-export type HookFn<A extends BaseAction = DefaultAction> = (
+export type HookFn<A extends IAction = IAction> = (
   action: A,
   api: HookApi,
 ) => PromiseLike<any> | any;
 
-interface Hook<A extends BaseAction = DefaultAction> {
+interface Hook<A extends IAction = IAction> {
   name: string;
   fn: HookFn<A>;
 }

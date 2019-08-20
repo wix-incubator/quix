@@ -5,7 +5,7 @@ export abstract class IActionStore {
 }
 export interface IDBAction<T = IEventData, N extends string = string> {
   id: string;
-  user?: string;
+  user: string;
   dateCreated?: Date;
   type: N;
   data: T;

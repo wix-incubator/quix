@@ -1,103 +1,109 @@
-<bi-foldable 
-  class="bi-theme--lighter"
-  is-folded="vm.isFolded"
-  on-toggle="events.onFoldToggle(fold)"
->
-  <div
-    class="bi-panel bi-c-h"
-    bi-maximizable
-    is-maximized="vm.isMaximized"
-    on-toggle="events.onMaximizeToggle(maximized)"
-  >
-    <div class="bi-panel-header bi-hover-parent">
-      <span 
-        class="quix-note-drag-handle quix-note-drag-indicator bi-hover-target"
-        ng-if="permissions.reorder && !vm.isMaximized"
-      >
-        <i class="bi-action bi-icon--sm">drag_indicator</i>
-      </span>
-
-      <div>
-        <div class="bi-align bi-s-h">
-          <span class="bi-align">
-            <span class="quix-checkbox" ng-if="permissions.edit && !vm.isMaximized" data-hook="note-select">
-              <i
-                class="bi-action bi-icon bi-fade-in checked"
-                ng-if="marked"
-                ng-click="$event.stopPropagation(); events.onMarkToggle()"
-              >
-                check_box_outline
-              </i>
-              <i
-                class="bi-action bi-icon bi-fade-in"
-                ng-if="!marked"
-                ng-click="$event.stopPropagation(); events.onMarkToggle()"
-              >
-                check_box_outline_blank
-              </i>
-            </span>
-
-            <span bm-toggle></span>
-          </span>  
+<div class="bi-r bi-s-h--x05">
+  <span class="quix-checkbox" ng-if="permissions.edit && !vm.isMaximized" data-hook="note-select">
+    <i
+      class="bi-action bi-icon bi-fade-in checked"
+      ng-if="marked"
+      ng-click="$event.stopPropagation(); events.onMarkToggle()"
+    >
+      check_box_outline
+    </i>
+    <i
+      class="bi-action bi-icon bi-fade-in"
+      ng-if="!marked"
+      ng-click="$event.stopPropagation(); events.onMarkToggle()"
+    >
+      check_box_outline_blank
+    </i>
+  </span>
     
-          <span class="bi-text--ui bi-muted">{{::note.type | biToHumanCase}}</span>
+  <bi-foldable 
+    class="bi-theme--lighter bi-c-h bi-grow"
+    is-folded="vm.isFolded"
+    on-toggle="events.onFoldToggle(fold)"
+  >
+    <div
+      class="bi-panel bi-c-h"
+      bi-maximizable
+      is-maximized="vm.isMaximized"
+      on-toggle="events.onMaximizeToggle(maximized)"
+    >
+      <div class="bi-panel-header bi-hover-parent">
+        <span 
+          class="quix-note-drag-handle quix-note-drag-indicator bi-hover-target"
+          ng-if="permissions.reorder && !vm.isMaximized"
+        >
+          <i class="bi-action bi-icon--sm">drag_indicator</i>
+        </span>
+
+        <div>
+          <div class="bi-align bi-s-h">
+            <span class="bi-align">
+              <span bm-toggle></span>
+            </span>  
+      
+            <span class="bi-text--ui bi-muted">{{::note.type | biToHumanCase}}</span>
+          </div>
+
+          <span
+            class="bi-panel-title bi-dont-shrink"
+            contenteditable="{{::permissions.rename}}"
+            ng-model="note.name"
+            on-change="events.onNameChange()"
+            ce-options="::{autoEdit: options.focusName}"
+            data-hook="note-name"
+          ></span>
         </div>
 
-        <span
-          class="bi-panel-title bi-dont-shrink"
-          contenteditable="{{::permissions.rename}}"
-          ng-model="note.name"
-          on-change="events.onNameChange()"
-          ce-options="::{autoEdit: options.focusName}"
-          data-hook="note-name"
-        ></span>
+        <div 
+          class="quix-note-drag-handle bi-hover-parent bi-justify-right"
+          ng-show="!vm.isMaximized"
+          ng-class="{'bi-hover-target': bf.fold}"
+          bf-toggle
+        >
+          <quix-meta entity="note"></quix-meta>
+
+          <quix-actions
+            type="note"
+            context="note"
+            permissions="::permissions"
+            quix-actions-options="{reverse: true, compact: true}"
+            on-share="events.onShare(context)"
+            on-clone="events.onClone(context)"
+            on-delete="events.onDelete(context)"
+          ></quix-actions>
+        </div>
       </div>
 
       <div 
-        class="quix-note-drag-handle bi-hover-parent bi-justify-right"
-        ng-show="!vm.isMaximized"
-        ng-class="{'bi-hover-target': bf.fold}"
-        bf-toggle
+        class="bi-panel-content bi-c-h bi-grow bi-fade-in"
+        ng-if="!bf.fold"
       >
-        <quix-meta entity="note"></quix-meta>
-
-        <quix-actions
-          type="note"
-          context="note"
-          permissions="::permissions"
-          quix-actions-options="{reverse: true, compact: true}"
-          on-share="events.onShare(context)"
-          on-clone="events.onClone(context)"
-          on-delete="events.onDelete(context)"
-        ></quix-actions>
+        <bi-sql-runner
+          class="bi-c-h bi-grow"
+          ng-model="note.content"
+          ng-change="events.onContentChange()"
+          bsr-options="::{
+            fitContent: true,
+            params: true,
+            focus: options.focusEditor,
+            showSyntaxErrors: vm.showSyntaxErrors
+          }"
+          type="note.type"
+          runner="runner"
+          download-file-name="getDownloadFileName(query)"
+          on-save="events.onSave()"
+          on-run="events.onRun()"
+          on-editor-load="events.onEditorInstanceLoad(instance)"
+          on-runner-load="events.onRunnerInstanceLoad(instance)"
+          on-runner-created="events.onRunnerCreated(runner)"
+          on-runner-destroyed="events.onRunnerDestroyed(runner)"
+          readonly="!permissions.edit"
+        >
+          <controls>
+            <quix-npc></quix-npc>
+          </controls>
+        </bi-sql-runner>
       </div>
     </div>
-
-    <div 
-      class="bi-panel-content bi-c-h bi-grow bi-fade-in"
-      ng-if="!bf.fold"
-    >
-      <bi-sql-runner
-        class="bi-c-h bi-grow"
-        ng-model="note.content"
-        ng-change="events.onContentChange()"
-        bsr-options="::{
-          fitContent: true,
-          params: true,
-          focus: options.focusEditor,
-          showSyntaxErrors: vm.showSyntaxErrors
-        }"
-        type="note.type"
-        runner="runner"
-        download-file-name="getDownloadFileName(query)"
-        on-save="events.onSave()"
-        on-run="events.onRun()"
-        on-editor-load="events.onEditorInstanceLoad(instance)"
-        on-runner-load="events.onRunnerInstanceLoad(instance)"
-        on-runner-created="events.onRunnerCreated(runner)"
-        on-runner-destroyed="events.onRunnerDestroyed(runner)"
-        readonly="!permissions.edit"
-      ></bi-sql-runner>
-    </div>
-  </div>
-</bi-foldable>
+  </bi-foldable>
+</div>

@@ -192,7 +192,8 @@ export default () => {
       editor: 'editor',
       actions: '?actions',
       result: '?result',
-      runHint: '?runHint'
+      runHint: '?runHint',
+      controls: '?controls',
     },
     scope: {
       data: '=',

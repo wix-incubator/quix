@@ -23,13 +23,16 @@ export default (app: App, store: Store) => () => ({
         .then(() => {
           initNgScope(scope)
           .withVM({
+            plugins: pluginManager.getPluginIdsByType(scope.type),
             $export() {
               return {type: scope.model};
             },
             $import({type}) {
-              scope.model = scope.model || (this.plugins.includes(type) ? type : this.plugins[0]);
+              scope.model = this.plugins.includes(type) ? type : null;
             },
-            plugins: pluginManager.getPluginIdsByType(scope.type)
+            $init() {
+              scope.model = scope.model || this.plugins[0];
+            }
           })
           .withState('pluginPicker', 'pluginPicker', {});
 

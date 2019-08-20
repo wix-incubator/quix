@@ -30,13 +30,13 @@
 </div>
 
 <div class="bi-c-h bi-s-v--x15 bi-grow bi-fade-in" ng-if="vm.state.after('Result')">
-  <input
-    class="quix-db-search bi-input bi-dont-shrink"
+  <bi-search
+    class="quix-db-search bi-dont-shrink"
     ng-model="vm.search.text"
     ng-change="events.onSearchChange(vm.search.text)"
     bi-focus
     placeholder="Search"
-  >
+  ></bi-search>
   
   <div class="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.before('SearchContent')">
     <div class="bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Search')">
