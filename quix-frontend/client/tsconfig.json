@@ -9,7 +9,8 @@
     "lib": ["dom", "es2016"],
     "esModuleInterop": true,
     "downlevelIteration": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "jsx": "react"
   },
   "include": [
     "./test/**/*.ts"

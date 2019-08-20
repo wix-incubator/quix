@@ -5,11 +5,20 @@ import {IBranches} from '../../../lib/store/services/store';
 import {createStore, Store} from '../../../lib/store';
 import Navigator from './navigator';
 import {App, IMenuItem} from './app';
-import {PluginBuilder, IPluginComponent, IStateFactory, IPluginBranches, IStateComponentFactory, IStateComponentConfig, IUrlParamListener} from './plugin-builder';
+import {
+  PluginBuilder,
+  IPluginComponent,
+  IStateFactory,
+  IPluginBranches,
+  IStateComponentFactory,
+  IUrlParamListener,
+  IReactStateComponentConfig, IAngularStateComponentConfig, IStateComponentConfig
+} from './plugin-builder';
 import {initScopeListeners} from '../utils/scope-utils';
 import {User} from './user';
 import {LocalStorage} from '../../core/srv/local-storage';
 import {Options} from '../types';
+import {react2angular} from 'react2angular';
 
 export type PluginFactory<Config> = (app: PluginBuilder<Config>) => any;
 
@@ -110,6 +119,11 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
     return this;
   }
 
+  reactComponent(name:string, factory:angular.IComponentOptions ):  Builder<Config> {
+    this.ngApp.component(name, factory);
+    return this;
+  }
+
   /**
    * Registers a state component
    *
@@ -181,17 +195,27 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
       }]
     });
 
-    this.component(camelCase(componentName), () => ({
+    const isAngularConfig = (unknownConfig: IStateComponentConfig): unknownConfig is IAngularStateComponentConfig => {
+      return typeof (unknownConfig as IAngularStateComponentConfig).template === 'string';
+    };
+
+    const createAngularFactory = (angularConfig: IAngularStateComponentConfig) => () => ({
       restrict: 'E',
-      template: config.template,
-      scope: mapValues({...config.scope, $stateOptions: true}, () => '<'),
+      template: angularConfig.template,
+      scope: mapValues({...angularConfig.scope, $stateOptions: true}, () => '<'),
       link: {
         pre(scope, ...args) {
-          initScopeListeners(scope, store, config.scope);
-          (config.link as any)(scope, ...args);
+          initScopeListeners(scope, store, angularConfig.scope);
+          (angularConfig.link as any)(scope, ...args);
         }
       }
-    }));
+    });
+
+    const createReactFactory = (reactConfig: IReactStateComponentConfig) => react2angular(reactConfig.template, Object.keys(reactConfig.scope));
+
+    isAngularConfig(config) ?
+      this.component(camelCase(componentName), createAngularFactory(config)):
+      this.reactComponent(camelCase(componentName), createReactFactory(config));
 
     return this;
   }
