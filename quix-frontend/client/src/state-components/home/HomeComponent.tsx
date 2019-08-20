@@ -1,7 +1,7 @@
 import * as React from "react";
 import "./home.scss";
 
-export interface HomeReactProps {
+export interface HomeProps {
   events: {
     onNotebooksClick(): void;
     onExamplesClick(): void;
@@ -9,7 +9,7 @@ export interface HomeReactProps {
   };
 }
 
-export function Home(props: HomeReactProps) {
+export function Home(props: HomeProps) {
   const {events} = props;
   return (
     <div className="bi-grow bi-scroll">

@@ -1,7 +1,7 @@
 import {Store} from "../../lib/store";
 import {App} from "../../lib/app";
 import {IReactStateComponentConfig} from "../../lib/app/services/plugin-builder";
-import {Home, HomeReactProps} from "./Home";
+import {Home, HomeProps} from "./HomeComponent";
 import {initNgScope} from "../../lib/core";
 import {addNotebook, goToExamples, goToRoot} from "../../services";
 
@@ -14,7 +14,7 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
       return;
     }
   },
-  controller: ($scope: HomeReactProps, params, {setTitle}) => {
+  controller: ($scope: HomeProps, params, {setTitle}) => {
     initNgScope($scope).withEvents({
       onNotebooksClick() {
         goToRoot(app);
