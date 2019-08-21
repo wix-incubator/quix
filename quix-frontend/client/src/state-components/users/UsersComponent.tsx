@@ -4,7 +4,7 @@ import {UsersTable} from './UsersTable';
 
 export interface UsersProps {
   users: IUser[];
-  error: any;
+  error: {message: string};
   onUserClicked(user: IUser): void;
 }
 
