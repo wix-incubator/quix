@@ -2,7 +2,7 @@ import {Testkit} from '../../../test/e2e/driver';
 
 const enum Hooks {
   Error = 'users-error',
-  Content = 'users-content',
+  Content = 'users-content'
 }
 
 export class UsersTestkit extends Testkit {
@@ -15,6 +15,6 @@ export class UsersTestkit extends Testkit {
   }
 
   async numOfUsers() {
-    return (await this.query.attrs('bi-tbl-row')).length;
+    return (await this.query.hooks('table-row')).length;
   }
 }
