@@ -10,7 +10,7 @@ export class BigQueryDbPlugin extends DbPlugin {
 
   getSampleQuery(table: IFile) {
     return `SELECT *
-FROM \`${[...table.path, table].join('.')}\`
+FROM \`${[...table.path, table].map(({name}) => name).join('.')}\`
 LIMIT ${DB.SampleLimit}
 `    
   }
