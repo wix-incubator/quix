@@ -1,17 +1,17 @@
 import {DbPlugin} from '../../services/plugins';
 import {IFile} from '../../../../shared';
 import {DB} from '../../config';
-import {sanitizeTableToken} from '../../services';
+import { App } from '../../lib/app';
 
 export class BigQueryDbPlugin extends DbPlugin {
-  constructor(name: string) {
-    super(name);
+  constructor(app: App, name: string, hooks: any) {
+    super(app, name, hooks);
   }
 
   getSampleQuery(table: IFile) {
     return `SELECT *
-FROM ${[...table.path, table].map(({name}) => sanitizeTableToken(name, '"')).join('.')}
+FROM \`${[...table.path, table]}\`
 LIMIT ${DB.SampleLimit}
-    `    
+`    
   }
 }

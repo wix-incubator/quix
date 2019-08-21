@@ -14,6 +14,6 @@ export class AthenaDbPlugin extends DbPlugin {
     return `SELECT *
 FROM ${[...table.path, table].map(({name}) => sanitizeTableToken(name, '"')).join('.')}
 LIMIT ${DB.SampleLimit}
-    `    
+`    
   }
 }
