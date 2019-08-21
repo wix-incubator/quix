@@ -43,11 +43,11 @@ class PrestoDbControllerTest extends E2EContext {
   @Test
   def sendFastPrestoQueryWhenDBTreeIsEmptyAndSlowInBackground(): Unit = {
     executor
-      .withResults(List(List("catalog")))
-      .withResults(List(List("catalog", "schema", "table")))
+      .withResults(List(List("catalog1")))
+      .withResults(List(List("catalog1", "schema", "table")))
 
     val catalogs = get[List[Catalog]]("api/db/presto-prod/explore")
-    val resultOfFastQuery = Catalog("catalog", children = Nil)
+    val resultOfFastQuery = Catalog("catalog1", children = Nil)
     assertThat(catalogs, Matchers.is(List(resultOfFastQuery)))
 
   }

@@ -11,6 +11,8 @@ export const pluginFactory = {
         return new DbPlugins.AthenaDbPlugin(app, id, hooks);
       case 'jdbc':
         return new DbPlugins.JdbcDbPlugin(app, id, hooks);
+      case 'bigquery':
+        return new DbPlugins.BigQueryDbPlugin(id);
       default:
         throw new Error(`No definition for "${engine}" engine db plugin`);
     }
@@ -26,6 +28,8 @@ export const pluginFactory = {
         return new NotePlugins.JdbcNotePlugin(app, id, hooks);
       case 'rupert':
         return new NotePlugins.RupertNotePlugin(app, id, hooks);
+      case 'bigquery':
+        return new NotePlugins.BigQueryNotePlugin(app, id, hooks);
       default:
         throw new Error(`No definition for "${engine}" engine note plugin`);
     }

@@ -16,6 +16,7 @@ docker-compose up
 ```
 
 The initial run of the `docker-compose up` command will take care of all the dependencies, like MySQL, Presto, Maven, etc, will install all necessary Quix components and create a web-accessible Quix instance.
+You will need an `.env` file to run it. We will configure it in the next step.
 
 To access Quix, navigate to:  
 `http://localhost:3000`
@@ -36,7 +37,7 @@ Note that you need to specify full URL, including protocol, port and API version
   * Or `host.docker.internal` (macOS only)
 
 #### DB
-Quix also uses MySQL to store notebooks and other application data. Location of this data is specified by `DB_VOLUME_PATH`.  
+Quix also uses MySQL to store notebooks and other application data. Location of this data is specified by `DB_VOLUME_PATH`. it's nowhere? 
 As an alternative, you can also use an external MySQL database, by specifying some of the following variables:
 * DB_NAME - defaults to `quix`, must exist
 * DB_USER - defaults to `root`

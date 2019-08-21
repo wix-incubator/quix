@@ -144,6 +144,9 @@ const getModuleSettings = (moduleName: string, globalEnv: any) => {
     case ModuleEngineType.Athena:
       syntax = ModuleEngineToSyntaxMap[ModuleEngineType.Athena];
       break;
+    case ModuleEngineType.BigQuery:
+      syntax = ModuleEngineToSyntaxMap[ModuleEngineType.BigQuery];
+      break;
     default: {
       syntax = globalEnv[syntaxEnvVar] as string;
     }
