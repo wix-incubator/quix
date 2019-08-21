@@ -1,5 +1,5 @@
-import * as React from "react";
-import "./home.scss";
+import * as React from 'react';
+import './home.scss';
 
 export interface HomeProps {
   events: {
