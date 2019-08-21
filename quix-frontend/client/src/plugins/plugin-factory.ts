@@ -12,7 +12,7 @@ export const pluginFactory = {
       case 'jdbc':
         return new DbPlugins.JdbcDbPlugin(app, id, hooks);
       case 'bigquery':
-        return new DbPlugins.BigQueryDbPlugin(id);
+        return new DbPlugins.BigQueryDbPlugin(app, id, hooks);
       default:
         throw new Error(`No definition for "${engine}" engine db plugin`);
     }
