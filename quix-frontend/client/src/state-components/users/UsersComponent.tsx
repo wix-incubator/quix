@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {IUser} from '../../../../shared/dist';
-import {UsersTable} from './UsersTable';
+import {Table} from '../../lib/ui/components/Table';
+import {usersTableFields} from './users-table-fields';
 
 export interface UsersProps {
   users: IUser[];
@@ -35,7 +36,7 @@ export function Users(props: UsersProps) {
         <div>
           <div className="bi-section-title">
             Users
-            <span className="bi-fade-in">({users.length})</span>
+            <span className="bi-fade-in"> ({users.length})</span>
           </div>
         </div>
       </div>
@@ -45,7 +46,11 @@ export function Users(props: UsersProps) {
           data-hook="users-content"
         >
           <div className="bi-panel-content bi-c-h">
-            <UsersTable users={users} onUserClicked={onUserClicked} />
+            <Table
+              rows={users}
+              rowsConfig={usersTableFields}
+              onRowClicked={onUserClicked}
+            />
           </div>
         </div>
       </div>
