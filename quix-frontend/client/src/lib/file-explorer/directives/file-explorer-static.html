@@ -1,8 +1,8 @@
 <ul ng-if="::vm" class="fe-folders">
   <li
     ng-class="{'fe-folder--open': vm.folder.isOpen(folder)}"
-    ng-repeat="folder in model.getFolders() | orderBy:'name' | limitTo:model.getLimit() track by folder.getId()"
     ng-if="::!options.hideEmptyFolders || folder.hasFileLeaf()"
+    ng-repeat="folder in model.getFolders() | orderBy:'name' | limitTo:model.getLimit() track by folder.getId()"
   >
     <div
       class="fe-item bi-spread bi-fade-in bi-hover bi-muted {{::'fe-item-depth-' + depth}}"

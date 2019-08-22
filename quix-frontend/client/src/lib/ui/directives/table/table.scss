@@ -1,14 +1,15 @@
 @import '../../assets/css/def/defaults.def';
 @import '../../assets/css/def/colors.def';
 
+.bi-table-container,
 bi-tbl {
   display: block;
 
   table > tbody {
-    transition: opacity .3s;
+    transition: opacity 0.3s;
 
     &.bi-tbl-fade-out {
-      opacity: .2;
+      opacity: 0.2;
     }
   }
 
