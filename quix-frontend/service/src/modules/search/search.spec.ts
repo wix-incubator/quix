@@ -9,6 +9,7 @@ import {SearchModule} from './search.module';
 import {SearchService} from './search';
 import {Chance} from 'chance';
 import {range} from 'lodash';
+import {INote} from 'shared';
 
 const chance = new Chance();
 
@@ -125,7 +126,6 @@ describe('Search', () => {
       textContent: 'select someColumn from someCatalog.someOtherTable',
     });
 
-    await noteRepo.save(note2);
     const [result] = await searchService.search(`someTable`);
     const [result2] = await searchService.search(`someOtherTable`);
     const [badResult] = await searchService.search('randomKeyword');
@@ -133,6 +133,21 @@ describe('Search', () => {
     expect(result[0].id).toBe(note.id);
     expect(result2[0].id).toBe(note2.id);
     expect(badResult).toHaveLength(0);
+  });
+
+  it('should actually return a proper note', async () => {
+    const notebook = await createNotebook();
+    const note = await createNote(notebook.id, {
+      textContent: 'select someColumn from someCatalog.someTable',
+    });
+
+    const [result] = await searchService.search(`someTable`);
+
+    expect(result).toHaveLength(1);
+    expect(result[0]).toMatchObject({
+      content: note.textContent,
+      id: note.id,
+    } as Partial<INote>);
   });
 
   it('should get note by content, partial keywords', async () => {

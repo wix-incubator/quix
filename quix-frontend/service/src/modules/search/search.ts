@@ -5,6 +5,8 @@ import {isValidQuery, parse} from './parser';
 import {ISearch} from './types';
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
+import {convertDbNote} from 'entities/note/dbnote.entity';
+import {INote} from 'shared';
 
 @Injectable()
 export class SearchService implements ISearch {
@@ -14,7 +16,7 @@ export class SearchService implements ISearch {
     content: string,
     total = 50,
     offset = 0,
-  ): Promise<[DbNote[], number]> {
+  ): Promise<[INote[], number]> {
     if (!content) {
       return [[], 0];
     }
@@ -54,8 +56,8 @@ export class SearchService implements ISearch {
         .skip(offset)
         .where(whereSql, whereArgs);
 
-      const results = await q.getManyAndCount();
-      return results;
+      const [notes, count] = await q.getManyAndCount();
+      return [notes.map(convertDbNote), count];
     }
 
     return [[], 0];
