@@ -31,15 +31,6 @@ export function Users(props: UsersProps) {
   );
 
   const displayLoadedState = () => (
-    <>
-      <div className="bi-section-header">
-        <div>
-          <div className="bi-section-title">
-            Users
-            <span className="bi-fade-in"> ({users.length})</span>
-          </div>
-        </div>
-      </div>
       <div className="bi-section-content bi-c-h">
         <div
           className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
@@ -54,10 +45,19 @@ export function Users(props: UsersProps) {
           </div>
         </div>
       </div>
-    </>
   );
   return (
     <div className="bi-section bi-c-h bi-grow">
+      <div className="bi-section-header">
+        <div>
+          <div className="bi-section-title">
+            Users
+            {users &&
+            <span className="bi-fade-in"> ({users.length})</span>
+            }
+          </div>
+        </div>
+      </div>
       {!users ? (
         <div className="bi-section-content--center">
           {error ? displayErrorState() : displayLoadingState()}
