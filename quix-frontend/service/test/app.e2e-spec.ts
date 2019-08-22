@@ -148,7 +148,7 @@ describe('Application (e2e)', () => {
     });
   });
 
-  fdescribe('Demo Mode', () => {
+  describe('Demo Mode', () => {
     beforeEach(() => {
       envSettingsOverride.DemoMode = true;
     });
