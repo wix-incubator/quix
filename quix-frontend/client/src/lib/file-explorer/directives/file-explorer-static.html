@@ -3,7 +3,6 @@
     ng-class="{'fe-folder--open': vm.folder.isOpen(folder)}"
     ng-if="::!options.hideEmptyFolders || folder.hasFileLeaf()"
     ng-repeat="folder in model.getFolders() | orderBy:'name' | limitTo:model.getLimit() track by folder.getId()"
-    viewport-watch
   >
     <div
       class="fe-item bi-spread bi-fade-in bi-hover bi-muted {{::'fe-item-depth-' + depth}}"
@@ -52,7 +51,6 @@
     class="bi-hover bi-muted"
     ng-repeat="file in model.getFiles() | orderBy:vm.order.field track by file.getId()"
     ng-click="events.onFileClick(file)"
-    viewport-watch
   >
     <div
       class="fe-item {{::'fe-item-depth-' + depth}} bi-spread bi-align bi-pointer bi-fade-in"
