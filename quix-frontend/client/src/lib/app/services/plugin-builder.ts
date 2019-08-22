@@ -4,6 +4,7 @@ import {Store, IBranch} from '../../store';
 import {Builder} from './builder';
 import {App, IMenuItem} from './app';
 import {ServerFrameworkType} from '../../store/services/store-logger';
+import * as React from 'react';
 
 export type IComponentFactory<Config = any> = (app: App<Config>, store: Store) => IDirectiveFactory;
 
@@ -28,11 +29,11 @@ export type IUrlParamListener = Function | {from: Function; to: Function};
 
 export type IScopeListener = (scope, current: any, previous: any, store: Store) => any
 interface IScopeListeners extends Record<string, IScopeListener | IScopeListeners> {}
-export interface IStateComponentConfig {
+
+export interface IStateComponentConfigBase {
   name: string;
   abstract?: boolean;
   url: {[key: string]: IUrlParamListener};
-  template: string;
   scope: IScopeListeners;
   options?: Record<string, any>,
   controller(scope: any, params: {[key: string]: any}, api: {
@@ -46,6 +47,14 @@ export interface IStateComponentConfig {
   onExit?(): any;
 }
 
+export interface IAngularStateComponentConfig extends IStateComponentConfigBase{
+  template: string;
+}
+
+export interface IReactStateComponentConfig extends IStateComponentConfigBase{
+  template: React.ComponentType<any>;
+}
+export type IStateComponentConfig = IAngularStateComponentConfig | IReactStateComponentConfig;
 /**
  * A subset of Builder which is exposed to plugin factories
  */

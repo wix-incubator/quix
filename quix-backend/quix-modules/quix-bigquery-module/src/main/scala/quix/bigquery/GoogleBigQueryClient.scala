@@ -10,7 +10,7 @@ class GoogleBigQueryClient(bigQuery: BigQuery, config: BigQueryConfig) extends B
   override def init(query: ActiveQuery[String]): Task[Job] = {
     for {
       jobInfo <- Task.now(JobInfo.of(QueryJobConfiguration.newBuilder(query.text).build))
-      _ <- Task(logger.info(s"method=init query-id=${query.id} job-id=${jobInfo.getJobId.getJob} query-sql=[${query.text.replace("\n", "-newline-")}] config=$config"))
+      _ <- Task(logger.info(s"method=init query-id=${query.id} query-sql=[${query.text.replace("\n", "-newline-")}] config=$config"))
     } yield bigQuery.create(jobInfo)
   }
 

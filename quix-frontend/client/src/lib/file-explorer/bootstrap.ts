@@ -6,4 +6,8 @@ import 'angular-dragdrop';
 import '../core';
 import '../ui';
 
-export default angular.module('bi.fileExplorer', ['bi.core', 'bi.ui', 'ngDragDrop']);
+import scrollMonitor from 'scrollmonitor';
+(window as any).scrollMonitor = scrollMonitor;
+import 'ap-viewport-watch';
+
+export default angular.module('bi.fileExplorer', ['bi.core', 'bi.ui', 'ngDragDrop', 'angularViewportWatch']);
