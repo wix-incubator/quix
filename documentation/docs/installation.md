@@ -21,12 +21,12 @@ To access Quix, navigate to:
 `http://localhost:3000`
 
 ## Configuration
-Most of the configuration you'll need is done through enviornment variables. docker-compose can load enviornemnt-variables easily through a `.env` file.
+Most of the configuration you'll need is done through environment variables. docker-compose can load environment-variables easily through a `.env` file.
 You can rename our [env-example](https://github.com/wix/quix/blob/master/env-example) file to `.env`, and modify it's values as needed. 
 
 #### Presto
 By default, Quix works with demo Presto instance that runs inside Docker Compose.  
-To work with your real Presto DB, change `PRESTO_API` URL.
+To work with your real Presto DB, change `PRESTO_API` environment variable.
 
 Note that you need to specify full URL, including protocol, port and API version:
 * PRESTO_API - `http://presto.my.domain:8181/v1`  
@@ -36,7 +36,7 @@ Note that you need to specify full URL, including protocol, port and API version
   * Or `host.docker.internal` (macOS only)
 
 #### DB
-Quix also uses MySQL to store notebooks and other application data. Location of this data is specified by `DB_VOLUME_PATH`.  
+Quix also uses MySQL to store notebooks and other application data. The default docker-compose uses a mysql container, so no further setup is needed. 
 As an alternative, you can also use an external MySQL database, by specifying some of the following variables:
 * DB_NAME - defaults to `quix`, must exist
 * DB_USER - defaults to `root`
@@ -56,7 +56,7 @@ If you use google oauth, you must supply the clientId and the secret:
 
 Other variables related to authentication:
 * AUTH_COOKIE - defaults to `__quix`. When using `google` auth, must be provided.
-* AUTH_SECRET - the encyption key for the cookie. Must be provided.
+* AUTH_SECRET - the encryption key for the cookie. Must be provided.
 * COOKIE_MAX_AGE - should be in seconds, default is 30 days.
 
 #### Configuration for custom deployment
@@ -73,6 +73,6 @@ This takes into account a `docker-compose` setup. Extrapolate as needed if you h
 1. Backup your data, if possible.
 2. Download an updated `docker-compose.yml` or `docker-compose.prebuilt.yml`. If you are not using the prebuilt images, you need to run `docker-compose build`.
 3. Stop the frontend and backend services - `docker-compose stop backend frontend`.
-4. Make sure all your enviroment variables are exported correctly in your current shell, specificly all the `DB_*` variables.
-5. Run DB migrations: `docker-compose run --rm frontend scripts/run_migrations.sh`.
+4. Make sure all your environment variables are exported correctly in your current shell, specifically all the `DB_*` variables.
+5. Run DB migrations: `docker-compose run --no-deps --rm frontend scripts/run_migrations.sh`.
 6. Start services again `docker-compose up -d`.
