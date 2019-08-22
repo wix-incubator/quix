@@ -2,7 +2,7 @@ import {Testkit} from '../../../test/e2e/driver';
 
 const enum Hooks {
   Error = 'favorites-error',
-  Content = 'favorites-content',
+  Content = 'favorites-content'
 }
 
 export class FavoritesTestkit extends Testkit {
@@ -15,6 +15,6 @@ export class FavoritesTestkit extends Testkit {
   }
 
   async numOfFavorites() {
-    return (await this.query.attrs('bi-tbl-row')).length;
+    return (await this.query.hooks('table-row')).length;
   }
 }

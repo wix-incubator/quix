@@ -43,12 +43,12 @@ export interface IStateComponentConfigBase {
       stateName?: string;
     }) => string[]): any;
   }): any;
-  link: IDirectiveLinkFn;
   onExit?(): any;
 }
 
 export interface IAngularStateComponentConfig extends IStateComponentConfigBase{
   template: string;
+  link: IDirectiveLinkFn;
 }
 
 export interface IReactStateComponentConfig extends IStateComponentConfigBase{
