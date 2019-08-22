@@ -49,7 +49,6 @@
     "angular-ui-router": "^0.4.2",
     "angular-ui-sortable": "^0.19.0",
     "antlr4": "^4.7.0",
-    "ap-viewport-watch": "^0.1.43",
     "brace": "^0.11.1",
     "change-case": "^3.1.0",
     "dialog-polyfill": "^0.4.10",
