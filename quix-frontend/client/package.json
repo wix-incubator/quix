@@ -37,6 +37,7 @@
     "tiny-worker": "^2.2.0",
     "typescript": "~3.4.4",
     "url-pattern": "^1.0.3",
+    "utility-types": "^3.7.0",
     "velocity": "~0.7.0",
     "yoshi": "^3.23.0"
   },

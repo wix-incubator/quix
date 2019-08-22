@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {IFile} from '../../../../shared';
 import {Table} from '../../lib/ui/components/Table';
+import {Image} from '../../lib/ui/components/Image';
 import {favoritesTableFields} from './favorites-table-fields';
 
 export interface FavoritesProps {
@@ -12,13 +13,7 @@ export interface FavoritesProps {
 }
 
 export function Favorites(props: FavoritesProps) {
-  const {
-    favorites,
-    error,
-    onFavoriteClick,
-    onLikeToggle,
-    emptyStateImgSrc
-  } = props;
+  const {favorites, error, onFavoriteClick, onLikeToggle} = props;
   const isEmptyState = favorites && favorites.length === 0;
 
   const displayLoadingState = () => {
@@ -49,7 +44,7 @@ export function Favorites(props: FavoritesProps) {
         className="quix-empty-state bi-empty-state bi-fade-in"
         data-hook="favorites-empty"
       >
-        <img className="bi-empty-state-image" src={emptyStateImgSrc} />
+        <Image className="bi-empty-state-image" name="no_data.svg" />
         <div className="bi-empty-state-header">
           You don't have any favorites
         </div>
