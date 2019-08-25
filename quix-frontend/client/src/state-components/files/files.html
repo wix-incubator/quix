@@ -2,9 +2,9 @@
   <div class="bi-section-header">
     <div>
       <div class="bi-section-title bi-r-h bi-align bi-s-h">
-        <img 
+        <img
           class="quix-user-avatar bi-fade-in"
-          ng-if="vm.state.is('Result') && vm.state.value().folder.ownerDetails.avatar"
+          ng-if="(vm.state.is('Result') || vm.state.after('Result')) && vm.state.value().folder.ownerDetails.avatar"
           ng-src="{{::vm.state.value().folder.ownerDetails.avatar}}"
         >
 
