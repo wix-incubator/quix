@@ -20,7 +20,7 @@ const mocks = {
     createMockUser({
       id: 'valery@wix.com',
       email: 'valery@wix.com',
-      avatar: 'https://lh4.googleusercontent.com/-W0WqulhKa-E/AAAAAAAAAAI/AAAAAAAAAsI/YUf_DDZhNCQ/s96-c/photo.jpg',
+      avatar: 'http://quix.wix.com/assets/user.svg',
       name: 'Valery Frolov',
       rootFolder: '6c98fe9a-39f7-4674-b003-70f9061bbee5',
       dateCreated: Date.now(),
@@ -29,7 +29,7 @@ const mocks = {
     createMockUser({
       id: 'anton@wix.com',
       email: 'anton@wix.com',
-      avatar: 'https://lh4.googleusercontent.com/-PhbzLtqaoGo/AAAAAAAAAAI/AAAAAAAAAlM/QQPR22nvo7o/s96-c/photo.jpg',
+      avatar: 'http://quix.wix.com/assets/user.svg',
       name: 'Anton Podolsky',
       rootFolder: 'de6908dd-7f1e-4803-ab0d-5f9d6a496609',
       dateCreated: Date.now(),
@@ -45,7 +45,12 @@ const mocks = {
   '/api/files/:id': ({id}) => createMockFolderPayload([
     createMockFolder({id: '100'}),
     createMockFile({id: '101'})
-  ], {id}),
+  ], {
+    id,
+    ownerDetails: {
+      avatar: 'http://quix.wix.com/assets/user.svg'
+    } as any
+  }),
   '/api/notebook/404': () => [404, {message: 'Notebook not found'}],
   '/api/notebook/500': () => [500, {message: 'Couldn\'t fetch notebook'}],
   '/api/notebook/:id': ({id}) => createMockNotebook([
@@ -55,7 +60,12 @@ const mocks = {
     createMockNote(id, {id: '1004'}),
     createMockNote(id, {id: '1005'}),
     createMockNote(id, {id: '1006'}),
-  ], {id}),
+  ], {
+    id,
+    ownerDetails: {
+      avatar: 'http://quix.wix.com/assets/user.svg'
+    } as any
+  }),
   '/api/favorites': () => [
     createMockFile({
       id: '100',
@@ -63,7 +73,7 @@ const mocks = {
       ownerDetails: {
         id: 'valery@wix.com',
         email: 'valery@wix.com',
-        avatar: 'https://lh4.googleusercontent.com/-W0WqulhKa-E/AAAAAAAAAAI/AAAAAAAAAsI/YUf_DDZhNCQ/s96-c/photo.jpg',
+        avatar: 'http://quix.wix.com/assets/user.svg',
         name: 'Valery Frolov',
         rootFolder: '6c98fe9a-39f7-4674-b003-70f9061bbee5',
         dateCreated: Date.now(),
@@ -76,7 +86,7 @@ const mocks = {
       ownerDetails: {
         id: 'anton@wix.com',
         email: 'anton@wix.com',
-        avatar: 'https://lh4.googleusercontent.com/-PhbzLtqaoGo/AAAAAAAAAAI/AAAAAAAAAlM/QQPR22nvo7o/s96-c/photo.jpg',
+        avatar: 'http://quix.wix.com/assets/user.svg',
         name: 'Anton Podolsky',
         rootFolder: 'de6908dd-7f1e-4803-ab0d-5f9d6a496609',
         dateCreated: Date.now(),
@@ -185,7 +195,15 @@ export const createMockUser = (props: Partial<IUser> = {}) => {
 }
 
 export const createMockRootFolder = (props: Partial<IFile> = {}) => {
-  return createFolder([], {id: '1', name: 'My notebooks', owner: 'local@quix.com', ...props});
+  return createFolder([], {
+    id: '1',
+    name: 'My notebooks',
+    owner: 'local@quix.com',
+    ownerDetails: {
+      avatar: 'http://quix.wix.com/assets/user.svg'
+    } as any,
+    ...props
+  });
 }
 
 export const createMockFile = (props: Partial<IFile> = {}) => {

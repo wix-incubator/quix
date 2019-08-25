@@ -4,7 +4,7 @@
       <div class="bi-section-title bi-r-h bi-align bi-s-h">
         <img
           class="quix-user-avatar bi-fade-in"
-          ng-if="vm.state.is('Result') && vm.state.value().notebook.ownerDetails.avatar"
+          ng-if="(vm.state.is('Result') || vm.state.after('Result')) && vm.state.value().notebook.ownerDetails.avatar"
           ng-src="{{::vm.state.value().notebook.ownerDetails.avatar}}"
         >
 
