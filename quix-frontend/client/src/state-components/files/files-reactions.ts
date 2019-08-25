@@ -9,7 +9,7 @@ export function setFolder(scope: IScope, folder: IFolder) {
       scope.vm.breadcrumbs = [...folder.path, {id: folder.id, name: folder.name}];
 
       if (!scope.permissions.edit) {
-        scope.vm.breadcrumbs[0].name = `${folder.ownerDetails.name}'s notebooks`;
+        scope.vm.breadcrumbs[0].name = `${folder.owner}'s notebooks`;
       }
     })
     .else(() => scope.vm.state.value({folder}));
