@@ -29,5 +29,4 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
 
     return setTitle();
   },
-  link: undefined
 });

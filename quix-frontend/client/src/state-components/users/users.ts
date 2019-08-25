@@ -31,5 +31,4 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
 
     scope.onUserClicked = onUserClick(scope, store, app);
   },
-  link: undefined
 });

@@ -22,11 +22,14 @@ export class UserListController {
         return u.id === user.email
           ? u
           : {
-              name: sanitizeUserName(u.name),
-              id: sanitizeUserEmail(u.id),
-              avatar: 'http://quix.wix.com/assets/user.svg',
-              rootFolder: u.rootFolder,
-            };
+            name: sanitizeUserName(u.name),
+            id: sanitizeUserEmail(u.id),
+            email: sanitizeUserEmail(u.email),
+            avatar: 'http://quix.wix.com/assets/user.svg',
+            rootFolder: u.rootFolder,
+            dateCreated: u.dateCreated,
+            dateUpdated: u.dateUpdated,
+          };
       });
     } else {
       return this.usersService.getListOfUsers();
