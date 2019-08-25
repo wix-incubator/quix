@@ -1,38 +1,38 @@
-import template from './favorites.html';
 import './favorites.scss';
-
-import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {App as App} from '../../lib/app';
-import {IStateComponentConfig} from '../../lib/app/services/plugin-builder';
+import {App} from '../../lib/app';
+import {IReactStateComponentConfig} from '../../lib/app/services/plugin-builder';
 import {cache} from '../../store';
-import {initEvents} from '../../services/scope';
-import {IScope} from './favorites-types';
-import VM from './favorites-vm';
-import * as Scope from './favorites-scope';
-import * as Events from './favorites-events';
+import {Favorites, FavoritesProps} from './FavoritesComponent';
+import {onFavoriteClick, onLikeToggle} from './favorites-events';
+import _noop from 'lodash/noop';
 
-export default (app: App, store: Store) => ({
+export default (app: App, store: Store): IReactStateComponentConfig => ({
   name: 'favorites',
-  template,
+  template: Favorites,
   url: {},
-  scope: Scope,
-  options: {isNew: false},
-  controller: async (scope: IScope, params, {syncUrl, setTitle}) => {
+  scope: {
+    favorites: _noop,
+    error: _noop,
+    onFavoriteClick: _noop,
+    onLikeToggle: _noop
+  },
+  controller: async (scope: FavoritesProps, params, {syncUrl, setTitle}) => {
     await cache.favorites.fetch(params.id);
-  
+
     syncUrl();
     setTitle();
 
-    store.subscribe('favorites', ({favorites, error}) => {
-      scope.favorites = favorites;
-      scope.error = error;
-    }, scope);
-  },
-  link: scope => {
-    const conf = initNgScope(scope)
-      .withVM(VM());
+    store.subscribe(
+      'favorites',
+      ({favorites, error}) => {
+        scope.favorites = favorites;
+        scope.error = error;
+      },
+      scope
+    );
 
-    initEvents(scope, conf, app, store, Events);
+    scope.onFavoriteClick = onFavoriteClick(app);
+    scope.onLikeToggle = onLikeToggle(store);
   }
-}) as IStateComponentConfig;
+});

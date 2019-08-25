@@ -19,6 +19,7 @@ import {User} from './user';
 import {LocalStorage} from '../../core/srv/local-storage';
 import {Options} from '../types';
 import {react2angular} from 'react2angular';
+import { withAppStoreProvider } from './appStoreProvider';
 
 export type PluginFactory<Config> = (app: PluginBuilder<Config>) => any;
 
@@ -211,7 +212,9 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
       }
     });
 
-    const createReactFactory = (reactConfig: IReactStateComponentConfig) => react2angular(reactConfig.template, Object.keys(reactConfig.scope));
+    const createReactFactory = (reactConfig: IReactStateComponentConfig) =>
+      react2angular(withAppStoreProvider(app, store, reactConfig.template),
+        Object.keys(reactConfig.scope));
 
     isAngularConfig(config) ?
       this.component(camelCase(componentName), createAngularFactory(config)):
