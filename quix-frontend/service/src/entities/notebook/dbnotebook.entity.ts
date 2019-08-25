@@ -91,7 +91,6 @@ export const covertNotebookToDb = (notebook: INotebook): DbNotebook => {
     dateUpdated,
     name,
     owner,
-    notes: notes.map(convertNoteToDb),
     jsonContent: {},
   });
 };
