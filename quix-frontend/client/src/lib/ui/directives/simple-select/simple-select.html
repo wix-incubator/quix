@@ -27,6 +27,7 @@
         class="bi-muted"
         ng-if="vm.options.falsy && model"
         ng-show="!vm.search.enabled"
+        ng-mousedown="$event.preventDefault()"
         ng-click="events.onOptionSelect(vm.options.falsy.option)"
         bi-html="renderOption(vm.options.falsy.option || placeholder)"
       ></li>
@@ -40,6 +41,7 @@
           <span class="bi-text--600" ng-if="options.freetext">{{vm.search.text}}</span>
           <span ng-if="!options.freetext">No matches</span>
         </span>
+
         <span ng-if="!vm.search.enabled">Start typing to see matches</span>
       </li>
 
@@ -53,6 +55,7 @@
           'bi-active': option === vm.keyNavOption
         }"
         ng-repeat="option in buffer"
+        ng-mousedown="$event.preventDefault()"
         ng-click="events.onOptionSelect(option)"
         bi-html="renderOption(option)"
         key-nav-item
