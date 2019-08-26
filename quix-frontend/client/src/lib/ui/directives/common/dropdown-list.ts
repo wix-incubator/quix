@@ -2,7 +2,6 @@ import {IScope} from 'angular';
 import {assign, includes, without, uniq} from 'lodash';
 import {initNgScope, createNgModel, inject, utils} from '../../../core';
 
-
 const isNull = value => {
   return !value && typeof value !== 'boolean' && typeof value !== 'number';
 }
