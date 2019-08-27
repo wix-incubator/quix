@@ -3,6 +3,7 @@ package quix.core.results
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
+import Batch._
 
 class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
   extends Builder[Code, Batch] with LazyLogging {
@@ -35,7 +36,7 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
 
   override def addSubQuery(queryId: String, results: Batch) = {
     val columnTask: Task[Unit] = results.columns.map(columns => sendColumns(queryId, columns)).getOrElse(Task.unit)
-    val progressTask: Task[Unit] = results.stats.map(stats => sendProgress(queryId, stats)).getOrElse(Task.unit)
+    val progressTask: Task[Unit] = results.percentage.map(percentage => sendProgress(queryId, percentage)).getOrElse(Task.unit)
     val errorTask: Task[Unit] = results.error.map(error => sendErrors(queryId, error)).getOrElse(Task.unit)
 
     rows += results.data.size
@@ -52,8 +53,8 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
     consumer.write(Error(queryId, prestoError.message))
   }
 
-  def sendProgress(queryId: String, stats: BatchStats) = {
-    consumer.write(Progress(queryId, stats.percentage))
+  def sendProgress(queryId: String, percentage: Int) = {
+    consumer.write(Progress(queryId, percentage))
   }
 
   override def errorSubQuery(queryId: String, e: Throwable) = {
