@@ -31,7 +31,14 @@ class JdbcQueryExecutor(config: JdbcConfig)
 
       do {
         val row = for (i <- 1 to columnCount)
-          yield rs.getObject(i)
+          yield {
+            rs.getMetaData.getColumnType(i) match {
+              case java.sql.Types.ARRAY =>
+                rs.getArray(i).getArray
+
+              case _ => rs.getObject(i)
+            }
+          }
 
         rows += row
       } while (!query.isCancelled && rows.size < config.batchSize && rs.next())

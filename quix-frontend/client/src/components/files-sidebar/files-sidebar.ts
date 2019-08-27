@@ -42,7 +42,8 @@ const listenToNavChange = (scope: IScope, app: App, fileExplorer) => {
   app.getNavigator()
     .listen(['files', 'notebook'], 'success', ({id}: {id: string}) => {
       const file = scope.vm.state.value().files.find(f => f.id === id);
-      return file && fileExplorer.setActive(file);
+
+     return file ? fileExplorer.setActive(file) : fileExplorer.clearActive();
     }, scope)
     .otherwise(() => fileExplorer.clearActive());
 }
