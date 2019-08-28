@@ -93,9 +93,13 @@ object PrestoStateToResults {
     val columns = state.columns.map(_.map(pc => BatchColumn(pc.name)))
     val error = state.error.map(pe => BatchError(pe.message))
 
-    Batch(state.data.getOrElse(Nil), columns, error = error)
+    val batch = Batch(state.data.getOrElse(Nil), columns, error = error)
       .withPercentage(completed)
       .withStatus(state.stats.state)
+
+    state.updateType.map { queryType =>
+      batch.withType(queryType)
+    }.getOrElse(batch)
   }
 }
 
