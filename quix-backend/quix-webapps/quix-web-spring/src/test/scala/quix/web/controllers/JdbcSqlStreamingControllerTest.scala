@@ -65,7 +65,6 @@ class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
     assertThat(listener.messagesJ, hasEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-start","data":{"id":"query-id"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-details","data":{"id":"query-id","code":"select * from small_table"}}"""))
-    assertThat(listener.messagesJ, hasEvent("""{"event":"percentage","data":{"id":"query-id","percentage":0}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"fields","data":{"id":"query-id","fields":["col1"]}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"row","data":{"id":"query-id","values":[1]}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id"}}"""))
@@ -79,7 +78,6 @@ class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
     assertThat(listener.messagesJ, hasEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-start","data":{"id":"query-id"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-details","data":{"id":"query-id","code":"select * from small_table"}}"""))
-    assertThat(listener.messagesJ, hasEvent("""{"event":"percentage","data":{"id":"query-id","percentage":0}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"fields","data":{"id":"query-id","fields":["col1"]}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"row","data":{"id":"query-id","values":[1]}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id"}}"""))
@@ -94,7 +92,7 @@ class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
       .replace("]", "\\]")
       .replace("{", "\\{")
       .replace("}", "\\}")
-      .replaceAll("query-id", """.{36}""")
+      .replaceAll("query-id", """.{36,37}""")
 
     Matchers.hasItem(matchesPattern(event))
   }

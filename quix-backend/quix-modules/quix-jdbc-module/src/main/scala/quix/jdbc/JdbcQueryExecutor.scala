@@ -52,7 +52,7 @@ class JdbcQueryExecutor(config: JdbcConfig)
     if (!query.isCancelled && rs.next()) {
       for {
         batch <- prepareBatch(query, rs)
-        _ <- rb.addSubQuery(query.id, batch)
+        _ <- rb.addSubQuery(query.id + query.current, batch)
         _ <- drainResultSet(query, rb, rs)
       } yield ()
     } else {
@@ -76,11 +76,11 @@ class JdbcQueryExecutor(config: JdbcConfig)
 
     val use = (con: Connection) => {
       for {
-        _ <- builder.startSubQuery(query.id, query.text, Batch(Nil, stats = Option(BatchStats("", 0))))
+        _ <- builder.startSubQuery(query.id + query.current, query.text, Batch(Nil))
         statement <- Task(con.createStatement())
         resultSet <- Task(statement.executeQuery(query.text))
         _ <- drainResultSet(query, builder, resultSet)
-        _ <- builder.endSubQuery(query.id)
+        _ <- builder.endSubQuery(query.id + query.current)
       } yield ()
     }
 
