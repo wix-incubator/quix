@@ -92,7 +92,7 @@ class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
       .replace("]", "\\]")
       .replace("{", "\\{")
       .replace("}", "\\}")
-      .replaceAll("query-id", """.{36}""")
+      .replaceAll("query-id", """.{36,37}""")
 
     Matchers.hasItem(matchesPattern(event))
   }
