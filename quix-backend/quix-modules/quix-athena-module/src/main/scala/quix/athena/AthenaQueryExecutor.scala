@@ -26,7 +26,7 @@ class AthenaQueryExecutor(val client: AthenaClient,
       case query if runningStatuses.contains(query.getStatus.getState) && !activeQuery.isCancelled =>
         for {
           _ <- Task(logger.info(s"method=waitLoop event=not-finished query-id=$queryId user=${activeQuery.user.email} status=${query.getStatus.getState} delay=$delay"))
-          _ <- builder.addSubQuery(queryId, Batch(data = List.empty, stats = Option(BatchStats(query.getStatus.getState, 0))))
+          _ <- builder.addSubQuery(queryId, Batch(data = List.empty))
           status <- waitLoop(queryId, activeQuery, builder, maxAdvanceDelay.min(delay * 2)).delayExecution(delay)
         } yield status
 

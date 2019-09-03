@@ -272,7 +272,12 @@ class ModulesConfiguration extends LazyLogging {
           env.getProperty("presto.db.empty.timeout", classOf[Long], 1000L * 10))
       }
 
-      Class.forName(driver)
+      try {
+        Class.forName(driver)
+      } catch {
+        case NonFatal(e) =>
+          logger.error(s"event=[spring-error] message=[failed-to-load-class] class=[$driver]", e)
+      }
 
       val config = JdbcConfig(url, user, pass, driver)
       val executor = new JdbcQueryExecutor(config)

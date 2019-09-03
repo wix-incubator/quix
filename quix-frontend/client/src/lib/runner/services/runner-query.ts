@@ -58,6 +58,7 @@ export default class RunnerQuery extends srv.eventEmitter.EventEmitter {
   private _fields: IField[] = [];
   private _rawFields: string[] = [];
   private readonly _results = new srv.collections.BufferedCollection().setChunkSize(20);
+  private fastForwardPromise = null;
   private error: IError;
   private time: ITime = {
     elapsed: null,
@@ -178,6 +179,16 @@ export default class RunnerQuery extends srv.eventEmitter.EventEmitter {
       this.fire('firstResultReceived', this);
     } else if (this.getResults().bufferSize() === 2) {
       this.fire('moreResultReceived', this);
+    }
+
+
+    // Fast-forward slow rows
+    if (this._results.size() < this._results.getChunkSize()) {
+      this.fastForwardPromise = this.fastForwardPromise ? this.fastForwardPromise.then(() => {
+        if (this._results.size() < this._results.getChunkSize()) {
+          return this._results.more();
+        }
+      }) : this._results.more();   
     }
 
     return this;

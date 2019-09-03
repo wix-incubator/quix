@@ -25,9 +25,9 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
       ((rowsSoFar + rows.size).toDouble / result.getTotalRows * 100).toInt
     } else 0
 
-    val stats = getStats(job).map(_.copy(percentage = percentage))
 
-    Batch(rows, toColumns(result), stats, getError(job))
+    Batch(rows, toColumns(result), error = getError(job))
+      .withPercentage(percentage)
   }
 
   def toColumns(result: TableResult): Option[Seq[BatchColumn]] = {
@@ -43,11 +43,6 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
 
       case _ => null
     }
-  }
-
-  def getStats(job: Job): Option[BatchStats] = {
-    val state = job.getStatus.getState.name()
-    Some(BatchStats(state, 0))
   }
 
   def getError(job: Job): Option[BatchError] = {
@@ -81,7 +76,7 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
 
     initClient(query, builder).bracket { job =>
       for {
-        _ <- builder.startSubQuery(job.getGeneratedId, query.text, Batch(Seq.empty, stats = getStats(job), error = getError(job)))
+        _ <- builder.startSubQuery(job.getGeneratedId, query.text, Batch(Seq.empty, error = getError(job)))
         _ <- waitForFinish(job, query)
         _ <- loop(query, builder, job, job.getQueryResults()).onErrorHandleWith {
           e: Throwable => builder.errorSubQuery(job.getGeneratedId, e)
