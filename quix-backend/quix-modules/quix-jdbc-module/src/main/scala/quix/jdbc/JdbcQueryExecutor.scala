@@ -49,7 +49,7 @@ class JdbcQueryExecutor(config: JdbcConfig)
   def drainResultSet(query: ActiveQuery[String],
                      rb: Builder[String, Batch],
                      rs: ResultSet): Task[Unit] = {
-    if (!query.isCancelled && rs.next()) {
+    if (rs != null && !query.isCancelled && rs.next()) {
       for {
         batch <- prepareBatch(query, rs)
         _ <- rb.addSubQuery(query.id + query.current, batch)
@@ -78,8 +78,8 @@ class JdbcQueryExecutor(config: JdbcConfig)
       for {
         _ <- builder.startSubQuery(query.id + query.current, query.text, Batch(Nil))
         statement <- Task(con.createStatement())
-        resultSet <- Task(statement.executeQuery(query.text))
-        _ <- drainResultSet(query, builder, resultSet)
+        _ <- Task(statement.execute(query.text))
+        _ <- drainResultSet(query, builder, statement.getResultSet)
         _ <- builder.endSubQuery(query.id + query.current)
       } yield ()
     }
