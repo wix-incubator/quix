@@ -68,6 +68,62 @@ class MysqlJdbcQueryExecutorTest extends SpecWithJUnit with BeforeAll with Befor
       there was one(builder).endSubQuery(anyString)
     }
 
+    "support create statements" in new ctx {
+      val sql = query("create table new_table (col1 INTEGER NOT NULL)")
+      executor.runTask(sql, builder).runSyncUnsafe()
+
+      // verify
+      there was one(builder).startSubQuery(anyString, anyString, any[Batch]())
+
+      there was no(builder).addSubQuery(anyString, any[Batch]())
+
+      there was one(builder).endSubQuery(anyString)
+
+      there was no(builder).errorSubQuery(anyString, any[Throwable]())
+    }
+
+    "support insert statements" in new ctx {
+      val sql = query("INSERT INTO small_table values (123);")
+      executor.runTask(sql, builder).runSyncUnsafe()
+
+      // verify
+      there was one(builder).startSubQuery(anyString, anyString, any[Batch]())
+
+      there was no(builder).addSubQuery(anyString, any[Batch]())
+
+      there was one(builder).endSubQuery(anyString)
+
+      there was no(builder).errorSubQuery(anyString, any[Throwable]())
+    }
+
+    "support update statements" in new ctx {
+      val sql = query("update small_table set col1 = 123 where col1 = 1")
+      executor.runTask(sql, builder).runSyncUnsafe()
+
+      // verify
+      there was one(builder).startSubQuery(anyString, anyString, any[Batch]())
+
+      there was no(builder).addSubQuery(anyString, any[Batch]())
+
+      there was one(builder).endSubQuery(anyString)
+
+      there was no(builder).errorSubQuery(anyString, any[Throwable]())
+    }
+
+    "support delete statements" in new ctx {
+      val sql = query("delete from small_table where col1 = 1")
+      executor.runTask(sql, builder).runSyncUnsafe()
+
+      // verify
+      there was one(builder).startSubQuery(anyString, anyString, any[Batch]())
+
+      there was no(builder).addSubQuery(anyString, any[Batch]())
+
+      there was one(builder).endSubQuery(anyString)
+
+      there was no(builder).errorSubQuery(anyString, any[Throwable]())
+    }
+
     "call builder.error on connection errors" in new ctx {
       EmbeddedMysqlDb.stop
       val sql = query("select * from empty_table")
