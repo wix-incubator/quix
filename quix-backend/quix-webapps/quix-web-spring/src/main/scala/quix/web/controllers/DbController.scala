@@ -3,7 +3,7 @@ package quix.web.controllers
 import monix.execution.Scheduler.Implicits.global
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation._
-import quix.api.db.Table
+import quix.api.db.{Catalog, Schema, Table}
 import quix.api.execute.Batch
 import quix.api.module.ExecutionModule
 
@@ -21,10 +21,30 @@ class DbController(modules: Map[String, ExecutionModule[String, Batch]]) {
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
   @RequestMapping(value = Array("/db/{moduleId}/explore"), method = Array(RequestMethod.GET))
   @ResponseBody
-  def getCatalogsNoColumns(@PathVariable moduleId: String) = {
+  def getCatalogsOf(@PathVariable moduleId: String): List[Catalog] = {
     getDb(moduleId).map {
       _.getCatalogs.runSyncUnsafe()
     }.getOrElse(Nil)
+  }
+
+  @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
+  @RequestMapping(value = Array("/db/{moduleId}/explore/{catalogId}"), method = Array(RequestMethod.GET))
+  @ResponseBody
+  def getSchemasOf(@PathVariable moduleId: String, @PathVariable catalogId: String): List[Schema] = {
+    getCatalogsOf(moduleId)
+      .find(_.name == catalogId)
+      .map(_.children)
+      .getOrElse(Nil)
+  }
+
+  @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
+  @RequestMapping(value = Array("/db/{moduleId}/explore/{catalogId}/{schemaId}"), method = Array(RequestMethod.GET))
+  @ResponseBody
+  def getTablesOf(@PathVariable moduleId: String, @PathVariable catalogId: String, @PathVariable schemaId: String): List[Table] = {
+    getSchemasOf(moduleId, catalogId)
+      .find(_.name == schemaId)
+      .map(_.children)
+      .getOrElse(Nil)
   }
 
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
