@@ -149,6 +149,42 @@ class PrestoDbControllerTest extends E2EContext {
 
     assertThat(actual("foo"), Matchers.is(List("boo")))
   }
+
+  @Test
+  def returnListOfSchemasOnCorrectCatalogName(): Unit = {
+    val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
+    MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
+
+    val firstResults = get[List[Schema]]("api/db/presto-prod/explore/catalog")
+    assertThat(firstResults, Matchers.is(mock.children))
+  }
+
+  @Test
+  def returnEmptyListOfSchemasOnInvalidCatalogName(): Unit = {
+    val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
+    MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
+
+    val firstResults = get[List[Schema]]("api/db/presto-prod/explore/i-do-not-exist")
+    assertThat(firstResults, Matchers.is(List.empty[Schema]))
+  }
+
+  @Test
+  def returnListOfTablesOnCorrectCatalogNameAndSchemaName(): Unit = {
+    val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
+    MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
+
+    val firstResults = get[List[Table]]("api/db/presto-prod/explore/catalog/second")
+    assertThat(firstResults, Matchers.is(List(Table("first", Nil))))
+  }
+
+  @Test
+  def returnEmptyListOfTablesOnInvalidCatalogNameOrSchemaName(): Unit = {
+    val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
+    MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
+
+    val results = get[List[Table]]("api/db/presto-prod/explore/catalog/foo")
+    assertThat(results, Matchers.is(List.empty[Table]))
+  }
 }
 
 
