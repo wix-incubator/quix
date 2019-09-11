@@ -10,7 +10,9 @@ object PrestoSqlOps {
     val splitter = new StatementSplitter(multipleStatements, Set(";").asJava)
 
     val completeStatements = splitter.getCompleteStatements.asScala.map(_.statement()).toList
-    val partialStatements = List(splitter.getPartialStatement).filterNot(_.trim.isEmpty)
+    val partialStatements = List(splitter.getPartialStatement)
+      .filterNot(_.trim.isEmpty)
+      .filterNot(_.trim.startsWith("--"))
 
     completeStatements ++ partialStatements
   }

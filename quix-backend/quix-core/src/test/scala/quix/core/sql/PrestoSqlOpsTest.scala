@@ -28,6 +28,12 @@ class PrestoSqlOpsTest extends SpecWithJUnit {
       split("       \n\n\n\n\n") must beEmpty
     }
 
+    "handle trailing comments" in {
+      val sqls = split("select 1;\n--comment1\n--comment2")
+
+      sqls must_=== List("select 1")
+    }
+
   }
 
 }
