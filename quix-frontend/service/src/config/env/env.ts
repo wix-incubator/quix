@@ -64,6 +64,7 @@ const transforms: {
   AuthType: s => {
     switch (s) {
       case 'google':
+      case 'openid':
       case 'fake':
         return s;
       case undefined:
@@ -81,6 +82,10 @@ const transforms: {
   QuixBackendInternalUrl: backendUrlParse,
   QuixBackendPublicUrl: backendUrlParse,
   GoogleClientId: stringParse,
+  OpenIdDiscoveryDoc: stringParse,
+  OpenIdClientId: stringParse,
+  OpenIdClientSecret: stringParse,
+  OpenIdRedirectUrl: stringParse,
   GoogleAuthSecret: stringParse,
   AuthCookieName: stringParse,
   AuthEncKey: stringParse,

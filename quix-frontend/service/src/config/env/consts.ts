@@ -26,11 +26,19 @@ export const envSettingsMap: {[K in keyof StaticSettings]: string} = {
   MountPath: 'MOUNT_PATH',
   RupertApiUrl: 'RUPERT_API_URL',
   RupertApiKey: 'RUPERT_API_KEY',
+  OpenIdDiscoveryDoc: 'OPEN_ID_DISCOVERY_DOC',
+  OpenIdClientId: 'OPEN_ID_CLIENT_ID',
+  OpenIdClientSecret: 'OPEN_ID_CLIENT_SECRET',
+  OpenIdRedirectUrl: 'OPEN_ID_RDIRECT_URL',
 };
 
 export const envSettingsDefaults = {
+  OpenIdDiscoveryDoc: 'https://accounts.google.com',
+  OpenIdClientSecret: '15dLRAxrQFI5CvLBDXWtv04F',
+  OpenIdClientId: '170992126842-j06a80mttd6l0s8g9cmlm60nr98og48k.apps.googleusercontent.com',
+  OpenIdRedirectUrl: 'http://local.quix.com:3000/code',
   DbType: 'mysql' as 'mysql' | 'sqlite',
-  AuthType: 'fake' as 'fake' | 'google',
+  AuthType: 'openid' as 'fake' | 'google' | 'openid',
   DbName: 'quix',
   DbUser: 'root',
   DbPass: '',

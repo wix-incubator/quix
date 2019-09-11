@@ -37,7 +37,7 @@ const fakeAuthServiceProvider = {
 export class AuthModule {
   static create(): DynamicModule {
     const env = getEnv();
-    if (env.AuthType === 'google') {
+    if (env.AuthType === 'google' || env.AuthType === 'openid') {
       return {
         module: AuthModule,
         imports: [
