@@ -60,17 +60,18 @@ export class AppController implements OnApplicationShutdown {
   private async getAuthorizationUrl(code_verifier: string) {
     const client = await this.getIssuerClient();
     const code_challenge = generators.codeChallenge(code_verifier);
-  
+
     return client.authorizationUrl({
       scope: 'openid email profile',
       code_challenge,
       code_challenge_method: 'S256',
+      state: 'true',
     });
   }
 
   @Get()
   @Render('index.vm')
-  async getIndex(@Res() res: Response) {
+  async getIndex(@Res() res: Response, @Req() req: any) {
     if (!this.clientConfig) {
       throw new Error('Server not up yet');
     }
@@ -79,16 +80,31 @@ export class AppController implements OnApplicationShutdown {
     const mode = this.clientConfig.getMode();
 
     const code_verifier = generators.codeVerifier();
-    const cryptr = new Cryptr(
-      this.configService.getEnvSettings().OpenIdClientId,
-    );
-    res.cookie('code_verifier', cryptr.encrypt(code_verifier), { httpOnly: true });  
+    const {OpenIdClientSecret} = this.configService.getEnvSettings();
+    const cryptr = new Cryptr(OpenIdClientSecret);
+    res.cookie('code_verifier', cryptr.encrypt(code_verifier), {
+      httpOnly: true,
+    });
     const authoriztionUrl = await this.getAuthorizationUrl(code_verifier);
     return {
       clientTopology,
       mode,
       quixConfig: this.clientConfig.serialize(),
     };
+  }
+
+  @Get('/openid-code')
+  async openIdCodeHandler(@Res() res: Response, @Req() req: any) {
+    const {
+      OpenIdClientSecret,
+      OpenIdRedirectUrl,
+    } = this.configService.getEnvSettings();
+    const client = await this.getIssuerClient();
+    const params = client.callbackParams(req);
+    const cryptr = new Cryptr(OpenIdClientSecret);
+    const code_verifier = cryptr.decrypt(req.cookies['code_verifier']);
+    const tokenset = await client.callback(OpenIdRedirectUrl, params, { code_verifier, state: 'true' });
+    res.send({...tokenset.claims(), return_url: req.query.return_url});
   }
 
   @Get('/health/is_alive')
