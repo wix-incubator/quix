@@ -1,4 +1,4 @@
-import { ModuleEngineType, ModuleComponentType } from './consts';
+import {ModuleEngineType, ModuleComponentType} from './consts';
 
 interface ComponentConfigurationTypes {
   [ModuleComponentType.Db]: {};
@@ -19,6 +19,8 @@ const defaultConfigData = {
   modules: [] as ConfigModule[],
   auth: {
     googleClientId: '',
+    authType: 'google' as 'google' | 'openId',
+    openidAuthUrl: ''
   },
   clientTopology: {
     staticsBaseUrl: '',

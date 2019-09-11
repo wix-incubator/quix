@@ -5,6 +5,8 @@ export interface Options {
   logoUrl?: string;
   apiBasePath?: string;
   auth?: {
-    googleClientId: string;
+    googleClientId?: string;
+    authType: 'google' | 'openId';
+    openidAuthUrl?: string;
   };
 }

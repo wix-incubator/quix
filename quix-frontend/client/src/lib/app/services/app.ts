@@ -2,7 +2,9 @@ import {Store} from '../../store';
 import angular from 'angular';
 import Navigator from './navigator';
 import {User} from './user';
-import {login} from './sso';
+import {login as googleLogin} from './sso';
+import {login as openIdLogin} from './openid-sso';
+
 import {Options} from '../types';
 
 export interface IMenuItem {
@@ -27,7 +29,7 @@ export class App<Config = any> {
     private readonly menuItems: IMenuItem[],
     private readonly store: Store,
     private readonly config: Config,
-  ) { }
+  ) {}
 
   init(modules: string[] = []) {
     this.ngModule = angular.module(this.id, ['bi.app'].concat(modules));
@@ -35,7 +37,11 @@ export class App<Config = any> {
   }
 
   login() {
-    return login(this.options.auth.googleClientId, this.options.apiBasePath)
+    const {apiBasePath, auth: {authType, googleClientId, openidAuthUrl}} = this.options;
+    const promise = authType === 'google' ? googleLogin(googleClientId, apiBasePath) :
+      openIdLogin(openidAuthUrl, apiBasePath);
+
+    return promise
       .then(data => this.navigator.finishLogin(data));
   }
 
