@@ -74,30 +74,36 @@ export class AuthController {
       AuthCookieName,
       CookieAge
     } = this.configService.getEnvSettings();
-    console.log('return_url  = ' + (req))
     const client = await this.getIssuerClient();
     const params = client.callbackParams(req);
     const cryptr = new Cryptr(OpenIdClientSecret);
     const code_verifier = cryptr.decrypt(req.cookies['code_verifier']);
-    const tokenset = await client.callback(OpenIdRedirectUrl, params, { code_verifier, state: 'true' });
-    const up = await this.authService.getUserProfileFromCode(JSON.stringify(tokenset.claims()));
-    
-      if (up) {
-        const token = await this.authService.createUserJwtToken(up);
-        response.cookie(AuthCookieName, token, {
-          maxAge: CookieAge,
-        });
-        // await this.userService.doUserLogin(up);
-        //response.json(up);
-        response.redirect('/', 302);
-        return;
-      }
+    const openidStateString = req.cookies['__quixOpenidState'];
+    const openidState = openidStateString ? JSON.parse(openidStateString) : null;
+    const state = req.query.state;
+    if (openidState && openidState[state]) {
+      const tokenset = await client.callback(OpenIdRedirectUrl, params, { code_verifier, state });
+      const up = await this.authService.getUserProfileFromCode(JSON.stringify(tokenset.claims()));
+      
+        if (up) {
+          const token = await this.authService.createUserJwtToken(up);
+          response.cookie(AuthCookieName, token, {
+            maxAge: CookieAge,
+          });
+          // await this.userService.doUserLogin(up);
+          //response.json(up);
+          const redirectUrl = openidState[state].redirectUrl || '/';
+          response.redirect(redirectUrl, 302);
+          return;
+        }
+        response.sendStatus(401).send();
+    }
       response.sendStatus(401).send();
 
       // response.send({...tokenset.claims(), return_url: req.query.return_url});
 
     } catch (e) {
-      // this.logger.error(e);
+      this.logger.error(e);
       response.sendStatus(500).send();
     }
   }

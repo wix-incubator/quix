@@ -29,7 +29,7 @@ export const envSettingsMap: {[K in keyof StaticSettings]: string} = {
   OpenIdDiscoveryDoc: 'OPEN_ID_DISCOVERY_DOC',
   OpenIdClientId: 'OPEN_ID_CLIENT_ID',
   OpenIdClientSecret: 'OPEN_ID_CLIENT_SECRET',
-  OpenIdRedirectUrl: 'OPEN_ID_RDIRECT_URL',
+  OpenIdRedirectUrl: 'OPEN_ID_REDIRECT_URL',
 };
 
 export const envSettingsDefaults = {

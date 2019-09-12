@@ -66,8 +66,7 @@ export class AppController implements OnApplicationShutdown {
     return client.authorizationUrl({
       scope: 'openid email profile',
       code_challenge,
-      code_challenge_method: 'S256',
-      state: 'true'
+      code_challenge_method: 'S256'
     });
   }
 
