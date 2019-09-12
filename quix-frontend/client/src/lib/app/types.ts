@@ -6,7 +6,7 @@ export interface Options {
   apiBasePath?: string;
   auth?: {
     googleClientId?: string;
-    authType: 'google' | 'openId';
+    authType: 'google' | 'openid';
     openidAuthUrl?: string;
   };
 }

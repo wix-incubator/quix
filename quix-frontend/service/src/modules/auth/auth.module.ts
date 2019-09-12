@@ -1,6 +1,6 @@
 import {Module, Provider, DynamicModule} from '@nestjs/common';
 import {ConfigModule} from 'config/config.module';
-import {AuthService, GoogleAuthService, FakeAuthService} from './auth.service';
+import {AuthService, GoogleAuthService, OpenidAuthService, FakeAuthService} from './auth.service';
 import {JwtModule} from '@nestjs/jwt';
 import {ConfigService} from 'config';
 import {PassportModule} from '@nestjs/passport';
@@ -16,6 +16,11 @@ import {EventSourcingModule} from 'modules/event-sourcing/event-sourcing.module'
 const googleAuthServiceProvider = {
   provide: AuthService,
   useClass: GoogleAuthService,
+};
+
+const openidAuthServiceProvider = {
+  provide: AuthService,
+  useClass: OpenidAuthService,
 };
 
 const fakeAuthServiceProvider = {
@@ -56,7 +61,7 @@ export class AuthModule {
             }),
           }),
         ],
-        providers: [googleAuthServiceProvider, JwtStrategy],
+        providers: [env.AuthType === 'google' ? googleAuthServiceProvider : openidAuthServiceProvider, JwtStrategy],
       };
     } else if (env.AuthType === 'fake') {
       return {

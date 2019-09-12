@@ -19,7 +19,7 @@ const defaultConfigData = {
   modules: [] as ConfigModule[],
   auth: {
     googleClientId: '',
-    authType: 'google' as 'google' | 'openId',
+    authType: 'google' as 'google' | 'openid',
     openidAuthUrl: ''
   },
   clientTopology: {

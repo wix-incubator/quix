@@ -13,6 +13,7 @@ import {Response} from 'express';
 import {ClientConfigHelper} from 'shared';
 import {Issuer, generators} from 'openid-client';
 import Cryptr from 'cryptr';
+// import {AuthService} from './modules/auth/auth.service';
 
 @Controller()
 export class AppController implements OnApplicationShutdown {
@@ -21,6 +22,7 @@ export class AppController implements OnApplicationShutdown {
 
   constructor(
     private configService: ConfigService,
+    // private readonly authService: AuthService,
     @InjectConnection() private conn: Connection,
   ) {
     this.fetchClientConfig();
@@ -65,7 +67,7 @@ export class AppController implements OnApplicationShutdown {
       scope: 'openid email profile',
       code_challenge,
       code_challenge_method: 'S256',
-      state: 'true',
+      state: 'true'
     });
   }
 
@@ -80,12 +82,15 @@ export class AppController implements OnApplicationShutdown {
     const mode = this.clientConfig.getMode();
 
     const code_verifier = generators.codeVerifier();
-    const {OpenIdClientSecret} = this.configService.getEnvSettings();
-    const cryptr = new Cryptr(OpenIdClientSecret);
-    res.cookie('code_verifier', cryptr.encrypt(code_verifier), {
-      httpOnly: true,
-    });
-    const authoriztionUrl = await this.getAuthorizationUrl(code_verifier);
+    const {OpenIdClientSecret, AuthType} = this.configService.getEnvSettings();
+    if (AuthType === 'openid') {
+      const cryptr = new Cryptr(OpenIdClientSecret);
+      res.cookie('code_verifier', cryptr.encrypt(code_verifier), {
+        httpOnly: true,
+      });
+      const authoriztionUrl = await this.getAuthorizationUrl(code_verifier);
+      this.clientConfig.setAuth({googleClientId: '', authType: 'openid', openidAuthUrl: authoriztionUrl});
+    }
     return {
       clientTopology,
       mode,
@@ -94,17 +99,39 @@ export class AppController implements OnApplicationShutdown {
   }
 
   @Get('/openid-code')
-  async openIdCodeHandler(@Res() res: Response, @Req() req: any) {
-    const {
+  async openIdCodeHandler(@Res() response: Response, @Req() req: any) {
+    
+    try {const {
       OpenIdClientSecret,
       OpenIdRedirectUrl,
+      AuthCookieName,
+      CookieAge
     } = this.configService.getEnvSettings();
     const client = await this.getIssuerClient();
     const params = client.callbackParams(req);
     const cryptr = new Cryptr(OpenIdClientSecret);
     const code_verifier = cryptr.decrypt(req.cookies['code_verifier']);
     const tokenset = await client.callback(OpenIdRedirectUrl, params, { code_verifier, state: 'true' });
-    res.send({...tokenset.claims(), return_url: req.query.return_url});
+    //const up = await this.authService.getUserProfileFromCode(JSON.stringify(tokenset.claims()));
+    
+      // if (up) {
+      //   const token = await this.authService.createUserJwtToken(up);
+      //   response.cookie(AuthCookieName, token, {
+      //     maxAge: CookieAge,
+      //   });
+      //   // await this.userService.doUserLogin(up);
+      //   response.json(up);
+      //   return;
+      // }
+      // response.sendStatus(401).send();
+
+      response.send({...tokenset.claims(), return_url: req.query.return_url});
+
+    } catch (e) {
+      // this.logger.error(e);
+      response.sendStatus(500).send();
+    }
+
   }
 
   @Get('/health/is_alive')

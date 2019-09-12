@@ -72,3 +72,31 @@ export class GoogleAuthService implements AuthService {
     }
   }
 }
+
+@Injectable()
+export class OpenidAuthService implements AuthService {
+  constructor(
+    private configService: ConfigService,
+    private jwtService: JwtService,
+  ) {
+    const settings = this.configService.getEnvSettings();
+  }
+
+  createUserJwtToken(userProfile: IGoogleUser) {
+    return this.jwtService.signAsync(userProfile);
+  }
+
+  async getUserProfileFromCode(authCode: string) {
+    const payload: any = JSON.parse(authCode);
+    if (payload && payload.email && payload.sub) {
+      const up: IGoogleUser = {
+        avatar: payload.picture,
+        name: payload.name,
+        email: payload.email,
+        id: payload.sub,
+      };
+      return up;
+    }
+  }
+}
+

@@ -41,7 +41,7 @@ export abstract class ConfigService {
     const clientConfig = new ClientConfigHelper();
 
     clientConfig
-      .setAuth({googleClientId: env.GoogleClientId})
+      .setAuth({googleClientId: env.GoogleClientId, authType: 'google', openidAuthUrl: ''})
       .setClientTopology({
         executeBaseUrl: env.QuixBackendPublicUrl,
         staticsBaseUrl: `${env.MountPath}/`,
