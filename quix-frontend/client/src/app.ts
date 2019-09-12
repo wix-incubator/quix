@@ -1,8 +1,8 @@
 import './lib/ui/bootstrap';
 import './app.scss';
 
-import { SyncHook } from 'tapable';
 import create from './lib/app';
+import {hooks} from './hooks';
 import * as components from './components';
 import * as stateComponents from './state-components';
 import {branches, initCache} from './store';
@@ -14,10 +14,6 @@ import {setupNotifications} from './bootstrap';
 import {ClientConfigHelper, ModuleComponentType} from '@wix/quix-shared';
 
 import './lib/file-explorer';
-
-export const hooks = {
-  bootstrap: new SyncHook(['appBuilder']),
-};
 
 (window as any).UrlPattern = UrlPattern;  // expose for e2e tests
 
