@@ -1,5 +1,5 @@
 import { App } from '../../lib/app';
-import { TModuleComponentType, ModuleEngineType } from '../../../../shared/dist';
+import { TModuleComponentType, ModuleEngineType } from '@wix/quix-shared';
 import { Plugin, TPluginMap, resolvePluginType } from './plugin-types';
 
 export class PluginManager<H> {

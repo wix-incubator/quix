@@ -1,4 +1,4 @@
-import {createNotebook, createNote} from '../../../shared';
+import {createNotebook, createNote} from '@wix/quix-shared';
 import {QuixFolder, ExamplesNotebook} from '../config';
 
 const addNote = (id, name, content) => createNote('examples', {id, name, content, owner: QuixFolder.owner});

@@ -1,4 +1,4 @@
-import {IFile} from '../../../../shared';
+import {IFile} from '@wix/quix-shared';
 
 export const setFavorites = (favorites: IFile[]) => ({
   type: 'favorites.set',

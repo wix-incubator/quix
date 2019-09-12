@@ -1,7 +1,7 @@
 import { App } from '../../lib/app';
 import {DbPlugin} from '../../services/plugins';
 import {DB} from '../../config';
-import {IFile} from '../../../../shared';
+import {IFile} from '@wix/quix-shared';
 import {sanitizeTableToken} from '../../services';
 
 

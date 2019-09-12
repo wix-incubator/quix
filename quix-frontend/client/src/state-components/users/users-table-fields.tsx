@@ -1,4 +1,4 @@
-import {IUser} from '../../../../shared';
+import {IUser} from '@wix/quix-shared';
 import biRelativeDate from '../../../src/lib/ui/filters/relative-date';
 import * as React from 'react';
 import {RowConfig} from '../../lib/ui/components/Table';

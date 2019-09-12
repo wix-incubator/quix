@@ -1,5 +1,5 @@
 import {IScope} from './notebook-types';
-import {INotebook, INote} from '../../../../shared';
+import {INotebook, INote} from '@wix/quix-shared';
 
 export function setNotebook(scope: IScope, notebook: INotebook) {
   scope.vm.state

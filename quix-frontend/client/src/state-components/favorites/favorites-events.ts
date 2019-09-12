@@ -1,6 +1,6 @@
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
-import {IFile, NotebookActions} from '../../../../shared';
+import {IFile, NotebookActions} from '@wix/quix-shared';
 import {goToFile} from '../../services';
 import {toast} from '../../lib/ui';
 

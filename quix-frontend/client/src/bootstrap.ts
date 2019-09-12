@@ -1,5 +1,5 @@
 import {browserNotificationsManager} from './services';
-import {INotebook, INote} from '../../shared';
+import {INotebook, INote} from '@wix/quix-shared';
 
 export const setupNotifications = (staticsBaseUrl: string) => {
   browserNotificationsManager.setStaticsBaseUrl(staticsBaseUrl);

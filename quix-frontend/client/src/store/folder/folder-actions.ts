@@ -1,4 +1,4 @@
-import {IFile, IFolder} from '../../../../shared';
+import {IFile, IFolder} from '@wix/quix-shared';
 
 export const setFolder = (folder: IFolder) => ({
   type: 'folder.set',

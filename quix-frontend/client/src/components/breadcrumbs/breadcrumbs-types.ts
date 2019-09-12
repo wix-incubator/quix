@@ -1,5 +1,5 @@
 import {IScope as ngIscope} from 'angular';
-import {IFile} from '../../../../shared';
+import {IFile} from '@wix/quix-shared';
 
 export interface IScope extends ngIscope {
   breadcrumbs: IFile;

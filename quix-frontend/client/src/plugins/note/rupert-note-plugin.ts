@@ -1,6 +1,6 @@
 import { App } from '../../lib/app';
 import { flatten } from 'lodash';
-import { INote, ModuleEngineType, NoteActions } from '../../../../shared';
+import { INote, ModuleEngineType, NoteActions } from '@wix/quix-shared';
 import { Store } from '../../lib/store';
 import { NotePlugin} from '../../services/plugins';
 import { ParamParser } from '../../lib/code-editor/services/param-parser';

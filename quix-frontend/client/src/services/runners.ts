@@ -1,7 +1,7 @@
 import {fromPairs} from 'lodash';
 import {Runner} from '../lib/runner';
 import {browserNotificationsManager} from '../services/notifications';
-import {INotebook, INote} from '../../../shared/dist';
+import {INotebook, INote} from '@wix/quix-shared';
 
 
 const runners = new Map();

@@ -4,7 +4,7 @@ import './destination-picker.scss';
 import {initNgScope, createNgModel} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
-import {IFile, FileType} from '../../../../shared';
+import {IFile, FileType} from '@wix/quix-shared';
 import {IScope} from './destination-picker-types';
 import {cache} from '../../store';
 import {StateManager, fetchRoot, fetchFile, fetchFileParent} from '../../services';

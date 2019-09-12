@@ -11,7 +11,7 @@ import {config as runnerConfig} from './lib/runner';
 import {config as resourcesConfig} from './services/resources';
 import {pluginManager} from './plugins';
 import {setupNotifications} from './bootstrap';
-import {ClientConfigHelper, ModuleComponentType} from '../../shared';
+import {ClientConfigHelper, ModuleComponentType} from '@wix/quix-shared';
 
 import './lib/file-explorer';
 

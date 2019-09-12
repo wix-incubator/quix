@@ -1,6 +1,6 @@
 import {IScope} from './files-types';
 import {initTableFields} from './files-table-fields';
-import {IFolder, IFile} from '../../../../shared';
+import {IFolder, IFile} from '@wix/quix-shared';
 
 export function setFolder(scope: IScope, folder: IFolder) {
   scope.vm.state

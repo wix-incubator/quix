@@ -12,7 +12,7 @@ import {default as users} from './users/users-branch';
 import {default as usersCache} from './users/users-cache';
 import {default as favorites} from './favorites/favorites-branch';
 import {default as favoritesCache} from './favorites/favorites-cache';
-import {IEntity} from '../../../shared';
+import {IEntity} from '@wix/quix-shared';
 
 export const branches = {
   app,

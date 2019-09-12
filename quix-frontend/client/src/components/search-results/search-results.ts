@@ -7,7 +7,7 @@ import hljs from 'highlight.js';
 import {initNgScope, inject} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
-import {INote} from '../../../../shared';
+import {INote} from '@wix/quix-shared';
 import {IScope} from './search-results-types';
 import * as Resources from '../../services/resources';
 import * as AppActions from '../../store/app/app-actions';

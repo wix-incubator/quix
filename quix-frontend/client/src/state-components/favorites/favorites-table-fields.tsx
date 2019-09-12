@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {IFile} from '../../../../shared';
+import {IFile} from '@wix/quix-shared';
 import {RowConfig} from '../../lib/ui/components/Table';
 import classNames from 'classnames';
 
