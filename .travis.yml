@@ -34,8 +34,6 @@ matrix:
         provider: npm
         email: "$NPM_EMAIL"
         api_key: "$NPM_API_KEY"
-        on:
-          tags: true
         skip_cleanup: true
     - stage: test
       dist: bionic
