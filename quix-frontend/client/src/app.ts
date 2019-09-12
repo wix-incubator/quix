@@ -1,6 +1,7 @@
 import './lib/ui/bootstrap';
 import './app.scss';
 
+import { SyncHook } from 'tapable';
 import create from './lib/app';
 import * as components from './components';
 import * as stateComponents from './state-components';
@@ -14,6 +15,10 @@ import {ClientConfigHelper, ModuleComponentType} from '../../shared';
 
 import './lib/file-explorer';
 
+export const hooks = {
+  bootstrap: new SyncHook(['appBuilder']),
+};
+
 (window as any).UrlPattern = UrlPattern;  // expose for e2e tests
 
 const clientConfig = ClientConfigHelper.load(window.quixConfig);
@@ -24,7 +29,7 @@ const {
   apiBasePath,
 } = clientConfig.getClientTopology();
 
-create<ClientConfigHelper>({
+const appBuilder = create<ClientConfigHelper>({
   id: 'quix',
   title: 'Quix',
 }, {
@@ -67,5 +72,8 @@ create<ClientConfigHelper>({
 
       app.getModule().controller('app', ['$scope', scope => scope.app = app] as any);
     });
-  })
-  .build();
+  });
+
+hooks.bootstrap.call(appBuilder);
+
+appBuilder.build();
