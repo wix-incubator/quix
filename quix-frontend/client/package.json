@@ -1,15 +1,20 @@
 {
-  "name": "quix",
+  "name": "@wix/quix-client",
   "version": "1.0.0",
   "license": "MIT",
   "description": "Presto-based notebook manager",
-  "files": [
-    "dist"
-  ],
   "author": {
     "name": "Anton Podolsky",
     "email": "antonp@wix.com"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist/src"
+  ],
+  "main": "dist/src/app.js",
+  "types": "dist/src/app.d.ts",
   "scripts": {
     "start": "tsc -b && yoshi start",
     "precommit": "yoshi lint",
