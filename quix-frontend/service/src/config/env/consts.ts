@@ -33,14 +33,11 @@ export const envSettingsMap: {[K in keyof StaticSettings]: string} = {
 };
 
 export const envSettingsDefaults = {
-  // OpenIdDiscoveryDoc: 'https://sthuck-aviad.okta.com/.well-known/openid-configuration',
-  // OpenIdClientSecret: '2_pAIOOn6J-Uf3XTeKUkSZ6Kd5wBdZCnC3c8F8Y-',
-  // OpenIdClientId: '0oa1b318sqkl7AHWH357',
-  OpenIdDiscoveryDoc: 'https://accounts.google.com',
-  OpenIdClientSecret: '15dLRAxrQFI5CvLBDXWtv04F',
-  OpenIdClientId: '170992126842-j06a80mttd6l0s8g9cmlm60nr98og48k.apps.googleusercontent.com',
+  OpenIdDiscoveryDoc: '',
+  OpenIdClientSecret: '',
+  OpenIdClientId: '',
   OpenIdRedirectUrl: 'http://local.quix.com:3000/api/authenticate-openid',
-  DbType: 'sqlite' as 'mysql' | 'sqlite', 
+  DbType: 'sqlite' as 'mysql' | 'sqlite',
   AuthType: 'openid' as 'fake' | 'google' | 'openid',
   DbName: 'quix',
   DbUser: 'root',
