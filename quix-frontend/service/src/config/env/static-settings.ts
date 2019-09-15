@@ -1,6 +1,6 @@
 import {BaseConnectionOptions} from 'typeorm/connection/BaseConnectionOptions';
 
-import {StaticSettings, ComputedSettings} from './types';
+import {StaticSettings} from './types';
 
 export const envSettingsMap: {[K in keyof StaticSettings]: string} = {
   DbName: 'DB_NAME',
@@ -69,13 +69,4 @@ export const testingDefaults: StaticSettings = {
   Modules: ['presto'],
   HttpPort: 3000,
   MountPath: '',
-};
-
-export const computedSettingsDefaults: ComputedSettings = {
-  moduleSettings: {
-    presto: {
-      syntax: 'ansi_sql',
-      engine: 'presto',
-    },
-  },
 };
