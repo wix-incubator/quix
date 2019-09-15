@@ -1,4 +1,4 @@
-import {envSettingsDefaults} from './consts';
+import {envSettingsDefaults} from './static-settings';
 
 export type StaticSettings = typeof envSettingsDefaults;
 export interface ComputedSettings {

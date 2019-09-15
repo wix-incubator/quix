@@ -3,14 +3,13 @@ import {isJestTest} from '../utils';
 import path from 'path';
 import {defaults} from 'lodash';
 import {BaseConnectionOptions} from 'typeorm/connection/BaseConnectionOptions';
-import {StaticSettings, ComputedSettings, EnvSettings} from './types';
+import {StaticSettings, EnvSettings} from './types';
 import {
-  computedSettingsDefaults,
   envSettingsMap,
   testingDefaults,
   envSettingsDefaults,
-} from './consts';
-import {ModuleEngineType, ModuleEngineToSyntaxMap} from 'shared';
+} from './static-settings';
+import {getComputedSettings} from './computed-settings';
 
 let environmentLoaded = false;
 export const loadEnv = () => {
@@ -110,70 +109,6 @@ const transforms: {
   RupertApiUrl: identity,
   localStaticsPath: identity,
   remoteStaticsPath: identity,
-};
-
-const getModuleSettings = (moduleName: string, globalEnv: any) => {
-  const syntaxEnvVar = `MODULES_${moduleName.toUpperCase()}_SYNTAX`;
-  const engineEnvVar = `MODULES_${moduleName.toUpperCase()}_ENGINE`;
-  let engine = globalEnv[engineEnvVar];
-  let syntax: string = '';
-
-  /* backwards compatibility */
-  if (engine === undefined) {
-    switch (moduleName) {
-      case 'presto':
-        engine = ModuleEngineType.Presto;
-        break;
-      case 'athena':
-        engine = ModuleEngineType.Athena;
-        break;
-      default:
-    }
-  }
-
-  if (!Object.values(ModuleEngineType).includes(engine)) {
-    throw new Error(
-      `Bad configuration. Missing or bad 'engine' declaration for module '${moduleName}'. Possible values: ${Object.values(
-        ModuleEngineType,
-      ).join(',')}`,
-    );
-  }
-
-  switch (engine) {
-    case ModuleEngineType.Presto:
-      syntax = ModuleEngineToSyntaxMap[ModuleEngineType.Presto];
-      break;
-    case ModuleEngineType.Athena:
-      syntax = ModuleEngineToSyntaxMap[ModuleEngineType.Athena];
-      break;
-    case ModuleEngineType.BigQuery:
-      syntax = ModuleEngineToSyntaxMap[ModuleEngineType.BigQuery];
-      break;
-    default: {
-      syntax = globalEnv[syntaxEnvVar] as string;
-    }
-  }
-
-  if (!syntax) {
-    throw new Error(
-      `Bad configuration. Missing 'syntax' declaration for module '${moduleName}'`,
-    );
-  }
-  return {syntax, engine};
-};
-const getComputedSettings = (
-  modules: string[],
-  globalEnv: Record<string, string | undefined>,
-): ComputedSettings => {
-  const computedSettings: ComputedSettings = computedSettingsDefaults;
-
-  modules.forEach(moduleName => {
-    computedSettings.moduleSettings[moduleName] = getModuleSettings(
-      moduleName,
-      globalEnv,
-    );
-  });
-  return computedSettings;
 };
 
 export const getEnv = (
