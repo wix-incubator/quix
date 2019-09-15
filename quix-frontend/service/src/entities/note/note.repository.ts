@@ -4,7 +4,7 @@ import {DbNote} from './dbnote.entity';
 @EntityRepository(DbNote)
 export class NoteRepository extends Repository<DbNote> {
   async insertNewWithRank(note: DbNote) {
-    const currentCount = await this.count({owner: note.owner});
+    const currentCount = await this.count({notebookId: note.notebookId});
     note.rank = currentCount;
     return this.save(note);
   }
@@ -20,7 +20,7 @@ export class NoteRepository extends Repository<DbNote> {
         .set({
           rank: () => '`rank` - 1',
         })
-        .where(`owner = :owner`, {owner: note.owner})
+        .where(`notebookId = :notebookId`, {notebookId: note.notebookId})
         .andWhere(`rank > :rank`, {rank: note.rank})
         .execute();
       await em.delete(DbNote, note.id);
@@ -45,7 +45,7 @@ export class NoteRepository extends Repository<DbNote> {
           .set({
             rank: () => '`rank` + 1',
           })
-          .where(`owner = :owner`, {owner: note.owner})
+          .where(`notebookId = :notebookId`, {notebookId: note.notebookId})
           .andWhere(`rank between :to and :from`, {from: from - 1, to})
           .execute();
       } else if (from < to) {
@@ -55,7 +55,7 @@ export class NoteRepository extends Repository<DbNote> {
           .set({
             rank: () => '`rank` - 1',
           })
-          .where(`owner = :owner`, {owner: note.owner})
+          .where(`notebookId = :notebookId`, {notebookId: note.notebookId})
           .andWhere(`rank between :from and :to`, {from: from + 1, to})
           .execute();
       }

@@ -257,8 +257,22 @@ describe('event sourcing', () => {
       const howManyNotes = 6;
 
       beforeEach(async () => {
+        const [
+          notebookId2,
+          createNotebookAction2,
+        ] = mockBuilder.createNotebookAction();
+
+        const notes2 = range(2).map(() => createNote(notebookId2));
+
         notes = range(howManyNotes).map(() => createNote(notebookId));
         createNoteActions = notes.map(n => NoteActions.addNote(n.id, n));
+        const createNoteActions2 = notes2.map(n =>
+          NoteActions.addNote(n.id, n),
+        );
+
+        /* creating notes in another notebook, just to make sure reorder is local inside a notebook */
+        await driver.emitAsUser(eventBus, [createNotebookAction2]);
+        await driver.emitAsUser(eventBus, createNoteActions2);
 
         await driver.emitAsUser(eventBus, [createNotebookAction]);
         await driver.emitAsUser(eventBus, createNoteActions);
