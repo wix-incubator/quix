@@ -11,7 +11,7 @@ class PrestoSqlOpsTest extends SpecWithJUnit {
     }
 
     "handle delimited statements" in {
-      split("select 1;select 2") must contain("select 1", "select 2")
+      split("select 1;select 2") must_=== List("select 1", "select 2")
     }
 
     "handle delimited statements with empty partial statement" in {
@@ -26,6 +26,30 @@ class PrestoSqlOpsTest extends SpecWithJUnit {
 
     "handle empty strings" in {
       split("       \n\n\n\n\n") must beEmpty
+    }
+
+    "handle trailing comments" in {
+      val sqls = split("select 1;\n--comment1\n--comment2")
+
+      sqls must_=== List("select 1")
+    }
+
+    "do not strip leading newlines in case of single statement" in {
+      val sqls = split("\nselect 1")
+
+      sqls must_=== List("\nselect 1")
+    }
+
+    "do not strip leading newlines in case of multiple statements" in {
+      val sqls = split("\nselect 1;\nselect 2;")
+
+      sqls must_=== List("\nselect 1", "select 2")
+    }
+
+    "do not strip leading newlines in case of multiple statements" in {
+      val sqls = split("\n--comment\nselect 1;\nselect 2;")
+
+      sqls must_=== List("\n--comment\nselect 1", "select 2")
     }
 
   }

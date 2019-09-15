@@ -1,5 +1,5 @@
 import {StoreCache} from '../../lib/store';
-import {IFolder, createFolderPayload} from '../../../../shared';
+import {IFolder, createFolderPayload} from '@wix/quix-shared';
 import {setFolder, setError} from './folder-actions';
 import * as Resources from '../../services/resources';
 import {createQuixFolder} from '../../data';

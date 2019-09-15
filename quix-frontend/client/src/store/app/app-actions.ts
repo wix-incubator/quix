@@ -1,5 +1,5 @@
 import {Runner} from '../../lib/runner';
-import {INotebook, INote} from '../../../../shared';
+import {INotebook, INote} from '@wix/quix-shared';
 
 export const setSearchText = (searchText: string, origin: 'user' | 'machine' = 'machine') => ({
   type: 'app.setSearchText',

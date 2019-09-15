@@ -1,5 +1,5 @@
 import {DbPlugin} from '../../services/plugins';
-import {IFile} from '../../../../shared';
+import {IFile} from '@wix/quix-shared';
 import {DB} from '../../config';
 import { App } from '../../lib/app';
 

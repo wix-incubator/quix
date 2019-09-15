@@ -5,7 +5,7 @@ import {
   IFolder,
   clientFileListReducer,
   composeReducers,
-} from '../../../../shared';
+} from '@wix/quix-shared';
 
 export interface IPermissions {
   edit: boolean;

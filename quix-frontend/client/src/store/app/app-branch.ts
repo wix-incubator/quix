@@ -4,7 +4,7 @@ import {Middleware} from 'redux';
 
 import * as Runners from '../../services/runners';
 
-interface IApp {
+export interface IApp {
   searchPage?: number;
   searchText?: string;
   runners?: Record<string, any>;

@@ -4,7 +4,7 @@ import './files-sidebar.scss';
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
-import {FileActions, NotebookActions, IFile} from '../../../../shared';
+import {FileActions, NotebookActions, IFile} from '@wix/quix-shared';
 import {IScope} from './files-sidebar-types';
 import {cache} from '../../store';
 import {

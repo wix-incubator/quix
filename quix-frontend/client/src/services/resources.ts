@@ -1,6 +1,6 @@
 import {mapValues} from 'lodash';
 import {inject, Config} from '../lib/core';
-import {IFile, IFolder, INotebook, INote, IUser} from '../../../shared';
+import {IFile, IFolder, INotebook, INote, IUser} from '@wix/quix-shared';
 
 export const config = new Config<{
   apiBasePath: string;

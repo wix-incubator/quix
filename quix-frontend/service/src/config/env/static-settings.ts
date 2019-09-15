@@ -1,6 +1,7 @@
 import {BaseConnectionOptions} from 'typeorm/connection/BaseConnectionOptions';
+import * as path from 'path';
 
-import {StaticSettings, ComputedSettings} from './types';
+import {StaticSettings} from './types';
 
 export const envSettingsMap: {[K in keyof StaticSettings]: string} = {
   DbName: 'DB_NAME',
@@ -30,6 +31,8 @@ export const envSettingsMap: {[K in keyof StaticSettings]: string} = {
   OpenIdClientId: 'OPEN_ID_CLIENT_ID',
   OpenIdClientSecret: 'OPEN_ID_CLIENT_SECRET',
   OpenIdRedirectUrl: 'OPEN_ID_REDIRECT_URL',
+  localStaticsPath: 'LOCAL_STATICS_PATH',
+  remoteStaticsPath: 'REMOTE_STATICS_PATH',
 };
 
 export const envSettingsDefaults = {
@@ -60,6 +63,8 @@ export const envSettingsDefaults = {
   MountPath: '',
   RupertApiUrl: '',
   RupertApiKey: '',
+  localStaticsPath: path.resolve('.', 'statics'),
+  remoteStaticsPath: '',
 };
 
 export const testingDefaults: StaticSettings = {
@@ -77,13 +82,4 @@ export const testingDefaults: StaticSettings = {
   Modules: ['presto'],
   HttpPort: 3000,
   MountPath: '',
-};
-
-export const computedSettingsDefaults: ComputedSettings = {
-  moduleSettings: {
-    presto: {
-      syntax: 'ansi_sql',
-      engine: 'presto',
-    },
-  },
 };

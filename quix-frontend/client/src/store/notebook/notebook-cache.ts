@@ -1,5 +1,5 @@
 import {StoreCache} from '../../lib/store';
-import {INotebook} from '../../../../shared';
+import {INotebook} from '@wix/quix-shared';
 import {setNotebook, setError} from './notebook-actions';
 import {notebook} from '../../services/resources';
 import {createExamplesNotebook} from '../../data';

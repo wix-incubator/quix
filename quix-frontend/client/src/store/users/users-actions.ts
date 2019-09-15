@@ -1,4 +1,4 @@
-import {IUser} from '../../../../shared';
+import {IUser} from '@wix/quix-shared';
 
 export const setUsers = (users: IUser[]) => ({
   type: 'users.set',

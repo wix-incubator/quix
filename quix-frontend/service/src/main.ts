@@ -38,8 +38,8 @@ async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  app.useStaticAssets(path.resolve(__dirname, '..', 'statics'));
-  app.setBaseViewsDir(path.resolve(__dirname, '..', 'statics'));
+  app.useStaticAssets(env.localStaticsPath);
+  app.setBaseViewsDir(env.localStaticsPath);
   app.engine('.vm', velocityEngine());
   app.use(cookieParser());
   await app.listen(env.HttpPort);

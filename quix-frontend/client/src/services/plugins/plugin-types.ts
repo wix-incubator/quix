@@ -1,4 +1,4 @@
-import { IFile, TModuleComponentType } from '../../../../shared';
+import { IFile, TModuleComponentType } from '@wix/quix-shared';
 import { App } from '../../lib/app';
 
 export const resolvePluginType = (type: TModuleComponentType) => {

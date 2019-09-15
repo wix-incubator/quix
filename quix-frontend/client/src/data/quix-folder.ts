@@ -1,4 +1,4 @@
-import {createFolderPayload, createFile, } from '../../../shared';
+import {createFolderPayload, createFile, } from '@wix/quix-shared';
 import {QuixFolder, ExamplesNotebook} from '../config';
 
 export default () => createFolderPayload([], {

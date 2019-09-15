@@ -39,12 +39,15 @@ export abstract class ConfigService {
   async getClientConfig() {
     const env = this.getEnvSettings();
     const clientConfig = new ClientConfigHelper();
+    const staticsBaseUrl = env.remoteStaticsPath
+      ? env.remoteStaticsPath
+      : `${env.MountPath}/`;
 
     clientConfig
       .setAuth({googleClientId: env.GoogleClientId, authType: 'google', openidAuthUrl: ''})
       .setClientTopology({
         executeBaseUrl: env.QuixBackendPublicUrl,
-        staticsBaseUrl: `${env.MountPath}/`,
+        staticsBaseUrl,
         apiBasePath: env.MountPath,
       })
       .setMode({

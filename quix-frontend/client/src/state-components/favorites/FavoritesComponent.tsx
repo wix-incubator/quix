@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {IFile} from '../../../../shared';
+import {IFile} from '@wix/quix-shared';
 import {Table} from '../../lib/ui/components/Table';
 import {Image} from '../../lib/ui/components/Image';
 import {favoritesTableFields} from './favorites-table-fields';

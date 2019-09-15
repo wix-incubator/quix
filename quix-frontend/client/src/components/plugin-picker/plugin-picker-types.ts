@@ -1,5 +1,5 @@
 import {IScope as ngIscope} from 'angular';
-import {ModuleComponentType} from '../../../../shared';
+import {ModuleComponentType} from '@wix/quix-shared';
 
 export interface IScope extends ngIscope {
   vm: any;
