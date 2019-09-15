@@ -107,6 +107,8 @@ const transforms: {
   MountPath: identity,
   RupertApiKey: identity,
   RupertApiUrl: identity,
+  localStaticsPath: identity,
+  remoteStaticsPath: identity,
 };
 
 export const getEnv = (

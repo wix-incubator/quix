@@ -1,4 +1,5 @@
 import {BaseConnectionOptions} from 'typeorm/connection/BaseConnectionOptions';
+import * as path from 'path';
 
 import {StaticSettings} from './types';
 
@@ -26,6 +27,8 @@ export const envSettingsMap: {[K in keyof StaticSettings]: string} = {
   MountPath: 'MOUNT_PATH',
   RupertApiUrl: 'RUPERT_API_URL',
   RupertApiKey: 'RUPERT_API_KEY',
+  localStaticsPath: 'LOCAL_STATICS_PATH',
+  remoteStaticsPath: 'REMOTE_STATICS_PATH',
 };
 
 export const envSettingsDefaults = {
@@ -52,6 +55,8 @@ export const envSettingsDefaults = {
   MountPath: '',
   RupertApiUrl: '',
   RupertApiKey: '',
+  localStaticsPath: path.resolve('.', 'statics'),
+  remoteStaticsPath: '',
 };
 
 export const testingDefaults: StaticSettings = {
