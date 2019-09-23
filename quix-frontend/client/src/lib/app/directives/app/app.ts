@@ -91,8 +91,6 @@ export default () => {
         }, scope);
 
         inject('$timeout')(() => scope.vm.loginHint.toggle(true), 5000);
-
-        console.log(1)
       }
     }
   };
