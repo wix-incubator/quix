@@ -143,7 +143,7 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
     this.state({
       name: fullStateName,
       abstract: config.abstract || false,
-      url: config.abstract ? '' : `/${stateParts.join('/')}${paramName ? `/:${paramName}` : ''}?${Object.keys(config.url)}`,
+      url: config.abstract ? '' : `/${stateName}${paramName ? `/:${paramName}` : ''}?${Object.keys(config.url)}`,
       reloadOnSearch: false,
       template: `
         <${componentName}
