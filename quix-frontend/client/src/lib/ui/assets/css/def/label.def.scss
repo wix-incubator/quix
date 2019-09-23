@@ -6,6 +6,15 @@
   text-transform: uppercase;
 }
 
+%color-label {
+  display: inline-flex;
+  padding: 1px 6px;
+  place-content: center;
+  border-radius: 2px;
+  font-size: 9px;
+  color: $white !important;
+}
+
 @mixin label-dark() {
   @extend %label;
 
@@ -24,4 +33,10 @@
       @include label-light();
     }
   }
+}
+
+@mixin color-label($color) {
+  @extend %color-label;
+
+  background-color: $color;
 }
