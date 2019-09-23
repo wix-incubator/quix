@@ -154,8 +154,8 @@ export class PluginBuilder<Config> {
       this.pluginBranches = {branches, logUrl, server};
       return this;
     }
-    return this.pluginBranches;
 
+    return this.pluginBranches;
   }
 
   modules(modules) {

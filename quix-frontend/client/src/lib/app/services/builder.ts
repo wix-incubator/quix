@@ -1,7 +1,6 @@
 import {mapValues, last} from 'lodash';
 import {paramCase, camelCase, headerCase} from 'change-case';
 import {srv, inject, utils} from '../../core';
-import {IBranches} from '../../../lib/store/services/store';
 import {createStore, Store} from '../../../lib/store';
 import Navigator from './navigator';
 import {App, IMenuItem} from './app';
@@ -51,7 +50,6 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
   private readonly user: User;
   private readonly menuItems: IMenuItem[] = [];
   private readonly title: string;
-  private appstore: Store = null;
   private conf: Config;
 
   constructor(
@@ -223,21 +221,6 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
     return this;
   }
 
-  /**
-   * Creates a redux store
-   *
-   * @param branches    store branches
-   * @param logUrl      events log url
-   */
-  store(branches?: IBranches, logUrl?: string) {
-    if (branches) {
-      this.appstore = createStore(branches, {logUrl});
-      return this;
-    }
-    return this.appstore;
-
-  }
-
   modules(modules: string[]) {
     this.ngmodules = this.ngmodules.concat(modules);
   }
@@ -268,7 +251,6 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
       this.user,
       this.navigator,
       this.menuItems,
-      this.appstore,
       this.conf,
     )
       .init(this.ngmodules);

@@ -1,4 +1,4 @@
-<div class="bi-app-header bi-fade-in bi-theme--lighter">
+<div class="bi-app-header bi-fade-in bi-theme--lighter" ng-if="vm.header.enabled">
   <div 
     class="bi-app-title bi-pointer"
     ng-click="events.onTitleClick()"
@@ -44,7 +44,7 @@
 <div class="bi-r-h">
   <div 
     class="bi-app-menu bi-theme--darker bi-dont-shrink bi-fade-in"
-    ng-if="user.isLoggedIn() && app.getMenuItems().length"
+    ng-if="vm.menu.enabled && user.isLoggedIn() && app.getMenuItems().length"
   >
     <ul>
     <ul>
