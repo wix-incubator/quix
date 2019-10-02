@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {IUser} from '../../../../shared/dist';
+import {IUser} from '@wix/quix-shared';
 import {Table} from '../../lib/ui/components/Table';
 import {usersTableFields} from './users-table-fields';
 

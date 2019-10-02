@@ -30,6 +30,11 @@ matrix:
       script:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - npm test
+      deploy:
+        provider: npm
+        email: $NPM_EMAIL
+        api_key: $NPM_API_KEY
+        skip_cleanup: true
     - stage: test
       dist: bionic
       name: "Frontend"

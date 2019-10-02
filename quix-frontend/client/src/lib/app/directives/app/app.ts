@@ -32,15 +32,16 @@ export default () => {
         initNgScope(scope)
           .withVM({
             apps: without(Apps, find(Apps, {id: scope.app.getId()} as any)),
+            header: {},
             menu: {
-              current: null
+              current: null,
+              content: {},
             },
             loginHint: {}
           })
           .withEvents({
             onMenuItemToggle(item: IMenuItem) {
-              const {menu} = scope.vm;
-              const {current} = menu;
+              const {current, content} = scope.vm.menu;
 
               if (typeof item.onToggle === 'function') {
                 item.onToggle(scope.app, item);
@@ -50,9 +51,9 @@ export default () => {
               }
 
               if (scope.vm.menu.current) {
-                scope.vm.menu.reload();
+                content.reload();
               } else {
-                scope.vm.menu.toggle(false);
+                content.toggle(false);
               }
 
               if (current && current.scope) {
@@ -83,6 +84,11 @@ export default () => {
             return stateName.indexOf(item.state) >= 0 && !!(setCurrentMenuItem(scope, item) || true);
           });
         }, scope).otherwise(() => scope.vm.menu.current && scope.vm.menu.current.state && setCurrentMenuItem(scope, null));
+
+        scope.app.getStore().subscribe('app', ({header, menu}) => {
+          scope.vm.header.toggle(header);
+          scope.vm.menu.toggle(menu);
+        }, scope);
 
         inject('$timeout')(() => scope.vm.loginHint.toggle(true), 5000);
       }

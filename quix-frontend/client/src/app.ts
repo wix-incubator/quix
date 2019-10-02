@@ -1,20 +1,13 @@
-import './lib/ui/bootstrap';
-import './app.scss';
-
+import {setupNotifications} from './bootstrap';
 import create from './lib/app';
+import {hooks} from './hooks';
 import * as components from './components';
 import * as stateComponents from './state-components';
 import {branches, initCache} from './store';
-import UrlPattern from 'url-pattern';
 import {config as runnerConfig} from './lib/runner';
 import {config as resourcesConfig} from './services/resources';
 import {pluginManager} from './plugins';
-import {setupNotifications} from './bootstrap';
-import {ClientConfigHelper, ModuleComponentType, ModuleEngineType} from '../../shared';
-
-import './lib/file-explorer';
-
-(window as any).UrlPattern = UrlPattern;  // expose for e2e tests
+import {ClientConfigHelper, ModuleComponentType, ModuleEngineType} from '@wix/quix-shared';
 
 const clientConfig = ClientConfigHelper.load(window.quixConfig);
 
@@ -24,7 +17,7 @@ const {
   apiBasePath,
 } = clientConfig.getClientTopology();
 
-create<ClientConfigHelper>({
+const appBuilder = create<ClientConfigHelper>({
   id: 'quix',
   title: 'Quix',
 }, {
@@ -69,5 +62,8 @@ create<ClientConfigHelper>({
 
       app.getModule().controller('app', ['$scope', scope => scope.app = app] as any);
     });
-  })
-  .build();
+  });
+
+hooks.bootstrap.call(appBuilder);
+
+appBuilder.build();

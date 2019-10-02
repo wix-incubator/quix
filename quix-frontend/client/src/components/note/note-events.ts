@@ -1,6 +1,6 @@
 import {inject} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {INote} from '../../../../shared';
+import {INote} from '@wix/quix-shared';
 import {IScope} from './note-types';
 import {App} from '../../lib/app';
 

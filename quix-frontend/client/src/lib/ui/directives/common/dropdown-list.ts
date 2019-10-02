@@ -1,12 +1,18 @@
 import {IScope} from 'angular';
 import {assign, includes, without, uniq} from 'lodash';
+import * as JsSearch from 'js-search';
 import {initNgScope, createNgModel, inject, utils} from '../../../core';
 
 const isNull = value => {
   return !value && typeof value !== 'boolean' && typeof value !== 'number';
 }
 
+const toString = value => {
+  return isNull(value) ? '' : `${value}`;
+}
+
 export class DropdownList {
+  private searcher: any = null;
   private deferredId = 0;
   private readonly $timeout: ng.ITimeoutService = inject('$timeout');
   constructor(
@@ -39,6 +45,7 @@ export class DropdownList {
         dropdownMinWidth: 'toggle',
         debounce: 0,
         type: 'text',
+        filterBy: [],
         ...config.options
       })
       .withVM({
@@ -46,15 +53,20 @@ export class DropdownList {
         renderedModel: null,
         keyNavOption: null,
         search: {
-          text: null
+          text: null,
+          parsed: null,
         },
         options: {
           collection: null,
           filtered: null,
+          searched: null,
           falsy: null,
           deferred: {
             loading: false
           },
+          items() {
+            return this.searched || this.filtered;
+          }
         }
       })
       .withEvents({
@@ -66,7 +78,7 @@ export class DropdownList {
           if (!this.config.isArray || options.typeahead) {
             vm.options.toggle(true);
 
-            this.initOptions();
+            this.search();
 
             scope.onTypeahead({text: vm.search.text});
           }
@@ -104,14 +116,12 @@ export class DropdownList {
           }
         },
         onDropdownHide: () => {
-          scope.vm.search.toggle(false);
-          this.render(scope.model);
+          this.reset();
         },
         onOptionSelect: (...options) => {
           const {vm} = this.scope;
 
           vm.options.toggle(false);
-          vm.search.toggle(false);
 
           if (this.config.isArray) {
             scope.model = uniq([...scope.model, ...options]);
@@ -129,8 +139,6 @@ export class DropdownList {
         onOptionDelete: option => {
           if (this.config.isArray) {
             scope.model = without(scope.model, option);
-
-            this.render(scope.model);
           }
         }
       });
@@ -141,7 +149,7 @@ export class DropdownList {
       const deferredId = ++this.deferredId;
 
       if (collection && collection.then) {
-        this.initOptions(null);
+        this.setOptions(null);
 
         vm.options.deferred.toggle(true);
         vm.options.deferred.loading = true;
@@ -151,7 +159,7 @@ export class DropdownList {
 
       if (deferredId === this.deferredId) {
         utils.scope.safeApply(scope, () => {
-          this.initOptions(collection);
+          this.setOptions(collection);
           vm.options.deferred.loading = false;
         });
       }
@@ -161,6 +169,15 @@ export class DropdownList {
     scope.renderOption = option => this.renderOption(option);
 
     scope.placeholder = scope.placeholder || 'Select a value';
+  }
+
+  private reset() {
+    const {vm} = this.scope;
+
+    vm.search.toggle(false);
+    vm.options.searched = null;
+
+    this.render();
   }
 
   private format(model: any) {
@@ -175,12 +192,20 @@ export class DropdownList {
 
   private parse(model: any[]) {
     const {biOptions} = this.controllers;
+    let parsed;
 
     if (this.config.isArray) {
-      return model.map(item => biOptions.parse(item));
+      parsed = model.map(item => biOptions.parse(item));
+    } else {
+      parsed = biOptions.parse(model);
     }
 
-    return biOptions.parse(model);
+    inject('$timeout')(() => {
+      this.reset();
+      this.initOptions();
+    });
+
+    return parsed;
   }
 
   private validate() {
@@ -195,17 +220,17 @@ export class DropdownList {
     };
   }
 
-  private render(model: any[]) {
+  private render(model: any[] = this.scope.model) {
     const {biOptions} = this.controllers;
     const {vm} = this.scope;
 
     if (this.config.isArray) {
       vm.renderedModel = model.map(item => biOptions.render(item));
+      vm.search.text = '';
     } else {
       vm.search.text = biOptions.render(model);
+      vm.search.parsed = biOptions.parse(model);
     }
-
-    this.initOptions();
   }
 
   private applySearchText(text) {
@@ -213,7 +238,7 @@ export class DropdownList {
 
     if (vm.search.enabled && !isNull(text)) {
       if (this.config.isArray) {
-        const values: string[] | number[] = typeof text === 'string' ?text.split(',') : [text];
+        const values: string[] | number[] = typeof text === 'string' ? text.split(',') : [text];
         events.onOptionSelect(...values);
       } else {
         events.onOptionSelect(text);
@@ -221,28 +246,69 @@ export class DropdownList {
     }
   }
 
-  private initOptions(collection: any[] = this.scope.vm.options.collection) {
-    const {biOptions} = this.controllers;
+  private setOptions(collection: any[] = this.scope.vm.options.collection) {
     const {vm} = this.scope;
 
     vm.options.collection = collection;
+
+    this.initOptions();
+    this.search();
+  }
+
+  private initOptions(collection: any[] = this.scope.vm.options.collection) {
+    const {vm, options} = this.scope;
+
+    if (!collection) {
+      vm.options.filtered = null;
+      return;
+    }
+
+    const {biOptions} = this.controllers;
+
     vm.options.falsy = null;
-
-    vm.options.filtered = collection && collection.filter(option => {
-      const renderedOption = biOptions.render(option);
-      // tslint:disable-next-line: restrict-plus-operands
-      const renderedOptionLowerCase = ((renderedOption || '') + '').toLowerCase();
-      let falsy = false;
-
+    vm.options.filtered = collection.filter((option) => {
       if (!vm.options.falsy && isNull(biOptions.parse(option))) {
         vm.options.falsy = {option};
-        falsy = true;
+        return false;
       }
 
-      return !falsy &&
-        (!vm.search.enabled || !vm.search.text || includes(renderedOptionLowerCase, vm.search.text)) &&
-        (!this.config.isArray || !includes(vm.renderedModel, renderedOption));
+      if (this.config.isArray && includes(vm.renderedModel, biOptions.render(option))) {
+        return false;
+      }
+
+      return true;
     });
+
+    if (vm.options.filtered && options.filterBy.length) {
+      this.searcher = new JsSearch.Search(options.filterBy[0]);
+
+      options.filterBy.forEach(prop => this.searcher.addIndex(prop));
+      this.searcher.addDocuments(vm.options.filtered);
+    } else {
+      this.searcher = null;
+    }
+  }
+
+  private search(collection: any[] = this.scope.vm.options.filtered) {
+    const {vm} = this.scope;
+
+    if (!collection || !vm.search.enabled || !vm.search.text) {
+      vm.options.searched = null;
+      return;
+    }
+
+    let text = vm.search.text;
+
+    if (this.searcher) {
+      vm.options.searched = this.searcher.search(text);
+      return;
+    }
+
+    const {biOptions} = this.controllers;
+    text = toString(text).toLowerCase();
+
+    vm.options.searched = collection.filter(option =>
+      includes(toString(biOptions.render(option)).toLowerCase(), text));
   }
 
   public renderToggle() {

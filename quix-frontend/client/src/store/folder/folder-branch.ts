@@ -10,7 +10,7 @@ import {
   clientFileReducer,
   clientFileListReducer,
   composeReducers
-} from '../../../../shared';
+} from '@wix/quix-shared';
 
 import {getFolderPermissions, getDefaultPermissions, IPermissions} from '../../services';
 

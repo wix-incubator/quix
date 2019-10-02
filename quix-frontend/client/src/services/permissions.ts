@@ -1,5 +1,5 @@
 import {App} from '../lib/app';
-import {IEntity, IFile} from '../../../shared';
+import {IEntity, IFile} from '@wix/quix-shared';
 import {isRoot} from './files';
 
 export interface IPermissions {

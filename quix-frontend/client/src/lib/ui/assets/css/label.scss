@@ -19,3 +19,27 @@
   font-size: 18px !important;
   font-weight: 300 !important;
 }
+
+.bi-label--primary {
+  @include color-label($primary);
+}
+
+.bi-label--secondary {
+  @include color-label($secondary);
+}
+
+.bi-label--success {
+  @include color-label($success);
+}
+
+.bi-label--warning {
+  @include color-label($warning);
+}
+
+.bi-label--danger {
+  @include color-label($danger);
+}
+
+.bi-label--muted {
+  @include color-label($grey--400);
+}

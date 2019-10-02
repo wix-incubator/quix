@@ -9,7 +9,7 @@ import {
   clientNotebookReducer,
   noteListReducer,
   NoteActionTypes
-} from '../../../../shared';
+} from '@wix/quix-shared';
 
 import {getNotebookPermissions, getDefaultPermissions, IPermissions} from '../../services';
 

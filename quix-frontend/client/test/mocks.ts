@@ -11,7 +11,7 @@ import {
   createFile,
   createNote,
   createFolderPayload,
-} from '../../shared';
+} from '@wix/quix-shared';
 
 const mocks = {
   '/api/user': () => createUser(),

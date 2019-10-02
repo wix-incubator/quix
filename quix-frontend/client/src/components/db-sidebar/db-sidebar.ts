@@ -4,7 +4,7 @@ import './db-sidebar.scss';
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
-import {IFile} from '../../../../shared';
+import {IFile} from '@wix/quix-shared';
 import {IScope} from './db-sidebar-types';
 import {cache} from '../../store';
 import {convert} from '../../services/db';

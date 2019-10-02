@@ -1,4 +1,4 @@
-import {Store} from '../../store';
+import {createStore, Store} from '../../store';
 import angular from 'angular';
 import Navigator from './navigator';
 import {User} from './user';
@@ -16,6 +16,7 @@ export interface IMenuItem {
 
 export class App<Config = any> {
   private ngModule: angular.IModule;
+  private readonly store: Store;
 
   constructor(
     private readonly id: string,
@@ -25,9 +26,25 @@ export class App<Config = any> {
     private readonly user: User,
     private readonly navigator: Navigator,
     private readonly menuItems: IMenuItem[],
-    private readonly store: Store,
     private readonly config: Config,
-  ) { }
+  ) {
+    this.store = createStore({
+      app: register => register((state = {
+        header: true,
+        menu: true,
+      }, action) => {
+        switch (action.type) {
+          case 'toggle.header':
+            return {...state, header: action.header};
+          case 'toggle.menu':
+            return {...state, menu: action.menu};
+          default:  
+        }
+
+        return state;
+      })
+    });
+  }
 
   init(modules: string[] = []) {
     this.ngModule = angular.module(this.id, ['bi.app'].concat(modules));
@@ -77,6 +94,14 @@ export class App<Config = any> {
 
   getConfig() {
     return this.config;
+  }
+
+  toggleHeader(state: boolean) {
+    this.store.dispatch({type: 'toggle.header', header: state});
+  }
+
+  toggleMenu(state: boolean) {
+    this.store.dispatch({type: 'toggle.menu', menu: state});
   }
 
   go(state: string, params?: Object, options?) {

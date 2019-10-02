@@ -30,7 +30,7 @@
         <dependency>
             <groupId>io.monix</groupId>
             <artifactId>monix-eval_${scala.dependencies.version}</artifactId>
-            <version>3.0.0-RC2</version>
+            <version>3.0.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->

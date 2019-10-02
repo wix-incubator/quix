@@ -1,5 +1,5 @@
 import {getEnv} from './env';
-import {testingDefaults} from './consts';
+import {testingDefaults} from './static-settings';
 
 describe('configuration parsing', () => {
   it('should override empty strings with defaults', () => {

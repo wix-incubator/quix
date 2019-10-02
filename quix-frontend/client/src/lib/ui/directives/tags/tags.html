@@ -48,22 +48,13 @@
   >
     <ul
       class="bi-dropdown-menu"
-      bi-infinite-scroll="vm.options.filtered"
+      bi-infinite-scroll="vm.options.items()"
       bis-buffer="buffer"
     >
       <li
-        class="bi-muted"
-        ng-if="vm.options.falsy && model"
-        ng-show="!vm.search.enabled"
-        ng-mousedown="$event.preventDefault()"
-        ng-click="events.onOptionSelect(vm.options.falsy.option)"
-        bi-html="renderOption(vm.options.falsy.option || placeholder)"
-      ></li>
-
-      <li
         class="bi-text--sm bi-muted bi-fade-in"
         ng-class="{'bi-active': vm.search.enabled && options.freetext}"
-        ng-if="options.typeahead && !vm.options.filtered.length && !vm.options.deferred.loading"
+        ng-if="options.typeahead && !vm.options.items().length && !vm.options.deferred.loading"
       >
         <span ng-if="vm.search.enabled">
           <span class="bi-text--600" ng-if="options.freetext">{{vm.search.text}}</span>

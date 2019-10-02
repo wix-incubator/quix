@@ -1,5 +1,14 @@
+import './lib/ui/bootstrap';
+import './lib/app';
+import './lib/file-explorer';
+import UrlPattern from 'url-pattern';
+
 import {browserNotificationsManager} from './services';
-import {INotebook, INote} from '../../shared';
+import {INotebook, INote} from '@wix/quix-shared';
+
+import './app.scss';
+
+(window as any).UrlPattern = UrlPattern;  // expose for e2e tests
 
 export const setupNotifications = (staticsBaseUrl: string) => {
   browserNotificationsManager.setStaticsBaseUrl(staticsBaseUrl);

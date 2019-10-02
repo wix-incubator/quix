@@ -1,7 +1,7 @@
 import {combineReducers} from 'redux';
 import {IBranch} from '../../lib/store';
 import {App} from '../../lib/app';
-import {IUser} from '../../../../shared';
+import {IUser} from '@wix/quix-shared';
 
 export default (app: App): IBranch => register => {
   const users = (state: IUser[] = null, action: any) => {

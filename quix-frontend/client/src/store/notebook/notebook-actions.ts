@@ -1,4 +1,4 @@
-import {INotebook, INote} from '../../../../shared';
+import {INotebook, INote} from '@wix/quix-shared';
 
 export const setNotebook = (notebook: INotebook) => ({
   type: 'notebook.set',
