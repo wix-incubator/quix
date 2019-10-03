@@ -27,6 +27,7 @@ export const envSettingsMap: {[K in keyof StaticSettings]: string} = {
   MountPath: 'MOUNT_PATH',
   RupertApiUrl: 'RUPERT_API_URL',
   RupertApiKey: 'RUPERT_API_KEY',
+  RupertApiSecret: 'RUPERT_API_SECRET',
   localStaticsPath: 'LOCAL_STATICS_PATH',
   remoteStaticsPath: 'REMOTE_STATICS_PATH',
 };
@@ -55,6 +56,7 @@ export const envSettingsDefaults = {
   MountPath: '',
   RupertApiUrl: '',
   RupertApiKey: '',
+  RupertApiSecret: '',
   localStaticsPath: path.resolve('.', 'statics'),
   remoteStaticsPath: '',
 };

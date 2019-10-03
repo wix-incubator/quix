@@ -40,6 +40,7 @@ services:
       - MODULES
       - RUPERT_API_URL
       - RUPERT_API_KEY
+      - RUPERT_API_SECRET
   db:
     image: "mysql:5.7"
     restart: always

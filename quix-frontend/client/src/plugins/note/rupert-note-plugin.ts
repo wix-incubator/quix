@@ -14,8 +14,8 @@ const generateNoteContent = (questionId, {requestor, question, queries}) => {
 
   const header = `
 /**************************************
-Question ID: ${questionId}
 Submitted by: ${requestor}
+Question ID: ${questionId}
 Question: ${question}
 **************************************/`;
 
@@ -33,43 +33,54 @@ export class RupertNotePlugin extends NotePlugin {
 
     this.type = 'presto';
 
-    const baseRupertApiUrl = `${app.getConfig().getClientTopology().apiBasePath}/api/module/rupert`;
+    const api = (questionId: string, path = '') => 
+      `${app.getConfig().getClientTopology().apiBasePath}/api/module/rupert/question/${encodeURIComponent(questionId)}${path ? `/${path}` : ''}`;
     
     hooks.import.tapPromise('RupertNotePlugin', (store: Store, note: INote, questionId: string) => {
       if (note.type !== ModuleEngineType.Rupert) {
         return Promise.resolve();
       }
 
-      return fetch(`${baseRupertApiUrl}/question/${encodeURIComponent(questionId)}`)
+      return fetch(api(questionId))
         .then(res => res.ok ? res.json() : Promise.reject('Rupert responded with an error'))
         .then(({data})=> store.dispatchAndLog(NoteActions.updateContent(note.id, generateNoteContent(questionId, data))));
     });
     
-    hooks.runFinish.tapPromise('RupertNotePlugin', (_app: App, store: Store, note: INote, runner: Runner) => {
+    hooks.runFinish.tap('RupertNotePlugin', (_app: App, store: Store, note: INote, runner: Runner) => {
       if (note.type !== ModuleEngineType.Rupert) {
         return Promise.resolve();
       }
 
-      const questionId = 'test';
-      const error = runner.getState().getError();
       const sql = new ParamParser(new DefaultParamSerializer()).format(note.content, [], {
         customParamsEnabled: true,
         keepEmbed: false,
       });
 
+      const match = sql.match(/Question ID\: (\S+)/);
+
+      if (!match) {
+        return Promise.resolve();
+      }
+
+      const questionId = match[1];
+      const error = runner.getState().getError();
+
+      const headers = {
+        'Content-Type': 'application/json',
+      };
+
       const payload = {
         execution_time: Date.now() - runner.getState().getTime().started,
-        rows: sql.split('\n').length,
         failure: error ? 1 : 0,
-        failure_reason: error.msg,
         extra_data: {
           note_id: note.id,
           note_contents: sql,
         },
       };
 
-      return fetch(`${baseRupertApiUrl}/question/${encodeURIComponent(questionId)}/statistics`, {
-        method: 'POST',
+      return fetch(api(questionId, 'statistics'), {
+        method: 'post',
+        headers,
         body: JSON.stringify(payload),
       });
     });

@@ -107,6 +107,7 @@ const transforms: {
   MountPath: identity,
   RupertApiKey: identity,
   RupertApiUrl: identity,
+  RupertApiSecret: identity,
   localStaticsPath: identity,
   remoteStaticsPath: identity,
 };
