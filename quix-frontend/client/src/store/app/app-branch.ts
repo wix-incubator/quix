@@ -14,26 +14,26 @@ export interface IApp {
   };
 }
 
-const runnerMiddleware: Middleware = () =>
-  next => (action: any) => {
-    switch (action.type) {
-      case 'app.addRunner':
-        Runners.addRunner(action.id, action.runner, action.note, action.notebook);
-        break;
-      case 'app.removeRunner':
-        Runners.removeRunner(action.id);
-        break
-      default:
+export default (app: App): IBranch<IApp> => register => {
+  const runnerMiddleware: Middleware = () =>
+    next => (action: any) => {
+      switch (action.type) {
+        case 'app.addRunner':
+          Runners.addRunner(app, null, action.id, action.runner, action.note, action.notebook);
+          break;
+        case 'app.removeRunner':
+          Runners.removeRunner(action.id);
+          break
+        default:
+      }
+
+      return next(action);
     }
 
-    return next(action);
-  }
-
-export default (app: App): IBranch<IApp> => register => {
-  function appReducer(state: IApp = {
+  const appReducer = (state: IApp = {
     runners: {},
     import: {},
-  }, action): IApp {
+  }, action): IApp => {
     switch (action.type) {
       case 'app.setSearchPage':
         return {...state, searchPage: action.searchPage};
