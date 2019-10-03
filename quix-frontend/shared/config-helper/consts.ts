@@ -9,7 +9,6 @@ export enum ModuleEngineType {
   Presto = 'presto',
   Athena = 'athena',
   Jdbc = 'jdbc',
-  Rupert = 'rupert',
   BigQuery = 'bigquery',
 }
 

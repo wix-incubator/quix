@@ -24,7 +24,6 @@ import {SearchModule} from 'modules/search/search.module';
 import {UserListController} from './user-list.controller';
 import {FavoritesService} from './favorites/favorites.service';
 import {FavoritesController} from './favorites/favorites.controller';
-import {ModulesController} from './modules/rupert-module.controller';
 
 @Module({
   imports: [
@@ -52,7 +51,6 @@ import {ModulesController} from './modules/rupert-module.controller';
     SearchController,
     UserListController,
     FavoritesController,
-    ModulesController,
   ],
   providers: [NotebookService, FoldersService, FavoritesService],
   exports: [],

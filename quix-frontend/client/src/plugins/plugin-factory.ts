@@ -26,8 +26,6 @@ export const pluginFactory = {
         return new NotePlugins.AthenaNotePlugin(app, id, hooks);
       case 'jdbc':
         return new NotePlugins.JdbcNotePlugin(app, id, hooks);
-      case 'rupert':
-        return new NotePlugins.RupertNotePlugin(app, id, hooks);
       case 'bigquery':
         return new NotePlugins.BigQueryNotePlugin(app, id, hooks);
       default:

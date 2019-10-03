@@ -105,8 +105,6 @@ const transforms: {
   Modules: stringListParse,
   HttpPort: numberParse,
   MountPath: identity,
-  RupertApiKey: identity,
-  RupertApiUrl: identity,
   localStaticsPath: identity,
   remoteStaticsPath: identity,
 };
