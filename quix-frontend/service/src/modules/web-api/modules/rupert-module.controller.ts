@@ -77,7 +77,6 @@ export class ModulesController {
       execution_time: payload.execution_time,
       rows: payload.extra_data.note_contents.split('\n').length,
       failure: payload.failure,
-      failure_reason: payload.failure && 'Failure reason unavailable at the moment',
       extra_data: {
         note_id: payload.extra_data.note_id,
         note_contents: md5(payload.extra_data.note_contents),
