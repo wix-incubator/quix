@@ -1,16 +1,19 @@
 import {dbConf} from 'config/db-conf';
-import {Repository} from 'typeorm';
+import {Repository, Connection} from 'typeorm';
 import {DbNote} from '../../entities';
 import {isValidQuery, parse} from './parser';
 import {ISearch} from './types';
 import {Injectable} from '@nestjs/common';
-import {InjectRepository} from '@nestjs/typeorm';
+import {InjectRepository, InjectConnection} from '@nestjs/typeorm';
 import {convertDbNote} from 'entities/note/dbnote.entity';
 import {INote} from 'shared';
 
 @Injectable()
 export class SearchService implements ISearch {
-  constructor(@InjectRepository(DbNote) private repo: Repository<DbNote>) {}
+  constructor(
+    @InjectRepository(DbNote) private repo: Repository<DbNote>,
+    @InjectConnection() private connection: Connection,
+  ) {}
 
   async search(
     content: string,
@@ -24,7 +27,6 @@ export class SearchService implements ISearch {
     const searchQuery = parse(content);
 
     if (isValidQuery(searchQuery)) {
-      let q = this.repo.createQueryBuilder('note');
       const where: string[] = [];
       const whereArgs: any = {};
 
@@ -51,13 +53,38 @@ export class SearchService implements ISearch {
 
       const whereSql = where.join(' AND ');
 
-      q = q
+      const q = this.connection
+        .createQueryBuilder()
+        .select('note.id', 'id')
+        .addSelect('note.json_content', 'jsonContent')
+        .addSelect('note.textContent', 'textContent')
+        .addSelect('note.type', 'type')
+        .addSelect('note.name', 'name')
+        .addSelect('note.owner', 'owner')
+        .addSelect('note.date_updated', 'dateUpdated')
+        .addSelect('note.date_created', 'dateCreated')
+        .addSelect('note.notebookId', 'notebookId')
+        .from(
+          qb =>
+            qb
+              .select()
+              .from(DbNote, 'note')
+              .where(whereSql, whereArgs),
+          'note',
+        )
         .take(total)
-        .skip(offset)
+        .skip(offset);
+
+      const countQuote = this.repo
+        .createQueryBuilder('note')
         .where(whereSql, whereArgs);
 
-      const [notes, count] = await q.getManyAndCount();
-      return [notes.map(convertDbNote), count];
+      const [notes, count] = await Promise.all([
+        q.getRawMany(),
+        countQuote.getCount(),
+      ]);
+
+      return [notes.map(n => convertDbNote(new DbNote(n))), count];
     }
 
     return [[], 0];
