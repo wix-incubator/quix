@@ -8,7 +8,7 @@ import {IFolder} from 'shared/entities/folder';
 import {EntityManager} from 'typeorm';
 import {
   convertListDbNodeToIFileList,
-  convertSignleNodeToIFile,
+  convertSingleNodeToIFile,
   extractPath,
 } from './utils';
 
@@ -46,18 +46,32 @@ export class FoldersService {
   }
 
   async getFolder(rootId: string): Promise<IFolder | undefined> {
+    const getFileNodeQuery = this.fileTreeRepo
+      .createQueryBuilder('fileNode')
+      .leftJoinAndSelect('fileNode.notebook', 'notebook')
+      .leftJoinAndSelect('fileNode.folder', 'folder')
+      .leftJoinAndMapOne(
+        'fileNode.ownerDetails',
+        DbUser,
+        'user',
+        'fileNode.owner = user.id',
+      )
+      .where('fileNode.id = :rootId', {rootId});
+
     const [node, children] = await Promise.all([
       /* TODO: do this in one query */
-      this.fileTreeRepo.findOne(rootId, {relations: ['folder', 'notebook']}),
+      getFileNodeQuery.getOne(),
       this.fileTreeRepo.getChildren(rootId),
     ]);
+
     if (node) {
       const path = await this.computePath(node);
-      const nodeAsFile = convertSignleNodeToIFile(node, path);
+      const nodeAsFile = convertSingleNodeToIFile(node, path);
 
       const files = convertListDbNodeToIFileList(children, [nodeAsFile]);
       return {...nodeAsFile, files};
     }
+
     return undefined;
   }
 
