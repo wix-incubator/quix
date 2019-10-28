@@ -78,6 +78,7 @@ const SqliteConf: DbColumnConf = {
   noteContent: {type: 'text', nullable: true},
   dateUpdated: {
     type: 'integer',
+    name: 'date_updated',
     transformer: {
       from: (d: number) => {
         const date = new Date(d);
@@ -95,6 +96,7 @@ const SqliteConf: DbColumnConf = {
   },
   dateCreated: {
     type: 'integer',
+    name: 'date_created',
     transformer: {
       from: (d: number) => {
         const date = new Date(d);
