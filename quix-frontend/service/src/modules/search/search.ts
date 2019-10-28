@@ -67,9 +67,11 @@ export class SearchService implements ISearch {
         .from(
           qb =>
             qb
-              .select()
+              .select('*')
+              .addSelect(dbConf.fullTextSearch('note.textContent', searchQuery.content), 'relevance')
               .from(DbNote, 'note')
-              .where(whereSql, whereArgs),
+              .where(whereSql, whereArgs)
+              .orderBy('relevance'),
           'note',
         )
         .take(total)
