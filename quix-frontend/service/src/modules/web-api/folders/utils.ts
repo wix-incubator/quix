@@ -4,7 +4,7 @@ import {extractOwnerDetails} from 'entities/utils';
 
 /**
  * @param list The list dbNodes you want to convert to a IFile
- * @param initialData if you have a praent node already converted to an IFile, this is where you pass it
+ * @param initialData if you have a parent node already converted to an IFile, this is where you pass it
  */
 export function convertListDbNodeToIFileList(
   list: DbFileTreeNode[],
@@ -86,7 +86,7 @@ export function computeName(node: DbFileTreeNode): string {
   return name || '';
 }
 
-export function convertSignleNodeToIFile(
+export function convertSingleNodeToIFile(
   node: DbFileTreeNode,
   path: IFilePathItem[],
 ) {
