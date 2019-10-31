@@ -42,7 +42,7 @@ Add/update following properties to .env file to configure your new note
 | `MODULES_FOO_URL` | jdbc url      |   `jdbc:postgresql:postgres` |
 | `MODULES_FOO_USER` | db username      |   `user` |
 | `MODULES_FOO_PASS` | db password      |   `pass` |
-| `MODULES_FOO_SYNTAX` | syntax marker      |   `mysql` |
+| `MODULES_FOO_SYNTAX` | syntax marker      |   `mysql` or `ansi_sql` |
 
 
 example of postgres jdbc note that will be named `foo` in the UI
