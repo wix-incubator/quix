@@ -19,8 +19,6 @@ Add/update following properties to .env file to configure your new note
 | `MODULES_FOO_OUTPUT` | s3 bucket for results      |   `s3://some-bucket-id/` |
 | `MODULES_FOO_REGION` | aws region      |   `us-east-1` |
 | `MODULES_FOO_DATABASE` | default database      |   `default` |
-| `MODULES_FOO_DB_EMPTY_TIMEOUT` | timeout for empty db tree      |   `60000` |
-| `MODULES_FOO_DB_REQUEST_TIMEOUT` | timeout for expanding a table in db tree      |   `10000` |
 
 Example of possible configuration that will create note type named foo : 
 ```properties
@@ -28,8 +26,6 @@ MODULES_FOO_ENGINE=athena
 MODULES_FOO_OUTPUT=s3://some-bucket-id/
 MODULES_FOO_REGION=us-east-1
 MODULES_FOO_DATABASE=default
-MODULES_FOO_DB_EMPTY_TIMEOUT=60000
-MODULES_FOO_DB_REQUEST_TIMEOUT=10000
 ```
 
 ## Troubleshooting
