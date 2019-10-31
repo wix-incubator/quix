@@ -1,6 +1,7 @@
 {
   "docs": {
     "Introduction": ["about", "architecture"],
-    "Getting Started": ["installation"]
+    "Getting Started": ["installation"],
+    "Supported databases": ["athena", "bigquery", "jdbc"]
   }
 }
