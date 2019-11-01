@@ -1,27 +1,36 @@
 ---
-id: jdbc
-title: Jdbc
-sidebar_label: Jdbc
+id: postgresql
+title: PostgreSQL
+sidebar_label: PostgreSQL
 ---
 
 ## Features
-Using jdbc note you can use quix to query MySQL, ClickHouse, PostgreSQL, Microsoft SQL Server, MariaDB, Oracle, SQLite, Redshift, Firebird, H2, HSQLDB, Apache Derby, IBM DB2, Teradata and more. 
+Work with PostgreSQL straight from Quix, execute multiple queries in parallel, explore the db tree, visualize and download the results into csv.
 
-You will be able to execute multiple queries in parallel, explore the db tree, visualize and download the results into csv.
 
 ## Setup
-To setup jdbc note you have to perform the following two steps :
+To setup PostgreSQL note you have to perform the following two steps :
 
 ### 1. Add new jdbc dependency
-If your database supports jdbc, find the correct maven dependency and  add it to `https://github.com/wix/quix/blob/master/quix-backend/quix-webapps/quix-web-spring/pom.xml`.
+Find the needed version of postgresql jdbc driver on https://github.com/pgjdbc/pgjdbc and copy the dependency definition to `https://github.com/wix/quix/blob/master/quix-backend/quix-webapps/quix-web-spring/pom.xml`.
+
+For example this is the dependency of 42.2.7 for java8 : 
+```xml
+<dependency>
+    <groupId>org.postgresql</groupId>
+    <artifactId>postgresql</artifactId>
+    <version>42.2.7</version>
+</dependency>
+```
 
 If you are using docker to run quix, run `docker-compose build` to prepare a new image
 
 If you are deploying standalone jar, run `mvn clean install` to prepare new jar. 
 
+
 ### 2. Pick new name and update .env
 
-Add/update following properties to .env file to configure your new note    
+Add/update following properties to .env file to configure your new postgresql note    
 
 | Variables        | Meaning           | Example  |
 | ------------- |:-------------:| -----:|
@@ -31,10 +40,10 @@ Add/update following properties to .env file to configure your new note
 | `MODULES_FOO_URL` | jdbc url      |   `jdbc:postgresql:postgres` |
 | `MODULES_FOO_USER` | db username      |   `user` |
 | `MODULES_FOO_PASS` | db password      |   `pass` |
-| `MODULES_FOO_SYNTAX` | syntax marker      |   `mysql` or `ansi_sql` |
+| `MODULES_FOO_SYNTAX` | syntax marker      |   `ansi_sql` |
 
 
-example of postgres jdbc note that will be named `foo` in the UI
+example of postgresql jdbc note that will be named `foo` in the UI
 
 ```properties
 MODULES=<comma separated list of your modules>,foo
