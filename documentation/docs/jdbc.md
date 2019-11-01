@@ -5,7 +5,21 @@ sidebar_label: Jdbc
 ---
 
 ## Features
-Using jdbc note you can use quix to query MySQL, ClickHouse, PostgreSQL, Microsoft SQL Server, MariaDB, Oracle, SQLite, Redshift, Firebird, H2, HSQLDB, Apache Derby, IBM DB2, Teradata and more. 
+Using jdbc note you can use quix to query 
+[MySQL](mysql.md), 
+[ClickHouse](clickhouse.md), 
+[PostgreSQL](postgresql.md), 
+Microsoft SQL Server, 
+[MariaDB](mariadb.md), 
+[Oracle](oracle.md), 
+SQLite, 
+Redshift, 
+Firebird, 
+H2, 
+HSQLDB, 
+Apache Derby, 
+IBM DB2, 
+Teradata and more. 
 
 You will be able to execute multiple queries in parallel, explore the db tree, visualize and download the results into csv.
 
