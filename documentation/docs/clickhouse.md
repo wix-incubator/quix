@@ -42,7 +42,7 @@ Add/update following properties to .env file to configure your new note
 | `MODULES_FOO_SYNTAX` | syntax marker      |   `ansi_sql` |
 
 
-example of clickhouse1 jdbc note that will be named `foo` in the UI
+example of clickhouse jdbc note that will be named `foo` in the UI
 
 ```properties
 MODULES=<comma separated list of your modules>,foo
