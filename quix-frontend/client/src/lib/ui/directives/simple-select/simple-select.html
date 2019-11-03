@@ -3,7 +3,8 @@
   ng-class="{'bs-custom-toggle': vm.isCustomToggle}"
   bd-options="::{
     width: options.dropdownWidth,
-    minWidth: options.dropdownMinWidth
+    minWidth: options.dropdownMinWidth,
+    align: options.alignDropdown
   }"
   bd-is-open="vm.options.enabled"
   on-show="events.onDropdownShow()"
