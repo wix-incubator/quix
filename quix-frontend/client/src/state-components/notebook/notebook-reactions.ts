@@ -5,14 +5,12 @@ export function setNotebook(scope: IScope, notebook: INotebook) {
   scope.vm.state
     .set('Result', !!notebook, {notebook})
     .then(() => {
-      if (scope.vm.breadcrumbs.folders.length === 1) {
-        scope.vm.breadcrumbs.folders = [...notebook.path, {id: notebook.id, name: notebook.name}];
+      if (scope.vm.breadcrumbs.length === 1) {
+        scope.vm.breadcrumbs = [...notebook.path, {id: notebook.id, name: notebook.name}];
 
         if (!scope.permissions.edit) {
-          scope.vm.breadcrumbs.folders[0].name = `${notebook.owner}'s notebooks`;
+          scope.vm.breadcrumbs[0].name = `${notebook.ownerDetails.name}'s notebooks`;
         }
-
-        scope.vm.breadcrumbs.reload();
       }
     })
     .else(() => scope.vm.state.value({notebook}));

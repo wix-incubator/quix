@@ -1,7 +1,7 @@
 <div class="bi-section bi-c-h bi-grow">
   <div class="bi-section-header">
     <div>
-      <div class="bi-section-title bi-r-h bi-align bi-s-h">
+      <div class="bi-section-title bi-r-h bi-align bi-s-h bi-fade-in" ng-if="vm.state.is('Result') || vm.state.after('Result')">
         <img
           class="quix-user-avatar bi-fade-in"
           ng-if="(vm.state.is('Result') || vm.state.after('Result')) && vm.state.value().notebook.ownerDetails.avatar"
@@ -9,9 +9,8 @@
         >
 
         <quix-breadcrumbs
-          class="bi-dont-shrink bi-fade-in"
-          ng-if="vm.breadcrumbs.enabled"
-          breadcrumbs="vm.breadcrumbs.folders"
+          class="bi-dont-shrink"
+          breadcrumbs="vm.breadcrumbs"
           quix-breadcrumbs-options="::{focusName: options.isNew}"
           on-folder-click="events.onBreadcrumbClick(file)"
           on-name-change="events.onNameChange(file)"
