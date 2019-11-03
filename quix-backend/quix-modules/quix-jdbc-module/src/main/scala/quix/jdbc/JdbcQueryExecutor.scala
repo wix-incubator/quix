@@ -33,7 +33,7 @@ class JdbcQueryExecutor(config: JdbcConfig)
         val row = for (i <- 1 to columnCount)
           yield {
             rs.getMetaData.getColumnType(i) match {
-              case java.sql.Types.ARRAY =>
+              case java.sql.Types.ARRAY if rs.getArray(i) != null =>
                 rs.getArray(i).getArray
 
               case _ => rs.getObject(i)

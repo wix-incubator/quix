@@ -5,6 +5,7 @@
 @import 'icon.def';
 @import 'space.def';
 @import 'morph.def';
+@import 'state.def';
 
 %button {
   @include flex(row, center);
@@ -15,6 +16,7 @@
   font-family: 'Open Sans';
   text-transform: uppercase;
   outline: 0;
+  border: none;
   border-radius: 3px;
   white-space: nowrap;
   // box-shadow: 0 1px 2px rgba(0, 0, 0, .10);
@@ -31,7 +33,6 @@
 }
 
 @mixin button-color($bgColor: $grey--200, $color: $white) {
-  border: none;
   background-color: $bgColor;
   color: $color !important;
 
@@ -53,5 +54,49 @@
 
   &:active:not([disabled='disabled']) {
     box-shadow: inset 1px 3px 8px darken($bgColor, 15), 1px 1px 1px $white;
+  }
+}
+
+@mixin button-theme($theme) {
+  @extend %button;
+  @include disabled($theme);
+  @include button-size();
+  
+  @if ($theme == 'lighter') {
+    background-color: darken($lighter-hover-bg, 2);
+    color: $lighter-color;
+  } @else if ($theme == 'light') {
+    background-color: darken($light-hover-bg, 2);
+    color: $light-color;
+  } @else if ($theme == 'dark') {
+    background-color: lighten($dark-hover-bg, 2);
+    color: $dark-color;
+  } @else {
+    background-color: lighten($darker-hover-bg, 2);
+    color: $darker-color;
+  }
+  
+  &:hover:not([disabled='disabled']) {
+    @if ($theme == 'lighter') {
+      background-color: darken($lighter-hover-bg, 5);
+    } @else if ($theme == 'light') {
+      background-color: darken($light-hover-bg, 5);
+    } @else if ($theme == 'dark') {
+      background-color: lighten($dark-hover-bg, 5);
+    } @else {
+      background-color: lighten($darker-hover-bg, 5);
+    }
+  }
+  
+  &:active:not([disabled='disabled']) {
+    @if ($theme == 'lighter') {
+      box-shadow: inset 1px 3px 8px darken($lighter-hover-bg, 10), 1px 1px 1px $lighter-bg;
+    } @else if ($theme == 'light') {
+      box-shadow: inset 1px 3px 8px darken($light-hover-bg, 10), 1px 1px 1px $light-bg;
+    } @else if ($theme == 'dark') {
+      background-color: lighten($dark-hover-bg, 3);
+    } @else {
+      background-color: lighten($darker-hover-bg, 3);
+    }
   }
 }

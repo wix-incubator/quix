@@ -11,10 +11,7 @@ enum States {
 
 export default (app: App) => ({
   note: null,
-  breadcrumbs: {
-    enabled: true,
-    folders: [{name: 'My notebooks'}],
-  },
+  breadcrumbs: [{name: 'My notebooks'}],
   view: {
     hasChanges: false
   },
