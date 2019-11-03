@@ -14,21 +14,21 @@ export const addFolder = async (
 ): Promise<IFile> => {
   let path = isArray(parentOrPath) ? parentOrPath : [...parentOrPath.path, {
     id: parentOrPath.id,
-    name: parentOrPath.name
+    name: parentOrPath.name,
   }];
 
   path = path.length ? path : await fetchRootPath();
 
   const folder = createFolder(path, {...props, owner: app.getUser().getEmail()});
 
-  return store.dispatchAndLog(FileActions.createFile(folder.id, folder))
+  return store.logAndDispatch(FileActions.createFile(folder.id, folder))
     .then(() => folder);
 }
 
 export const deleteFolder = (store: Store, app: App, folder: IFile) => {
   const {id} = folder;
 
-  return store.dispatchAndLog(FileActions.deleteFile(id)).then(() => {
+  return store.logAndDispatch(FileActions.deleteFile(id)).then(() => {
     if (store.getState('folder.folder')) {
       goUp(app, folder);
     }
