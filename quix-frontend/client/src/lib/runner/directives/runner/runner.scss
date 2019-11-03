@@ -33,7 +33,13 @@ bi-runner {
   .br-download-action {
     width: 30px;
     padding: 7px;
-    border-radius: 30px;
+    border-radius: 30px !important;
+  }
+
+  .br-download-action[disabled="disabled"] {
+    i {
+      color: $grey--600;
+    }
   }
 
   .br-tabs {
