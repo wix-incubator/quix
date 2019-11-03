@@ -40,12 +40,14 @@
         title="Download CSV"
       >file_download</i>
 
-      <i
-        class="br-download-action bi-button bi-icon--sm"
-        ng-if="vm.result.current.error"
-        title="Download CSV"
-        disabled="disabled"
-      >file_download</i>
+      <button class="br-download-action bi-button bi-center" disabled="disabled">
+        <i
+          class="bi-icon--sm"
+          ng-if="vm.result.current.error"
+          title="Download CSV"
+          disabled="disabled"
+        >file_download</i>
+      </button>
     </span>
 
     <div class="bi-r-i bi-s-h--x15 bi-muted bi-fade-in" ng-if="vm.runner.enabled || vm.result.enabled">
