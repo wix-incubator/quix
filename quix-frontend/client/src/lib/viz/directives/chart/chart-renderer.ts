@@ -40,7 +40,7 @@ export class ChartRenderer {
         pad: 4,
       },
       legend: {
-        'orientation': 'h',
+        'orientation': 'v',
       },
       yaxis: {
         automargin: true,
