@@ -59,7 +59,6 @@
 @mixin button-theme($theme) {
   @extend %button;
   @include disabled($theme);
-  @include button-size();
   
   @if ($theme == 'lighter') {
     background-color: darken($lighter-hover-bg, 2);

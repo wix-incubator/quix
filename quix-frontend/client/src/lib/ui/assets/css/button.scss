@@ -22,6 +22,10 @@
   @include button($danger);
 }
 
+.bi-button {
+  @include button-size();
+}
+
 .bi-button--sm {
   @include button-size(22px, 8px, 10px);
 }
