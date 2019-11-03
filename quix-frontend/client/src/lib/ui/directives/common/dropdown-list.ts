@@ -43,6 +43,7 @@ export class DropdownList {
         typeahead: false,
         dropdownWidth: null,
         dropdownMinWidth: 'toggle',
+        alignDropdown: 'left',
         debounce: 0,
         type: 'text',
         filterBy: [],
