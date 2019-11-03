@@ -2,14 +2,6 @@
 @import './def/button.def';
 @import './def/flex.def';
 
-.bi-button {
-  @include button($grey--200, $grey--700);
-}
-
-.bi-button--sm {
-  @include button-size(22px, 8px, 10px);
-}
-
 .bi-button--primary {
   @include button($primary);
 }
@@ -30,6 +22,10 @@
   @include button($danger);
 }
 
+.bi-button--sm {
+  @include button-size(22px, 8px, 10px);
+}
+
 .bi-button-group {
   @include flex();
 
@@ -38,5 +34,35 @@
 
   button {
     border-radius: 0;
+  }
+}
+
+.bi-theme--lighter {
+  .bi-button {
+    @include button-theme('lighter');
+  }
+}
+
+.bi-theme--light {
+  .bi-button {
+    @include button-theme('light');
+  }
+
+  .bi-theme--lighter {
+    .bi-button {
+      @include button-theme('lighter');
+    }
+  }
+}
+
+.bi-theme--dark {
+  .bi-button {
+    @include button-theme('dark');
+  }
+}
+
+.bi-theme--darker {
+  .bi-button {
+    @include button-theme('darker');
   }
 }
