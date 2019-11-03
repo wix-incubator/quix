@@ -22,7 +22,7 @@ function renderActions(scope, editorComponentInstance, runnerComponentInstance, 
   if (!transclude.isSlotFilled('actions')) {
     return inject('$compile')(`
       <ul class="bi-dropdown-menu">
-        <li ng-click="events.onRunAndDownload()">
+        <li class="bi-align bi-s-h--x05" ng-click="events.onRunAndDownload()">
           <i class="bi-icon">file_download</i>
           <div>Run and download</div>
         </li>
