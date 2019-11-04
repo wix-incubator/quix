@@ -31,5 +31,9 @@ bi-app {
     .bi-section-content {
       padding: 0;
     }
+
+    .ui-resizable-handle {
+      border-left: 1px solid $lighter-bg;
+    }
   }
 }
