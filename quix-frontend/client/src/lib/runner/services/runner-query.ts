@@ -4,7 +4,7 @@ import {srv, inject} from '../../core';
 
 export interface IField {
   name: string;
-  title: string;
+  title?: string;
 }
 
 export interface IError {
@@ -29,7 +29,7 @@ export interface IStatus {
 function getFieldName(field: string, fieldNames: Record<string, number>) {
   fieldNames[field] = fieldNames[field] || 0;
 
-  return field + `${fieldNames[field]++ ? fieldNames[field] : ''}`;
+  return field + `${fieldNames[field]++ ? `_${fieldNames[field]}` : ''}`;
 }
 
 function startDurationCount(): ITime {
@@ -162,12 +162,12 @@ export default class RunnerQuery extends srv.eventEmitter.EventEmitter {
   public setFields(fields: string[]): RunnerQuery {
     const fieldNames = {};
 
-    this._rawFields = fields;
-
     this._fields = fields.map(name => ({
       name: getFieldName(name, fieldNames),
-      title: name
     }));
+
+
+    this._rawFields = this._fields.map(({name}) => name);
 
     return this;
   }
