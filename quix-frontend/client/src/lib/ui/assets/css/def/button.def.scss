@@ -94,8 +94,10 @@
       box-shadow: inset 1px 3px 8px darken($light-hover-bg, 10), 1px 1px 1px $light-bg;
     } @else if ($theme == 'dark') {
       background-color: lighten($dark-hover-bg, 3);
+      box-shadow: none;
     } @else {
       background-color: lighten($darker-hover-bg, 3);
+      box-shadow: none;
     }
   }
 }

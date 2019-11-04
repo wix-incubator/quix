@@ -3,40 +3,17 @@
 @import './def/state.def';
 
 .bi-home-action {
-  @include elevate();
-
   display: flex;
-  height: 300px;
+  height: 200px;
   flex-direction: column;
   flex-basis: 300px;
-  border-radius: 8px;
+  border-radius: 8px !important;
   align-items: center;
   justify-content: center;
   cursor: pointer;
 
-  &:hover {
-    .bi-icon,
-    span {
-      color: $primary !important;
-    }
-  }
-
-  .bi-icon {
-    transition: color .3s;
-    margin: -10px 0 20px 0;
-    font-size: 140px !important;
-    color: $grey--500 !important;
-  }
-
-  img {
-    width: 150px;
-    height: 150px;
-    margin: -10px 0 30px 0;
-  }
-
   span {
     font-size: 20px;
     font-weight: 300;
-    color: $muted;
   }
 }
