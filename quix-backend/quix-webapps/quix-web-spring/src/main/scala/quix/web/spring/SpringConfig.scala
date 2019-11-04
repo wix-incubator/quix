@@ -26,7 +26,7 @@ import quix.jdbc._
 import quix.presto._
 import quix.presto.db.{PrestoAutocomplete, PrestoCatalogs, PrestoTables}
 import quix.presto.rest.ScalaJPrestoStateClient
-import quix.web.auth.JwtUsers
+import quix.web.auth.{DemoUsers, JwtUsers}
 import quix.web.controllers.{DbController, DownloadController, HealthController}
 
 import scala.util.control.NonFatal
@@ -72,7 +72,10 @@ class AuthConfig extends LazyLogging {
       Coeval(DummyUsers)
     }
 
-    auth.value
+    env.getProperty("demo.mode", "false").toLowerCase match {
+      case "true" => new DemoUsers(auth.value)
+      case _ => auth.value
+    }
   }
 }
 
