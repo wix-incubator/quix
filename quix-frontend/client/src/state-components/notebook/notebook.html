@@ -148,7 +148,8 @@
       permissions="::permissions.note"
       quix-note-options="{
         fold: vm.notes.get(note).fold === null || vm.notes.get(note).fold,
-        focusName: vm.notes.get(note).focusName
+        focusName: vm.notes.get(note).focusName,
+        focusEditor: !options.isNew,
       }"
       marked="!!vm.marked.map[note.id]"
       runner="runners[note.id]"
