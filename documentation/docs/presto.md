@@ -10,7 +10,7 @@ share your notes with other people in your organization and more.
 
 ## Setup
 
-### 1. 1. Pick a new name for your presto note and update .env
+### 1. Pick a new name for your presto note and update .env
 
 Add/update following properties to .env file to configure your new note    
 

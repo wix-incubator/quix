@@ -30,7 +30,7 @@ Create a new IAM policy to allow access to your bucket
 Create a new user with `Programmatic Access`. Attach security policy `AmazonAthenaFullAccess` along with policy created in step 1. 
 
 
-### 2. Pick a new name for your athena note and update .env
+### 3. Pick a new name for your athena note and update .env
 
 Add/update following properties to .env file to configure your new note    
 
