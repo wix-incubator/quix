@@ -31,6 +31,9 @@ class JdbcCatalogs(val config: JdbcConfig)
           case url if url.startsWith("jdbc:clickhouse") =>
             result += RichTable("__root", schema, table)
 
+          case _ if catalog == null =>
+            result += RichTable("__root", schema, table)
+
           case _ =>
             result += RichTable(catalog, schema, table)
         }
