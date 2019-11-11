@@ -13,16 +13,29 @@ Work with Amazon Athena tables straight from Quix, execute multiple queries in p
 Create a new IAM policy to allow access to your bucket
 ```json
 {
-	"Version": "2012-10-17",
-	"Statement": [{
-		"Effect": "Allow",
-		"Action": ["s3:GetObject"],
-		"Resource": ["arn:aws:s3:::your-bucket-name/*"]
-	}, {
-		"Effect": "Allow",
-		"Action": ["s3:GetBucketLocation", "s3:ListBucket"],
-		"Resource": ["arn:aws:s3:::your-bucket-name"]
-	}]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::your-bucket-name/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetBucketLocation",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::your-bucket-name"
+            ]
+        }
+    ]
 }
 ```
 
