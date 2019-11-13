@@ -17,3 +17,5 @@ case class ProcessStdOutLine(jobId: String, line: String) extends PythonMessage
 case class ProcessStdErrLine(jobId: String, line: String) extends PythonMessage
 
 case class Line(str: String, isPartial: Boolean = false)
+
+case class PythonCode(code: String, modules: Seq[String] = Nil)

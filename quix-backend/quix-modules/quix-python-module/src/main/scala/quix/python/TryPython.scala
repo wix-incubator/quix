@@ -11,7 +11,7 @@ object TryPython {
   def main(args: Array[String]): Unit = {
     val executor = new PythonExecutor()
     val query = ActiveQuery("id", Seq(importQuix), User("default"))
-    val builder = new SingleBuilder[String]
+    val builder = new SingleBuilder[PythonCode]
     val task = executor.runTask(query, builder)
 
     task.runSyncUnsafe()
@@ -23,7 +23,7 @@ object TryPython {
       println(log)
   }
 
-  def samplePyBridge = {
+  def samplePyBridge = PythonCode {
     """
       |from py4j.java_gateway import JavaGateway
       |from py4j.java_gateway import GatewayParameters
@@ -34,7 +34,7 @@ object TryPython {
       |""".stripMargin
   }
 
-  def pyBridgeClass = {
+  def pyBridgeClass = PythonCode{
     """
       |class Bridge:
       |
@@ -60,7 +60,7 @@ object TryPython {
       |""".stripMargin
   }
 
-  def importQuix = {
+  def importQuix = PythonCode{
     """
       |from quix import Quix
       |

@@ -16,7 +16,7 @@ import quix.core.utils.TaskOps._
 
 import scala.io.Source
 
-class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging {
+class PythonExecutor extends AsyncQueryExecutor[PythonCode, Batch] with LazyLogging {
 
   var port = AtomicInt(25333)
 
@@ -27,14 +27,58 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
     content
   }
 
-  def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
+  def initVirtualEnv(dir: String, libraries: Seq[String]) = {
+    s"""
+       |def installed_modules():
+       |  try:
+       |      with open('$dir/modules') as f:
+       |          return f.read()
+       |  except IOError:
+       |      return ''
+       |
+       |venv_dir = "$dir"
+       |
+       |import os.path
+       |ready_env = os.path.isfile('$dir/env')
+       |if not ready_env:
+       |  print('start creating virtual env for first time for dir $dir')
+       |  import virtualenv
+       |  virtualenv.create_environment(venv_dir)
+       |
+       |  open('$dir/env', 'a').close()
+       |  print('done creating virtual env for first time for dir $dir')
+       |
+       |modules_path = '$dir/modules'
+       |modules = installed_modules()
+       |
+       |if (modules != '${libraries.mkString(", ")}'):
+       |  from pip._internal import main as pipmain
+       |  print('modules are ' + modules)
+       |  print('start installing modules ${libraries.mkString(", ")}')
+       |  exec(open('${dir}/bin/activate_this.py').read(), {'__file__': '${dir}/bin/activate_this.py'})
+       |  pipmain(['install', ${libraries.map(lib => s"'$lib'").mkString(", ")}, '--prefix', venv_dir, '--ignore-installed', '-q', '--no-warn-script-location', '--no-warn-conflicts'])
+       |  modules_file = open(modules_path,'w+')
+       |  modules_file.write('${libraries.mkString(", ")}')
+       |  modules_file.close()
+       |  print('done installing modules ${libraries.mkString(", ")}')
+       |else :
+       |  exec(open('${dir}/bin/activate_this.py').read(), {'__file__': '${dir}/bin/activate_this.py'})
+       |
+       |""".stripMargin
+  }
+
+  def makeProcess(query: ActiveQuery[PythonCode]): Task[PythonRunningProcess] = {
     val task = for {
       process <- Task(PythonRunningProcess(query.id))
 
-      file <- Task(Files.createTempFile(query.user.id, ".py"))
+      dir = Paths.get("/tmp", query.user.id, query.id)
+      _ <- Task(if (Files.notExists(dir)) Files.createDirectories(dir)).attempt
+
+      file <- Task(Files.createTempFile(dir, "script-", ".py"))
       _ <- Task(process.file = Option(file))
-      _ <- Task(Files.write(file, query.text.getBytes("UTF-8")))
-      _ <- Task(logger.info(s"method=makeProcess event=create-file query-id=${query.id} user=${query.user.email} file=$file query=${query.text}"))
+      script = initVirtualEnv(dir.toString, Seq("py4j") ++ query.text.modules) + query.text.code
+      _ <- Task(Files.write(file, script.getBytes("UTF-8")))
+      _ <- Task(logger.info(s"method=makeProcess event=create-file query-id=${query.id} user=${query.user.email} file=$file query=${script}"))
       _ <- Task(Files.write(Paths.get(file.getParent.toString, "quix.py"), quixPyContent))
 
       bridge <- Task(new PythonBridge(query.id))
@@ -50,7 +94,7 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
       .logOnError(s"method=makeProcess event=failure query-id=${query.id} user=${query.user.email} port=${port.get()}")
   }
 
-  def run(process: PythonRunningProcess, query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
+  def run(process: PythonRunningProcess, query: ActiveQuery[PythonCode], builder: Builder[PythonCode, Batch]): Task[Unit] = {
     val observable = new Observable[PythonMessage] {
       override def unsafeSubscribeFn(subscriber: Subscriber[PythonMessage]): Cancelable = {
         logger.info(s"method=run event=starting-process-observable query-id=${query.id} user=${query.user.email}")
@@ -109,7 +153,7 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
       }.lastL
   }
 
-  override def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
+  override def runTask(query: ActiveQuery[PythonCode], builder: Builder[PythonCode, Batch]): Task[Unit] = {
     makeProcess(query)
       .bracket(process => run(process, query, builder))(_.close)
   }
