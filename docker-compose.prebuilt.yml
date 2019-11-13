@@ -1,25 +1,27 @@
 version: '3'
 services:
   backend:
-    image: wixquix/quix-backend:release-0.2.7
+    image: wixquix/quix-backend:release-v1
     ports:
       - "8081:8081"
     depends_on:
       - presto
+    env_file:
+      - .env
     environment:
-      - PRESTO_API
+      - MODULES
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
-    env_file:
-      - env-example
   frontend:
-    image: wixquix/quix-frontend:release-0.2.7
+    image: wixquix/quix-frontend:release-v1
     ports:
       - "3000:3000"
     depends_on:
       - backend
       - db
+    env_file:
+      - .env
     environment:
       - DB_NAME
       - DB_USER
@@ -33,8 +35,9 @@ services:
       - AUTH_COOKIE
       - AUTH_SECRET
       - AUTH_TYPE
-    env_file:
-      - env-example
+      - APPMETRICS_PORT
+      - ENABLE_APPMETRICS
+      - MODULES
   db:
     image: "mysql:5.7"
     restart: always

@@ -13,16 +13,29 @@ Work with Amazon Athena tables straight from Quix, execute multiple queries in p
 Create a new IAM policy to allow access to your bucket
 ```json
 {
-	"Version": "2012-10-17",
-	"Statement": [{
-		"Effect": "Allow",
-		"Action": ["s3:GetObject"],
-		"Resource": ["arn:aws:s3:::your-bucket-name/*"]
-	}, {
-		"Effect": "Allow",
-		"Action": ["s3:GetBucketLocation", "s3:ListBucket"],
-		"Resource": ["arn:aws:s3:::your-bucket-name"]
-	}]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+            ],
+            "Resource": [
+                "arn:aws:s3:::your-bucket-name/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:GetBucketLocation",
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "arn:aws:s3:::your-bucket-name"
+            ]
+        }
+    ]
 }
 ```
 
@@ -30,7 +43,7 @@ Create a new IAM policy to allow access to your bucket
 Create a new user with `Programmatic Access`. Attach security policy `AmazonAthenaFullAccess` along with policy created in step 1. 
 
 
-### 2. Pick a new name for your athena note and update .env
+### 3. Pick a new name for your athena note and update .env
 
 Add/update following properties to .env file to configure your new note    
 

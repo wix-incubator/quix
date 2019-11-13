@@ -6,6 +6,7 @@ services:
       - "8081:8081"
     depends_on:
       - presto
+      - postgres
     env_file:
       - .env
     environment:
@@ -53,6 +54,10 @@ services:
     image: "starburstdata/presto"
     ports:
       - "8181:8080"
+  postgres:
+    image : "aa8y/postgres-dataset:dellstore"
+    ports:
+      - "5432:5432"
 
 volumes:
   db_volume:
