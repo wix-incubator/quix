@@ -65,6 +65,7 @@ matrix:
         directories:
           - $HOME/.m2
       before_install:
+        - sudo apt-get install python3
         - cd ./quix-backend
       install:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
