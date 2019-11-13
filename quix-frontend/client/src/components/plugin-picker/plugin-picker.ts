@@ -1,7 +1,7 @@
 import template from './plugin-picker.html';
 import './plugin-picker.scss';
 
-import {initNgScope, createNgModel} from '../../lib/core';
+import {initNgScope, createNgModel, inject} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
 import {IScope} from './plugin-picker-types';
@@ -33,15 +33,15 @@ export default (app: App, store: Store) => () => ({
             },
             $import({type}) {
               scope.model = this.plugins.includes(type) ? type : null;
-            },
-            $init() {
-              scope.model = scope.model || this.plugins[0];
             }
           })
           .withState('pluginPicker', 'pluginPicker', {});
-
-          scope.onLoad({plugin: scope.model});
         });
+
+      inject('$timeout')(() => {
+        scope.model = scope.model || scope.vm.plugins[0];
+        scope.onLoad({plugin: scope.model});
+      });  
     }
   }
 });
