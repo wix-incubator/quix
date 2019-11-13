@@ -33,6 +33,8 @@ trait Builder[Code, Results] {
   def endSubQuery(queryId: String): Task[Unit]
 
   def errorSubQuery(queryId: String, e: Throwable): Task[Unit]
+
+  def log(queryId: String, line: String, level: String = "INFO"): Task[Unit]
 }
 
 trait Executions[Code, Results] {
