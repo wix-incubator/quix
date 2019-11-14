@@ -26,6 +26,7 @@ import quix.jdbc._
 import quix.presto._
 import quix.presto.db.{PrestoAutocomplete, PrestoCatalogs, PrestoTables}
 import quix.presto.rest.ScalaJPrestoStateClient
+import quix.python.{PythonExecutor, PythonModule}
 import quix.web.auth.{DemoUsers, JwtUsers}
 import quix.web.controllers.{DbController, DownloadController, HealthController}
 
@@ -301,6 +302,27 @@ class ModulesConfiguration extends LazyLogging {
       modules.filter { module =>
         env.getProperty(s"modules.$module.url", "").startsWith("jdbc")
       }
+    }
+
+    "OK"
+  }
+
+  @Bean def initPython(env : Environment) : String = {
+
+    def getPythonModules() = {
+      val modules = env.getProperty("modules", "").split(",")
+
+      modules.filter { module =>
+        env.getProperty(s"modules.$module.type", "").equalsIgnoreCase("python")
+      }
+    }
+
+    for (moduleName <- getPythonModules()) {
+      val module = {
+        val executor = new PythonExecutor
+        new PythonModule(executor)
+      }
+      Registry.modules.update(moduleName, module)
     }
 
     "OK"

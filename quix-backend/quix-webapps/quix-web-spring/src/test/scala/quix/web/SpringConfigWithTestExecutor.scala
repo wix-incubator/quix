@@ -6,6 +6,7 @@ import quix.api.module.ExecutionModule
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
 import quix.presto.db.{PrestoAutocomplete, PrestoCatalogs, PrestoTables}
 import quix.presto.{PrestoQuixModule, TestQueryExecutor}
+import quix.python.{PythonExecutor, PythonModule}
 import quix.web.spring._
 
 import scala.concurrent.duration.FiniteDuration
@@ -19,7 +20,8 @@ class SpringConfigWithTestExecutor {
   def initModules: Map[String, ExecutionModule[String, Batch]] = {
     Map(
       "presto-prod" -> PrestoQuixModule(MockBeans.queryExecutor, Some(MockBeans.db)),
-      "presto-dev" -> PrestoQuixModule(MockBeans.queryExecutor, Some(MockBeans.db))
+      "presto-dev" -> PrestoQuixModule(MockBeans.queryExecutor, Some(MockBeans.db)),
+      "snake" -> new PythonModule(new PythonExecutor)
     )
   }
 }
