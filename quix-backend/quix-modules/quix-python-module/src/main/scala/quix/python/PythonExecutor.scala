@@ -29,6 +29,9 @@ class PythonExecutor extends AsyncQueryExecutor[PythonCode, Batch] with LazyLogg
 
   def initVirtualEnv(dir: String, libraries: Seq[String]) = {
     s"""
+       |import sys
+       |print(sys.version)
+       |
        |def installed_modules():
        |  try:
        |      with open('$dir/modules') as f:
