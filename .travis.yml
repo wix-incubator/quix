@@ -74,6 +74,7 @@ matrix:
         - which python
         - which pyenv
         - pyenv versions
+        - pyenv global 3.7.1
         - python -VV
         - pip -V
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
