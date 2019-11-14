@@ -71,12 +71,7 @@ matrix:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
       script:
-        - which python
-        - which pyenv
-        - pyenv versions
         - pyenv global 3.7.1
-        - python -VV
-        - pip -V
         - pip install virtualenv
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - mvn test
