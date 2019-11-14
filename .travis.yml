@@ -69,8 +69,9 @@ matrix:
         - cd ./quix-backend
       install:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
-        - pip3 install virtualenv
         - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
       script:
+        - python3 -m pip || wget -qO- https://bootstrap.pypa.io/get-pip.py | python3
+        - pip3 install virtualenv
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - mvn test
