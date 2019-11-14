@@ -14,17 +14,17 @@ class PythonExecutorTest extends SpecWithJUnit {
 
   class ctx extends Scope {
     val executor = new PythonExecutor
-    val executions = new SequentialExecutions[PythonCode](executor)
+    val executions = new SequentialExecutions[String](executor)
     val user = User("user-email", "user-id")
 
-    val builder = new SingleBuilder[PythonCode]
+    val builder = new SingleBuilder[String]
 
     def have(item: String): Matcher[SingleBuilder[String]] = {
       be_==(item) ^^ ((resultBuilder: SingleBuilder[String]) =>
         resultBuilder.build().map(_.toString()).mkString)
     }
 
-    def script(code: String): ActiveQuery[PythonCode] = ActiveQuery("query-id", Seq(PythonCode(code)), user)
+    def script(code: String): ActiveQuery[String] = ActiveQuery("query-id", Seq(code), user)
   }
 
   "pass sanity" in new ctx {

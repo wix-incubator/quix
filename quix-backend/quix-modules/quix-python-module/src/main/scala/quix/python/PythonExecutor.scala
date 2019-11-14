@@ -16,7 +16,7 @@ import quix.core.utils.TaskOps._
 
 import scala.io.Source
 
-class PythonExecutor extends AsyncQueryExecutor[PythonCode, Batch] with LazyLogging {
+class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging {
 
   var port = AtomicInt(25333)
 
@@ -70,7 +70,12 @@ class PythonExecutor extends AsyncQueryExecutor[PythonCode, Batch] with LazyLogg
        |""".stripMargin
   }
 
-  def makeProcess(query: ActiveQuery[PythonCode]): Task[PythonRunningProcess] = {
+  def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
+    val modules = query.session.get("modules").collect {
+      case items: Seq[String] => items
+      case items: String => items.split(",").toList
+    }.getOrElse(Nil)
+
     val task = for {
       process <- Task(PythonRunningProcess(query.id))
 
@@ -79,7 +84,7 @@ class PythonExecutor extends AsyncQueryExecutor[PythonCode, Batch] with LazyLogg
 
       file <- Task(Files.createTempFile(dir, "script-", ".py"))
       _ <- Task(process.file = Option(file))
-      script = initVirtualEnv(dir.toString, Seq("py4j") ++ query.text.modules) + query.text.code
+      script = initVirtualEnv(dir.toString, Seq("py4j") ++ modules) + query.text
       _ <- Task(Files.write(file, script.getBytes("UTF-8")))
       _ <- Task(logger.info(s"method=makeProcess event=create-file query-id=${query.id} user=${query.user.email} file=$file query=${script}"))
       _ <- Task(Files.write(Paths.get(file.getParent.toString, "quix.py"), quixPyContent))
@@ -97,7 +102,7 @@ class PythonExecutor extends AsyncQueryExecutor[PythonCode, Batch] with LazyLogg
       .logOnError(s"method=makeProcess event=failure query-id=${query.id} user=${query.user.email} port=${port.get()}")
   }
 
-  def run(process: PythonRunningProcess, query: ActiveQuery[PythonCode], builder: Builder[PythonCode, Batch]): Task[Unit] = {
+  def run(process: PythonRunningProcess, query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
     val observable = new Observable[PythonMessage] {
       override def unsafeSubscribeFn(subscriber: Subscriber[PythonMessage]): Cancelable = {
         logger.info(s"method=run event=starting-process-observable query-id=${query.id} user=${query.user.email}")
@@ -156,7 +161,7 @@ class PythonExecutor extends AsyncQueryExecutor[PythonCode, Batch] with LazyLogg
       }.lastL
   }
 
-  override def runTask(query: ActiveQuery[PythonCode], builder: Builder[PythonCode, Batch]): Task[Unit] = {
+  override def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
     makeProcess(query)
       .bracket(process => run(process, query, builder))(_.close)
   }
