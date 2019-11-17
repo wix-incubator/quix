@@ -2,7 +2,7 @@
 
 Quix is an easy-to-use notebook manager with support for [Presto](https://wix.github.io/quix/docs/presto), [Athena](https://wix.github.io/quix/docs/athena), [BigQuery](https://wix.github.io/quix/docs/bigquery), [MySQL](https://wix.github.io/quix/docs/mysql), [PostgreSQL](https://wix.github.io/quix/docs/postgresql), [ClickHouse](https://wix.github.io/quix/docs/clickhouse) and more.
 
-* [Demo](http://quix.wix.com)
+* [Demo](http://quix.wix.com) (requires a Google OAuth login)
 * [Installation](https://wix.github.io/quix/docs/installation)
 ## Quick start
 Using docker-compose, this will run Quix with a mysql container, and an example presto installation. Quix will run in a single-user mode, no authentication. 
