@@ -5,7 +5,7 @@ Quix is an easy-to-use notebook manager with support for [Presto](https://wix.gi
 * [Demo](http://quix.wix.com) (requires a Google OAuth login)
 * [Installation](https://wix.github.io/quix/docs/installation)
 ## Quick start
-Using docker-compose, this will run Quix with a mysql container, and an example presto installation. Quix will run in a single-user mode, no authentication. 
+Using docker-compose, this will run Quix with a MySQL container and an example Presto installation. Quix will run in a single-user mode, no authentication. 
 ```bash
 mkdir quix && cd quix
 curl https://raw.githubusercontent.com/wix/quix/master/docker-compose.prebuilt.yml -o docker-compose.yml
