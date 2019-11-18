@@ -27,6 +27,12 @@ bi-app {
 
 .quix-content {
   box-shadow: inset 0 1px 6px rgba(0, 0, 0, .05);
+
+  .bi-section {
+    &.bi-theme--dark {
+      box-shadow: inset 0 1px 6px $darker-bg;
+    }
+  }
 }
 
 .quix-user-avatar {
