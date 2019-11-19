@@ -13,9 +13,45 @@
         "title": "Architecture",
         "sidebar_label": "Architecture"
       },
+      "athena": {
+        "title": "Amazon Athena",
+        "sidebar_label": "Athena"
+      },
+      "bigquery": {
+        "title": "Google BigQuery",
+        "sidebar_label": "BigQuery"
+      },
+      "clickhouse": {
+        "title": "ClickHouse",
+        "sidebar_label": "ClickHouse"
+      },
       "installation": {
         "title": "Installation",
         "sidebar_label": "Installation"
+      },
+      "jdbc": {
+        "title": "Jdbc",
+        "sidebar_label": "Jdbc"
+      },
+      "mariadb": {
+        "title": "MariaDB",
+        "sidebar_label": "MariaDB"
+      },
+      "mysql": {
+        "title": "MySQL",
+        "sidebar_label": "MySQL"
+      },
+      "oracle": {
+        "title": "Oracle",
+        "sidebar_label": "Oracle"
+      },
+      "postgresql": {
+        "title": "PostgreSQL",
+        "sidebar_label": "PostgreSQL"
+      },
+      "presto": {
+        "title": "Presto",
+        "sidebar_label": "Presto"
       }
     },
     "links": {
@@ -24,7 +60,8 @@
     },
     "categories": {
       "Introduction": "Introduction",
-      "Getting Started": "Getting Started"
+      "Getting Started": "Getting Started",
+      "Supported databases": "Supported databases"
     }
   },
   "pages-strings": {

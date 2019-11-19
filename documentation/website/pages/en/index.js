@@ -63,8 +63,8 @@ class HomeSplash extends React.Component {
         <div className="inner">
           <ProjectTitle siteConfig={siteConfig} />
           <PromoSection>
-            <Button href={docUrl('about')}>Introduction</Button>
-            <Button href={docUrl('installation')}>Get Started</Button>
+            <Button href={docUrl('about')}>Quick start</Button>
+            <Button href={docUrl('installation')}>Installation</Button>
           </PromoSection>
         </div>
       </SplashContainer>
@@ -117,30 +117,24 @@ class Index extends React.Component {
             title: 'Multi-user web app',
           },
           {
-            content: `<a href="${docUrl('about', 'organize')}">Organize</a> your notebooks in folders`,
+            content: `<a href="${docUrl('about', 'management')}">Organize</a> your notebooks in folders`,
             image: `${baseUrl}img/undraw_folder.svg`,
             imageAlign: 'top',
             title: 'Organize queries',
           },
           {
-            content: `<a href="${docUrl('about', 'execute')}">Harness</a> the power of <a href="https://github.com/prestosql/presto" target="_blank">Presto</a>`,
-            image: `${baseUrl}img/undraw_media_player.svg`,
+            content: `Use the DB tree to <a href="${docUrl('about', 'explorer')}">explore</a> your data sources`,
+            image: `${baseUrl}img/undraw_server_status.svg`,
             imageAlign: 'top',
-            title: 'Execute queries',
+            title: 'Explore',
           },
         ]}
       </Block>
     );
 
     const MoreFeatures = () => (
-      <Block layout="fourColumn">
+      <Block layout="threeColumn">
         {[
-          {
-            content: `Use the DB tree to <a href="${docUrl('about', 'explore')}">explore</a> your data sources`,
-            image: `${baseUrl}img/undraw_server_status.svg`,
-            imageAlign: 'top',
-            title: 'Explore',
-          },
           {
             content: `Quickly <a href="${docUrl('about', 'visualize')}">plot</a> time and bar series <br> (more visualizations to follow)`,
             image: `${baseUrl}img/undraw_visual_data.svg`,
