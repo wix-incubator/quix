@@ -75,7 +75,7 @@ export class ModulesController {
     payload = {
       source: 'quix',
       execution_time: payload.execution_time,
-      rows: payload.extra_data.note_contents.split('\n').length,
+      rows: payload.rows,
       failure: payload.failure,
       extra_data: {
         note_id: payload.extra_data.note_id,

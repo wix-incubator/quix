@@ -72,6 +72,7 @@ export class RupertNotePlugin extends NotePlugin {
       const payload = {
         execution_time: Date.now() - runner.getState().getTime().started,
         failure: error ? 1 : 0,
+        rows: error ? 0 : runner.getCurrentQuery().getResults().bufferSize(),
         extra_data: {
           note_id: note.id,
           note_contents: sql,
