@@ -22,7 +22,7 @@ For support please use our [Slack channel](https://wix-quix.slack.com).
 ## Main features
 - [Query management](#Management) - organize your notebooks in folders for easy access and sharing
 - [Visualizations](#Visualizations) - quickly plot time and bar series (more visualizations to follow)
-- [DB Explorer](#DB Explorer) - explore your data sources
+- [DB Explorer](#Explorer) - explore your data sources
 - Search - search notes of all users
 
 #### Management
@@ -31,7 +31,7 @@ For support please use our [Slack channel](https://wix-quix.slack.com).
 #### Visualizations
 ![](documentation/docs/assets/chart.gif)
 
-#### DB Explorer
+#### Explorer
 ![](documentation/docs/assets/db.gif)
 
 ## License
