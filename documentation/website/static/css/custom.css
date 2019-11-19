@@ -49,3 +49,10 @@
   top: 50%;
   left: 0;
 }
+
+.fixedHeaderContainer header .logo {
+  height: 20px;
+  padding: 4px;
+  background-color: #ffffff;
+  border-radius: 100px;
+}
