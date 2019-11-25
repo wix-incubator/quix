@@ -8,7 +8,7 @@ export interface IErrorAnnotation {
 }
 
 export class PythonErrorListener extends antlr4.error.ErrorListener {
-  private annotations: IErrorAnnotation[] = [];
+  private readonly annotations: IErrorAnnotation[] = [];
 
   getErrors = () => this.annotations;
 

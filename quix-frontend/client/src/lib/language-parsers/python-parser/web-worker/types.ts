@@ -1,17 +1,17 @@
 import {WorkerFunctionsMap, RequestTypeToResponseTypeMap} from '../../../web-worker-infra/web-worker';
 import {IErrorAnnotation} from '../parser/errors-listener';
 
-export type WorkerRequest = {
+export interface WorkerRequest {
   'getErrors': string;
-};
+}
 
-export type WorkerResponse = {
+export interface WorkerResponse {
   'errorsDone': IErrorAnnotation[];
-};
+}
 
-export type RequestToResponseMap = {
+export interface RequestToResponseMap {
   'getErrors': 'errorsDone';
-};
+}
 
 export const RequestToResponseMap: WorkerRqstToResposneMapType = {
   getErrors: 'errorsDone'
