@@ -5,7 +5,7 @@ import java.nio.file.{Files, Paths}
 import com.google.common.io.Resources
 import com.typesafe.scalalogging.LazyLogging
 import com.zaxxer.nuprocess.NuProcessBuilder
-import monix.eval.Task
+import monix.eval.{Coeval, Task}
 import monix.execution.Cancelable
 import monix.execution.atomic.AtomicInt
 import monix.reactive.Observable
@@ -14,17 +14,18 @@ import py4j.GatewayServer
 import quix.api.execute._
 import quix.core.utils.TaskOps._
 
-import scala.io.Source
+import scala.io.{BufferedSource, Source}
 
 class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging {
 
   var port = AtomicInt(25333)
 
   val quixPyContent = {
-    val source = Source.fromFile(Resources.getResource("quix.py").toURI)
-    val content = source.mkString.getBytes("UTF-8")
-    source.close()
-    content
+    val openFile = Coeval(Source.fromURL(Resources.getResource("quix.py")))
+    val closeFile = (buffer: BufferedSource) => Coeval(buffer.close())
+    val readFile = (buffer: BufferedSource) => Coeval(buffer.mkString.getBytes("UTF-8"))
+
+    openFile.bracket(readFile)(closeFile).value()
   }
 
   def initVirtualEnv(dir: String, libraries: Seq[String]) = {
@@ -55,7 +56,11 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
        |modules = installed_modules()
        |
        |if (modules != '${libraries.mkString(", ")}'):
-       |  from pip._internal import main as pipmain
+       |  import pip
+       |  try:
+       |    from pip import main as pipmain
+       |  except:
+       |    from pip._internal import main as pipmain
        |  print('modules are ' + modules)
        |  print('start installing modules ${libraries.mkString(", ")}')
        |  exec(open('${dir}/bin/activate_this.py').read(), {'__file__': '${dir}/bin/activate_this.py'})
@@ -79,8 +84,8 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
     val task = for {
       process <- Task(PythonRunningProcess(query.id))
 
-      dir = Paths.get("/tmp", query.user.id, query.id)
-      _ <- Task(if (Files.notExists(dir)) Files.createDirectories(dir)).attempt
+      dir = Paths.get("/tmp", query.user.email)
+      _ <- Task(if (Files.notExists(dir)) Files.createDirectories(dir))
 
       file <- Task(Files.createTempFile(dir, "script-", ".py"))
       _ <- Task(process.file = Option(file))
