@@ -83,14 +83,15 @@ class AuthConfig extends LazyLogging {
 @Configuration
 class ModulesConfiguration extends LazyLogging {
 
-  @Bean def initPresto(env: Environment) = {
-    def getPrestoModules() = {
-      val modules = env.getProperty("modules", "").split(",")
+  def getModules(env: Environment, moduleName: String) = {
+    val modules = env.getProperty("modules", "").split(",")
 
-      modules.filter { module =>
-        env.getProperty(s"modules.$module.engine", "") == "presto" || module == "presto"
-      }
+    modules.filter { module =>
+      env.getProperty(s"modules.$module.engine", "") == moduleName || module == moduleName
     }
+  }
+
+  @Bean def initPresto(env: Environment) = {
 
     def getPrestoModule(presto: String) = {
       val config = {
@@ -151,21 +152,13 @@ class ModulesConfiguration extends LazyLogging {
       new PrestoQuixModule(executions, Some(db))
     }
 
-    for (module <- getPrestoModules())
+    for (module <- getModules(env, "presto"))
       Registry.modules.update(module, getPrestoModule(module))
 
     "OK"
   }
 
   @Bean def initAthena(env: Environment) = {
-    def getAthenaModules() = {
-      val modules = env.getProperty("modules", "").split(",")
-
-      modules.filter { module =>
-        env.getProperty(s"modules.$module.engine", "") == "athena" || module == "athena"
-      }
-    }
-
     def getAthenaModule(athena: String) = {
       val config = {
         val output = env.getProperty(s"modules.$athena.output",
@@ -202,21 +195,13 @@ class ModulesConfiguration extends LazyLogging {
       AthenaQuixModule(executor, db)
     }
 
-    for (module <- getAthenaModules())
+    for (module <- getModules(env, "athena"))
       Registry.modules.update(module, getAthenaModule(module))
 
     "OK"
   }
 
   @Bean def initBigQuery(env: Environment) = {
-    def getBigQueryModules() = {
-      val modules = env.getProperty("modules", "").split(",")
-
-      modules.filter { module =>
-        env.getProperty(s"modules.$module.engine", "") == "bigquery" || module == "bigquery"
-      }
-    }
-
     def getBigQueryModule(bigquery: String) = {
       val config = {
         val credentialsBase64 = env.getProperty(s"modules.$bigquery.credentials.base64")
@@ -257,15 +242,14 @@ class ModulesConfiguration extends LazyLogging {
       BigQueryQuixModule(executor, db)
     }
 
-    for (module <- getBigQueryModules())
+    for (module <- getModules(env, "bigquery"))
       Registry.modules.update(module, getBigQueryModule(module))
 
     "OK"
   }
 
   @Bean def initJdbc(env: Environment): String = {
-
-    for (module <- getJdbcModulesList()) {
+    for (module <- getModules(env, "jdbc")) {
       val url = env.getRequiredProperty(s"modules.$module.url")
       val user = env.getRequiredProperty(s"modules.$module.user")
       val pass = env.getRequiredProperty(s"modules.$module.pass")
@@ -296,28 +280,11 @@ class ModulesConfiguration extends LazyLogging {
       Registry.modules.update(module, JdbcQuixModule(executor, db))
     }
 
-    def getJdbcModulesList() = {
-      val modules = env.getProperty("modules", "").split(",")
-
-      modules.filter { module =>
-        env.getProperty(s"modules.$module.url", "").startsWith("jdbc")
-      }
-    }
-
     "OK"
   }
 
-  @Bean def initPython(env : Environment) : String = {
-
-    def getPythonModules() = {
-      val modules = env.getProperty("modules", "").split(",")
-
-      modules.filter { module =>
-        env.getProperty(s"modules.$module.type", "").equalsIgnoreCase("python")
-      }
-    }
-
-    for (moduleName <- getPythonModules()) {
+  @Bean def initPython(env: Environment): String = {
+    for (moduleName <- getModules(env, "python")) {
       val module = {
         val executor = new PythonExecutor
         new PythonModule(executor)
@@ -329,7 +296,7 @@ class ModulesConfiguration extends LazyLogging {
   }
 
   @Bean
-  @DependsOn(Array("initPresto", "initAthena", "initJdbc", "initBigQuery"))
+  @DependsOn(Array("initPresto", "initAthena", "initJdbc", "initBigQuery", "initPython"))
   def initKnownModules: Map[String, ExecutionModule[String, Batch]] = {
     logger.info(s"event=[spring-config] bean=[initKnownModules] modules=[${Registry.modules.keySet.toList.sorted}]")
 
