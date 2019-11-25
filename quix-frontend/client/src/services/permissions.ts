@@ -51,7 +51,7 @@ export const getFolderPermissions = (app: App, folder: IFile): IFolderPermission
     rename: isFolderOwner && !isRootFolder,
     clone: false,
     like: false,
-    addFolder: isFolderOwner && folder.path.length < 3,
+    addFolder: isFolderOwner && folder.path.length < 2,
     addNotebook: isFolderOwner,
     bulk: {
       delete: isFolderOwner,
