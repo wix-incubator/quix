@@ -1,13 +1,13 @@
 import { App } from '../../lib/app';
 import {DbPlugin} from '../../services/plugins';
 import {DB} from '../../config';
-import {IFile} from '@wix/quix-shared';
+import {IFile, ModuleEngineType} from '@wix/quix-shared';
 import {sanitizeTableToken} from '../../services';
 
 
 export class AthenaDbPlugin extends DbPlugin {
   constructor(app: App, name: string, hooks: any) {
-    super(app, name, hooks);
+    super(app, name, ModuleEngineType.Athena, hooks);
   }
 
   getSampleQuery(table: IFile) {

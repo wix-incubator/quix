@@ -3,7 +3,7 @@ import {
   RequestToResponseMap,
   SqlResponse
 } from './types';
-import {TypedWorkerManager} from '../../web-worker-infra/web-worker-manager';
+import {TypedWorkerManager} from '../../../web-worker-infra/web-worker-manager';
 
 export type BiSqlWebWorkerMngrCtor = typeof BiSqlWebWorkerMngr;
 
