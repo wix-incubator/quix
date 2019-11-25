@@ -1,8 +1,7 @@
 import {isArray, last, takeWhile} from 'lodash';
 import {Store} from '../lib/store';
 import {App} from '../lib/app';
-import {IFile, FileActions, createFolder, IFilePathItem} from '@wix/quix-shared';
-import {FileType} from '@wix/quix-shared/dist/entities/file';
+import {IFile, FileActions, createFolder, IFilePathItem, FileType} from '@wix/quix-shared';
 import {isOwner} from './permissions';
 import {cache} from '../store';
 

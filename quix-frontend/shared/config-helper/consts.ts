@@ -10,7 +10,7 @@ export enum ModuleEngineType {
   Athena = 'athena',
   Jdbc = 'jdbc',
   BigQuery = 'bigquery',
-  Python = 'python'
+  Python = 'python',
 }
 
 export const ModuleEngineToSyntaxMap = {

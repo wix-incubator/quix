@@ -1,4 +1,4 @@
-import { IFile, TModuleComponentType } from '@wix/quix-shared';
+import { IFile, TModuleComponentType, ModuleEngineType } from '@wix/quix-shared';
 import { App } from '../../lib/app';
 
 export const resolvePluginType = (type: TModuleComponentType) => {
@@ -10,27 +10,25 @@ export const resolvePluginType = (type: TModuleComponentType) => {
 }
 
 export class Plugin {
-  protected type: string;
-
-  constructor (app: App, protected readonly id: string, hooks: any) {
-    this.type = id;    
+  constructor (app: App, protected readonly id: string, protected readonly engine: ModuleEngineType, hooks: any) {
+ 
   }
 
   public getId() {
     return this.id;
   }
 
-  public getType() {
-    return this.type;
+  public getEngine() {
+    return this.engine;
   }
 }
 
 export class NotePlugin extends Plugin {
-  constructor (app: App, id: string, hooks: any, private readonly config: {
+  constructor (app: App, id: string, engine: ModuleEngineType, hooks: any, private readonly config: {
     syntaxValidation: boolean;
     canCreate: boolean;
   }) {
-    super(app, id, hooks);
+    super(app, id, engine, hooks);
   }
 
   getConfig() {
@@ -39,8 +37,8 @@ export class NotePlugin extends Plugin {
 }
 
 export class DbPlugin extends Plugin {
-  constructor (app: App, id: string, hooks: any) {
-    super(app, id, hooks);
+  constructor (app: App, id: string, engine: ModuleEngineType, hooks: any) {
+    super(app, id, engine, hooks);
   }
 
   getSampleQuery(table: IFile): string {

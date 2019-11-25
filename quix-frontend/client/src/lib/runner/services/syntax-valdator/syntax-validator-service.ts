@@ -1,4 +1,4 @@
-import {IErrorAnnotation} from '../../../sql-parser/parser/errors-listener';
+import {IErrorAnnotation} from '../../../language-parsers/sql-parser/parser/errors-listener';
 import {CodeEditorInstance} from '../../../code-editor';
 import {ModelConf} from '../../../core/ang/srv/ng-model/ng-model';
 export interface HasGetErrorsMethod {
