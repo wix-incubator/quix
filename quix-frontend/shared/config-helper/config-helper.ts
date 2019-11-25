@@ -5,7 +5,7 @@ interface ComponentConfigurationTypes {
   [ModuleComponentType.Note]: {};
 }
 
-type ComponentConfiguration = {[K in ModuleComponentType]?: ComponentConfigurationTypes[K]}
+export type ComponentConfiguration = {[K in ModuleComponentType]?: ComponentConfigurationTypes[K]}
 
 interface ConfigModule {
   id: string;

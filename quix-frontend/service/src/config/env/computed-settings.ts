@@ -1,12 +1,14 @@
 /* tslint:disable:no-console */
 import {ComputedSettings} from './types';
 import {ModuleEngineType, ModuleEngineToSyntaxMap} from 'shared';
+import {engineToClientComponents} from './engine-settings';
 
 export const computedSettingsDefaults: ComputedSettings = {
   moduleSettings: {
     presto: {
       syntax: 'ansi_sql',
       engine: 'presto',
+      components: {db: {}, note: {}},
     },
   },
 };
@@ -50,6 +52,9 @@ const getModuleSettings = (moduleName: string, globalEnv: any) => {
     case ModuleEngineType.BigQuery:
       syntax = ModuleEngineToSyntaxMap[ModuleEngineType.BigQuery];
       break;
+    case ModuleEngineType.Python:
+      syntax = ModuleEngineToSyntaxMap[ModuleEngineType.BigQuery];
+      break;
     default: {
       syntax = globalEnv[syntaxEnvVar] as string;
     }
@@ -61,12 +66,13 @@ const getModuleSettings = (moduleName: string, globalEnv: any) => {
     );
     return undefined;
   }
-  return {syntax, engine};
+  const components = engineToClientComponents(engine);
+  return {syntax, engine, components};
 };
 
 export const getComputedSettings = (
   modules: string[],
-  globalEnv: Record<string, string | undefined>,
+  globalEnv: Record<string, string | undefined> = process.env,
 ): ComputedSettings => {
   const computedSettings: ComputedSettings = computedSettingsDefaults;
 
