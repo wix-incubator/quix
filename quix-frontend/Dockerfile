@@ -1,4 +1,4 @@
-FROM node:10
+FROM node:10-buster as build
 
 COPY ./ ./
 WORKDIR /client
@@ -7,7 +7,20 @@ WORKDIR /shared
 RUN npm install
 WORKDIR /service
 RUN npm install
-RUN npm run build && npm install -g pm2 && (rm -f .env || true)
+RUN npm run build 
+workdir /
+RUN rm -rf /service/node_modules /shared/node_modules
+WORKDIR /shared
+RUN npm install --prodcution
+WORKDIR /service
+RUN npm install --production
+
+FROM node:10-buster-slim
+COPY --from=build /shared /shared
+COPY --from=build /service /service
+WORKDIR /service
+RUN rm -f .env || true
+RUN npm install -g pm2 
 
 EXPOSE 3000
 CMD ["pm2-runtime", "start", "ecosystem.config.js"]
