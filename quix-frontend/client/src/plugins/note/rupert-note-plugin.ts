@@ -1,6 +1,6 @@
 import { App } from '../../lib/app';
 import { flatten } from 'lodash';
-import { INote, ModuleEngineType, NoteActions } from '@wix/quix-shared';
+import { INote, NoteActions } from '@wix/quix-shared';
 import { Store } from '../../lib/store';
 import { NotePlugin} from '../../services/plugins';
 import { ParamParser } from '../../lib/code-editor/services/param-parser';
@@ -37,7 +37,7 @@ export class RupertNotePlugin extends NotePlugin {
       `${app.getConfig().getClientTopology().apiBasePath}/api/module/rupert/question/${encodeURIComponent(questionId)}${path ? `/${path}` : ''}`;
     
     hooks.import.tapPromise('RupertNotePlugin', (store: Store, note: INote, questionId: string) => {
-      if (note.type !== ModuleEngineType.Rupert) {
+      if (note.type !== 'rupert') {
         return Promise.resolve();
       }
 
@@ -47,7 +47,7 @@ export class RupertNotePlugin extends NotePlugin {
     });
     
     hooks.runFinish.tap('RupertNotePlugin', (_app: App, store: Store, note: INote, runner: Runner) => {
-      if (note.type !== ModuleEngineType.Rupert) {
+      if (note.type !== 'rupert') {
         return Promise.resolve();
       }
 
