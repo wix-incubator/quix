@@ -7,10 +7,12 @@ export interface HomeProps {
     onExamplesClick(): void;
     onNotebookAdd(): void;
   };
+  vm: any;
 }
 
 export function Home(props: HomeProps) {
-  const {events} = props;
+  const {events, vm} = props;
+
   return (
     <div className="bi-section bi-c-h bi-grow bi-scroll bi-theme--dark">
       <div className="quix-home-welcome bi-section-title bi-c bi-s-v--x3">
@@ -29,19 +31,20 @@ export function Home(props: HomeProps) {
           onClick={() => events.onNotebooksClick()}
           data-hook="home-notebooks"
         >
-          {/* <i className="bi-icon">description</i> */}
           <span>My notebooks</span>
         </button>
 
-        <button
-          className="bi-button bi-home-action"
-          role="button"
-          onClick={() => events.onExamplesClick()}
-          data-hook="home-examples"
-        >
-          {/* <i className="bi-icon">local_library</i> */}
-          <span>Examples</span>
-        </button>
+        {
+          vm.examples.enabled ? 
+            <button
+              className="bi-button bi-home-action"
+              role="button"
+              onClick={() => events.onExamplesClick()}
+              data-hook="home-examples"
+            >
+              <span>Examples</span>
+            </button> : ''
+        }
 
         <button
           className="bi-button bi-home-action"
