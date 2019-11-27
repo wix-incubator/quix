@@ -8,8 +8,15 @@ It aims to be a shared space for your company's BI insights and know-how.
 Since the official announcement this summer and following the requests from our first users we added support for more data sources (Athena, BigQuery, JDBC), tweaked the visualizations, fixed bugs and improved the documentation.
 
 If you're in the market for an intuitive and fast tool to query and share your data, give Quix a try:
-* [Online Demo](http://quix.wix.com) (requires a Google OAuth login)
-* [Installation](https://wix.github.io/quix/docs/installation)
+* [Online demo](http://quix.wix.com) (requires a Google OAuth login)
+* Quick start
+```
+mkdir quix && cd quix
+curl https://raw.githubusercontent.com/wix/quix/master/docker-compose.prebuilt.yml -o docker-compose.yml
+curl https://raw.githubusercontent.com/wix/quix/master/env-example -o .env
+docker-compose up
+```
+* [Full installation](https://wix.github.io/quix/docs/installation)
 
 ### Here's what's available in our first release:
 
