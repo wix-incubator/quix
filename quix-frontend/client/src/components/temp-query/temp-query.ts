@@ -20,7 +20,7 @@ export default (app: App, store: Store) => () => ({
       initNgScope(scope)
         .withVM({
           $import({code} = {code: ''}) {
-            scope.code = code;
+            scope.code = scope.code || code;
           },
           $export() {
             return {code: scope.code};
