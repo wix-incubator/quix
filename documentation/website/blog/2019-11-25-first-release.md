@@ -10,7 +10,7 @@ Since the official announcement this summer and following the requests from our 
 If you're in the market for an intuitive and fast tool to query and share your data, give Quix a try:
 * [Online demo](http://quix.wix.com) (requires a Google OAuth login)
 * Quick start
-```
+```bash
 mkdir quix && cd quix
 curl https://raw.githubusercontent.com/wix/quix/master/docker-compose.prebuilt.yml -o docker-compose.yml
 curl https://raw.githubusercontent.com/wix/quix/master/env-example -o .env
