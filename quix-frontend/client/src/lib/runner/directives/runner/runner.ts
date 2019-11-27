@@ -272,7 +272,7 @@ export default () => {
           })
           .withActions({
             getCsvFields() {
-              return scope.vm.result.current.getFields().map(field => field.title);
+              return scope.vm.result.current.getFields().map(field => field.name);
             },
             getCsvRows() {
               const fields = scope.vm.result.current.getFields();
