@@ -7,16 +7,15 @@ function initConsoleEvents(runner: Runner) {
   const events = runner.getEvents();
   const id = 'console';
 
-  ['stdout', 'stderr'].forEach(event => events
-    .register(event, data => {
-      if (!state.getQueryById(id).getFields().length) {
-        events.apply('fields', {id, fields: ['type', ...Object.keys(data)]}, {});
-      }
+  events.register('log', data => {
+    if (!state.getQueryById(id).getFields().length) {
+      events.apply('fields', {id, fields: Object.keys(data)}, {});
+    }
 
-      events.apply('row', {id, row: {...data, type: event}}, {});
+    events.apply('row', {id, row: data}, {});
 
-      return data;
-    }));
+    return data;
+  });
 
   events
     .append('start', data => {
