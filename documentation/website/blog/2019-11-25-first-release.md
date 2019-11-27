@@ -5,7 +5,7 @@ author: Quix Team
 Quix is a notebook manager that focuses on ease of use and shareability.  
 It aims to be a shared space for your company's BI insights and know-how.
 
-Since the official announcement this summer and following requests from our first users we added support for more data sources (Athena, BigQuery, JDBC), tweaked the visualizations, fixed bugs and improved the documentation.
+Since the official announcement this summer and following the requests from our first users we added support for more data sources (Athena, BigQuery, JDBC), tweaked the visualizations, fixed bugs and improved the documentation.
 
 If you're in the market for a intuitive and fast tool to query and share your data, give Quix a try.
 
