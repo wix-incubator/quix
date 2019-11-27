@@ -28,7 +28,7 @@ function initEditorComponentInstance(scope, editorComponentInstance: CodeEditorI
       const code = editorComponentInstance.getParams().formatEmbed({runCustom: true});
 
       createRunner('python', scope)
-        .run({code})
+        .run(code)
         .on('finish', (runner: Runner) => {
           runner.getCurrentQuery().getResults().buffer.forEach(({k, o}) => {
             const options = JSON.parse(o);

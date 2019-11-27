@@ -39,17 +39,10 @@ function sendSocketData(socket, code, user, transformers, mode = 'stream') {
   socket.on('open', () => {
     code = transformers.request(code);
 
-    if (code && code.then) {
-      code.then(c => socket.send({
-        event: 'execute', 
-        data: {code: c, session}
-      }));
-    } else {
-      socket.send({
-        event: 'execute',
-        data: {code, session}
-      });
-    }
+    socket.send({
+      event: 'execute',
+      data: {code, session}
+    });
   });
 }
 
