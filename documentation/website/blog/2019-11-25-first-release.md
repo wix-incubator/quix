@@ -7,7 +7,7 @@ It aims to be a shared space for your company's BI insights and know-how.
 
 Since the official announcement this summer and following the requests from our first users we added support for more data sources (Athena, BigQuery, JDBC), tweaked the visualizations, fixed bugs and improved the documentation.
 
-If you're in the market for a intuitive and fast tool to query and share your data, give Quix a try.
+If you're in the market for an intuitive and fast tool to query and share your data, give Quix a try.
 
 ### Here's what's available in our first release:
 
