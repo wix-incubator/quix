@@ -11,23 +11,28 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
   template: Home,
   url: {},
   scope: {
-    events: () => {
-      return;
-    }
+    events: () => {},
+    vm: () => {}
   },
-  controller: ($scope: HomeProps, params, {setTitle}) => {
-    initNgScope($scope).withEvents({
-      onNotebooksClick() {
-        goToRoot(app);
-      },
-      onNotebookAdd() {
-        addNotebook(store, app, [], {addNote: true})
-          .then(notebook => goToNotebook(app, notebook, {isNew: true}));
-      },
-      onExamplesClick() {
-        goToExamples(app);
-      }
-    });
+  controller: (scope: HomeProps, params, {setTitle}) => {
+    initNgScope(scope)
+      .withVM({
+        examples: {}
+      })
+      .withEvents({
+        onNotebooksClick() {
+          goToRoot(app);
+        },
+        onNotebookAdd() {
+          addNotebook(store, app, [], {addNote: true})
+            .then(notebook => goToNotebook(app, notebook, {isNew: true}));
+        },
+        onExamplesClick() {
+          goToExamples(app);
+        }
+      });
+
+    scope.vm.examples.toggle(!!app.getConfig().getMode().demo);
 
     return setTitle();
   },
