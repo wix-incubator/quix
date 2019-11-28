@@ -22,7 +22,7 @@ export const Table = <T extends {}>(props: TableProps<T>) => {
     >
       <div className={'bi-fade-in'}>
         <table className={'bi-table'}>
-          <thead className="bi-tbl-header ng-scope ng-isolate-scope">
+          <thead className="bi-tbl-header">
             <tr>
               {props.rowsConfig.map((rowConfig, index) => (
                 <th key={index}>
