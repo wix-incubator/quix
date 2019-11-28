@@ -45,13 +45,13 @@ As an alternative, you can also use an external MySQL database, by specifying so
 * DB_HOST - defaults to `db`
 * DB_PORT - defaults to `3306`
 
-* DB_AUTO_MIGRATE - this sets the [Typeorm](https://typeorm.io/#/connection-options) `synchronize` flag. Defaults to `false`. You probably only want to set this when running locally for development or if you don't care at all about your data.
+* DB_AUTO_MIGRATE - this sets the [TypeORM](https://typeorm.io/#/connection-options) `synchronize` flag. Defaults to `false`. You probably only want to set this when running locally for development or if you don't care at all about your data.
 
 #### User authentication
 Quix can work in two modes: multi-user mode, authenticated with [Google OAuth](https://console.developers.google.com/apis/credentials), or in a single-user mode. This is controlled by the following variables:
-* AUTH_TYPE - can be `fake` or `google`. defaults to `fake` (single-user mode).
+* AUTH_TYPE - can be `fake` or `google`. Defaults to `fake` (single-user mode).
 
-If you use google oauth, you must supply the clientId and the secret:
+If you use Google OAuth, you must supply the clientId and the secret:
 * GOOGLE_SSO_CLIENT_ID
 * GOOGLE_SSO_SECRET
 

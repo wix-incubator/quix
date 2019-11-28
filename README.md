@@ -1,37 +1,37 @@
-# Quix [![Build Status](https://travis-ci.com/wix/quix.svg?branch=master)](https://travis-ci.com/wix/quix)
+# Quix [![Build Status](https://travis-ci.com/wix/quix.svg?branch=master)](https://travis-ci.com/wix/quix) [![Support](https://img.shields.io/badge/slack-wix--quix-orange?logo=slack)](https://wix-quix.slack.com)
 
 Quix is an easy-to-use notebook manager with support for [Presto](https://wix.github.io/quix/docs/presto), [Athena](https://wix.github.io/quix/docs/athena), [BigQuery](https://wix.github.io/quix/docs/bigquery), [MySQL](https://wix.github.io/quix/docs/mysql), [PostgreSQL](https://wix.github.io/quix/docs/postgresql), [ClickHouse](https://wix.github.io/quix/docs/clickhouse) and more.
 
-* [Demo](http://quix.wix.com)
+* [Online demo](http://quix.wix.com) (requires a Google OAuth login)
 * [Installation](https://wix.github.io/quix/docs/installation)
-## Getting Started (or the TL;DR version on how to install)
-Using docker-compose, this will run Quix with a mysql container, and an example presto installation. Quix will run in a single-user mode, no authentication. 
+
+## Quick start
+Using `docker-compose`, this will run Quix with a MySQL container and an example Presto installation. Quix will run in a single-user mode without authentication. 
+
 ```bash
 mkdir quix && cd quix
 curl https://raw.githubusercontent.com/wix/quix/master/docker-compose.prebuilt.yml -o docker-compose.yml
 curl https://raw.githubusercontent.com/wix/quix/master/env-example -o .env
 docker-compose up
 ```
-Be sure to check the [full installation notes](https://wix.github.io/quix/docs/installation) on how to edit the `.env` file and setup multiple data sources, add multiple users, or any other settings needed for custom deployment. 
-## Features
-- [Query organizer](#Organize) - organize your notebooks in folders for easy access and sharing
-- [Query executor](#Execute) - execute multi-statement [Presto](https://github.com/prestosql/presto) queries
-- [Visualizations](#Visualize) - quickly plot time and bar series (more visualizations to follow)
-- [DB explorer](#Explore) - use the DB tree to explore your data sources
-- Search - all queries are searchable accross all users
-- Live syntax validation
 
+Be sure to check the [full installation notes](https://wix.github.io/quix/docs/installation) on how to edit the `.env` file to add more data sources, turn on multi-user mode and customize your deployment.
 
-#### Organize
+For support please use our [Slack channel](https://wix-quix.slack.com).
+
+## Main features
+- [Query management](#Management) - organize your notebooks in folders for easy access and sharing
+- [Visualizations](#Visualizations) - quickly plot time and bar series (more visualizations to follow)
+- [DB Explorer](#Explorer) - explore your data sources
+- Search - search notes of all users
+
+#### Management
 ![](documentation/docs/assets/management.gif)
 
-#### Execute
-![](documentation/docs/assets/presto.gif)
-
-#### Visualize
+#### Visualizations
 ![](documentation/docs/assets/chart.gif)
 
-#### Explore
+#### Explorer
 ![](documentation/docs/assets/db.gif)
 
 ## License

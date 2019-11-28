@@ -22,7 +22,7 @@ const users = [
 
 const siteConfig = {
   title: 'Quix', // Title for your website.
-  tagline: 'A Presto-based notebook manager',
+  tagline: 'An easy-to-use notebook manager',
   // url: 'https://your-docusaurus-test-site.com', // Your website URL
   baseUrl: '/quix/', // Base URL for your project */
   // For github.io type URLs, you would set the url and baseUrl like:
@@ -39,6 +39,7 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     {doc: 'installation', label: 'Docs'},
+    {blog: true, label: 'Blog'},
     {href: 'https://github.com/wix/quix', label: 'GitHub'},
     // {blog: true, label: 'Blog'},
   ],

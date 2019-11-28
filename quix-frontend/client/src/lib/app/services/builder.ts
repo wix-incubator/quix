@@ -118,7 +118,7 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
     return this;
   }
 
-  reactComponent(name:string, factory:angular.IComponentOptions ):  Builder<Config> {
+  reactComponent(name: string, factory: angular.IComponentOptions): Builder<Config> {
     this.ngApp.component(name, factory);
     return this;
   }

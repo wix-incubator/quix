@@ -20,12 +20,6 @@ describe('Home ::', () => {
     expect(await driver.url.matches('/files/')).to.be.true;
   });
 
-  it('should navigate to examples notebook', async () => {
-    await testkit.clickExamples();
-
-    expect(await driver.url.matches('/notebook/examples')).to.be.true;
-  });
-
   it('should create a notebook and navigate to it', async () => {
     await testkit.clickAddNotebook();
 

@@ -4,6 +4,7 @@ import {App} from '../lib/app';
 import {FileType, IFile, INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem, createNote} from '@wix/quix-shared';
 import {fetchRootPath, goUp, goToFile} from './';
 import { createFileByNamePath as addFileByNamePath } from './files';
+import { pluginManager } from '../plugins';
 
 const resolvePath = async (parentOrPath: IFile | IFilePathItem[]) => {
   const path = isArray(parentOrPath) ? parentOrPath : [...parentOrPath.path, {
@@ -26,7 +27,12 @@ export const addNotebook = async (
   const actions: any[] = [NotebookActions.createNotebook(notebook.id, notebook)];
 
   if (options.addNote) {
-    const note = createNote(notebook.id);
+    const types = pluginManager.module('note').plugins()
+      .filter(plugin => plugin.getConfig().canCreate)
+      .map(plugin => plugin.getId());
+
+    const note = createNote(notebook.id, {type: types[0]});
+
     actions.push(NoteActions.addNote(note.id, note));
   }
 
