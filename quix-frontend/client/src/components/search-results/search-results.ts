@@ -84,8 +84,6 @@ const search = ((currentSearchId = 1) => debounce((scope: IScope, store: Store, 
           })
           .set('Content', !!notes.length);
 
-        store.dispatch(AppActions.setSearchText(text, 'user'));  
-
         initPagination(scope, scope.vm.state.value().totalResults, scope.vm.state.value().currentPage);
       }
     })
@@ -93,7 +91,8 @@ const search = ((currentSearchId = 1) => debounce((scope: IScope, store: Store, 
       if (searchId === currentSearchId) {
         scope.vm.state.force('Error', true, {error: {...e.data, status: e.status}});
       }
-    });
+    })
+    .then(() => store.dispatch(AppActions.setSearchText(text, 'user')));
 }, 300))();
 
 export default (app: App, store: Store) => () => ({
