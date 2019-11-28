@@ -28,10 +28,16 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
     openFile.bracket(readFile)(closeFile).value()
   }
 
+  val activatorPyContent = {
+    val openFile = Coeval(Source.fromURL(Resources.getResource("activator.py")))
+    val closeFile = (buffer: BufferedSource) => Coeval(buffer.close())
+    val readFile = (buffer: BufferedSource) => Coeval(buffer.mkString.getBytes("UTF-8"))
+
+    openFile.bracket(readFile)(closeFile).value()
+  }
+
   def initVirtualEnv(dir: String, libraries: Seq[String]) = {
-    s"""
-       |import sys
-       |print(sys.version)
+    s"""import sys
        |
        |def installed_modules():
        |  try:
@@ -42,18 +48,26 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
        |
        |venv_dir = "$dir"
        |
-       |import os.path
-       |ready_env = os.path.isfile('$dir/env')
-       |if not ready_env:
-       |  print('start creating virtual env for first time for dir $dir')
-       |  import virtualenv
-       |  virtualenv.create_environment(venv_dir)
+       |def create_environment():
+       |  import os.path
+       |  ready_env = os.path.isfile('$dir/env')
        |
-       |  open('$dir/env', 'a').close()
-       |  print('done creating virtual env for first time for dir $dir')
+       |  if not ready_env:
+       |    print('start creating virtual env for first time for dir $dir')
+       |
+       |    if sys.version_info[1] == 6:
+       |      import venv
+       |      venv.create(venv_dir)
+       |    if sys.version_info[1] == 7:
+       |      import virtualenv
+       |      virtualenv.create_environment(venv_dir)
+       |
+       |    open('$dir/env', 'a').close()
+       |    print('done creating virtual env for first time for dir $dir')
        |
        |modules_path = '$dir/modules'
        |modules = installed_modules()
+       |create_environment()
        |
        |if (modules != '${libraries.mkString(", ")}'):
        |  import pip
@@ -63,14 +77,14 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
        |    from pip._internal import main as pipmain
        |  print('modules are ' + modules)
        |  print('start installing modules ${libraries.mkString(", ")}')
-       |  exec(open('${dir}/bin/activate_this.py').read(), {'__file__': '${dir}/bin/activate_this.py'})
+       |  exec(open('${dir}/bin/activator.py').read(), {'__file__': '${dir}/bin/activator.py'})
        |  pipmain(['install', ${libraries.map(lib => s"'$lib'").mkString(", ")}, '--prefix', venv_dir, '--ignore-installed', '-q', '--no-warn-script-location', '--no-warn-conflicts'])
        |  modules_file = open(modules_path,'w+')
        |  modules_file.write('${libraries.mkString(", ")}')
        |  modules_file.close()
        |  print('done installing modules ${libraries.mkString(", ")}')
        |else :
-       |  exec(open('${dir}/bin/activate_this.py').read(), {'__file__': '${dir}/bin/activate_this.py'})
+       |  exec(open('${dir}/bin/activator.py').read(), {'__file__': '${dir}/bin/activator.py'})
        |
        |""".stripMargin
   }
@@ -85,7 +99,9 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
       process <- Task(PythonRunningProcess(query.id))
 
       dir = Paths.get("/tmp", query.user.email)
+      bin = Paths.get(dir.toString, "bin")
       _ <- Task(if (Files.notExists(dir)) Files.createDirectories(dir))
+      _ <- Task(if (Files.notExists(bin)) Files.createDirectories(bin))
 
       file <- Task(Files.createTempFile(dir, "script-", ".py"))
       _ <- Task(process.file = Option(file))
@@ -93,6 +109,7 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
       _ <- Task(Files.write(file, script.getBytes("UTF-8")))
       _ <- Task(logger.info(s"method=makeProcess event=create-file query-id=${query.id} user=${query.user.email} file=$file query=${script}"))
       _ <- Task(Files.write(Paths.get(file.getParent.toString, "quix.py"), quixPyContent))
+      _ <- Task(Files.write(Paths.get(bin.toString, "activator.py"), activatorPyContent))
 
       bridge <- Task(new PythonBridge(query.id))
       _ <- Task(process.bridge = Option(bridge))
