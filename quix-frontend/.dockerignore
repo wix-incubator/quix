@@ -1,7 +1,6 @@
-service/node_modules
-client/node_modules
-shared/node_modules
-dist
+**/node_modules/*
+**/dist*
+service/statics*
 .dockerignore
 Dockerfile
 .vscode

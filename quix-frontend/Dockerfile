@@ -7,20 +7,20 @@ WORKDIR /shared
 RUN npm install
 WORKDIR /service
 RUN npm install
-RUN npm run build 
+RUN npm run build
 workdir /
 RUN rm -rf /service/node_modules /shared/node_modules
 WORKDIR /shared
-RUN npm install --prodcution
+RUN npm prune --prodcution
 WORKDIR /service
-RUN npm install --production
+RUN npm prune --production
 
 FROM node:10-buster-slim
 COPY --from=build /shared /shared
 COPY --from=build /service /service
 WORKDIR /service
 RUN rm -f .env || true
-RUN npm install -g pm2 
+RUN npm install -g pm2
 
 EXPOSE 3000
 CMD ["pm2-runtime", "start", "ecosystem.config.js"]
