@@ -41,7 +41,7 @@ export default (app: App, store: Store) => () => ({
         })
         .withEvents({
           onSearch() {
-            store.dispatch(AppActions.setSearchText(scope.vm.searchText || null, 'user'));
+            store.dispatch(AppActions.setSearchText(scope.vm.searchText || null));
           },
           onNavItemClick(item) {
             app.go(item.targetState, {id: null});
