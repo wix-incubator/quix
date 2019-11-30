@@ -12,7 +12,7 @@ def create_environment(dir):
     ready_env = os.path.isfile(dir + '/env')
 
     if not ready_env:
-        print('start creating virtual env for first time for dir $dir')
+        print('start creating virtual env for first time for dir ' + dir)
 
         if sys.version_info[1] == 6:
             import venv
@@ -22,7 +22,7 @@ def create_environment(dir):
             virtualenv.create_environment(dir)
 
         open(dir + '/env', 'a').close()
-        print('done creating virtual env for first time for dir $dir')
+        print('done creating virtual env for first time for dir ' + dir)
 
 
 def init(dir, required):
