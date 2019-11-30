@@ -49,10 +49,7 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
   }
 
   def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
-    val modules = query.session.get("modules").collect {
-      case items: Seq[String] => items
-      case items: String => items.split(",").toList
-    }.getOrElse(Nil)
+    val modules = extractRequestedModules(query)
 
     val task = for {
       process <- Task(PythonRunningProcess(query.id))
@@ -83,6 +80,23 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
 
     task
       .logOnError(s"method=makeProcess event=failure query-id=${query.id} user=${query.user.email} port=${port.get()}")
+  }
+
+  private def extractRequestedModules(query: ActiveQuery[String]): Seq[String] = {
+    val modulesFromSession = query.session.get("modules").collect {
+      case items: Seq[String] => items
+      case items: String => items.split(",").toList
+    }.getOrElse(Nil).filter(_.trim.nonEmpty).distinct
+
+    val modulesFromScript: Array[String] = {
+      query.text
+        .split("\n")
+        .filter(_.startsWith("#pip install"))
+        .map(_.substring("#pip install".length))
+        .flatMap(_.split(" ").map(_.trim).filter(_.nonEmpty).distinct)
+    }
+
+    (modulesFromSession ++ modulesFromScript).distinct
   }
 
   def run(process: PythonRunningProcess, query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {

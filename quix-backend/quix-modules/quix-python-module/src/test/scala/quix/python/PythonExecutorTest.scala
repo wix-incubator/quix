@@ -24,7 +24,8 @@ class PythonExecutorTest extends SpecWithJUnit {
         resultBuilder.build().map(_.toString()).mkString)
     }
 
-    def script(code: String): ActiveQuery[String] = ActiveQuery("query-id", Seq(code), user)
+    def script(code: String, modules: List[String] = Nil): ActiveQuery[String] =
+      ActiveQuery("query-id", Seq(code), user, session = Map("modules" -> modules))
   }
 
   "pass sanity" in new ctx {
@@ -60,5 +61,40 @@ class PythonExecutorTest extends SpecWithJUnit {
 
     builder.columns.map(_.name) must_=== List("foo", "boo")
     builder.build().head.map(_.toString.toInt) must_=== List(1, 2)
+  }
+
+  "support installing specific versions of modules" in new ctx {
+    executor.runTask(script(
+      // https://github.com/psf/requests/releases/tag/v2.18.1 from June 2017
+      modules = List("requests==2.18.1"),
+      code =
+        """from quix import Quix
+          |q = Quix()
+          |
+          |q.fields(['foo', 'boo'])
+          |q.row([1, 2])
+          |""".stripMargin), builder).runSyncUnsafe()
+
+    builder.columns.map(_.name) must_=== List("foo", "boo")
+    builder.build().head.map(_.toString.toInt) must_=== List(1, 2)
+  }
+
+  "support fetching modules list from a first line comment" in new ctx {
+    executor.runTask(script(
+      code =
+        """#pip install pipdate
+          |
+          |import pipdate
+          |
+          |from quix import Quix
+          |q = Quix()
+          |
+          |q.fields(['foo', 'boo'])
+          |q.row([1, 2])
+          |""".stripMargin), builder).runSyncUnsafe()
+
+    builder.columns.map(_.name) must_=== List("foo", "boo")
+    builder.build().head.map(_.toString.toInt) must_=== List(1, 2)
+
   }
 }
