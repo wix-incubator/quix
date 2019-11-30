@@ -1,6 +1,6 @@
 package quix.python
 
-import java.nio.file.{Files, Paths}
+import java.nio.file.{Files, Path, Paths}
 
 import com.google.common.io.Resources
 import com.typesafe.scalalogging.LazyLogging
@@ -20,71 +20,30 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
 
   var port = AtomicInt(25333)
 
-  val quixPyContent = {
-    val openFile = Coeval(Source.fromURL(Resources.getResource("quix.py")))
+  def load(filename: String) = {
+    val openFile = Coeval(Source.fromURL(Resources.getResource(filename)))
     val closeFile = (buffer: BufferedSource) => Coeval(buffer.close())
     val readFile = (buffer: BufferedSource) => Coeval(buffer.mkString.getBytes("UTF-8"))
 
     openFile.bracket(readFile)(closeFile).value()
   }
 
-  val activatorPyContent = {
-    val openFile = Coeval(Source.fromURL(Resources.getResource("activator.py")))
-    val closeFile = (buffer: BufferedSource) => Coeval(buffer.close())
-    val readFile = (buffer: BufferedSource) => Coeval(buffer.mkString.getBytes("UTF-8"))
+  val quixPyContent = load("quix.py")
+  val envPyContent = load("env.py")
+  val activatorPyContent = load("activator.py")
 
-    openFile.bracket(readFile)(closeFile).value()
+  def copy(dir: Path, filename: String) = {
+    for {
+      _ <- Task(if (Files.notExists(dir)) Files.createDirectories(dir))
+      _ <- Task(Files.write(Paths.get(dir.toString, filename), load(filename)))
+    } yield ()
   }
 
   def initVirtualEnv(dir: String, libraries: Seq[String]) = {
-    s"""import sys
+    s"""
+       |import env
        |
-       |def installed_modules():
-       |  try:
-       |      with open('$dir/modules') as f:
-       |          return f.read()
-       |  except IOError:
-       |      return ''
-       |
-       |venv_dir = "$dir"
-       |
-       |def create_environment():
-       |  import os.path
-       |  ready_env = os.path.isfile('$dir/env')
-       |
-       |  if not ready_env:
-       |    print('start creating virtual env for first time for dir $dir')
-       |
-       |    if sys.version_info[1] == 6:
-       |      import venv
-       |      venv.create(venv_dir)
-       |    if sys.version_info[1] == 7:
-       |      import virtualenv
-       |      virtualenv.create_environment(venv_dir)
-       |
-       |    open('$dir/env', 'a').close()
-       |    print('done creating virtual env for first time for dir $dir')
-       |
-       |modules_path = '$dir/modules'
-       |modules = installed_modules()
-       |create_environment()
-       |
-       |if (modules != '${libraries.mkString(", ")}'):
-       |  import pip
-       |  try:
-       |    from pip import main as pipmain
-       |  except:
-       |    from pip._internal import main as pipmain
-       |  print('modules are ' + modules)
-       |  print('start installing modules ${libraries.mkString(", ")}')
-       |  exec(open('${dir}/bin/activator.py').read(), {'__file__': '${dir}/bin/activator.py'})
-       |  pipmain(['install', ${libraries.map(lib => s"'$lib'").mkString(", ")}, '--prefix', venv_dir, '--ignore-installed', '-q', '--no-warn-script-location', '--no-warn-conflicts'])
-       |  modules_file = open(modules_path,'w+')
-       |  modules_file.write('${libraries.mkString(", ")}')
-       |  modules_file.close()
-       |  print('done installing modules ${libraries.mkString(", ")}')
-       |else :
-       |  exec(open('${dir}/bin/activator.py').read(), {'__file__': '${dir}/bin/activator.py'})
+       |env.init('$dir', [${libraries.map(lib => ''' + lib + ''').mkString(", ")}])
        |
        |""".stripMargin
   }
@@ -108,8 +67,10 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
       script = initVirtualEnv(dir.toString, Seq("py4j") ++ modules) + query.text
       _ <- Task(Files.write(file, script.getBytes("UTF-8")))
       _ <- Task(logger.info(s"method=makeProcess event=create-file query-id=${query.id} user=${query.user.email} file=$file query=${script}"))
-      _ <- Task(Files.write(Paths.get(file.getParent.toString, "quix.py"), quixPyContent))
-      _ <- Task(Files.write(Paths.get(bin.toString, "activator.py"), activatorPyContent))
+
+      _ <- copy(dir, "quix.py")
+      _ <- copy(dir, "env.py")
+      _ <- copy(bin, "activator.py")
 
       bridge <- Task(new PythonBridge(query.id))
       _ <- Task(process.bridge = Option(bridge))
