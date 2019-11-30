@@ -39,7 +39,7 @@ def init(dir, required):
             pipmain.main(pipargs)
         except:
             from pip._internal import main as pipmain
-            pipmain(pipargs)
+            pipmain.main(pipargs)
 
         modules_file = open(dir + '/modules', 'w+')
         modules_file.write(' '.join(required))
