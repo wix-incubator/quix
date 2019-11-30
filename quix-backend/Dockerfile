@@ -45,6 +45,8 @@ RUN apk add --update \
     py-pip \
   && rm -rf /var/cache/apk/*
 
+RUN pip3 install --upgrade pip
+
 EXPOSE 8081
 
 WORKDIR /quix-webapps/quix-web-spring
