@@ -10,7 +10,8 @@ bi-console-result {
   font-size: 12px;
   color: $white;
   background-color: $black;
-  overflow: auto;
+  white-space: pre-wrap;
+  overflow-y: auto;
 
   pre {
     line-height: 1;
