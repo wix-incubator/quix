@@ -8,8 +8,6 @@ RUN npm install
 WORKDIR /service
 RUN npm install
 RUN npm run build
-workdir /
-RUN rm -rf /service/node_modules /shared/node_modules
 WORKDIR /shared
 RUN npm prune --prodcution
 WORKDIR /service
