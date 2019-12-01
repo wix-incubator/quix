@@ -8,11 +8,13 @@ function initConsoleEvents(runner: Runner) {
   const id = 'console';
 
   events.register('log', data => {
+    const fields = Object.keys(data);
+
     if (!state.getQueryById(id).getFields().length) {
-      events.apply('fields', {id, fields: Object.keys(data)}, {});
+      events.apply('fields', {id, fields}, {});
     }
 
-    events.apply('row', {id, row: data}, {});
+    events.apply('row', {id, values: fields.map(field => data[field])}, {});
 
     return data;
   });
