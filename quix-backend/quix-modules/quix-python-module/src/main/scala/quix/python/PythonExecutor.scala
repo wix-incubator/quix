@@ -108,7 +108,7 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
           process.gatewayServer.getOrElse(throw new IllegalStateException("No running gateway")).getPort.toString)
         val handler = new PythonProcessHandler(query.id, subscriber)
         pb.setProcessListener(handler)
-        pb.start()
+        process.process = Some(pb.start())
         logger.info(s"method=run event=started-process-observable query-id=${query.id} user=${query.user.email} process=${pb.command()}")
 
         () => {}
