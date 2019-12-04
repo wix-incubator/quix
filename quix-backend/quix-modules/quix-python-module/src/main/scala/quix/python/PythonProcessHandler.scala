@@ -7,24 +7,28 @@ import com.typesafe.scalalogging.LazyLogging
 import com.zaxxer.nuprocess.{NuAbstractProcessHandler, NuProcess}
 import monix.reactive.observers.Subscriber
 
-class PythonProcessHandler(jobId: String, subscriber: Subscriber[PythonMessage])
+class PythonProcessHandler(queryId: String, subscriber: Subscriber[PythonMessage])
   extends NuAbstractProcessHandler with LazyLogging {
 
   import ByteBufferUtils._
+  var pid = 0L
 
   override def onStart(nuProcess: NuProcess): Unit = {
-    subscriber.onNext(JobStartSuccess(jobId))
+    pid = nuProcess.getPID
+    logger.info(s"method=onStart query-id=$queryId pid=$pid")
+    subscriber.onNext(JobStartSuccess(queryId))
   }
 
   override def onExit(statusCode: Int): Unit = {
-    subscriber.onNext(JobEndSuccess(jobId))
+    logger.info(s"method=onExit query-id=$queryId pid=$pid")
+    subscriber.onNext(JobEndSuccess(queryId))
   }
 
   override def onStdout(buffer: ByteBuffer, closed: Boolean): Unit = {
     if (!closed) {
       for (line <- buffer.asLines()) {
-        logger.info(s"method=onStdout line=${line.str}")
-        subscriber.onNext(ProcessStdOutLine(jobId, line.str))
+        logger.info(s"method=onStdout query-id=$queryId pid=$pid line=${line.str}")
+        subscriber.onNext(ProcessStdOutLine(queryId, line.str))
       }
     }
   }
@@ -32,8 +36,8 @@ class PythonProcessHandler(jobId: String, subscriber: Subscriber[PythonMessage])
   override def onStderr(buffer: ByteBuffer, closed: Boolean): Unit = {
     if (!closed) {
       for (line <- buffer.asLines()) {
-        logger.info(s"method=onStdErr line=${line.str}")
-        subscriber.onNext(ProcessStdErrLine(jobId, line.str))
+        logger.info(s"method=onStdErr pid=$pid line=${line.str}")
+        subscriber.onNext(ProcessStdErrLine(queryId, line.str))
       }
     }
   }
