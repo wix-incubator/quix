@@ -154,7 +154,7 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
         case ProcessRow(jobId, row) =>
           builder.addSubQuery(jobId, Batch(Seq(row)))
         case event =>
-          Task(logger.info(s"method=run event=unknown-even query-id=${query.id} user=${query.user.email} event=$event"))
+          Task(logger.info(s"method=run event=unknown-event query-id=${query.id} user=${query.user.email} event=$event"))
       }.lastL
   }
 
