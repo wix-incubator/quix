@@ -5,14 +5,14 @@ sidebar_label: Presto
 ---
 ## Features
 Quix is a great tool for querying Presto. You can execute multiple queries in parallel, 
-stream results straight to your browser, download them as cvs, build visualizations, 
+stream results straight to your browser, download them as csv, build visualizations, 
 share your notes with other people in your organization and more.
 
 ## Setup
 
 ### 1. Pick a new name for your presto note and update .env
 
-Add/update following properties to .env file to configure your new note    
+Add/update the following properties to the .env file to configure your new notebook    
 
 | Variables        | Meaning           | Example  |
 | ------------- |:-------------:| -----:|
