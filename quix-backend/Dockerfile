@@ -40,12 +40,15 @@ FROM openjdk:8-alpine
 
 ENV PYTHONUNBUFFERED=1
 
-RUN apk add --update \
-    python3-dev \
-    py-pip \
-  && rm -rf /var/cache/apk/*
-
-RUN pip3 install --upgrade pip
+RUN apk add --no-cache python3 python3-dev libstdc++ && \
+    apk add --no-cache g++ && \
+    ln -s /usr/include/locale.h /usr/include/xlocale.h && \
+    if [ ! -e /usr/bin/python ]; then ln -sf python3 /usr/bin/python ; fi && \
+    python3 -m ensurepip && \
+    rm -r /usr/lib/python*/ensurepip && \
+    pip3 install --no-cache --upgrade pip setuptools wheel requests pyhive awscli ujson boto3 sqlparse PyMySQL && \
+    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
+    rm -rf /var/cache/apk/*
 
 EXPOSE 8081
 

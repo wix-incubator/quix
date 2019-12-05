@@ -16,7 +16,7 @@ import quix.core.utils.TaskOps._
 
 import scala.io.{BufferedSource, Source}
 
-class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging {
+class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryExecutor[String, Batch] with LazyLogging {
 
   var port = AtomicInt(25333)
 
@@ -39,17 +39,17 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
     } yield ()
   }
 
-  def initVirtualEnv(dir: String, libraries: Seq[String]) = {
+  def initVirtualEnv(dir: String, packages: Seq[String]) = {
     s"""
        |import env
        |
-       |env.init('$dir', [${libraries.map(lib => ''' + lib + ''').mkString(", ")}])
+       |env.init('$dir', [${packages.map(lib => ''' + lib + ''').mkString(", ")}], '${config.indexUrl}', '${config.extraIndexUrl}')
        |
        |""".stripMargin
   }
 
   def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
-    val modules = extractRequestedModules(query)
+    val packages = (Seq("py4j") ++ config.packages ++ extractRequestedPackages(query)).distinct
 
     val task = for {
       process <- Task(PythonRunningProcess(query.id))
@@ -61,7 +61,7 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
 
       file <- Task(Files.createTempFile(dir, "script-", ".py"))
       _ <- Task(process.file = Option(file))
-      script = initVirtualEnv(dir.toString, Seq("py4j") ++ modules) + query.text
+      script = initVirtualEnv(dir.toString, packages) + query.text
       _ <- Task(Files.write(file, script.getBytes("UTF-8")))
       _ <- Task(logger.info(s"method=makeProcess event=create-file query-id=${query.id} user=${query.user.email} file=$file query=${script}"))
 
@@ -82,13 +82,13 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
       .logOnError(s"method=makeProcess event=failure query-id=${query.id} user=${query.user.email} port=${port.get()}")
   }
 
-  private def extractRequestedModules(query: ActiveQuery[String]): Seq[String] = {
-    val modulesFromSession = query.session.get("modules").collect {
+  private def extractRequestedPackages(query: ActiveQuery[String]): Seq[String] = {
+    val packagesFromSession = query.session.get("packages").collect {
       case items: Seq[String] => items
       case items: String => items.split(",").toList
     }.getOrElse(Nil).filter(_.trim.nonEmpty).distinct
 
-    val modulesFromScript: Array[String] = {
+    val packagesFromScript: Array[String] = {
       query.text
         .split("\n")
         .filter(_.startsWith("#pip install"))
@@ -96,7 +96,7 @@ class PythonExecutor extends AsyncQueryExecutor[String, Batch] with LazyLogging 
         .flatMap(_.split(" ").map(_.trim).filter(_.nonEmpty).distinct)
     }
 
-    (modulesFromSession ++ modulesFromScript).distinct
+    (packagesFromSession ++ packagesFromScript).distinct
   }
 
   def run(process: PythonRunningProcess, query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
