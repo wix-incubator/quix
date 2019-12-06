@@ -12,7 +12,7 @@ share your notes with other people in your organization and more.
 
 ### 1. Pick a new name for your presto note and update .env
 
-Add/update the following properties to the .env file to configure your new notebook    
+Add the following properties to the .env file to configure your new presto note
 
 | Variables        | Meaning           | Example  |
 | ------------- |:-------------:| -----:|
