@@ -82,7 +82,8 @@ export default () => {
             showSyntaxErrors: true,
             promptOnPermissionError: true,
             disableCustomActions: false,
-            fitContent: false
+            fitContent: false,
+            autoRun: false,
           })
           .withVM({
             selection: null,

@@ -13,14 +13,14 @@ export function Users(props: UsersProps) {
   const {users, error, onUserClicked} = props;
 
   const displayLoadingState = () => (
-    <div className="quix-empty-state bi-empty-state--loading bi-fade-in">
+    <div className="bi-empty-state--loading bi-fade-in">
       <div className="bi-empty-state-content">Loading users...</div>
     </div>
   );
 
   const displayErrorState = () => (
     <div
-      className="quix-empty-state bi-empty-state bi-fade-in"
+      className="bi-empty-state bi-fade-in"
       data-hook="users-error"
     >
       <div className="bi-empty-state-icon bi-danger">

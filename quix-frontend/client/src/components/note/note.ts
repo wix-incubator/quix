@@ -36,7 +36,9 @@ export default (app: App, store: Store) => () => ({
         .withOptions('quixNoteOptions', {
           fold: false,
           focusName: false,
-          focusEditor: true
+          focusEditor: true,
+          autoRun: false,
+          maximizable: true,
         }, () => {
           if (scope.options.focusName) {
             scope.options.focusEditor = false;

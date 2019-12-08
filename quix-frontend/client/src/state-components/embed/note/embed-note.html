@@ -1,0 +1,22 @@
+<div class="bi-c-h bi-center bi-grow" ng-if="vm.state.before('Content')">
+  <div class="bi-center bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
+    <div class="bi-empty-state-content">Loading note...</div>
+  </div>
+
+  <div class="bi-center bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="note-error">
+    <quix-image class="bi-empty-state-image" name="error_{{::vm.state.value().error.status}}.svg"></quix-image>
+    <div class="bi-empty-state-header">{{::vm.state.value().error.message}}</div>
+  </div>
+</div>
+
+<quix-note
+  class="bi-fade-in"
+  ng-if="vm.state.is('Content')"
+  note="::vm.state.value().note"
+  quix-note-options="{
+    fold: false,
+    autoRun: true,
+    maximizable: false,
+    shareable: false,
+  }"
+></quix-note>
