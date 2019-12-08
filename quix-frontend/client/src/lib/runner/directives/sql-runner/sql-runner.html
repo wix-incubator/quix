@@ -5,7 +5,8 @@
   br-options="{
     type: type,
     buttonText: vm.runnerOptions.buttonText,
-    disableCustomActions: options.disableCustomActions
+    disableCustomActions: options.disableCustomActions,
+    autoRun: options.autoRun,
   }"
   on-run="events.onRun(runner)"
   on-runner-created="events.onRunnerCreated(runner)"

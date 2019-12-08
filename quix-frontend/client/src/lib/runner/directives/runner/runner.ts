@@ -218,7 +218,8 @@ export default () => {
           .withOptions('brOptions', {
             type: 'presto',
             buttonText: 'Run',
-            disableCustomActions: false
+            disableCustomActions: false,
+            autoRun: false,
           }, true)
           .withVM({
             runner: {},
@@ -287,6 +288,10 @@ export default () => {
         scope.renderResult = (queryScope, query) => ({html: renderResult(scope, queryScope, query, scope.tableFormatter, transclude)});
 
         scope.onLoad({instance});
+
+        if (scope.options.autoRun) {
+          instance.run('stream');
+        }
       }
     }
   };
