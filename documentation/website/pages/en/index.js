@@ -65,6 +65,7 @@ class HomeSplash extends React.Component {
           <PromoSection>
             <Button href={docUrl('about')}>Quick start</Button>
             <Button href={docUrl('installation')}>Installation</Button>
+            <Button href="mailto:oss@wix.com">Contact us</Button>
           </PromoSection>
         </div>
       </SplashContainer>
@@ -93,40 +94,20 @@ class Index extends React.Component {
       </Container>
     );
 
-    const LearnHow = () => (
-      <Block background="light">
-        {[
-          {
-            content:
-              'Each new Docusaurus project has **randomly-generated** theme colors.',
-            image: `${baseUrl}img/undraw_youtube_tutorial.svg`,
-            imageAlign: 'right',
-            title: 'Randomly Generated Theme Colors',
-          },
-        ]}
-      </Block>
-    );
-
     const MainFeatures = () => (
       <Block layout="threeColumn" background="light">
         {[
           {
-            content: 'Via Google OAuth',
-            image: `${baseUrl}img/undraw_team.svg`,
-            imageAlign: 'top',
-            title: 'Multi-user web app',
+            content: 'You can run Quix in single-user or <br> multi-user mode via Google OAuth',
+            title: 'Multi-user web-app',
           },
           {
-            content: `<a href="${docUrl('about', 'management')}">Organize</a> your notebooks in folders`,
-            image: `${baseUrl}img/undraw_folder.svg`,
-            imageAlign: 'top',
-            title: 'Organize queries',
+            content: 'Quix uses notes to edit and run queries. <br> Notes live inside notebooks, which  <br>  can be organized in folders.',
+            title: 'Notebook manager',
           },
           {
-            content: `Use the DB tree to <a href="${docUrl('about', 'explorer')}">explore</a> your data sources`,
-            image: `${baseUrl}img/undraw_server_status.svg`,
-            imageAlign: 'top',
-            title: 'Explore',
+            content: 'The DB explorer lets you navigate, <br> search and preview your tables',
+            title: 'DB explorer',
           },
         ]}
       </Block>
@@ -136,22 +117,16 @@ class Index extends React.Component {
       <Block layout="threeColumn">
         {[
           {
-            content: `Quickly <a href="${docUrl('about', 'visualize')}">plot</a> time and bar series <br> (more visualizations to follow)`,
-            image: `${baseUrl}img/undraw_visual_data.svg`,
-            imageAlign: 'top',
-            title: 'Visualize',
+            content: 'Quix features smart charts which help <br> you quickly visualize your data',
+            title: 'One-click visualizations',
           },
           {
             content: 'Search queries accross all users',
-            image: `${baseUrl}img/undraw_search.svg`,
-            imageAlign: 'top',
             title: 'Search',
           },
           {
-            content: 'Share folders, notebooks and notes',
-            image: `${baseUrl}img/undraw_live_collaboration.svg`,
-            imageAlign: 'top',
-            title: 'Share',
+            content: 'Easily share your folders, notebooks and notes',
+            title: 'Shareability',
           },
         ]}
       </Block>
