@@ -1,4 +1,4 @@
-# Quix [![Build Status](https://travis-ci.com/wix/quix.svg?branch=master)](https://travis-ci.com/wix/quix) [![Support](https://img.shields.io/badge/slack-wix--quix-orange?logo=slack)](https://wix-quix.slack.com)
+# Quix ![Support](https://img.shields.io/npm/l/@wix/quix-client) [![Build Status](https://travis-ci.com/wix/quix.svg?branch=master)](https://travis-ci.com/wix/quix)
 
 Quix is an easy-to-use notebook manager with support for [Presto](https://wix.github.io/quix/docs/presto), [Athena](https://wix.github.io/quix/docs/athena), [BigQuery](https://wix.github.io/quix/docs/bigquery), [MySQL](https://wix.github.io/quix/docs/mysql), [PostgreSQL](https://wix.github.io/quix/docs/postgresql), [ClickHouse](https://wix.github.io/quix/docs/clickhouse) and more.
 
@@ -17,7 +17,7 @@ docker-compose up
 
 Be sure to check the [full installation notes](https://wix.github.io/quix/docs/installation) on how to edit the `.env` file to add more data sources, turn on multi-user mode and customize your deployment.
 
-For support please use our [Slack channel](https://wix-quix.slack.com).
+For support please conatct us via [oss@wix.com](mailto:oss@wix.com).
 
 ## Main features
 - [Query management](#Management) - organize your notebooks in folders for easy access and sharing
