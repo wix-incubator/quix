@@ -8,6 +8,8 @@ import {config as runnerConfig} from './lib/runner';
 import {config as resourcesConfig} from './services/resources';
 import {pluginManager} from './plugins';
 import {ClientConfigHelper, ModuleComponentType} from '@wix/quix-shared';
+import {openTempQuery} from './services';
+import {inject} from './lib/core';
 
 const clientConfig = ClientConfigHelper.load(window.quixConfig);
 
@@ -36,6 +38,8 @@ const appBuilder = create<ClientConfigHelper>({
 
     plugin.menuItem({name: 'Notebooks', icon: 'description', template: '<quix-files-sidebar class="bi-c bi-grow"></quix-files-sidebar>'});
     plugin.menuItem({name: 'DB Explorer', icon: 'storage', template: '<quix-db-sidebar class="bi-c-h bi-grow"></quix-db-sidebar>'});
+    plugin.menuItem({name: 'separator'});
+    plugin.menuItem({name: 'Playground', icon: 'code', onToggle: () => openTempQuery(inject('$rootScope'))});
 
     plugin.onPluginReady((app, store) => {
       runnerConfig.set({

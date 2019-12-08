@@ -47,20 +47,26 @@
     ng-if="vm.menu.enabled && user.isLoggedIn() && app.getMenuItems().length"
   >
     <ul>
-    <ul>
       <li
-        class="bi-muted bi-hover bi-pointer"
-        ng-class="{'bi-active': item === vm.menu.current}"
+        class="bi-c-h bi-muted"
+        ng-class="{
+          'bi-active': item === vm.menu.current,
+          'bi-hover': item.name !== 'separator',
+          'bi-pointer': item.name !== 'separator'
+        }"
         ng-click="events.onMenuItemToggle(item)"
         ng-repeat="item in ::app.getMenuItems()"
       >
         <i
           class="bi-action bi-icon"
+          ng-if="::item.name !== 'separator'"
           ng-class="{'bi-active': item === vm.menu.current}"
           title="{{::item.name}}"
           role="button"
           data-hook="app-menu-{{::item.name}}"
         >{{::item.icon}}</i>
+
+        <div class="bi-app-menu-separator" ng-if="::item.name === 'separator'"></div>
       </li>
     </ul>
   </div>
