@@ -17,7 +17,7 @@ docker-compose up
 
 Be sure to check the [full installation notes](https://wix.github.io/quix/docs/installation) on how to edit the `.env` file to add more data sources, turn on multi-user mode and customize your deployment.
 
-For support please conatct us via [oss@wix.com](mailto:oss@wix.com).
+For support please contact us via [oss@wix.com](mailto:oss@wix.com).
 
 ## Main features
 - [Query management](#Management) - organize your notebooks in folders for easy access and sharing
