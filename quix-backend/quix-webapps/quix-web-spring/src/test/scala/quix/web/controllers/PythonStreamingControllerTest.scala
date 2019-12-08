@@ -38,7 +38,7 @@ class PythonStreamingControllerTest extends E2EContext with LazyLogging {
       """import numpy as np
         |a = np.arange(6)
         |print(a)
-        |""".stripMargin, session = Map("modules" -> "numpy"), module = "snake")
+        |""".stripMargin, session = Map("packages" -> "numpy"), module = "snake")
 
     assertThat(listener.messagesJ, hasEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-start","data":{"id":"query-id"}}"""))
