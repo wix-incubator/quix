@@ -1,11 +1,10 @@
 import template from './base.html';
 
-import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
 import {IStateComponentConfig} from '../../lib/app/services/plugin-builder';
 import {setSearchText, setSearchPage} from '../../store/app/app-actions';
-import {openSearchResults, openTempQuery, closePopup, hasQueuedNotes} from '../../services';
+import {openSearchResults, closePopup, hasQueuedNotes} from '../../services';
 
 export default (app: App, store: Store) => ({
   name: '',
@@ -24,11 +23,6 @@ export default (app: App, store: Store) => ({
     window.onbeforeunload = () => hasQueuedNotes(store) || undefined;
   },
   link: (scope) => {
-    initNgScope(scope)
-      .withEvents({
-        onTempNoteClick() {
-          openTempQuery(scope);
-        }
-      });
+
   }
 }) as IStateComponentConfig;

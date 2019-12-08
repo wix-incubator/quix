@@ -6,12 +6,12 @@ import {login} from './sso';
 import {Options} from '../types';
 
 export interface IMenuItem {
-  icon: string;
   name?: string;
+  icon: string;
   state?: string;
   template?: string;
   compiled?: string;
-  onToggle?(app: App, item: IMenuItem): any;
+  onToggle?(app?: App, item?: IMenuItem): any;
 }
 
 export class App<Config = any> {
