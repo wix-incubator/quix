@@ -7,19 +7,16 @@ def get_installed_packages(dir):
 
 
 def create_environment(dir):
-    import sys
     import os.path
     ready_env = os.path.isfile(dir + '/env')
 
     if not ready_env:
         print('start creating virtual env for first time for dir ' + dir)
 
-        if sys.version_info[1] == 6:
-            import venv
-            venv.create(dir, system_site_packages=True)
-        if sys.version_info[1] == 7:
-            import virtualenv
-            virtualenv.create_environment(dir, system_site_packages=True)
+        import venv
+        # inherit system site packages for fast installation times
+        # in `init` function pip will be used with '--upgrade' option to allow using different versions
+        venv.create(dir, system_site_packages=True)
 
         open(dir + '/env', 'a').close()
         print('done creating virtual env for first time for dir ' + dir)
@@ -29,8 +26,8 @@ def init(dir, required_packages, index_url, extra_index_url):
     installed_packages = get_installed_packages(dir)
     create_environment(dir)
 
-    if installed_packages != required_packages:
-        print('existing packages = [' + str(installed_packages) + '], required = [' + str(required_packages) + ']')
+    if not set(required_packages).issubset(installed_packages):
+        print('existing packages = ' + str(installed_packages) + ', required = ' + str(required_packages))
         exec (open(dir + '/bin/activator.py').read(), {'__file__': dir + '/bin/activator.py'})
 
         index_url_args = []

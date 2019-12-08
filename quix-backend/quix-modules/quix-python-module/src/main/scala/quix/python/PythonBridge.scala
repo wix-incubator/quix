@@ -2,7 +2,11 @@ package quix.python
 
 import monix.reactive.observers.Subscriber
 
-class PythonBridge(val jobId: String) {
+/** Python Bridge is py4j bridge to connect between methods defined in quix.py and Quix execution model
+ *
+ * @param queryId the queryId that started the execution, it will be used to generate events in context of singe query
+ */
+class PythonBridge(val queryId: String) {
 
   import scala.collection.JavaConverters._
 
@@ -14,24 +18,24 @@ class PythonBridge(val jobId: String) {
 
   def fields(columns: java.util.ArrayList[Any]): Unit = {
     for (subscriber <- subscriberOpt)
-      subscriber.onNext(ProcessFields(jobId, columns.asScala.map(_.toString)))
+      subscriber.onNext(ProcessFields(queryId, columns.asScala.map(_.toString)))
   }
 
   def row(values: java.util.ArrayList[Any]): Unit = {
     for (subscriber <- subscriberOpt) {
-      subscriber.onNext(ProcessRow(jobId, values.asScala))
+      subscriber.onNext(ProcessRow(queryId, values.asScala))
     }
   }
 
   def error(message: String): Unit = {
     for (subscriber <- subscriberOpt) {
-      subscriber.onNext(ProcessStdErrLine(jobId, message))
+      subscriber.onNext(ProcessStdErrLine(queryId, message))
     }
   }
 
   def info(message: String): Unit = {
     for (subscriber <- subscriberOpt) {
-      subscriber.onNext(ProcessStdOutLine(jobId, message))
+      subscriber.onNext(ProcessStdOutLine(queryId, message))
     }
   }
 }

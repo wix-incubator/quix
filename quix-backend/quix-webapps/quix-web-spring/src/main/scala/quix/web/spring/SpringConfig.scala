@@ -291,8 +291,9 @@ class ModulesConfiguration extends LazyLogging {
           val indexUrl = env.getProperty(s"modules.$moduleName.pip.index", "https://pypi.python.org/simple")
           val extraIndexUrl = env.getProperty(s"modules.$moduleName.pip.extra.index", "")
           val packages = env.getProperty(s"modules.$moduleName.pip.packages", "").split(",").map(_.trim).filter(_.nonEmpty)
+          val userScriptsDir = env.getProperty(s"modules.$moduleName.scripts.dir", "/tmp/quix-python")
 
-          PythonConfig(indexUrl, extraIndexUrl, packages)
+          PythonConfig(indexUrl, extraIndexUrl, packages, userScriptsDir)
         }
 
         val executor = new PythonExecutor(config)

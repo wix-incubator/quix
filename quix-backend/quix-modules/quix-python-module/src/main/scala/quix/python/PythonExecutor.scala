@@ -54,7 +54,7 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
     val task = for {
       process <- Task(PythonRunningProcess(query.id))
 
-      dir = Paths.get("/tmp", query.user.email)
+      dir = Paths.get(config.userScriptsDir, query.user.email)
       bin = Paths.get(dir.toString, "bin")
       _ <- Task(if (Files.notExists(dir)) Files.createDirectories(dir))
       _ <- Task(if (Files.notExists(bin)) Files.createDirectories(bin))
