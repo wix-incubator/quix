@@ -6,8 +6,8 @@ import {login} from './sso';
 import {Options} from '../types';
 
 export interface IMenuItem {
-  name?: string;
-  icon: string;
+  name: string;
+  icon?: string;
   state?: string;
   template?: string;
   compiled?: string;
