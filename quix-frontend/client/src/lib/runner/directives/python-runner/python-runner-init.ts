@@ -1,6 +1,7 @@
 import {last} from 'lodash';
+import moment from 'moment';
 import {Runner} from '../../services/runner-service';
-import {RunnerComponentInstance} from "../runner/runner";
+import {RunnerComponentInstance} from '../runner/runner';
 
 function initConsoleEvents(runner: Runner) {
   const state = runner.getState();
@@ -8,13 +9,16 @@ function initConsoleEvents(runner: Runner) {
   const id = 'console';
 
   events.register('log', data => {
+    data = {...data, timestamp: moment().format('HH:mm:ss')};
+
     const fields = Object.keys(data);
+    const values = [...fields.map(field => data[field])];
 
     if (!state.getQueryById(id).getFields().length) {
       events.apply('fields', {id, fields}, {});
     }
 
-    events.apply('row', {id, values: fields.map(field => data[field])}, {});
+    events.apply('row', {id, values}, {});
 
     return data;
   });

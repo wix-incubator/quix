@@ -8,18 +8,12 @@ bi-console-result {
   padding: 10px;
   font-family: 'Courier';
   font-size: 12px;
+  line-height: 1;
   color: $white;
   background-color: $black;
-  white-space: pre-wrap;
   overflow-y: auto;
 
   pre {
-    line-height: 1;
-    color: $white !important;
-    overflow: hidden;
 
-    &.bi-success {
-      color: $success !important;
-    }
   }
 }
