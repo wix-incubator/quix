@@ -8,12 +8,11 @@ bi-console-result {
   padding: 10px;
   font-family: 'Courier';
   font-size: 12px;
-  line-height: 1;
   color: $white;
   background-color: $black;
   overflow-y: auto;
 
   pre {
-
+    white-space: pre-line;
   }
 }
