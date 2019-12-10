@@ -33,7 +33,7 @@ const successEvents = [
   {event:'row',data:{id:'20190507_155320_00041_s9xam',values:['2019-01-03',120,'C']}},
   {event:'row',data:{id:'20190507_155320_00041_s9xam',values:['2019-01-04',220,'C']}},
 
-  {event: 'log', data: {id: '20190507_155320_00041_s9xa', level: 'INFO', line: 'INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message INFO message '}},
+  {event: 'log', data: {id: '20190507_155320_00041_s9xa', level: 'INFO', line: 'INFO message'}},
   {event: 'log', data: {id: '20190507_155320_00041_s9xa', level: 'ERROR', line: 'ERROR message'}},
 
   {event:'query-end',data:{id:'20190507_155320_00041_s9xam'}},

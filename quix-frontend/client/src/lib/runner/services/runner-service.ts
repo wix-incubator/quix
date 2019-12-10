@@ -191,13 +191,11 @@ export class Runner extends srv.eventEmitter.EventEmitter {
       .setFinishedStatus(true)
       .stopDurationCount();
 
-    if (this.getState().hasQueries()) {
-      const query = this.getState().getCurrentQuery();
-
+    this.getState().getQueries().forEach(query => {
       if (!query.finished) {
         this.getState().endQuery(query.getId());
       }
-    }
+    });
 
     this.fire('finish', this);
   }
