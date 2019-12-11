@@ -73,7 +73,6 @@ matrix:
       script:
         - pyenv versions
         - pyenv global 3.7
-        - pip3 install virtualenv
-        - pip3 install --upgrade pip
+        - python3 -m pip install --upgrade pip
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - mvn test
