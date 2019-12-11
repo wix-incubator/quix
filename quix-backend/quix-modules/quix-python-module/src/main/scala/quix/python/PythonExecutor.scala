@@ -54,7 +54,7 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
   }
 
   def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
-    val packages = (Seq("pip", "py4j") ++ config.packages).distinct
+    val packages = (Seq("py4j") ++ config.packages).distinct
 
     val task = for {
       process <- Task(PythonRunningProcess(query.id))
