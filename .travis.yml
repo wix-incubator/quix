@@ -72,7 +72,7 @@ matrix:
         - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
       script:
         - pyenv versions
-        - pyenv global 3.7.1
+        - pyenv global 3.7
         - pip3 install virtualenv
         - pip3 install --upgrade pip
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
