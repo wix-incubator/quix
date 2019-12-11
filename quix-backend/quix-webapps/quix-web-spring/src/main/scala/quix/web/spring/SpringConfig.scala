@@ -308,7 +308,12 @@ class ModulesConfiguration extends LazyLogging {
   @Bean
   @DependsOn(Array("initPresto", "initAthena", "initJdbc", "initBigQuery", "initPython"))
   def initKnownModules: Map[String, ExecutionModule[String, Batch]] = {
-    logger.info(s"event=[spring-config] bean=[initKnownModules] modules=[${Registry.modules.keySet.toList.sorted}]")
+    logger.info(s"*******************************************************")
+    logger.info(s"****************          Modules are")
+    Registry.modules.keySet.toList.sorted.foreach { module =>
+      logger.info(s"****************          $module")
+    }
+    logger.info(s"*******************************************************")
 
     Registry.modules.toMap
   }
