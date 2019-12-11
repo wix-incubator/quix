@@ -1,5 +1,7 @@
 package quix.python
 
+import java.util.UUID
+
 import monix.execution.Scheduler.Implicits.traced
 import org.specs2.matcher.Matcher
 import org.specs2.mutable.SpecWithJUnit
@@ -15,7 +17,7 @@ class PythonExecutorTest extends SpecWithJUnit {
   class ctx extends Scope {
     val executor = new PythonExecutor
     val executions = new SequentialExecutions[String](executor)
-    val user = User("user-email", "user-id")
+    lazy val user = User("user-" + UUID.randomUUID().getLeastSignificantBits + "@quix.com", "user-id")
 
     val builder = new SingleBuilder[String]
 
@@ -55,8 +57,8 @@ class PythonExecutorTest extends SpecWithJUnit {
       """from quix import Quix
         |q = Quix()
         |
-        |q.fields(['foo', 'boo'])
-        |q.row([1, 2])
+        |q.fields('foo', 'boo')
+        |q.row(1, 2)
         |""".stripMargin), builder).runSyncUnsafe()
 
     builder.columns.map(_.name) must_=== List("foo", "boo")
@@ -71,8 +73,8 @@ class PythonExecutorTest extends SpecWithJUnit {
         """from quix import Quix
           |q = Quix()
           |
-          |q.fields(['foo', 'boo'])
-          |q.row([1, 2])
+          |q.fields('foo', 'boo')
+          |q.row(1, 2)
           |""".stripMargin), builder).runSyncUnsafe()
 
     builder.columns.map(_.name) must_=== List("foo", "boo")
@@ -82,15 +84,17 @@ class PythonExecutorTest extends SpecWithJUnit {
   "support fetching modules list from a first line comment" in new ctx {
     executor.runTask(script(
       code =
-        """#pip install pipdate
+        """packages.install('pipdate')
+          |packages.install('ujson')
           |
           |import pipdate
+          |import ujson
           |
           |from quix import Quix
           |q = Quix()
           |
-          |q.fields(['foo', 'boo'])
-          |q.row([1, 2])
+          |q.fields('foo', 'boo')
+          |q.row(1, 2)
           |""".stripMargin), builder).runSyncUnsafe()
 
     builder.columns.map(_.name) must_=== List("foo", "boo")

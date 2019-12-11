@@ -28,10 +28,6 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
     openFile.bracket(readFile)(closeFile).value()
   }
 
-  val quixPyContent = load("quix.py")
-  val envPyContent = load("env.py")
-  val activatorPyContent = load("activator.py")
-
   def copy(dir: Path, filename: String) = {
     for {
       _ <- Task(if (Files.notExists(dir)) Files.createDirectories(dir))
@@ -41,15 +37,24 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
 
   def initVirtualEnv(dir: String, packages: Seq[String]) = {
     s"""
-       |import env
+       |from packages import Packages
+       |packages = Packages('$dir', '${config.indexUrl}', '${config.extraIndexUrl}')
+       |packages.install(${packages.map(lib => ''' + lib + ''').mkString(", ")})
        |
-       |env.init('$dir', [${packages.map(lib => ''' + lib + ''').mkString(", ")}], '${config.indexUrl}', '${config.extraIndexUrl}')
+       |""".stripMargin
+  }
+
+  def addQuix() = {
+    s"""
+       |from quix import Quix
+       |
+       |quix = Quix()
        |
        |""".stripMargin
   }
 
   def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
-    val packages = (Seq("py4j") ++ config.packages ++ extractRequestedPackages(query)).distinct
+    val packages = (Seq("pip", "py4j") ++ config.packages).distinct
 
     val task = for {
       process <- Task(PythonRunningProcess(query.id))
@@ -62,12 +67,12 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
       file <- Task(Files.createTempFile(dir, "script-", ".py"))
       _ <- Task(process.file = Option(file))
       _ <- Task(logger.info(s"method=makeProcess event=setup-env packages=$packages query-id=${query.id} user=${query.user.email} file=$file"))
-      script = initVirtualEnv(dir.toString, packages) + query.text
+      script = initVirtualEnv(dir.toString, packages) + addQuix() + query.text
       _ <- Task(Files.write(file, script.getBytes("UTF-8")))
       _ <- Task(logger.info(s"method=makeProcess event=create-file file=$file query=$script query-id=${query.id} user=${query.user.email}"))
 
       _ <- copy(dir, "quix.py")
-      _ <- copy(dir, "env.py")
+      _ <- copy(dir, "packages.py")
       _ <- copy(bin, "activator.py")
 
       bridge <- Task(new PythonBridge(query.id))
@@ -84,20 +89,10 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
   }
 
   private def extractRequestedPackages(query: ActiveQuery[String]): Seq[String] = {
-    val packagesFromSession = query.session.get("packages").collect {
+    query.session.get("packages").collect {
       case items: Seq[String] => items
       case items: String => items.split(",").toList
     }.getOrElse(Nil).filter(_.trim.nonEmpty).distinct
-
-    val packagesFromScript: Array[String] = {
-      query.text
-        .split("\n")
-        .filter(_.startsWith("#pip install"))
-        .map(_.substring("#pip install".length))
-        .flatMap(_.split(" ").map(_.trim).filter(_.nonEmpty).distinct)
-    }
-
-    (packagesFromSession ++ packagesFromScript).distinct
   }
 
   def run(process: PythonRunningProcess, query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
