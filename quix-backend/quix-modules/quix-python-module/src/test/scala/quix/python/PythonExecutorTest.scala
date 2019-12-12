@@ -81,7 +81,7 @@ class PythonExecutorTest extends SpecWithJUnit {
     builder.build().head.map(_.toString.toInt) must_=== List(1, 2)
   }
 
-  "support fetching modules list from a first line comment" in new ctx {
+  "use packages for installing new packages " in new ctx {
     executor.runTask(script(
       code =
         """packages.install('pipdate')
@@ -99,6 +99,19 @@ class PythonExecutorTest extends SpecWithJUnit {
 
     builder.columns.map(_.name) must_=== List("foo", "boo")
     builder.build().head.map(_.toString.toInt) must_=== List(1, 2)
+  }
 
+  "support requirements syntax for packages.install " in new ctx {
+    executor.runTask(script(
+      code =
+        """packages.install('ujson==1.35')
+          |packages.install('ujson>1.0')
+          |packages.install('ujson>1.0,<1.30')
+          |
+          |import ujson
+          |print(123)
+          |""".stripMargin), builder).runSyncUnsafe()
+
+    builder.logs must contain("123")
   }
 }
