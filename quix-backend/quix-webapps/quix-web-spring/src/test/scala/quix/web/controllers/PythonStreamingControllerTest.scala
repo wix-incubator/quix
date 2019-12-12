@@ -26,7 +26,6 @@ class PythonStreamingControllerTest extends E2EContext with LazyLogging {
 
     assertThat(listener.messagesJ, hasEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-start","data":{"id":"query-id"}}"""))
-    assertThat(listener.messagesJ, hasEvent("""{"event":"log","data":{"id":"query-id","line":"done installing modules ['py4j']","level":"INFO"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"log","data":{"id":"query-id","line":"123","level":"INFO"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"end","data":{"id":"query-id"}}"""))
@@ -35,14 +34,15 @@ class PythonStreamingControllerTest extends E2EContext with LazyLogging {
   @Test
   def installAndUseCustomModule(): Unit = {
     val listener = execute(sql =
-      """import numpy as np
+      """packages.install('numpy')
+        |
+        |import numpy as np
         |a = np.arange(6)
         |print(a)
-        |""".stripMargin, session = Map("packages" -> "numpy"), module = "snake")
+        |""".stripMargin, module = "snake")
 
     assertThat(listener.messagesJ, hasEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-start","data":{"id":"query-id"}}"""))
-    assertThat(listener.messagesJ, hasEvent("""{"event":"log","data":{"id":"query-id","line":"done installing modules ['py4j', 'numpy']","level":"INFO"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"log","data":{"id":"query-id","line":"[0 1 2 3 4 5]","level":"INFO"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"end","data":{"id":"query-id"}}"""))
