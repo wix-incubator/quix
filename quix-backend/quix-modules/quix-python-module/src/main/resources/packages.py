@@ -24,6 +24,22 @@ class Packages:
 
             open(self.dir + '/env', 'a').close()
 
+    def __clean(self, packages):
+        for package in packages:
+            index = len(package)
+
+            if '==' in package:
+                index = package.find('==')
+            elif '>' in package and '<' in package:
+                greater = package.find('>')
+                less = package.find('<')
+                index = min(greater, less)
+            elif '>' in package:
+                index = package.find('>')
+            elif '<' in package:
+                index = package.find('<')
+            yield package[0: index]
+
     def list(self):
         import subprocess
         from quix import Quix
@@ -63,7 +79,8 @@ class Packages:
             subprocess.check_call([sys.executable, '-m', 'pip'] + pipargs)
 
             packages_file = open(self.dir + '/packages', 'w+')
-            packages_file.write(' '.join(list(required_packages) + installed_packages))
+            packages = self.__clean(required_packages)
+            packages_file.write(' '.join(list(packages) + installed_packages))
             packages_file.close()
         else:
             exec (open(self.dir + '/bin/activator.py').read(), {'__file__': self.dir + '/bin/activator.py'})
@@ -76,7 +93,8 @@ class Packages:
             import subprocess
             import sys
 
-            process = subprocess.Popen(self.dir + '/bin/python3 -m pip uninstall --yes ' + ' '.join(list(packages)), shell=True)
+            process = subprocess.Popen(self.dir + '/bin/python3 -m pip uninstall --yes ' + ' '.join(list(packages)),
+                                       shell=True)
             process.wait()
 
             packages_file = open(self.dir + '/packages', 'w+')
