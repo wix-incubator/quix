@@ -36,19 +36,26 @@ RUN mvn -T 1C install -pl quix-modules/quix-python-module -am -DskipTests
 COPY /quix-webapps/quix-web-spring/src ./quix-webapps/quix-web-spring/src
 RUN mvn -T 1C install -pl quix-webapps/quix-web-spring -am -DskipTests
 
-FROM openjdk:8-alpine
+FROM ubuntu:19.10
 
+# Setup python and java and base system
 ENV PYTHONUNBUFFERED=1
+ENV DEBIAN_FRONTEND noninteractive
+ENV LANG=en_US.UTF-8
 
-RUN apk add --no-cache python3 python3-dev libstdc++ && \
-    apk add --no-cache g++ && \
-    ln -s /usr/include/locale.h /usr/include/xlocale.h && \
-    if [ ! -e /usr/bin/python ]; then ln -sf python3 /usr/bin/python ; fi && \
-    python3 -m ensurepip && \
-    rm -r /usr/lib/python*/ensurepip && \
-    pip3 install --no-cache --upgrade pip setuptools wheel requests pyhive awscli ujson boto3 sqlparse PyMySQL && \
-    if [ ! -e /usr/bin/pip ]; then ln -s pip3 /usr/bin/pip ; fi && \
-    rm -rf /var/cache/apk/*
+RUN apt-get update && \
+  apt-get install -q -y --no-install-recommends \
+  openjdk-8-jdk \
+  python3 \
+  python-dev \
+  python3-dev \
+  python3-pip \
+  libsnappy-dev \
+  language-pack-en \
+  build-essential \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN python3 -m pip install --upgrade pip
 
 EXPOSE 8081
 
