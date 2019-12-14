@@ -46,6 +46,13 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
 
   def addQuix() = {
     s"""
+       |try:
+       |  from py4j.java_gateway import JavaGateway
+       |except ImportError:
+       |  import sys
+       |  print("mandatory py4j package is missing, installing", file = sys.stderr)
+       |  packages.install('py4j')
+       |
        |from quix import Quix
        |
        |quix = Quix()
