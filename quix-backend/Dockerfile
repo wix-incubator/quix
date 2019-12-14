@@ -45,7 +45,7 @@ ENV LANG=en_US.UTF-8
 
 RUN apt-get update && \
   apt-get install -q -y --no-install-recommends \
-  openjdk-8-jdk \
+  default-jdk \
   python3 \
   python-dev \
   python3-dev \
@@ -55,7 +55,8 @@ RUN apt-get update && \
   build-essential \
   && rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m pip install --upgrade pip
+RUN pip3 install --no-cache --upgrade pip setuptools wheel
+RUN pip3 install --no-cache --upgrade 'python-dateutil<2.8.1,>=2.1' boto3 requests pyhive awscli ujson sqlparse py4j
 
 EXPOSE 8081
 
