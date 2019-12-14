@@ -72,7 +72,7 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
       file <- Task(Files.createTempFile(dir, "script-", ".py"))
       _ <- Task(process.file = Option(file))
       _ <- Task(logger.info(s"method=makeProcess event=setup-env packages=${config.packages} query-id=${query.id} user=${query.user.email} file=$file"))
-      script = initVirtualEnv(dir.toString, config.packages) + addQuix() + query.text
+      script = initVirtualEnv(dir.toString, config.packages) + addQuix() + config.additionalCode + query.text
       _ <- Task(Files.write(file, script.getBytes("UTF-8")))
       _ <- Task(logger.info(s"method=makeProcess event=create-file file=$file query=$script query-id=${query.id} user=${query.user.email}"))
 
