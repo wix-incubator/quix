@@ -55,8 +55,7 @@ RUN apt-get update && \
   build-essential \
   && rm -rf /var/lib/apt/lists/*
 
-RUN pip3 install --no-cache --upgrade pip setuptools wheel
-RUN pip3 install --no-cache --upgrade 'python-dateutil<2.8.1,>=2.1' boto3 requests pyhive awscli ujson sqlparse py4j
+RUN pip3 install --no-cache --upgrade pip setuptools wheel py4j
 
 EXPOSE 8081
 
