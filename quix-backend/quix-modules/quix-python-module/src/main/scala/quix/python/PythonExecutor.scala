@@ -54,8 +54,6 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
   }
 
   def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
-    val packages = (Seq("py4j") ++ config.packages).distinct
-
     val task = for {
       process <- Task(PythonRunningProcess(query.id))
 
@@ -66,8 +64,8 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
 
       file <- Task(Files.createTempFile(dir, "script-", ".py"))
       _ <- Task(process.file = Option(file))
-      _ <- Task(logger.info(s"method=makeProcess event=setup-env packages=$packages query-id=${query.id} user=${query.user.email} file=$file"))
-      script = initVirtualEnv(dir.toString, packages) + addQuix() + query.text
+      _ <- Task(logger.info(s"method=makeProcess event=setup-env packages=${config.packages} query-id=${query.id} user=${query.user.email} file=$file"))
+      script = initVirtualEnv(dir.toString, config.packages) + addQuix() + query.text
       _ <- Task(Files.write(file, script.getBytes("UTF-8")))
       _ <- Task(logger.info(s"method=makeProcess event=create-file file=$file query=$script query-id=${query.id} user=${query.user.email}"))
 
