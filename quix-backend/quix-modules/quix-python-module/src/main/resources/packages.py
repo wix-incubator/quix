@@ -45,7 +45,7 @@ class Packages:
         from quix import Quix
         quix = Quix()
 
-        process = subprocess.Popen(self.dir + '/bin/python3 -m pip freeze', shell=True, stdout=subprocess.PIPE)
+        process = subprocess.Popen(self.dir + '/bin/python3 -m pip list --format=freeze', shell=True, stdout=subprocess.PIPE)
         stdout = process.communicate()[0]
 
         reqs = sorted(stdout.decode('utf-8').strip().split('\n'))
