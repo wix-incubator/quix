@@ -86,6 +86,7 @@ export default () => {
     scope: {
       onSave: '&',
       onLoad: '&',
+      onParamsShare: '&',
       readonly: '=',
       bceOptions: '<'
     },
@@ -105,7 +106,8 @@ export default () => {
             focus: false,
             params: false,
             customParams: true,
-            fitContent: false
+            fitContent: false,
+            shareParams: false,
           })
           .withVM({
             param: {
@@ -166,17 +168,7 @@ export default () => {
               editor.getParams().removeParam(key);
             },
             onShareClick() {
-              const input = jquery('<input>')
-                // tslint:disable-next-line: restrict-plus-operands
-                .val(window.location.href.split('?')[0] + '?' + scope.state.state.exportAsURL('url'));
-
-              input.appendTo(window.document.body);
-              input.get(0).focus();
-              (input.get(0) as any).select();
-              document.execCommand('Copy');
-              input.remove();
-
-              showToast({text: 'Copied share url to clipboard', hideDelay: 3000});
+              scope.onParamsShare({params: scope.state.state.exportAsURL('url')});
             }
           })
           .withState('bce', 'bce', {});

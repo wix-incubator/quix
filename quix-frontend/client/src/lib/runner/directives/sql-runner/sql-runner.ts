@@ -56,6 +56,7 @@ export default () => {
       onRun: '&',
       onRunnerCreated: '&',
       onRunnerDestroyed: '&',
+      onParamsShare: '&',
       tableFormatter: '&',
       downloadFileName: '&',
       readonly: '=',
@@ -82,7 +83,8 @@ export default () => {
             showSyntaxErrors: true,
             promptOnPermissionError: true,
             disableCustomActions: false,
-            fitContent: false
+            fitContent: false,
+            shareParams: false,
           })
           .withVM({
             selection: null,

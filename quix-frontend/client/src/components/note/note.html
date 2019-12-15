@@ -87,7 +87,8 @@
             fitContent: true,
             params: true,
             focus: options.focusEditor,
-            showSyntaxErrors: vm.showSyntaxErrors
+            showSyntaxErrors: vm.showSyntaxErrors,
+            shareParams: true,
           }"
           type="vm.type"
           runner="runner"
@@ -98,6 +99,7 @@
           on-runner-load="events.onRunnerInstanceLoad(instance)"
           on-runner-created="events.onRunnerCreated(runner)"
           on-runner-destroyed="events.onRunnerDestroyed(runner)"
+          on-params-share="events.onShare(note, params)"
           readonly="!permissions.edit"
         >
           <controls>
@@ -114,7 +116,8 @@
             fitContent: true,
             params: true,
             focus: options.focusEditor,
-            showSyntaxErrors: vm.showSyntaxErrors
+            showSyntaxErrors: vm.showSyntaxErrors,
+            shareParams: true,
           }"
           type="vm.type"
           runner="runner"
@@ -125,6 +128,7 @@
           on-runner-load="events.onRunnerInstanceLoad(instance)"
           on-runner-created="events.onRunnerCreated(runner)"
           on-runner-destroyed="events.onRunnerDestroyed(runner)"
+          on-params-share="events.onShare(note, params)"
           readonly="!permissions.edit"
         >
           <controls>

@@ -80,6 +80,7 @@ export default () => {
       onRun: '&',
       onRunnerCreated: '&',
       onRunnerDestroyed: '&',
+      onParamsShare: '&',
       downloadFileName: '&',
       readonly: '='
     },
@@ -108,6 +109,7 @@ export default () => {
             customParams: true,
             showSyntaxErrors: true,
             fitContent: false,
+            shareParams: false,
           })
           .withVM({
             selection: null,

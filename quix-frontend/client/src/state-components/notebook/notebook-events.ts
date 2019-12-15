@@ -109,10 +109,14 @@ export const onNoteClone = (scope: IScope, store: Store, app: App) => (note: INo
   }, 3000));
 }
 
-export const onNoteShare = (scope: IScope, store: Store, app: App) => (note: INote) => {
+export const onNoteShare = (scope: IScope, store: Store, app: App) => (note: INote, params: string) => {
   const {notebook} = scope.vm.state.value();
 
-  utils.copyToClipboard(app.getNavigator().getUrl(null, {id: notebook.id, note: note.id}));
+  const url = [app.getNavigator().getUrl(null, {id: notebook.id, note: note.id}), params]
+    .filter(x => !!x)
+    .join('');
+
+  utils.copyToClipboard(url);
 
   toast.showToast({
     text: 'Copied note url to clipboard',

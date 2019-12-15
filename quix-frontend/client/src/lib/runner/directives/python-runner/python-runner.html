@@ -21,10 +21,12 @@
         params: options.params,
         customParams: options.customParams,
         fitContent: options.fitContent,
+        shareParams: options.shareParams,
         ace: {mode: 'ace/mode/python'}
       }"
       on-save="onSave()"
       on-load="events.onEditorLoad(instance)"
+      on-params-share="onParamsShare({params: params})"
       readonly="readonly"
     ></bi-code-editor>
   </editor>

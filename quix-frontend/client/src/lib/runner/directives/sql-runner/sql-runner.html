@@ -5,7 +5,7 @@
   br-options="{
     type: type,
     buttonText: vm.runnerOptions.buttonText,
-    disableCustomActions: options.disableCustomActions
+    disableCustomActions: options.disableCustomActions,
   }"
   on-run="events.onRun(runner)"
   on-runner-created="events.onRunnerCreated(runner)"
@@ -23,10 +23,12 @@
         focus: options.focus,
         params: options.params,
         customParams: options.customParams,
-        fitContent: options.fitContent
+        fitContent: options.fitContent,
+        shareParams: options.shareParams,
       }"
       on-save="onSave()"
       on-load="events.onEditorLoad(instance)"
+      on-params-share="onParamsShare({params: params})"
       readonly="readonly"
     ></bi-code-editor>
   </editor>
