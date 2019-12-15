@@ -9,7 +9,6 @@ import CodeEditor from '../services/code-editor-service';
 import Instance from '../services/code-editor-instance';
 import {IParam, ParamParser} from '../services/param-parser';
 import {renderParam} from '../services/param-parser/param-renderers';
-import {showToast} from '../../../lib/ui/services/toast';
 
 const {safeApply} = utils.scope;
 
