@@ -5,33 +5,22 @@ import java.nio.file.{Files, Path, Paths}
 import com.google.common.io.Resources
 import com.typesafe.scalalogging.LazyLogging
 import com.zaxxer.nuprocess.NuProcessBuilder
-import monix.eval.{Coeval, Task}
+import monix.eval.Task
 import monix.execution.Cancelable
 import monix.execution.atomic.AtomicInt
 import monix.reactive.Observable
 import monix.reactive.observers.Subscriber
 import py4j.GatewayServer
 import quix.api.execute._
-import quix.core.utils.TaskOps._
-
-import scala.io.{BufferedSource, Source}
 
 class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryExecutor[String, Batch] with LazyLogging {
 
   var port = AtomicInt(25333)
 
-  def load(filename: String) = {
-    val openFile = Coeval(Source.fromURL(Resources.getResource(filename)))
-    val closeFile = (buffer: BufferedSource) => Coeval(buffer.close())
-    val readFile = (buffer: BufferedSource) => Coeval(buffer.mkString.getBytes("UTF-8"))
-
-    openFile.bracket(readFile)(closeFile).value()
-  }
-
-  def copy(dir: Path, filename: String) = {
+  def copy(dir: Path, filename: String): Task[Unit] = {
     for {
-      _ <- Task(if (Files.notExists(dir)) Files.createDirectories(dir))
-      _ <- Task(Files.write(Paths.get(dir.toString, filename), load(filename)))
+      bytes <- Task(Resources.toByteArray(Resources.getResource(filename)))
+      _ <- Task(Files.write(Paths.get(dir.toString, filename), bytes))
     } yield ()
   }
 
@@ -60,57 +49,55 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
        |""".stripMargin
   }
 
-  def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
-    val task = for {
-      process <- Task(PythonRunningProcess(query.id))
+  def prepareFiles(process: PythonRunningProcess, query: ActiveQuery[String]): Task[Path] = {
+    val dir = Paths.get(config.userScriptsDir, query.user.email)
+    val bin = Paths.get(dir.toString, "bin")
 
-      dir = Paths.get(config.userScriptsDir, query.user.email)
-      bin = Paths.get(dir.toString, "bin")
+    for {
       _ <- Task(if (Files.notExists(dir)) Files.createDirectories(dir))
       _ <- Task(if (Files.notExists(bin)) Files.createDirectories(bin))
 
       file <- Task(Files.createTempFile(dir, "script-", ".py"))
-      _ <- Task(process.file = Option(file))
-      _ <- Task(logger.info(s"method=makeProcess event=setup-env packages=${config.packages} query-id=${query.id} user=${query.user.email} file=$file"))
       script = initVirtualEnv(dir.toString, config.packages) + addQuix() + config.additionalCode + query.text
       _ <- Task(Files.write(file, script.getBytes("UTF-8")))
-      _ <- Task(logger.info(s"method=makeProcess event=create-file file=$file query=$script query-id=${query.id} user=${query.user.email}"))
 
       _ <- copy(dir, "quix.py")
       _ <- copy(dir, "packages.py")
       _ <- copy(bin, "activator.py")
 
-      bridge <- Task(new PythonBridge(query.id))
-      _ <- Task(process.bridge = Option(bridge))
-      gatewayServer <- Task(new GatewayServer(bridge, port.incrementAndGet()))
-      _ <- Task(process.gatewayServer = Option(gatewayServer))
-      _ <- Task(gatewayServer.start())
-      _ <- Task(logger.info(s"method=makeProcess event=started-py4bridge query-id=${query.id} user=${query.user.email} port=${port.get()}"))
-
-    } yield process
-
-    task
-      .logOnError(s"method=makeProcess event=failure query-id=${query.id} user=${query.user.email} port=${port.get()}")
+      _ <- Task(process.file = Some(file))
+    } yield file
   }
 
-  private def extractRequestedPackages(query: ActiveQuery[String]): Seq[String] = {
-    query.session.get("packages").collect {
-      case items: Seq[String] => items
-      case items: String => items.split(",").toList
-    }.getOrElse(Nil).filter(_.trim.nonEmpty).distinct
+  def prepareGateway(process: PythonRunningProcess, query: ActiveQuery[String]): Task[GatewayServer] = {
+    for {
+      bridge <- Task(new PythonBridge(query.id))
+      _ <- Task(process.bridge = Some(bridge))
+
+      gatewayServer <- Task(new GatewayServer(bridge, port.incrementAndGet()))
+      _ <- Task(process.gatewayServer = Some(gatewayServer))
+    } yield gatewayServer
+  }
+
+  def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
+    val process = PythonRunningProcess(query.id)
+
+    for {
+      _ <- prepareFiles(process, query)
+      _ <- prepareGateway(process, query)
+    } yield process
   }
 
   def run(process: PythonRunningProcess, query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
     val observable = new Observable[PythonMessage] {
       override def unsafeSubscribeFn(subscriber: Subscriber[PythonMessage]): Cancelable = {
-        logger.info(s"method=run event=starting-process-observable query-id=${query.id} user=${query.user.email}")
         val pb = new NuProcessBuilder("python3", "-W", "ignore",
           process.file.getOrElse(throw new IllegalStateException("No file to execute")).toString,
           process.gatewayServer.getOrElse(throw new IllegalStateException("No running gateway")).getPort.toString)
         val handler = new PythonProcessHandler(query.id, subscriber)
         pb.setProcessListener(handler)
+        process.gatewayServer.foreach(_.start())
         process.process = Some(pb.start())
-        logger.info(s"method=run event=started-process-observable query-id=${query.id} user=${query.user.email} process=${pb.command()}")
 
         () => {}
       }
@@ -126,7 +113,6 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
     Observable(data, observable).merge
       .takeWhileInclusive {
         case JobEndSuccess(_) =>
-          logger.info(s"method=run event=got-job-end-success query-id=${query.id} user=${query.user.email}")
           false
 
         case _ if query.isCancelled => false
