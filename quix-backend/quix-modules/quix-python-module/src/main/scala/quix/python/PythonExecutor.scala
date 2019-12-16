@@ -6,10 +6,8 @@ import com.google.common.io.Resources
 import com.typesafe.scalalogging.LazyLogging
 import com.zaxxer.nuprocess.NuProcessBuilder
 import monix.eval.Task
-import monix.execution.Cancelable
 import monix.execution.atomic.AtomicInt
-import monix.reactive.Observable
-import monix.reactive.observers.Subscriber
+import monix.reactive.{Observable, OverflowStrategy}
 import py4j.GatewayServer
 import quix.api.execute._
 
@@ -98,28 +96,27 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
   }
 
   def run(process: PythonRunningProcess, query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
-    val observable = new Observable[PythonMessage] {
-      override def unsafeSubscribeFn(subscriber: Subscriber[PythonMessage]): Cancelable = {
-        val pb = new NuProcessBuilder("python3", "-W", "ignore",
+
+    val pythonProcessMessages: Observable[PythonMessage] = Observable.create(OverflowStrategy.Unbounded) { sub =>
+      val task = for {
+        pb <- Task(new NuProcessBuilder("python3", "-W", "ignore",
           process.file.getOrElse(throw new IllegalStateException("No file to execute")).toString,
-          process.gatewayServer.getOrElse(throw new IllegalStateException("No running gateway")).getPort.toString)
-        val handler = new PythonProcessHandler(query.id, subscriber)
-        pb.setProcessListener(handler)
-        process.gatewayServer.foreach(_.start())
-        process.process = Some(pb.start())
+          process.gatewayServer.getOrElse(throw new IllegalStateException("No running gateway")).getPort.toString))
 
-        () => {}
-      }
+        handler <- Task(new PythonProcessHandler(query.id, sub))
+        _ <- Task(pb.setProcessListener(handler))
+        _ <- Task(process.gatewayServer.foreach(_.start()))
+        _ <- Task(process.process = Some(pb.start()))
+      } yield ()
+
+      task.runToFuture(sub.scheduler)
     }
 
-    val data: Observable[PythonMessage] = (subscriber: Subscriber[PythonMessage]) => {
-      val bridge = process.bridge.getOrElse(throw new IllegalStateException("No python bridge"))
-      bridge.register(subscriber)
-
-      () => {}
+    val quixInteropMessages: Observable[PythonMessage] = Observable.create(OverflowStrategy.Unbounded) { sub =>
+      Task(process.bridge.foreach(_.register(sub))).runToFuture(sub.scheduler)
     }
 
-    Observable(data, observable).merge
+    Observable(quixInteropMessages, pythonProcessMessages).merge
       .takeWhileInclusive {
         case JobEndSuccess(_) =>
           false
