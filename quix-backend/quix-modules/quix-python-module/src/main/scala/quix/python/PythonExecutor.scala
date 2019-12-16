@@ -33,33 +33,18 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
        |""".stripMargin
   }
 
-  def addQuix() = {
-    s"""
-       |try:
-       |  from py4j.java_gateway import JavaGateway
-       |except ImportError:
-       |  import sys
-       |  print("mandatory py4j package is missing, installing", file = sys.stderr)
-       |  packages.install('py4j')
-       |
-       |from quix import Quix
-       |
-       |quix = Quix()
-       |
-       |""".stripMargin
-  }
-
   def prepareFiles(process: PythonRunningProcess, query: ActiveQuery[String]): Task[Path] = {
     val dir = Paths.get(config.userScriptsDir, query.user.email)
     val bin = Paths.get(dir.toString, "bin")
+    val script = generateUserScript(dir, query).getBytes("UTF-8")
 
     for {
       _ <- Task(if (Files.notExists(dir)) Files.createDirectories(dir))
       _ <- Task(if (Files.notExists(bin)) Files.createDirectories(bin))
 
       file <- Task(Files.createTempFile(dir, "script-", ".py"))
-      script = initVirtualEnv(dir.toString, config.packages) + addQuix() + config.additionalCode + query.text
-      _ <- Task(Files.write(file, script.getBytes("UTF-8")))
+
+      _ <- Task(Files.write(file, script))
 
       _ <- copy(dir, "quix.py")
       _ <- copy(dir, "packages.py")
@@ -67,6 +52,34 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
 
       _ <- Task(process.file = Some(file))
     } yield file
+  }
+
+  private def generateUserScript(dir: Path, query: ActiveQuery[String]) = {
+    val envSetup =
+      s"""
+         |from packages import Packages
+         |packages = Packages('$dir', '${config.indexUrl}', '${config.extraIndexUrl}')
+         |packages.install(${config.packages.map(lib => ''' + lib + ''').mkString(", ")})
+         |
+         |""".stripMargin
+
+    val quixSetup =
+      s"""
+         |try:
+         |  from py4j.java_gateway import JavaGateway
+         |except ImportError:
+         |  import sys
+         |  print("mandatory py4j package is missing, installing", file = sys.stderr)
+         |  packages.install('py4j')
+         |
+         |from quix import Quix
+         |
+         |quix = Quix()
+         |
+         |""".stripMargin
+
+
+    envSetup + quixSetup + config.additionalCode + query.text
   }
 
   def prepareGateway(process: PythonRunningProcess, query: ActiveQuery[String]): Task[GatewayServer] = {
