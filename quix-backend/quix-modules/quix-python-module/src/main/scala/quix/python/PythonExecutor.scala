@@ -24,13 +24,18 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
     } yield ()
   }
 
-  def initVirtualEnv(dir: String, packages: Seq[String]) = {
-    s"""
-       |from packages import Packages
-       |packages = Packages('$dir', '${config.indexUrl}', '${config.extraIndexUrl}')
-       |packages.install(${packages.map(lib => ''' + lib + ''').mkString(", ")})
-       |
-       |""".stripMargin
+  override def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
+    makeProcess(query)
+      .bracket(process => run(process, query, builder))(_.close)
+  }
+
+  def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
+    val process = PythonRunningProcess(query.id)
+
+    for {
+      _ <- prepareFiles(process, query)
+      _ <- prepareGateway(process, query)
+    } yield process
   }
 
   def prepareFiles(process: PythonRunningProcess, query: ActiveQuery[String]): Task[Path] = {
@@ -92,15 +97,6 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
     } yield gatewayServer
   }
 
-  def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
-    val process = PythonRunningProcess(query.id)
-
-    for {
-      _ <- prepareFiles(process, query)
-      _ <- prepareGateway(process, query)
-    } yield process
-  }
-
   def run(process: PythonRunningProcess, query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
     val observable = new Observable[PythonMessage] {
       override def unsafeSubscribeFn(subscriber: Subscriber[PythonMessage]): Cancelable = {
@@ -156,10 +152,5 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
         case event =>
           Task(logger.info(s"method=run event=unknown-event query-id=${query.id} user=${query.user.email} event=$event"))
       }.lastL
-  }
-
-  override def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
-    makeProcess(query)
-      .bracket(process => run(process, query, builder))(_.close)
   }
 }
