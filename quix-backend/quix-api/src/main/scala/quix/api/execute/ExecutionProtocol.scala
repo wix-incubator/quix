@@ -2,6 +2,11 @@ package quix.api.execute
 
 sealed trait EventData
 
+/**
+ * Event used to communicate changes
+ * @param event event name, shared between quix backend and quix frontend
+ * @param data data that arrives with every event
+ */
 sealed case class ExecutionEvent(event: String, data: EventData)
 
 sealed case class Start(id: String, numOfQueries: Int) extends EventData
