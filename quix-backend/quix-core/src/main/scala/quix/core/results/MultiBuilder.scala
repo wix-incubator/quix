@@ -2,8 +2,8 @@ package quix.core.results
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
+import quix.api.execute.Batch._
 import quix.api.execute._
-import Batch._
 
 class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
   extends Builder[Code, Batch] with LazyLogging {
@@ -75,5 +75,9 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
   override def error(queryId: String, e: Throwable) = {
     lastError = Some(e)
     consumer.write(Error(queryId, e.getMessage))
+  }
+
+  override def log(queryId: String, line: String, level: String): Task[Unit] = {
+    consumer.write(Log(queryId, line, level))
   }
 }

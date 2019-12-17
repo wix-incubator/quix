@@ -2,6 +2,11 @@ package quix.api.execute
 
 sealed trait EventData
 
+/**
+ * Event used to communicate changes
+ * @param event event name, shared between quix backend and quix frontend
+ * @param data data that arrives with every event
+ */
 sealed case class ExecutionEvent(event: String, data: EventData)
 
 sealed case class Start(id: String, numOfQueries: Int) extends EventData
@@ -27,6 +32,8 @@ sealed case class Row(id: String, values: Seq[Any]) extends EventData
 sealed case class Download(id: String, url: String) extends EventData
 
 sealed case class StartCommand[Code](code: Code, session: Map[String, String]) extends EventData
+
+sealed case class Log(id: String, line: String, level: String) extends EventData
 
 object Empty extends EventData
 
@@ -77,4 +84,8 @@ object Pong {
 
 object Download {
   def apply(id: String, url: String): ExecutionEvent = ExecutionEvent("query-download", new Download(id, url))
+}
+
+object Log {
+  def apply(id: String, line: String, level: String): ExecutionEvent = ExecutionEvent("log", new Log(id, line, level))
 }

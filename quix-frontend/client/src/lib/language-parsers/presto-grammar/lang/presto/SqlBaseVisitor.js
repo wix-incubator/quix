@@ -1,6 +1,6 @@
 // Generated from ./lang/presto/SqlBase.g4 by ANTLR 4.7
 // jshint ignore: start
-var antlr4 = require('antlr4/index');
+var antlr4 = require('antlr4');
 
 // This class defines a complete generic visitor for a parse tree produced by SqlBaseParser.
 

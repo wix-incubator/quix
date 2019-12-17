@@ -30,6 +30,8 @@ export const pluginFactory = {
         return new NotePlugins.RupertNotePlugin(app, id, hooks);
       case 'bigquery':
         return new NotePlugins.BigQueryNotePlugin(app, id, hooks);
+      case 'python':
+        return new NotePlugins.PythonNotePlugin(app, id, hooks);
       default:
         throw new Error(`No definition for "${engine}" engine note plugin`);
     }

@@ -39,17 +39,10 @@ function sendSocketData(socket, code, user, transformers, mode = 'stream') {
   socket.on('open', () => {
     code = transformers.request(code);
 
-    if (code && code.then) {
-      code.then(c => socket.send({
-        event: 'execute', 
-        data: {code: c, session}
-      }));
-    } else {
-      socket.send({
-        event: 'execute',
-        data: {code, session}
-      });
-    }
+    socket.send({
+      event: 'execute',
+      data: {code, session}
+    });
   });
 }
 
@@ -198,13 +191,11 @@ export class Runner extends srv.eventEmitter.EventEmitter {
       .setFinishedStatus(true)
       .stopDurationCount();
 
-    if (this.getState().hasQueries()) {
-      const query = this.getState().getCurrentQuery();
-
+    this.getState().getQueries().forEach(query => {
       if (!query.finished) {
         this.getState().endQuery(query.getId());
       }
-    }
+    });
 
     this.fire('finish', this);
   }

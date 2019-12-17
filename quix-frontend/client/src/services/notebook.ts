@@ -1,8 +1,7 @@
 import {isArray} from 'lodash';
 import {Store} from '../lib/store';
 import {App} from '../lib/app';
-import {INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem, createNote} from '@wix/quix-shared';
-import {FileType, IFile} from '@wix/quix-shared/dist/entities/file';
+import {FileType, IFile, INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem, createNote} from '@wix/quix-shared';
 import {fetchRootPath, goUp, goToFile} from './';
 import { createFileByNamePath as addFileByNamePath } from './files';
 import { pluginManager } from '../plugins';

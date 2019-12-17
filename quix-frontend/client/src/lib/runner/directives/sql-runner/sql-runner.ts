@@ -56,6 +56,7 @@ export default () => {
       onRun: '&',
       onRunnerCreated: '&',
       onRunnerDestroyed: '&',
+      onParamsShare: '&',
       tableFormatter: '&',
       downloadFileName: '&',
       readonly: '=',
@@ -83,6 +84,7 @@ export default () => {
             promptOnPermissionError: true,
             disableCustomActions: false,
             fitContent: false,
+            shareParams: false,
             autoRun: false,
           })
           .withVM({

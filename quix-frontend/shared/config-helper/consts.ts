@@ -11,10 +11,12 @@ export enum ModuleEngineType {
   Jdbc = 'jdbc',
   Rupert = 'rupert',
   BigQuery = 'bigquery',
+  Python = 'python',
 }
 
 export const ModuleEngineToSyntaxMap = {
   presto: 'presto',
   athena: 'athena',
   bigquery: 'ansisql',
+  python: 'python'
 }

@@ -1,6 +1,6 @@
 import {CodeEditorInstance} from '../../../code-editor';
 import {ICompleterItem as AceCompletion} from '../../../code-editor/services/code-editor-completer';
-import {BiSqlWebWorkerMngr} from '../../../sql-parser';
+import {BiSqlWebWorkerMngr} from '../../../language-parsers/sql-parser';
 import {DbInfo} from '../db/db-service';
 import {initSqlWorker} from '../workers/sql-parser-worker';
 import {createMatchMask, makeCompletionItem} from './autocomplete-utils';

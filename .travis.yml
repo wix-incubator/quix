@@ -65,10 +65,14 @@ matrix:
         directories:
           - $HOME/.m2
       before_install:
+        - sudo apt-get install python3
         - cd ./quix-backend
       install:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
       script:
+        - pyenv versions
+        - pyenv global 3.7
+        - python3 -m pip install --upgrade pip
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - mvn test

@@ -1,4 +1,4 @@
-import {BiSqlWebWorkerMngr} from '../../../sql-parser';
+import {BiSqlWebWorkerMngr} from '../../../language-parsers/sql-parser';
 
 const workerUrl = 'https://static.parastorage.com/unpkg/@wix/bi-sql-parser@1.0.43/dist/statics/web-worker.bundle.min.js';
 let sqlParserPromise: Promise<BiSqlWebWorkerMngr>;

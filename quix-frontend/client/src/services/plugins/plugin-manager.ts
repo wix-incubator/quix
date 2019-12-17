@@ -23,7 +23,11 @@ export class PluginManager<H> {
     return {
       plugin: (id: string, engine?: ModuleEngineType, app? :App,) => {
         if (engine) {
-          this.pool.push(this.pluginFactory[type](app, id, engine, this.hooks));
+          const plugin = this.pluginFactory[type](app, id, engine, this.hooks);
+
+          if (plugin) {
+            this.pool.push(plugin);
+          }
         }
           
         return this.getPluginById(id, type);

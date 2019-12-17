@@ -20,8 +20,8 @@ export const onContentChange = (scope: IScope, store: Store) => () => {
   scope.onContentChange({note: scope.note});
 };
 
-export const onShare = (scope: IScope, store: Store) => (note: INote) => {
-  scope.onShare({note});
+export const onShare = (scope: IScope, store: Store) => (note: INote, params: string) => {
+  scope.onShare({note, params});
 };
 
 export const onClone = (scope: IScope, store: Store) => (note: INote) => {

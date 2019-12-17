@@ -1,0 +1,52 @@
+<bi-runner
+  data="model.value"
+  version="version"
+  runner="runner"
+  br-options="{
+    type: type,
+    buttonText: vm.runnerOptions.buttonText
+  }"
+  on-run="events.onRun(runner)"
+  on-runner-created="events.onRunnerCreated(runner)"
+  on-runner-destroyed="events.onRunnerDestroyed(runner)"
+  on-load="events.onRunnerLoad(instance)"
+  download-file-name="downloadFileName({query: query, runner: runner})"
+>
+  <editor class="bi-c-h">
+    <bi-code-editor
+      class="bi-c-h"
+      ng-model="model.value"
+      bce-options="::{
+        focus: options.focus,
+        params: options.params,
+        customParams: options.customParams,
+        fitContent: options.fitContent,
+        shareParams: options.shareParams,
+        ace: {mode: 'ace/mode/python'}
+      }"
+      on-save="onSave()"
+      on-load="events.onEditorLoad(instance)"
+      on-params-share="onParamsShare({params: params})"
+      readonly="readonly"
+    ></bi-code-editor>
+  </editor>
+
+  <result>
+    <bi-console-result ng-if="::query.id === 'console'" query="query"></bi-console-result>
+
+    <bi-viz
+      ng-if="::query.id !== 'console'"
+      class="bi-c-h bi-grow"
+      data="query.getResults().buffer"
+      table-data="query.getResults()"
+      fields="query.getRawFields()"
+      table-fields="query.getFields()"
+      is-partial="query.running"
+      bv-options="::{picker: true}"
+    ></bi-viz>
+  </result>
+
+  <run-hint>
+    <div class="bi-hint bi-fade-in" ng-if="vm.hint.run.enabled && !readonly">{{::getCtrlKeyName()}} + Enter to run</div>
+  </run-hint>
+</bi-runner>

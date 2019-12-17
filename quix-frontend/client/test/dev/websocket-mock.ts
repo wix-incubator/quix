@@ -33,6 +33,9 @@ const successEvents = [
   {event:'row',data:{id:'20190507_155320_00041_s9xam',values:['2019-01-03',120,'C']}},
   {event:'row',data:{id:'20190507_155320_00041_s9xam',values:['2019-01-04',220,'C']}},
 
+  {event: 'log', data: {id: '20190507_155320_00041_s9xa', level: 'INFO', line: 'INFO message'}},
+  {event: 'log', data: {id: '20190507_155320_00041_s9xa', level: 'ERROR', line: 'ERROR message'}},
+
   {event:'query-end',data:{id:'20190507_155320_00041_s9xam'}},
   {event:'end',data:{id:'d85eed1e-fec8-4f1c-abba-5ab8593ea46b'}}
 ];
@@ -46,12 +49,12 @@ const failEvents = [
   {event: 'error', data: {id: '20190506_152226_00201_xps63', 'message': 'line 1:8: Column \'a\' cannot be resolved'}},
   {event: 'query-end', data: {id: '20190506_152226_00201_xps63'}},
   {event: 'end', data: {id: '274370d2-6755-4d3c-8248-b573a63523d2'}}
-]
+];
 
 export const setupMockWs = (app: express.Express) => {
   const router = express.Router();
 
-  router.ws('/presto', (ws, req) => {
+  router.ws('/:type', (ws, req) => {
     ws.on('message', async (msg) => {
       const payload: {data: {code: string}; event: string} = JSON.parse(msg.toString());
       const match = payload.data.code.match(/timeout=(\d+)/)
@@ -69,7 +72,7 @@ export const setupMockWs = (app: express.Express) => {
     });
   });
 
-  app.use('/mock/api/v1/execute/', router)
+  app.use('/mock/api/v1/execute/', router);
 }
 
 const promisifiedSend = (WS: WebSocket) => (data: any) => new Promise((resolve, reject) => {

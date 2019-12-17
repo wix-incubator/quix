@@ -41,7 +41,7 @@ export {
   clientNoteListReducer
 } from './entities/note';
 
-export {ClientConfigHelper} from './config-helper/config-helper'
+export {ClientConfigHelper, ComponentConfiguration} from './config-helper/config-helper'
 export {ModuleEngineToSyntaxMap, ModuleEngineType, ModuleComponentType, TModuleComponentType} from './config-helper/consts'
 export {
   IUser, createEmptyIUser, createUser, UserActionTypes, UserActions
