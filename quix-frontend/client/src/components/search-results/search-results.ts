@@ -94,7 +94,7 @@ const search = ((currentSearchId = 1) => debounce((scope: IScope, store: Store, 
     })
     .then(() => {
       if (searchId === currentSearchId) {
-        store.dispatch(AppActions.setSearchText(text, 'user'))
+        store.dispatch(AppActions.setSearchText(text, 'user'));
       }
     });
 }, 300))();
