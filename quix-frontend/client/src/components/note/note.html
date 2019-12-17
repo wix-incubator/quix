@@ -23,12 +23,12 @@
   >
     <div
       class="bi-panel bi-c-h"
-      bi-maximizable
+      bi-maximizable="::options.maximizable"
       is-maximized="vm.isMaximized"
       on-toggle="events.onMaximizeToggle(maximized)"
     >
       <div class="bi-panel-header bi-hover-parent">
-        <span 
+        <span
           class="quix-note-drag-handle quix-note-drag-indicator bi-hover-target"
           ng-if="permissions.reorder && !vm.isMaximized"
         >
@@ -37,7 +37,7 @@
 
         <div>
           <div class="bi-align bi-dont-shrink bi-s-h">
-            <span class="bi-align">
+            <span class="bi-align" ng-show="::options.maximizable">
               <span bm-toggle></span>
             </span>  
       
@@ -89,6 +89,7 @@
             focus: options.focusEditor,
             showSyntaxErrors: vm.showSyntaxErrors,
             shareParams: true,
+            autoRun: options.autoRun,
           }"
           type="vm.type"
           runner="runner"

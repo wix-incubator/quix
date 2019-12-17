@@ -101,11 +101,11 @@
   </div>
 
   <div class="bi-section-content--center" ng-if="vm.state.before('Content')">
-    <div class="quix-empty-state bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
+    <div class="bi-empty-state--loading bi-fade-in" ng-if="vm.state.is('Initial')">
       <div class="bi-empty-state-content">Loading notebook...</div>
     </div>
 
-    <div class="quix-empty-state bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="notebook-error">
+    <div class="bi-empty-state bi-fade-in" ng-if="vm.state.is('Error')" data-hook="notebook-error">
       <quix-image class="bi-empty-state-image" name="error_{{::vm.state.value().error.status}}.svg"></quix-image>
       <div class="bi-empty-state-header">{{::vm.state.value().error.message}}</div>
       <div class="bi-empty-state-content">
@@ -114,7 +114,7 @@
     </div>
 
     <div
-      class="quix-empty-state bi-empty-state bi-s-v bi-fade-in"
+      class="bi-empty-state bi-s-v bi-fade-in"
       ng-if="vm.state.is('Result')"
       data-hook="notebook-empty"
     >

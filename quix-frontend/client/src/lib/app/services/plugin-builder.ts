@@ -43,6 +43,7 @@ export interface IStateComponentConfigBase {
       stateName?: string;
     }) => string[]): any;
   }): any;
+  onEnter?(): any;
   onExit?(): any;
 }
 

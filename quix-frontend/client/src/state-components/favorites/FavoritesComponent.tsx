@@ -18,7 +18,7 @@ export function Favorites(props: FavoritesProps) {
 
   const displayLoadingState = () => {
     return (
-      <div className="quix-empty-state bi-empty-state--loading bi-fade-in">
+      <div className="bi-empty-state--loading bi-fade-in">
         <div className="bi-empty-state-content">Loading favorites...</div>
       </div>
     );
@@ -27,7 +27,7 @@ export function Favorites(props: FavoritesProps) {
   const displayErrorState = () => {
     return (
       <div
-        className="quix-empty-state bi-empty-state bi-fade-in"
+        className="bi-empty-state bi-fade-in"
         data-hook="favorites-error"
       >
         <div className="bi-empty-state-icon bi-danger">
@@ -41,7 +41,7 @@ export function Favorites(props: FavoritesProps) {
   const displayEmptyState = () => {
     return (
       <div
-        className="quix-empty-state bi-empty-state bi-fade-in"
+        className="bi-empty-state bi-fade-in"
         data-hook="favorites-empty"
       >
         <Image className="bi-empty-state-image" name="no_data.svg" />

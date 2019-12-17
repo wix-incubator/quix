@@ -85,6 +85,7 @@ export default () => {
             disableCustomActions: false,
             fitContent: false,
             shareParams: false,
+            autoRun: false,
           })
           .withVM({
             selection: null,

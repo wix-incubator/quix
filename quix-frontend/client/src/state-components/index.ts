@@ -1,6 +1,8 @@
+export {default as base} from './base/base';
+export {default as embed} from './embed/embed';
+export {default as embedNote} from './embed/note/embed-note';
 export {default as files} from './files/files';
 export {default as notebook} from './notebook/notebook';
-export {default as base} from './base/base';
 export {default as import} from './import/import';
 export {default as home} from './home/home';
 export {default as user} from './users/users';

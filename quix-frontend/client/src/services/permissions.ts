@@ -8,6 +8,7 @@ export interface IPermissions {
   rename?: boolean;
   clone?: boolean;
   like?: boolean;
+  share?: boolean;
   bulk?: IPermissions;
 }
 
@@ -51,6 +52,7 @@ export const getFolderPermissions = (app: App, folder: IFile): IFolderPermission
     rename: isFolderOwner && !isRootFolder,
     clone: false,
     like: false,
+    share: true,
     addFolder: isFolderOwner && folder.path.length < 2,
     addNotebook: isFolderOwner,
     bulk: {
@@ -72,6 +74,7 @@ export const getNotebookPermissions = (app: App, folder: IFile): INotebookPermis
     addNote: isFolderOwner,
     clone: true,
     like: true,
+    share: true,
     note: {
       edit: isFolderOwner,
       delete: isFolderOwner,
@@ -79,6 +82,7 @@ export const getNotebookPermissions = (app: App, folder: IFile): INotebookPermis
       reorder: isFolderOwner,
       clone: true,
       like: false,
+      share: true,
     },
     bulk: {
       delete: isFolderOwner,

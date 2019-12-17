@@ -43,6 +43,11 @@ export default () => {
             onMenuItemToggle(item: IMenuItem) {
               const {current, content} = scope.vm.menu;
 
+              if (!item.template) {
+                item.onToggle(scope.app, item);
+                return;
+              }
+
               if (typeof item.onToggle === 'function') {
                 item.onToggle(scope.app, item);
                 setCurrentMenuItem(scope, item);

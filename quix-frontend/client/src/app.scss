@@ -89,36 +89,6 @@ bi-app {
   }
 }
 
-.quix-temp-note-button {
-  position: fixed;
-  right: 15px;
-  bottom: 15px;
-  display: flex;
-  width: 60px !important;
-  height: 60px !important;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: $primary;
-  border-radius: 50% !important;
-  cursor: pointer;
-  z-index: 100;
-
-  &:before {
-    @extend %icon;
-
-    content: 'code';
-    font-size: 28px;
-    color: white;
-  }
-}
-
-.bi-section {
-  .quix-empty-state {
-    margin-top: -100px;
-  }
-}
-
 .bi-table-container.bi-table--nav,
 bi-tbl.bi-table--nav {
   td {
