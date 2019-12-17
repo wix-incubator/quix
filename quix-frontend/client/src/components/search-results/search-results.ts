@@ -92,7 +92,11 @@ const search = ((currentSearchId = 1) => debounce((scope: IScope, store: Store, 
         scope.vm.state.force('Error', true, {error: {...e.data, status: e.status}});
       }
     })
-    .then(() => store.dispatch(AppActions.setSearchText(text, 'user')));
+    .then(() => {
+      if (searchId === currentSearchId) {
+        store.dispatch(AppActions.setSearchText(text, 'user'))
+      }
+    });
 }, 300))();
 
 export default (app: App, store: Store) => () => ({
