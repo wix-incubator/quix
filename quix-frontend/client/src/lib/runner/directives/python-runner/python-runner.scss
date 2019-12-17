@@ -1,0 +1,9 @@
+@import '../../../ui/assets/css/def/colors.def';
+@import '../../../ui/assets/css/def/flex.def';
+
+bi-python-runner {
+  @include flex(column);
+
+  width: 100%;
+  flex-grow: 1;
+}

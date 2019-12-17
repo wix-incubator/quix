@@ -11,6 +11,7 @@ class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
   private val rows = ListBuffer.empty[Seq[Any]]
   private val headers = ListBuffer.empty[BatchColumn]
   private var failureCause: Option[Throwable] = None
+  private var logMessages = ListBuffer.empty[String]
 
   def build(): List[Seq[Any]] = rows.toList
 
@@ -22,7 +23,7 @@ class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
 
   override def addSubQuery(queryId: String, results: Batch) = handleBatch(results)
 
-  def handleBatch(batch: Batch) : Task[Unit] = Task {
+  def handleBatch(batch: Batch): Task[Unit] = Task {
     batch.error foreach { error =>
       failureCause = Option(new RuntimeException(error.message))
     }
@@ -51,4 +52,10 @@ class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
   }
 
   def columns = headers.toList
+
+  override def log(queryId: String, line: String, level: String): Task[Unit] = Task {
+    logMessages += line
+  }
+
+  def logs = logMessages.toList
 }

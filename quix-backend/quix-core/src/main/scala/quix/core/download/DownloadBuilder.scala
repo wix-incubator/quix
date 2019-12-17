@@ -108,5 +108,9 @@ class DownloadBuilder[Code](delegate: Builder[Code, Batch],
       }
     } yield ()
   }
+
+  override def log(queryId: String, line: String, level: String): Task[Unit] = {
+    delegate.log(queryId, line, level)
+  }
 }
 

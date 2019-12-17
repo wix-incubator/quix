@@ -1,16 +1,18 @@
 {
   "name": "@wix/quix-shared",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "description": "Presto-based notebook manager",
   "author": {
     "name": "Anton Podolsky",
     "email": "antonp@wix.com"
   },
-  "contributors": [{
-    "name": "Aviad Hadad",
-    "email": "aviadh@wix.com"
-  }],
+  "contributors": [
+    {
+      "name": "Aviad Hadad",
+      "email": "aviadh@wix.com"
+    }
+  ],
   "scripts": {
     "test": "jest"
   },

@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.context.{TestContextManager, TestPropertySource}
 import quix.web.E2EContext
 import quix.web.spring.SpringConfig
+import MyMatchers._
 
 @RunWith(classOf[SpringRunner])
 @DirtiesContext
@@ -84,7 +85,9 @@ class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
     assertThat(listener.messagesJ, hasEvent("""{"event":"end","data":{"id":"query-id"}}"""))
   }
 
+}
 
+object MyMatchers {
   def hasEvent(e: String) = {
     val event = e
       .replace("*", "\\*")

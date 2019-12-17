@@ -13,12 +13,6 @@ bi-console-result {
   overflow-y: auto;
 
   pre {
-    line-height: 1;
-    color: $white !important;
-    overflow: hidden;
-
-    &.bi-success {
-      color: $success !important;
-    }
+    white-space: pre-line;
   }
 }

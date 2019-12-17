@@ -1,4 +1,4 @@
-import {WorkerFunctionsMap, RequestTypeToResponseTypeMap} from '../../web-worker-infra/web-worker';
+import {WorkerFunctionsMap, RequestTypeToResponseTypeMap} from '../../../web-worker-infra/web-worker';
 import {IErrorAnnotation} from '../parser/errors-listener';
 
 export interface SqlRequest {

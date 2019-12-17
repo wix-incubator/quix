@@ -29,6 +29,7 @@ class SqlStreamingController(val modules: Map[String, ExecutionModule[String, Ba
     val task = Task {
       logger.info(s"event=unknown-message socket-id=${socket.getId} payload=$payload")
       socket.sendMessage(new TextMessage(Error(socket.getId, s"Failed to handle unknown message : [$payload]").asJsonStr))
+      socket.close(CloseStatus.BAD_DATA)
     }
 
     task.executeOn(io).runAsyncAndForget(io)

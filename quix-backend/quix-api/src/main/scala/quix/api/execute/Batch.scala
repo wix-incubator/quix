@@ -4,6 +4,14 @@ case class BatchColumn(name: String)
 
 case class BatchError(message: String)
 
+/** Used in [[quix.api.execute.Builder]] to send batched payloads from [[quix.api.module.ExecutionModule]] to
+ * [[quix.api.execute.Consumer]]
+ *
+ * @param data list of rows
+ * @param columns optional list of column names
+ * @param error optional error
+ * @param stats optional stats object for custom properties
+ */
 case class Batch(data: Seq[Seq[Any]],
                  columns: Option[Seq[BatchColumn]] = None,
                  error: Option[BatchError] = None,

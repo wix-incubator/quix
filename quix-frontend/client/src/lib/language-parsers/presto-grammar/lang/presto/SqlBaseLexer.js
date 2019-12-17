@@ -1,6 +1,6 @@
 // Generated from ./lang/presto/SqlBase.g4 by ANTLR 4.7
 // jshint ignore: start
-var antlr4 = require('antlr4/index');
+var antlr4 = require('antlr4');
 
 
 var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",

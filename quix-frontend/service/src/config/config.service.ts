@@ -59,10 +59,7 @@ export abstract class ConfigService {
       clientConfig.addModule({
         id: m,
         name: m,
-        components: {
-          [ModuleComponentType.Db]: {},
-          [ModuleComponentType.Note]: {},
-        },
+        components: env.moduleSettings[m].components,
         engine: env.moduleSettings[m].engine as any,
         syntax: env.moduleSettings[m].syntax,
       }),

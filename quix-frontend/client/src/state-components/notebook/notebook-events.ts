@@ -3,8 +3,7 @@ import {utils} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {toast} from '../../lib/ui';
 import {App} from '../../lib/app';
-import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem} from '@wix/quix-shared';
-import {FileType} from '@wix/quix-shared/dist/entities/file';
+import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem, FileType} from '@wix/quix-shared';
 import {IScope} from './notebook-types';
 import {setNotebook, setNote, queueNote, toggleMark, unmarkAll} from '../../store/notebook/notebook-actions';
 import {saveQueuedNotes, deleteNotebook, copyNotebook, goToFile, goToRoot, prompt, copyNote} from '../../services';
@@ -110,10 +109,14 @@ export const onNoteClone = (scope: IScope, store: Store, app: App) => (note: INo
   }, 3000));
 }
 
-export const onNoteShare = (scope: IScope, store: Store, app: App) => (note: INote) => {
+export const onNoteShare = (scope: IScope, store: Store, app: App) => (note: INote, params: string) => {
   const {notebook} = scope.vm.state.value();
 
-  utils.copyToClipboard(app.getNavigator().getUrl(null, {id: notebook.id, note: note.id}));
+  const url = [app.getNavigator().getUrl(null, {id: notebook.id, note: note.id}), params]
+    .filter(x => !!x)
+    .join('');
+
+  utils.copyToClipboard(url);
 
   toast.showToast({
     text: 'Copied note url to clipboard',

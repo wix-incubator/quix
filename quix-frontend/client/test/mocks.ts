@@ -55,11 +55,12 @@ const mocks = {
   '/api/notebook/500': () => [500, {message: 'Couldn\'t fetch notebook'}],
   '/api/notebook/:id': ({id}) => createMockNotebook([
     createMockNote(id, {id: '1001', name: 'Runnable', content: 'do success'}),
-    createMockNote(id, {id: '1002', name: 'Runnable (timeout)', content: 'do success timeout=200'}),
-    createMockNote(id, {id: '1003', name: 'Runnable (error)', content: 'do error'}),
-    createMockNote(id, {id: '1004'}),
+    createMockNote(id, {id: '1002', name: 'Runnable', content: 'do success', type: 'python'}),
+    createMockNote(id, {id: '1003', name: 'Runnable (timeout)', content: 'do success timeout=200'}),
+    createMockNote(id, {id: '1004', name: 'Runnable (error)', content: 'do error'}),
     createMockNote(id, {id: '1005'}),
     createMockNote(id, {id: '1006'}),
+    createMockNote(id, {id: '1007'}),
   ], {
     id,
     ownerDetails: {
