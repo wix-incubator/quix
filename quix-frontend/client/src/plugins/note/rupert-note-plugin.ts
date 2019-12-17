@@ -1,6 +1,6 @@
 import { App } from '../../lib/app';
 import { flatten } from 'lodash';
-import { INote, NoteActions } from '@wix/quix-shared';
+import { INote, NoteActions, ModuleEngineType } from '@wix/quix-shared';
 import { Store } from '../../lib/store';
 import { NotePlugin} from '../../services/plugins';
 import { ParamParser } from '../../lib/code-editor/services/param-parser';
@@ -26,12 +26,10 @@ Question: ${question}
 
 export class RupertNotePlugin extends NotePlugin {
   constructor(app: App, name: string, hooks: any) {
-    super(app, name, hooks, {
+    super(app, name, ModuleEngineType.Presto, hooks, {
       syntaxValidation: true,
       canCreate: false,
     });
-
-    this.type = 'presto';
 
     const api = (questionId: string, path = '') => 
       `${app.getConfig().getClientTopology().apiBasePath}/api/module/rupert/question/${encodeURIComponent(questionId)}${path ? `/${path}` : ''}`;

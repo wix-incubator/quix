@@ -7,7 +7,7 @@ import {branches, initCache} from './store';
 import {config as runnerConfig} from './lib/runner';
 import {config as resourcesConfig} from './services/resources';
 import {pluginManager} from './plugins';
-import {ClientConfigHelper, ModuleComponentType} from '@wix/quix-shared';
+import {ClientConfigHelper, ModuleComponentType, ModuleEngineType} from '@wix/quix-shared';
 import {openTempQuery} from './services';
 import {inject} from './lib/core';
 
@@ -59,7 +59,7 @@ const appBuilder = create<ClientConfigHelper>({
         pluginManager.module(ModuleComponentType.Note).plugin(id, engine, app);
       });
 
-      pluginManager.module(ModuleComponentType.Note).plugin('rupert', 'rupert' as any, app);
+      pluginManager.module(ModuleComponentType.Note).plugin('rupert', ModuleEngineType.Rupert, app);
 
       initCache(store);
       setupNotifications(staticsBaseUrl);
