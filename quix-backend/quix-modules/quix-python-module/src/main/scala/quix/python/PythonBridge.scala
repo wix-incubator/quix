@@ -14,32 +14,37 @@ class PythonBridge(val queryId: String) {
 
   /** Python bridge will produce a stream of [[PythonMessage]] messages to communicate with quix.
    * Each message would trigger some update of [[quix.api.execute.Builder]]
+   *
    * @param subscriber monix Subscriber that will receive every update from python
    */
   def register(subscriber: Subscriber[PythonMessage]): Unit = {
     subscriberOpt = Option(subscriber)
   }
 
-  def fields(columns: java.util.ArrayList[Any]): Unit = {
-    for (subscriber <- subscriberOpt)
-      subscriber.onNext(ProcessFields(queryId, columns.asScala.map(_.toString)))
-  }
-
-  def row(values: java.util.ArrayList[Any]): Unit = {
-    for (subscriber <- subscriberOpt) {
-      subscriber.onNext(ProcessRow(queryId, values.asScala))
-    }
-  }
-
   def error(message: String): Unit = {
     for (subscriber <- subscriberOpt) {
-      subscriber.onNext(ProcessStdErrLine(queryId, message))
+      subscriber.onNext(ProcessStderr(queryId, message))
     }
   }
 
   def info(message: String): Unit = {
     for (subscriber <- subscriberOpt) {
-      subscriber.onNext(ProcessStdOutLine(queryId, message))
+      subscriber.onNext(ProcessStdout(queryId, message))
     }
+  }
+
+  def tab_columns(tabId: String, columns: java.util.ArrayList[Any]): Unit = {
+    for (subscriber <- subscriberOpt)
+      subscriber.onNext(TabFields(tabId, columns.asScala.map(_.toString)))
+  }
+
+  def tab_row(tabId: String, columns: java.util.ArrayList[Any]): Unit = {
+    for (subscriber <- subscriberOpt)
+      subscriber.onNext(TabRow(tabId, columns.asScala.map(_.toString)))
+  }
+
+  def tab_end(tabId: String): Unit = {
+    for (subscriber <- subscriberOpt)
+      subscriber.onNext(TabEnd(tabId))
   }
 }
