@@ -8,8 +8,14 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <scala.library.version>2.12.7</scala.library.version>
+        <scala.library.version>2.12.10</scala.library.version>
         <scala.dependencies.version>2.12</scala.dependencies.version>
+        <scaffeine.version>2.6.0</scaffeine.version>
+        <scala.logging.version>3.9.2</scala.logging.version>
+        <jackson.version>2.10.1</jackson.version>
+        <presto.version>326</presto.version>
+        <specs.version>4.8.1</specs.version>
+        <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
     </properties>
 
     <dependencies>
@@ -23,35 +29,35 @@
         <dependency>
             <groupId>com.github.blemale</groupId>
             <artifactId>scaffeine_${scala.dependencies.version}</artifactId>
-            <version>2.6.0</version>
+            <version>${scaffeine.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.typesafe.scala-logging/scala-logging -->
         <dependency>
             <groupId>com.typesafe.scala-logging</groupId>
             <artifactId>scala-logging_${scala.dependencies.version}</artifactId>
-            <version>3.9.2</version>
+            <version>${scala.logging.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
-            <version>2.9.8</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-scala -->
         <dependency>
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-scala_${scala.dependencies.version}</artifactId>
-            <version>2.9.8</version>
+            <version>${jackson.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jdk8 -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jdk8</artifactId>
-            <version>2.9.8</version>
+            <version>${jackson.version}</version>
         </dependency>
 
 
@@ -65,14 +71,14 @@
         <dependency>
             <groupId>io.prestosql</groupId>
             <artifactId>presto-parser</artifactId>
-            <version>306</version>
+            <version>${presto.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-core_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -80,7 +86,7 @@
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-junit_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -88,7 +94,7 @@
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-mock_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -99,7 +105,7 @@
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>${scala.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>

@@ -8,9 +8,14 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <scala.library.version>2.12.8</scala.library.version>
+        <scala.library.version>2.12.10</scala.library.version>
         <scala.dependencies.version>2.12</scala.dependencies.version>
+        <monix.version>3.1.0</monix.version>
         <specs.version>4.6.0</specs.version>
+        <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
+        <logback.version>1.2.3</logback.version>
+        <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
+        <mysql.connector.version>8.0.18</mysql.connector.version>
     </properties>
 
 
@@ -27,10 +32,11 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.monix/monix -->
         <dependency>
             <groupId>io.monix</groupId>
             <artifactId>monix-eval_${scala.dependencies.version}</artifactId>
-            <version>3.0.0</version>
+            <version>${monix.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->
@@ -57,10 +63,11 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.wix/wix-embedded-mysql -->
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>wix-embedded-mysql</artifactId>
-            <version>4.2.0</version>
+            <version>${wix.embedded.mysql.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -68,7 +75,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.16</version>
+            <version>${mysql.connector.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -76,7 +83,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>${logback.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -89,7 +96,7 @@
                 <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>${scala.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
