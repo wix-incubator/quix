@@ -11,11 +11,7 @@ class PythonModule(val executor: PythonExecutor) extends ExecutionModule[String,
   override def start(command: StartCommand[String], id: String, user: User, builder: Builder[String, Batch]): Task[Unit] = {
     val query = ActiveQuery(id, Seq(command.code), user, session = command.session)
 
-    for {
-      _ <- builder.start(query)
-      _ <- executor.runTask(query, builder)
-      _ <- builder.end(query)
-    } yield ()
+    executor.runTask(query, builder)
   }
 
   override def db: Option[Db] = None
