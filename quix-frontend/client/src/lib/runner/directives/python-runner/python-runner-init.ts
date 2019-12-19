@@ -25,7 +25,7 @@ function initConsoleEvents(runner: Runner) {
 
   events
     .append('start', data => {
-      events.apply('query-start', {id, title: id}, {});
+      events.apply('query-start', {id, title: id, code: 'console'}, {});
       state.setTotalNumOfQueries(1);
 
       return data;
@@ -40,12 +40,10 @@ function initConsoleEvents(runner: Runner) {
 function initResultEvents(runner: Runner) {
   const state = runner.getState();
   const events = runner.getEvents();
-  const title = 'result';
 
   ['fields', 'row'].forEach(event => events.prepend(event, data => {
     if (data.id !== 'console') {
-      data.id = state.getQueries()[1].getId();
-      state.setTotalNumOfQueries(2);
+      state.setTotalNumOfQueries(state.getTotalNumOfQueries() + 1);
     }
 
     return data;
@@ -53,7 +51,7 @@ function initResultEvents(runner: Runner) {
 
   events
     .append('query-start', data => {
-      runner.getState().getQueryById(data.id).setTitle(data.title || title);
+      runner.getState().getQueryById(data.id).setTitle(data.code);
 
       return data;
     });

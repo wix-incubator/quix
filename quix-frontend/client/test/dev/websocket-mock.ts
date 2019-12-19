@@ -3,7 +3,7 @@ import express from 'express';
 
 const successEvents = [
   {event:'start',data:{id:'d85eed1e-fec8-4f1c-abba-5ab8593ea46b','numOfQueries':1}},
-  {event:'query-start',data:{id:'20190507_155320_00041_s9xam'}},
+  {event:'query-start',data:{id:'20190507_155320_00041_s9xam', code: 'first query'}},
   {event:'query-details',data:{id:'20190507_155320_00041_s9xam','code':'select 1'}},
   {event:'percentage',data:{id:'20190507_155320_00041_s9xam','percentage':0}},
   {event:'percentage',data:{id:'20190507_155320_00041_s9xam','percentage':0}},
@@ -37,6 +37,15 @@ const successEvents = [
   {event: 'log', data: {id: '20190507_155320_00041_s9xa', level: 'ERROR', line: 'ERROR message'}},
 
   {event:'query-end',data:{id:'20190507_155320_00041_s9xam'}},
+
+  {event:'query-start',data:{id:'second', code: 'second query'}},
+
+  {event:'fields',data:{id:'second','fields':['a','b']}},
+  {event:'query-details',data:{id:'second','code':'select 1'}},
+  {event:'row',data:{id:'second',values:[1,2]}},
+  {event:'row',data:{id:'second',values:[3,4]}},
+  {event:'query-end',data:{id:'second'}},
+
   {event:'end',data:{id:'d85eed1e-fec8-4f1c-abba-5ab8593ea46b'}}
 ];
 

@@ -25,9 +25,7 @@ class PythonStreamingControllerTest extends E2EContext with LazyLogging {
     val listener = execute("print(123)", module = "snake")
 
     assertThat(listener.messagesJ, hasEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}"""))
-    assertThat(listener.messagesJ, hasEvent("""{"event":"query-start","data":{"id":"query-id"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"log","data":{"id":"query-id","line":"123","level":"INFO"}}"""))
-    assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"end","data":{"id":"query-id"}}"""))
   }
 
@@ -42,9 +40,7 @@ class PythonStreamingControllerTest extends E2EContext with LazyLogging {
         |""".stripMargin, module = "snake")
 
     assertThat(listener.messagesJ, hasEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}"""))
-    assertThat(listener.messagesJ, hasEvent("""{"event":"query-start","data":{"id":"query-id"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"log","data":{"id":"query-id","line":"[0 1 2 3 4 5]","level":"INFO"}}"""))
-    assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"end","data":{"id":"query-id"}}"""))
   }
 

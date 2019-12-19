@@ -101,7 +101,10 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
       val task = for {
         pb <- Task(new NuProcessBuilder("python3", "-W", "ignore",
           process.file.getOrElse(throw new IllegalStateException("No file to execute")).toString,
-          process.gatewayServer.getOrElse(throw new IllegalStateException("No running gateway")).getPort.toString))
+          process.gatewayServer.getOrElse(throw new IllegalStateException("No running gateway")).getPort.toString,
+          query.id,
+          query.user.email
+        ))
 
         handler <- Task(new PythonProcessHandler(query.id, sub))
         _ <- Task(pb.setProcessListener(handler))
@@ -118,7 +121,7 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
 
     Observable(quixInteropMessages, pythonProcessMessages).merge
       .takeWhileInclusive {
-        case JobEndSuccess(_) =>
+        case ProcessEndSuccess(_) =>
           false
 
         case _ if query.isCancelled => false
@@ -126,26 +129,29 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
         case _ => true
       }
       .mapEval {
-        case JobStartSuccess(jobId) =>
-          builder.startSubQuery(jobId, query.text, Batch(Nil))
+        case ProcessStartSuccess(_) =>
+          builder.start(query)
 
-        case JobStartFailure(exception) =>
+        case ProcessStartFailure(exception) =>
           builder.error(query.id, exception)
 
-        case JobEndSuccess(jobId) =>
-          builder.endSubQuery(jobId)
+        case ProcessEndSuccess(_) =>
+          builder.end(query)
 
-        case ProcessStdOutLine(jobId, line) =>
+        case ProcessStdout(jobId, line) =>
           builder.log(jobId, line, "INFO")
 
-        case ProcessStdErrLine(jobId, line) =>
+        case ProcessStderr(jobId, line) =>
           builder.log(jobId, line, "ERROR")
 
-        case ProcessFields(jobId, fields) =>
-          builder.addSubQuery(jobId, Batch(Nil, columns = Option(fields.map(BatchColumn))))
+        case TabFields(tabId, fields) =>
+          builder.startSubQuery(tabId, tabId, Batch(Nil, columns = Option(fields.map(BatchColumn))))
 
-        case ProcessRow(jobId, row) =>
-          builder.addSubQuery(jobId, Batch(Seq(row)))
+        case TabRow(tabId, row) =>
+          builder.addSubQuery(tabId, Batch(Seq(row)))
+
+        case TabEnd(tabId) =>
+          builder.endSubQuery(tabId)
         case event =>
           Task(logger.info(s"method=run event=unknown-event query-id=${query.id} user=${query.user.email} event=$event"))
       }.lastL
