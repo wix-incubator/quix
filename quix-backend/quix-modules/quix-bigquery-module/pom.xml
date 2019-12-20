@@ -8,11 +8,11 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <scala.library.version>2.12.7</scala.library.version>
+        <scala.library.version>2.12.10</scala.library.version>
         <scala.dependencies.version>2.12</scala.dependencies.version>
-        <bigquery.version>1.84.0</bigquery.version>
-        <specs.version>4.5.1</specs.version>
-        <scala.maven.plugin.version>3.3.2</scala.maven.plugin.version>
+        <bigquery.version>1.102.0</bigquery.version>
+        <specs.version>4.8.1</specs.version>
+        <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
         <scala.logging.version>3.9.2</scala.logging.version>
         <logback-classic.version>1.2.3</logback-classic.version>
     </properties>
