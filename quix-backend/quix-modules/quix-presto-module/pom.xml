@@ -10,6 +10,13 @@
     <properties>
         <scala.library.version>2.12.7</scala.library.version>
         <scala.dependencies.version>2.12</scala.dependencies.version>
+        <specs.version>4.8.1</specs.version>
+        <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
+        <scala.logging.version>3.9.2</scala.logging.version>
+        <monix.version>3.1.0</monix.version>
+        <presto.version>326</presto.version>
+        <scalaj.version>2.4.2</scalaj.version>
+        <logback.version>1.2.3</logback.version>
     </properties>
 
     <dependencies>
@@ -25,17 +32,18 @@
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.monix/monix -->
         <dependency>
             <groupId>io.monix</groupId>
             <artifactId>monix-eval_${scala.dependencies.version}</artifactId>
-            <version>3.0.0</version>
+            <version>${monix.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.prestosql/presto-parser -->
         <dependency>
             <groupId>io.prestosql</groupId>
             <artifactId>presto-parser</artifactId>
-            <version>306</version>
+            <version>${presto.version}</version>
         </dependency>
 
 
@@ -43,7 +51,7 @@
         <dependency>
             <groupId>io.prestosql</groupId>
             <artifactId>presto-client</artifactId>
-            <version>306</version>
+            <version>${presto.version}</version>
         </dependency>
 
 
@@ -51,28 +59,28 @@
         <dependency>
             <groupId>org.scalaj</groupId>
             <artifactId>scalaj-http_${scala.dependencies.version}</artifactId>
-            <version>2.4.1</version>
+            <version>${scalaj.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.typesafe.scala-logging/scala-logging -->
         <dependency>
             <groupId>com.typesafe.scala-logging</groupId>
             <artifactId>scala-logging_${scala.dependencies.version}</artifactId>
-            <version>3.9.2</version>
+            <version>${scala.logging.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/ch.qos.logback/logback-classic -->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.3</version>
+            <version>${logback.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-core_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -80,7 +88,7 @@
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-junit_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -88,7 +96,7 @@
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-mock_${scala.dependencies.version}</artifactId>
-            <version>4.5.1</version>
+            <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -102,7 +110,7 @@
                 <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>3.3.2</version>
+                <version>${scala.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
