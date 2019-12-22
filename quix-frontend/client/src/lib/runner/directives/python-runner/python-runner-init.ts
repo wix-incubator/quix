@@ -25,8 +25,8 @@ function initConsoleEvents(runner: Runner) {
 
   events
     .append('start', data => {
-      events.apply('query-start', {id, title: id, code: 'console'}, {});
-      state.setTotalNumOfQueries(1);
+      events.apply('query-start', {id}, {});
+      events.apply('query-details', {id, code: 'console'}, {});
 
       return data;
     })
@@ -41,20 +41,15 @@ function initResultEvents(runner: Runner) {
   const state = runner.getState();
   const events = runner.getEvents();
 
-  ['fields', 'row'].forEach(event => events.prepend(event, data => {
-    if (data.id !== 'console') {
-      state.setTotalNumOfQueries(state.getTotalNumOfQueries() + 1);
-    }
+  events.append('query-start', () => {
+    state.setTotalNumOfQueries(state.getTotalNumOfQueries() + 1);
+  });
+
+  events.register('query-details', data => {
+    runner.getState().getQueryById(data.id).setTitle(data.code);
 
     return data;
-  }));
-
-  events
-    .append('query-start', data => {
-      runner.getState().getQueryById(data.id).setTitle(data.code);
-
-      return data;
-    });
+  });
 }
 
 function initRunnerComponent(runner: Runner, runnerComponentDeferred: Promise<RunnerComponentInstance>) {
