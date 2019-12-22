@@ -20,10 +20,7 @@ resource "aws_ecs_task_definition" "backend" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
-  # volume {
-  #   name = "data"
-  #   host_path = "/var/elasticsearch/data"
-  # }
+  execution_role_arn       = aws_iam_role.ecs_task_role.arn
   container_definitions = <<DEFINITION
 [
   {
@@ -38,6 +35,14 @@ resource "aws_ecs_task_definition" "backend" {
         "hostPort": ${var.backend_port}
       }
     ],
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+            "awslogs-group": "${aws_cloudwatch_log_group.quix-logs.name}",
+            "awslogs-region": "${var.aws_region}",
+            "awslogs-stream-prefix": "backend"
+        }
+    },
     "environment": [
         {
            "name": "MODULES",
@@ -72,13 +77,7 @@ resource "aws_ecs_task_definition" "frontend" {
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
-  # volume {
-  #   name = "data"
-  #   host_path = "/var/elasticsearch/data"
-  # }
-  # execution_role_arn       = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ecsTaskExecutionRole"
-  execution_role_arn       = "${aws_iam_role.ecs_task_role.arn}"
-
+  execution_role_arn       = aws_iam_role.ecs_task_role.arn
   container_definitions = <<DEFINITION
 [
   {
@@ -138,6 +137,7 @@ resource "aws_ecs_task_definition" "presto" {
   #   name = "data"
   #   host_path = "/var/elasticsearch/data"
   # }
+  execution_role_arn       = aws_iam_role.ecs_task_role.arn
   container_definitions = <<DEFINITION
 [
   {
@@ -146,6 +146,14 @@ resource "aws_ecs_task_definition" "presto" {
     "memory": ${var.fargate_memory},
     "name": "presto",
     "networkMode": "awsvpc",
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+            "awslogs-group": "${aws_cloudwatch_log_group.quix-logs.name}",
+            "awslogs-region": "${var.aws_region}",
+            "awslogs-stream-prefix": "presto"
+        }
+    },
     "portMappings": [
       {
         "containerPort": ${var.presto_port},

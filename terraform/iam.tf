@@ -15,7 +15,7 @@ data "aws_iam_policy_document" "task-assume-role-policy" {
 resource "aws_iam_role" "ecs_task_role" {
   name               = "ecs_task_role"
   path               = "/system/"
-  assume_role_policy = "${data.aws_iam_policy_document.task-assume-role-policy.json}"
+  assume_role_policy = data.aws_iam_policy_document.task-assume-role-policy.json
 }
 
 resource "aws_iam_policy_attachment" "ecs_task_role_attach" {
@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "autoscaling-assume-role-policy" {
 resource "aws_iam_role" "ecs_autoscale_role" {
   name               = "ecs_autoscale_role"
   path               = "/system/"
-  assume_role_policy = "${data.aws_iam_policy_document.autoscaling-assume-role-policy.json}"
+  assume_role_policy = data.aws_iam_policy_document.autoscaling-assume-role-policy.json
 }
 
 resource "aws_iam_policy_attachment" "ecs_autoscale_role_attach" {
