@@ -42,16 +42,34 @@ variable "fargate_memory" {
 
 variable "quix_backend_image" {
   description = "Docker image for backend to run in the ECS cluster"
-  # default     = "wixquix/quix-backend:release-v1"
-  default     = "nginx:latest"
+  default     = "wixquix/quix-backend:release-v1"
 
+}
+
+variable "quix_frontend_image" {
+  description = "Docker image for frontend to run in the ECS cluster"
+  default     = "wixquix/quix-frontend:release-v1"
+}
+
+variable "presto_image" {
+  description = "Docker image for Presto to run in the ECS cluster"
+  default     = "starburstdata/presto:latest"
 }
 
 variable "backend_port" {
   description = "Port exposed by the docker image of backend"
-  default     = 80
+  default     = 8081
 }
 
+variable "frontend_port" {
+  description = "Port exposed by the docker image of frontend"
+  default     = 3000
+}
+
+variable "presto_port" {
+  description = "Port exposed by the docker image of presto"
+  default     = 8181
+}
 variable "mapPublicIP" {
   default = true
 }

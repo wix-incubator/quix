@@ -136,14 +136,20 @@ resource "aws_security_group" "lb" {
   vpc_id      = aws_vpc.main.id
   ingress {
     protocol    = "tcp"
-    from_port   = 80
-    to_port     = 80
+    from_port   = var.backend_port
+    to_port     = var.backend_port
     cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     protocol    = "tcp"
-    from_port   = 8081
-    to_port     = 8081
+    from_port   = var.frontend_port
+    to_port     = var.frontend_port
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    protocol    = "tcp"
+    from_port   = 80
+    to_port     = 80
     cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
@@ -160,16 +166,24 @@ resource "aws_security_group" "ecs_tasks" {
   description = "allow inbound access from the ALB only"
   vpc_id      = aws_vpc.main.id
 
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = var.backend_port
+    to_port     = var.backend_port
+    security_groups = [aws_security_group.lb.id]
+  }
+  ingress {
+    protocol    = "tcp"
+    from_port   = var.frontend_port
+    to_port     = var.frontend_port
+    security_groups = [aws_security_group.lb.id]
+  }
+
   ingress {
     protocol        = "tcp"
     from_port       = "80"
     to_port         = "80"
-    security_groups = [aws_security_group.lb.id]
-  }
-  ingress {
-    protocol        = "tcp"
-    from_port       = "8081"
-    to_port         = "8081"
     security_groups = [aws_security_group.lb.id]
   }
   egress {
@@ -183,7 +197,7 @@ resource "aws_security_group" "ecs_tasks" {
 ### ALB
 
 resource "aws_alb" "main" {
-  name            = "tf-ecs-chat"
+  name            = "ecs-quix-alb"
   subnets         = aws_subnet.public.*.id
   security_groups = [aws_security_group.lb.id]
   tags = merge(
@@ -194,9 +208,9 @@ resource "aws_alb" "main" {
   )
 }
 
-resource "aws_alb_target_group" "app" {
-  name        = "tf-ecs-chat"
-  port        = 80
+resource "aws_alb_target_group" "frontend" {
+  name        = "ecs-quix-frontend-alb-tg"
+  port        = var.frontend_port
   protocol    = "HTTP"
   vpc_id      = aws_vpc.main.id
   target_type = "ip"
@@ -208,14 +222,39 @@ resource "aws_alb_target_group" "app" {
   )
 }
 
-# Redirect all traffic from the ALB to the target group
-resource "aws_alb_listener" "front_end" {
+resource "aws_alb_listener" "frontend" {
   load_balancer_arn = aws_alb.main.id
-  port              = "80"
+  port              = var.frontend_port
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = aws_alb_target_group.app.id
+    target_group_arn = aws_alb_target_group.frontend.id
+    type             = "forward"
+  }
+}
+
+
+resource "aws_alb_target_group" "backend" {
+  name        = "ecs-quix-backend-alb-tg"
+  port        = var.backend_port
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+  tags = merge(
+    {
+      "Name" = "alb-tg-${var.vpc_name}"
+    },
+    var.tags,
+  )
+}
+
+resource "aws_alb_listener" "backend" {
+  load_balancer_arn = aws_alb.main.id
+  port              = var.backend_port
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_alb_target_group.backend.id
     type             = "forward"
   }
 }
