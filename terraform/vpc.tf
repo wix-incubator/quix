@@ -146,6 +146,13 @@ resource "aws_security_group" "lb" {
     to_port     = var.frontend_port
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  ingress {
+    protocol    = "tcp"
+    from_port   = var.presto_port
+    to_port     = var.presto_port
+    cidr_blocks = ["10.0.0.0/8"]
+  }
   ingress {
     protocol    = "tcp"
     from_port   = 80
@@ -227,6 +234,44 @@ resource "aws_alb" "main" {
   )
 }
 
+resource "aws_alb" "presto" {
+  name            = "ecs-quix-presto-alb"
+  subnets         = aws_subnet.private.*.id
+  security_groups = [aws_security_group.lb.id]
+  internal = true
+  tags = merge(
+    {
+      "Name" = "alb-presto-${var.vpc_name}"
+    },
+    var.tags,
+  )
+}
+
+resource "aws_alb_target_group" "presto" {
+  name        = "ecs-quix-presto-alb-tg"
+  port        = var.presto_port
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+  tags = merge(
+    {
+      "Name" = "alb-tg-presto-${var.vpc_name}"
+    },
+    var.tags,
+  )
+}
+
+resource "aws_alb_listener" "presto" {
+  load_balancer_arn = aws_alb.presto.id
+  port              = var.presto_port
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_alb_target_group.presto.id
+    type             = "forward"
+  }
+}
+
 resource "aws_alb_target_group" "frontend" {
   name        = "ecs-quix-frontend-alb-tg"
   port        = var.frontend_port
@@ -235,7 +280,7 @@ resource "aws_alb_target_group" "frontend" {
   target_type = "ip"
   tags = merge(
     {
-      "Name" = "alb-tg-${var.vpc_name}"
+      "Name" = "alb-tg-frontend-${var.vpc_name}"
     },
     var.tags,
   )
@@ -261,7 +306,7 @@ resource "aws_alb_target_group" "backend" {
   target_type = "ip"
   tags = merge(
     {
-      "Name" = "alb-tg-${var.vpc_name}"
+      "Name" = "alb-tg-backend-${var.vpc_name}"
     },
     var.tags,
   )
@@ -288,51 +333,3 @@ resource "aws_alb_listener" "backend" {
     type             = "forward"
   }
 }
-
-#
-# resource "aws_security_group_rule" "ecs_tasks-in-http" {
-# 	type="ingress"
-# 	from_port=80
-# 	to_port=80
-# 	protocol="tcp"
-# 	security_group_id="${aws_security_group.ecs_tasks.id}"
-# 	source_security_group_id="${aws_security_group.production-access.id}"
-# }
-# resource "aws_security_group_rule" "ecs_tasks-eggress" {
-# 	type="egress"
-# 	from_port=0
-# 	to_port=0
-# 	protocol="-1"
-# 	security_group_id="${aws_security_group.ecs_tasks.id}"
-# 	cidr_blocks=["0.0.0.0/0"]
-# }
-# Network Load Balancer for apiservers and ingress
-# resource "aws_lb" "nlb" {
-#   name               = "main-nlb"
-#   load_balancer_type = "network"
-#   internal           = false
-#   subnets = aws_subnet.public.*.id
-#   enable_cross_zone_load_balancing = true
-# }
-# Forward HTTP ingress traffic to workers
-# resource "aws_lb_listener" "ingress-http" {
-#   load_balancer_arn = aws_lb.nlb.arn
-#   protocol          = "TCP"
-#   port              = 80
-#
-#   default_action {
-#     type             = "forward"
-#     target_group_arn = module.workers.target_group_http
-#   }
-# }
-#
-# resource "aws_network_interface" "eni" {
-#   subnet_id       = "${aws_subnet.public_a.id}"
-#   private_ips     = ["10.0.0.50"]
-#   security_groups = ["${aws_security_group.web.id}"]
-#
-#   attachment {
-#     instance     = "${aws_instance.test.id}"
-#     device_index = 1
-#   }
-# }

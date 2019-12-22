@@ -152,7 +152,7 @@ resource "aws_ecs_task_definition" "quix" {
       },
       {
           "name": "MODULES_PRESTO_API",
-          "value": "http://presto:${var.presto_port}/v1"
+          "value": "http://${aws_alb.presto.dns_name}:${var.presto_port}/v1"
        },
       {
        "name": "MODULES_PRESTO_CATALOG",
@@ -211,5 +211,14 @@ resource "aws_ecs_service" "quix" {
     container_port   = var.backend_port
   }
 
-  depends_on = [aws_alb_listener.frontend,aws_alb_listener.backend]
+  load_balancer {
+    target_group_arn = aws_alb_target_group.presto.id
+    container_name   = "presto"
+    container_port   = var.presto_port
+  }
+  depends_on = [
+      aws_alb_listener.frontend,
+      aws_alb_listener.backend,
+      aws_alb_listener.presto
+  ]
 }
