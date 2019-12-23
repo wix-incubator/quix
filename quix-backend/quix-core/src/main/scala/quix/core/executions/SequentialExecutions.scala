@@ -22,22 +22,17 @@ class SequentialExecutions[Code](val executor: AsyncQueryExecutor[Code, Batch])
   def execute(statements: Seq[Code], user: User, resultBuilder: Builder[Code, Batch]): Task[Unit] = {
     val activeQuery = ActiveQuery[Code](UUID.randomUUID().toString, statements, user)
 
-    val loop = for {
-      _ <- Task.eval(queries.put(activeQuery.id, activeQuery))
+    for {
       _ <- resultBuilder.start(activeQuery)
-      _ <- makeLoop(activeQuery, resultBuilder)
+      _ <- Task(queries.put(activeQuery.id, activeQuery))
+      _ <- makeLoop(activeQuery, resultBuilder).attempt
+      _ <- Task(queries.invalidate(activeQuery.id))
+      _ <- resultBuilder.end(activeQuery)
     } yield ()
-
-    loop.doOnFinish { _ =>
-      for {
-        _ <- Task.eval(queries.invalidate(activeQuery.id))
-        _ <- resultBuilder.end(activeQuery)
-      } yield ()
-    }
   }
 
   def makeLoop(query: ActiveQuery[Code], builder: Builder[Code, Batch]): Task[Unit] = {
-    Task.eval(builder.lastError).flatMap {
+    Task(builder.lastError).flatMap {
       case None =>
         query.statements.lift(query.current) match {
           case Some(_) =>
