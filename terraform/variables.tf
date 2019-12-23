@@ -68,7 +68,7 @@ variable "frontend_port" {
 
 variable "presto_port" {
   description = "Port exposed by the docker image of presto"
-  default     = 8181
+  default     = 8080
 }
 variable "mapPublicIP" {
   default = true
