@@ -20,7 +20,7 @@ import quix.bigquery._
 import quix.bigquery.db.{BigQueryAutocomplete, BigQueryCatalogs, BigQueryTables}
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
 import quix.core.download.DownloadableQueriesImpl
-import quix.core.executions.SequentialExecutions
+import quix.core.executions.{SequentialExecutions, SqlModule}
 import quix.core.utils.JsonOps
 import quix.jdbc._
 import quix.presto._
@@ -127,29 +127,26 @@ class ModulesConfiguration extends LazyLogging {
       val executor = new QueryExecutor(client)
       val executions = new SequentialExecutions[String](executor)
 
-      val db = {
-
-        val emptyDbTimeout = {
-          env.getProperty(s"modules.$presto.db.empty.timeout", classOf[Long],
-            env.getProperty("presto.db.empty.timeout", classOf[Long], 1000L * 10))
-        }
-
-        val requestTimeout = {
-          env.getProperty(s"modules.$presto.db.request.timeout", classOf[Long],
-            env.getProperty("presto.db.request.timeout", classOf[Long], 5000L))
-        }
-
-        logger.info(s"event=[spring-config] bean=[RefreshableDbConfig] firstEmptyStateDelay=$emptyDbTimeout requestTimeout=$requestTimeout")
-
-        val prestoCatalogs = new PrestoCatalogs(executor)
-        val catalogs = new RefreshableCatalogs(prestoCatalogs, emptyDbTimeout, 1000L * 60 * 5)
-        val autocomplete = new RefreshableAutocomplete(new PrestoAutocomplete(prestoCatalogs, executor), emptyDbTimeout, 1000L * 60 * 5)
-        val tables = new PrestoTables(executor, requestTimeout)
-
-        new RefreshableDb(catalogs, autocomplete, tables)
+      val emptyDbTimeout = {
+        env.getProperty(s"modules.$presto.db.empty.timeout", classOf[Long],
+          env.getProperty("presto.db.empty.timeout", classOf[Long], 1000L * 10))
       }
 
-      new PrestoQuixModule(executions, Some(db))
+      val requestTimeout = {
+        env.getProperty(s"modules.$presto.db.request.timeout", classOf[Long],
+          env.getProperty("presto.db.request.timeout", classOf[Long], 5000L))
+      }
+
+      logger.info(s"event=[spring-config] bean=[RefreshableDbConfig] firstEmptyStateDelay=$emptyDbTimeout requestTimeout=$requestTimeout")
+
+      val prestoCatalogs = new PrestoCatalogs(executor)
+      val catalogs = new RefreshableCatalogs(prestoCatalogs, emptyDbTimeout, 1000L * 60 * 5)
+      val autocomplete = new RefreshableAutocomplete(new PrestoAutocomplete(prestoCatalogs, executor), emptyDbTimeout, 1000L * 60 * 5)
+      val tables = new PrestoTables(executor, requestTimeout)
+
+      val db = new RefreshableDb(catalogs, autocomplete, tables)
+
+      new SqlModule(executions, Some(db))
     }
 
     for (module <- getModules(env, "presto"))
@@ -192,7 +189,7 @@ class ModulesConfiguration extends LazyLogging {
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      AthenaQuixModule(executor, db)
+      new SqlModule(new SequentialExecutions[String](executor), Some(db))
     }
 
     for (module <- getModules(env, "athena"))
@@ -239,7 +236,7 @@ class ModulesConfiguration extends LazyLogging {
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      BigQueryQuixModule(executor, db)
+      new SqlModule(new SequentialExecutions[String](executor), Some(db))
     }
 
     for (module <- getModules(env, "bigquery"))
@@ -249,7 +246,7 @@ class ModulesConfiguration extends LazyLogging {
   }
 
   @Bean def initJdbc(env: Environment): String = {
-    for (module <- getModules(env, "jdbc")) {
+    def getJdbcModule(module: String): SqlModule = {
       val url = env.getRequiredProperty(s"modules.$module.url")
       val user = env.getRequiredProperty(s"modules.$module.user")
       val pass = env.getRequiredProperty(s"modules.$module.pass")
@@ -277,7 +274,11 @@ class ModulesConfiguration extends LazyLogging {
       val autocomplete = new RefreshableAutocomplete(jdbcAutocomplete, emptyDbTimeout, 1000L * 60 * 5)
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      Registry.modules.update(module, JdbcQuixModule(executor, db))
+      new SqlModule(new SequentialExecutions[String](executor), Option(db))
+    }
+
+    for (module <- getModules(env, "jdbc")) {
+      Registry.modules.update(module, getJdbcModule(module))
     }
 
     "OK"
