@@ -70,7 +70,7 @@ class Packages:
             if self.extra_url:
                 extra_index_url_args = ['--extra-index-url', self.extra_url]
 
-            pipargs = ['install'] + list(required_packages) + ['--prefix', self.dir, '--upgrade',
+            pipargs = ['install'] + list(required_packages) + ['--prefix', self.dir, '--ignore-installed',
                                                                '--no-warn-script-location',
                                                                '--no-warn-conflicts'] + index_url_args + extra_index_url_args
 
