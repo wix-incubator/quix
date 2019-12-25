@@ -103,3 +103,44 @@ variable "tf_lock_table_read_capacity" {
 variable "tf_lock_table_write_capacity" {
   default = 1
 }
+
+variable "create_separate_presto" {
+  description  = "Defines if we need to create Presto ECS & talk to it via ALB"
+  default = false
+}
+
+# Let's Encrypt Account Registration Config
+
+variable "enable_ssl" {
+  description  = "Defines if we need to enable SSL for ALB"
+  default = false
+}
+
+variable "dns_domain_name"          {
+    default = "quix-demo.io"
+}
+
+variable "acme_server_url"          {
+    default = "https://acme.api.letsencrypt.org/directory"
+}
+variable "acme_registration_email"  {
+    default = "quix-demo@quix-demo.io"
+}
+
+
+variable "aws_acme_profile"                 {
+    default = "acme"
+}
+variable "acme_account_key_pem"                 {  default = "" }
+variable "acme_certificate_common_name"         {
+    description = "Domain for letsencrypt"
+    default = "quix-demo.io"
+
+}
+variable "min_days_remaining" {
+  description = "The minimum amount of days remaining on the expiration of a certificate before a renewal is attempted"
+  default     = 14
+}
+
+variable "acme_challenge_aws_access_key_id"     { default = ""}
+variable "acme_challenge_aws_secret_access_key" { default = ""}
