@@ -124,7 +124,7 @@ class MultiBuilderTest extends SpecWithJUnit {
       builder.errorSubQuery(query.id, new Exception("boom!")).runToFuture(Scheduler.global)
 
       eventually {
-        consumer.payloads must contain(SubQueryError(query.id, "boom!"))
+        consumer.payloads must contain(SubQueryError(query.id, "Exception(boom!)"))
       }
     }
   }
@@ -135,7 +135,7 @@ class MultiBuilderTest extends SpecWithJUnit {
       builder.error(query.id, new Exception("boom!")).runToFuture(Scheduler.global)
 
       eventually {
-        consumer.payloads must contain(Error(query.id, "boom!"))
+        consumer.payloads must contain(Error(query.id, "Exception(boom!)"))
       }
     }
   }

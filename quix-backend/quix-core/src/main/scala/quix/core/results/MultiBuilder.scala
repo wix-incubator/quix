@@ -59,7 +59,8 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
 
   override def errorSubQuery(queryId: String, e: Throwable) = {
     lastError = Some(e)
-    consumer.write(SubQueryError(queryId, e.getMessage))
+    val errorMessage = s"${e.getClass.getSimpleName}(${e.getMessage})"
+    consumer.write(SubQueryError(queryId, errorMessage))
   }
 
   def sendColumns(queryId: String, names: Seq[BatchColumn]) = {
@@ -74,7 +75,8 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
 
   override def error(queryId: String, e: Throwable) = {
     lastError = Some(e)
-    consumer.write(Error(queryId, e.getMessage))
+    val errorMessage = s"${e.getClass.getSimpleName}(${e.getMessage})"
+    consumer.write(Error(queryId, errorMessage))
   }
 
   override def log(queryId: String, line: String, level: String): Task[Unit] = {
