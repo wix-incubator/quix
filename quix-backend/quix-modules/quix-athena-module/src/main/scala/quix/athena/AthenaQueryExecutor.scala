@@ -120,7 +120,6 @@ class AthenaQueryExecutor(val client: AthenaClient,
       case "varchar" => String.valueOf(datum)
       case "tinyint" => new Integer(datum)
       case "smallint" => new Integer(datum)
-      case "smallint" => new Integer(datum)
       case "integer" => new Integer(datum)
       case "bigint" => new java.lang.Long(datum)
       case "double" => new java.lang.Double(datum)
