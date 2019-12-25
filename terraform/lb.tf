@@ -9,58 +9,13 @@ resource "aws_alb" "main" {
     },
     var.tags,
   )
-  # depends_on = [aws_security_group.lb]
 
 }
 
-### ALB PRESTO
-resource "aws_alb" "presto" {
-  name            = "ecs-quix-presto-alb"
-  subnets         = aws_subnet.private.*.id
-  security_groups = [aws_security_group.presto_lb.id]
-  internal = true
-  tags = merge(
-    {
-      "Name" = "alb-presto-${var.vpc_name}"
-    },
-    var.tags,
-  )
-  # depends_on = [aws_security_group.presto_lb]
-}
-
-resource "aws_alb_target_group" "presto" {
-  name        = "ecs-quix-presto-alb-tg"
-  port        = var.presto_port
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.main.id
-  target_type = "ip"
-  tags = merge(
-    {
-      "Name" = "alb-tg-presto-${var.vpc_name}"
-    },
-    var.tags,
-  )
-  health_check {
-   healthy_threshold   = 2
-   unhealthy_threshold = 5
-   timeout             = "5"
-   port                = var.presto_port
-   path                = "/"
-   protocol            = "HTTP"
-   interval            = 10
-   matcher             = "200-499"
- }
-}
-
-resource "aws_alb_listener" "presto" {
-  load_balancer_arn = aws_alb.presto.id
-  port              = var.presto_port
-  protocol          = "HTTP"
-
-  default_action {
-    target_group_arn = aws_alb_target_group.presto.id
-    type             = "forward"
-  }
+resource "aws_alb_listener_certificate" "frontend_https" {
+  count             = var.enable_ssl ? 1: 0
+  listener_arn      = aws_alb_listener.frontend.arn
+  certificate_arn   = aws_iam_server_certificate.alb_cert[0].arn
 }
 
 resource "aws_alb_target_group" "frontend" {
@@ -131,6 +86,60 @@ resource "aws_alb_listener" "backend" {
 
   default_action {
     target_group_arn = aws_alb_target_group.backend.id
+    type             = "forward"
+  }
+}
+
+
+### ALB PRESTO
+resource "aws_alb" "presto" {
+  count =         var.create_separate_presto ? 1: 0
+  name            = "ecs-quix-presto-alb"
+  subnets         = aws_subnet.private.*.id
+  security_groups = [aws_security_group.presto_lb.id]
+  internal = true
+  tags = merge(
+    {
+      "Name" = "alb-presto-${var.vpc_name}"
+    },
+    var.tags,
+  )
+  # depends_on = [aws_security_group.presto_lb]
+}
+
+resource "aws_alb_target_group" "presto" {
+  count =     var.create_separate_presto ? 1: 0
+  name        = "ecs-quix-presto-alb-tg"
+  port        = var.presto_port
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.main.id
+  target_type = "ip"
+  tags = merge(
+    {
+      "Name" = "alb-tg-presto-${var.vpc_name}"
+    },
+    var.tags,
+  )
+  health_check {
+   healthy_threshold   = 2
+   unhealthy_threshold = 5
+   timeout             = "5"
+   port                = var.presto_port
+   path                = "/"
+   protocol            = "HTTP"
+   interval            = 10
+   matcher             = "200-499"
+ }
+}
+
+resource "aws_alb_listener" "presto" {
+  count =         var.create_separate_presto ? 1: 0
+  load_balancer_arn = aws_alb.presto[0].id
+  port              = var.presto_port
+  protocol          = "HTTP"
+
+  default_action {
+    target_group_arn = aws_alb_target_group.presto[0].id
     type             = "forward"
   }
 }

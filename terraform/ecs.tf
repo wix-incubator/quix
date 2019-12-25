@@ -179,8 +179,9 @@ resource "aws_ecs_task_definition" "quix" {
        "value": "${aws_ssm_parameter.dbhost.value}"
       }
   ]
-},
-{
+}
+%{ if var.create_separate_presto != true }
+,{
 
   "essential": true,
   "cpu": ${var.fargate_cpu},
@@ -219,7 +220,7 @@ resource "aws_ecs_task_definition" "quix" {
       "hostPort": ${var.presto_port}
     }
   ]
-}
+}%{ endif }
 ]
 DEFINITION
     # depends_on = [
@@ -274,78 +275,80 @@ resource "aws_ecs_service" "quix" {
 }
 #####
 # Presto Only Service
-# resource "aws_ecs_task_definition" "presto" {
-#   family                   = "presto"
-#   network_mode             = "awsvpc"
-#   requires_compatibilities = ["FARGATE"]
-#   cpu                      = var.fargate_cpu * 4
-#   memory                   = var.fargate_memory * 8
-#   execution_role_arn       = aws_iam_role.ecs_task_role.arn
-#   container_definitions = <<DEFINITION
-# [
-# {
-#
-#   "essential": true,
-#   "cpu": ${var.fargate_cpu},
-#   "image": "${var.presto_image}",
-#   "memory": ${var.fargate_memory*8},
-#   "name": "presto",
-#   "networkMode": "awsvpc",
-#   "logConfiguration": {
-#       "logDriver": "awslogs",
-#       "options": {
-#           "awslogs-group": "${aws_cloudwatch_log_group.quix-logs.name}",
-#           "awslogs-region": "${var.aws_region}",
-#           "awslogs-stream-prefix": "presto"
-#       }
-#   },
-#   "ulimits": [
-#     {
-#       "name": "nofile",
-#       "hardLimit": 65536,
-#       "softLimit": 65536
-#     },
-#     {
-#       "name": "nproc",
-#       "hardLimit": 2048,
-#       "softLimit": 2048
-#     },
-#     {
-#       "name": "memlock",
-#       "hardLimit": -1,
-#       "softLimit": -1
-#     }
-#   ],
-#   "portMappings": [
-#     {
-#       "containerPort": ${var.presto_port},
-#       "hostPort": ${var.presto_port}
-#     }
-#   ]
-# }
-# ]
-# DEFINITION
-#     # depends_on = [
-#     #     aws_cloudwatch_log_group.quix-logs
-#     # ]
-# }
-#
-# resource "aws_ecs_service" "presto" {
-#   name            = "ecs-service-presto"
-#   cluster         = aws_ecs_cluster.main.id
-#   task_definition = aws_ecs_task_definition.presto.arn
-#   desired_count   = "1"
-#   launch_type     = "FARGATE"
-#
-#   network_configuration {
-#     security_groups = [aws_security_group.ecs_tasks.id]
-#     subnets         = aws_subnet.private.*.id
-#   }
-#
-#
-#   load_balancer {
-#     target_group_arn = aws_alb_target_group.presto.id
-#     container_name   = "presto"
-#     container_port   = var.presto_port
-#   }
-# }
+resource "aws_ecs_task_definition" "presto" {
+  count                    = var.create_separate_presto ? 1: 0
+  family                   = "presto"
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.fargate_cpu * 4
+  memory                   = var.fargate_memory * 8
+  execution_role_arn       = aws_iam_role.ecs_task_role.arn
+  container_definitions = <<DEFINITION
+[
+{
+
+  "essential": true,
+  "cpu": ${var.fargate_cpu},
+  "image": "${var.presto_image}",
+  "memory": ${var.fargate_memory*8},
+  "name": "presto",
+  "networkMode": "awsvpc",
+  "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+          "awslogs-group": "${aws_cloudwatch_log_group.quix-logs.name}",
+          "awslogs-region": "${var.aws_region}",
+          "awslogs-stream-prefix": "presto"
+      }
+  },
+  "ulimits": [
+    {
+      "name": "nofile",
+      "hardLimit": 65536,
+      "softLimit": 65536
+    },
+    {
+      "name": "nproc",
+      "hardLimit": 2048,
+      "softLimit": 2048
+    },
+    {
+      "name": "memlock",
+      "hardLimit": -1,
+      "softLimit": -1
+    }
+  ],
+  "portMappings": [
+    {
+      "containerPort": ${var.presto_port},
+      "hostPort": ${var.presto_port}
+    }
+  ]
+}
+]
+DEFINITION
+    # depends_on = [
+    #     aws_cloudwatch_log_group.quix-logs
+    # ]
+}
+
+resource "aws_ecs_service" "presto" {
+  count                     = var.create_separate_presto ? 1: 0
+  name                      = "ecs-service-presto"
+  cluster                    = aws_ecs_cluster.main.id
+  task_definition            = aws_ecs_task_definition.presto[0].arn
+  desired_count              = "1"
+  launch_type                = "FARGATE"
+
+  network_configuration {
+    security_groups = [aws_security_group.ecs_tasks.id]
+    subnets         = aws_subnet.private.*.id
+  }
+
+
+  load_balancer {
+    target_group_arn = aws_alb_target_group.presto[0].id
+    container_name   = "presto"
+    container_port   = var.presto_port
+  }
+}
