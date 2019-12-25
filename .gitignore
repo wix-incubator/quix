@@ -92,4 +92,4 @@ node_modules
 *.tfstate.backup
 .terraform
 vpc.plan
-
+terraform.tfvars
