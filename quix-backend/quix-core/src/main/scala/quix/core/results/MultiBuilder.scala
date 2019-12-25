@@ -59,8 +59,15 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
 
   override def errorSubQuery(queryId: String, e: Throwable) = {
     lastError = Some(e)
-    val errorMessage = s"${e.getClass.getSimpleName}(${e.getMessage})"
+    val errorMessage = makeErrorMessage(e)
     consumer.write(SubQueryError(queryId, errorMessage))
+  }
+
+  private def makeErrorMessage(e: Throwable) = {
+    e match {
+      case ExceptionPropagatedToClient(message) => message
+      case _ => s"${e.getClass.getSimpleName}(${e.getMessage})"
+    }
   }
 
   def sendColumns(queryId: String, names: Seq[BatchColumn]) = {
@@ -75,7 +82,7 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
 
   override def error(queryId: String, e: Throwable) = {
     lastError = Some(e)
-    val errorMessage = s"${e.getClass.getSimpleName}(${e.getMessage})"
+    val errorMessage = makeErrorMessage(e)
     consumer.write(Error(queryId, errorMessage))
   }
 

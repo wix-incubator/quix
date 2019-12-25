@@ -18,7 +18,8 @@ case class ActiveQuery[Code](id: String,
 
 /**
  * Builder is used to propagate messages between AsyncQueryExecutor and quix frontend
- * @tparam Code designates type of incoming code, usually String
+ *
+ * @tparam Code    designates type of incoming code, usually String
  * @tparam Results designates type of outgoing messages, usually [[quix.api.execute.Batch]]
  */
 
@@ -50,9 +51,9 @@ trait Builder[Code, Results] {
 
   /** Used to send different log messages.
    *
-   * @param line message to log
+   * @param line  message to log
    * @param level supported levels are INFO and ERROR
-   *  */
+   **/
   def log(queryId: String, line: String, level: String = "INFO"): Task[Unit]
 }
 
@@ -65,3 +66,5 @@ trait Executions[Code, Results] {
 trait AsyncQueryExecutor[Code, Results] {
   def runTask(query: ActiveQuery[Code], builder: Builder[Code, Results]): Task[Unit]
 }
+
+case class ExceptionPropagatedToClient(message: String) extends Exception

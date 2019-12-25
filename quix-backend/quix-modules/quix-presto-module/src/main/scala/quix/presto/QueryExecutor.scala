@@ -105,7 +105,8 @@ class QueryExecutor(val client: PrestoStateClient,
 
   def rewriteException(e: Throwable): Throwable = e match {
     case e@(_: ConnectException | _: SocketTimeoutException | _: SocketException) =>
-      new IllegalStateException(s"Presto can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}", e)
+      val message = s"Presto can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}"
+      ExceptionPropagatedToClient(message)
     case _ => e
   }
 }
