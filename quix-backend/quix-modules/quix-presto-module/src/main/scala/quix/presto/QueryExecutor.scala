@@ -52,17 +52,10 @@ class QueryExecutor(val client: PrestoStateClient,
 
     val task = client.advance(uri)
       .delayExecution(delay)
-      .onErrorHandleWith {
-        case e@(_: ConnectException | _: SocketTimeoutException | _: SocketException) =>
-          val ex = new IllegalStateException(s"Presto can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}", e)
-          builder.errorSubQuery(queryId, ex)
-            .logOnError(s"method=advance event=builder-failure-errorSubQuery query-id=${query.id} user=${query.user.email}")
-            .flatMap(_ => Task.raiseError(ex))
-
-        case ex: Exception =>
-          builder.errorSubQuery(queryId, ex)
-            .logOnError(s"method=advance event=builder-failure-errorSubQuery query-id=${query.id} user=${query.user.email}")
-            .flatMap(_ => Task.raiseError(ex))
+      .onErrorHandleWith { originalException =>
+        val exception = rewriteException(originalException)
+        builder.errorSubQuery(queryId, exception)
+          .flatMap(_ => Task.raiseError(exception))
       }
 
     log.flatMap(_ => task)
@@ -101,20 +94,19 @@ class QueryExecutor(val client: PrestoStateClient,
 
   def initClient(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[PrestoState] = {
     val log = Task(logger.info(s"method=initClient event=start query-id=${query.id} user=${query.user.email}"))
-    val task = client.init(query).onErrorHandleWith {
-      case e: Exception =>
-        val ex = rewriteException(e)
-        builder.error(query.id, ex)
-          .logOnError(s"method=initClient event=error query-id=${query.id} user=${query.user.email}")
-          .flatMap(_ => Task.raiseError(ex))
+    val task = client.init(query).onErrorHandleWith { originalException =>
+      val exception = rewriteException(originalException)
+      builder.error(query.id, exception)
+        .flatMap(_ => Task.raiseError(exception))
     }
 
     log.flatMap(_ => task)
   }
 
-  def rewriteException(e: Exception): Exception = e match {
+  def rewriteException(e: Throwable): Throwable = e match {
     case e@(_: ConnectException | _: SocketTimeoutException | _: SocketException) =>
-      new IllegalStateException(s"Presto can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}", e)
+      val message = s"Presto can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}"
+      ExceptionPropagatedToClient(message)
     case _ => e
   }
 }

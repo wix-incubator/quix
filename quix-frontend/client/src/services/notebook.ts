@@ -128,6 +128,7 @@ export const goToNotebook = (
 export const goToExamples = (app: App) => {
   app.go('notebook', {
     id: 'examples',
+    note: 'simple',
     isNew: false
   });
 }

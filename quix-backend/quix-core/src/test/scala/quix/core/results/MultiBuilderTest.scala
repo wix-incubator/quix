@@ -4,11 +4,12 @@ import monix.eval.Task
 import monix.execution.Scheduler
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
+import quix.api.execute.Batch._
 import quix.api.execute._
 import quix.api.users.User
 
 import scala.collection.mutable.ListBuffer
-import Batch._
+
 class MultiBuilderTest extends SpecWithJUnit {
 
   class ctx extends Scope {
@@ -124,6 +125,14 @@ class MultiBuilderTest extends SpecWithJUnit {
       builder.errorSubQuery(query.id, new Exception("boom!")).runToFuture(Scheduler.global)
 
       eventually {
+        consumer.payloads must contain(SubQueryError(query.id, "Exception(boom!)"))
+      }
+    }
+
+    "omit exception class on ExceptionPropagatedToClient" in new ctx {
+      builder.errorSubQuery(query.id, ExceptionPropagatedToClient("boom!")).runToFuture(Scheduler.global)
+
+      eventually {
         consumer.payloads must contain(SubQueryError(query.id, "boom!"))
       }
     }
@@ -133,6 +142,14 @@ class MultiBuilderTest extends SpecWithJUnit {
 
     "send Error event on error(query)" in new ctx {
       builder.error(query.id, new Exception("boom!")).runToFuture(Scheduler.global)
+
+      eventually {
+        consumer.payloads must contain(Error(query.id, "Exception(boom!)"))
+      }
+    }
+
+    "omit exception class on ExceptionPropagatedToClient" in new ctx {
+      builder.error(query.id, ExceptionPropagatedToClient("boom!")).runToFuture(Scheduler.global)
 
       eventually {
         consumer.payloads must contain(Error(query.id, "boom!"))

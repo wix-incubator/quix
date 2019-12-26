@@ -2,7 +2,7 @@ package quix.presto.rest
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute.ActiveQuery
+import quix.api.execute.{ActiveQuery, ExceptionPropagatedToClient}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.core.utils.TaskOps._
@@ -27,13 +27,13 @@ class ScalaJPrestoStateClient(config: PrestoConfig)
   }
 
   def readPrestoState[T: Manifest](response: HttpResponse[String]): Task[T] = {
-    if (response.isSuccess) {
+    val responseTask = if (response.isSuccess) {
       Task.eval(response.body.as[T])
-        .logOnError(s"event=read-presto-state-error response.code=${response.code} " +
-          s"response.statusLine=${response.statusLine} response.body=${response.body}")
     } else {
-      Task.raiseError(new IllegalArgumentException(response.body))
+      Task.raiseError(ExceptionPropagatedToClient(s"Request to presto failed with code=${response.code} and body=${response.body}"))
     }
+
+    responseTask.logOnError(s"event=read-presto-state-error response.code=${response.code} response.body=${response.body}")
   }
 
   override def advance(uri: String): Task[PrestoState] = {
