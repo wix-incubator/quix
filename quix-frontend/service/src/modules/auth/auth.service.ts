@@ -3,17 +3,22 @@ import {ConfigService} from 'config';
 import {JwtService} from '@nestjs/jwt';
 import {IGoogleUser} from './types';
 import {OAuth2Client} from 'google-auth-library';
+import {Request} from 'express';
+import {UsersService} from './users.service';
+import {Issuer, generators} from 'openid-client';
+import Cryptr from 'cryptr';
 
 export abstract class AuthService {
   abstract createUserJwtToken(userProfile: IGoogleUser): Promise<string>;
   abstract getUserProfileFromCode(
-    authCode: string,
+    res: Request,
   ): Promise<IGoogleUser | undefined>;
 }
 
 @Injectable()
 export class FakeAuthService implements AuthService {
-  getUserProfileFromCode(authCode: string) {
+  getUserProfileFromCode(req: Request) {
+    const authCode: string = req.query.code;
     const up: IGoogleUser = JSON.parse(authCode);
     return Promise.resolve(up);
   }
@@ -42,7 +47,8 @@ export class GoogleAuthService implements AuthService {
     return this.jwtService.signAsync(userProfile);
   }
 
-  async getUserProfileFromCode(authCode: string) {
+  async getUserProfileFromCode(req: Request) {
+    const authCode: string = req.query.code;
     const clientId = this.googleClientId;
     const clientSecret = this.googleAuthSecret;
 
@@ -86,17 +92,60 @@ export class OpenidAuthService implements AuthService {
     return this.jwtService.signAsync(userProfile);
   }
 
-  async getUserProfileFromCode(authCode: string) {
-    const payload: any = JSON.parse(authCode);
-    if (payload && payload.email && payload.sub) {
-      const up: IGoogleUser = {
-        avatar: payload.picture,
-        name: payload.name,
-        email: payload.email,
-        id: payload.sub,
-      };
-      return up;
+  private async getIssuerClient() {
+    const {
+      OpenIdDiscoveryDoc,
+      OpenIdClientId,
+      OpenIdClientSecret,
+      OpenIdRedirectUrl,
+    } = this.configService.getEnvSettings();
+    const discoverdIssuer = await Issuer.discover(OpenIdDiscoveryDoc);
+    return new discoverdIssuer.Client({
+      client_id: OpenIdClientId,
+      client_secret: OpenIdClientSecret,
+      redirect_uris: [OpenIdRedirectUrl],
+      response_types: ['code'],
+      // id_token_signed_response_alg (default "RS256")
+      // token_endpoint_auth_method (default "client_secret_basic")
+    });
+  }
+
+  async getUserProfileFromCode(req: Request) {
+    const {
+      OpenIdClientSecret,
+      OpenIdRedirectUrl,
+      AuthCookieName,
+      CookieAge,
+    } = this.configService.getEnvSettings();
+
+    const client = await this.getIssuerClient();
+    const params = client.callbackParams(req);
+    const cryptr = new Cryptr(OpenIdClientSecret);
+    const codeVerifier = cryptr.decrypt(req.cookies.code_verifier);
+
+    const openidStateString = req.cookies.__quixOpenidState;
+    const openidState = openidStateString
+      ? JSON.parse(openidStateString)
+      : null;
+    const state = req.query.state;
+
+    if (openidState && openidState[state]) {
+      const tokenSet = await client.callback(OpenIdRedirectUrl, params, {
+        code_verifier: codeVerifier,
+        state,
+      });
+
+      const userInfo = await client.userinfo(tokenSet);
+
+      if (userInfo && userInfo.email && userInfo.sub) {
+        const up: IGoogleUser = {
+          avatar: userInfo.picture,
+          name: userInfo.name,
+          email: userInfo.email,
+          id: userInfo.sub,
+        };
+        return up;
+      }
     }
   }
 }
-

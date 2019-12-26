@@ -39,7 +39,7 @@ export const envSettingsDefaults = {
   OpenIdDiscoveryDoc: '',
   OpenIdClientSecret: '',
   OpenIdClientId: '',
-  OpenIdRedirectUrl: 'http://local.quix.com:3000/api/authenticate-openid',
+  OpenIdRedirectUrl: 'http://local.quix.com:3000/api/authenticate',
   DbType: 'sqlite' as 'mysql' | 'sqlite',
   AuthType: 'openid' as 'fake' | 'google' | 'openid',
   DbName: 'quix',

@@ -44,7 +44,11 @@ export abstract class ConfigService {
       : `${env.MountPath}/`;
 
     clientConfig
-      .setAuth({googleClientId: env.GoogleClientId, authType: 'google', openidAuthUrl: ''})
+      .setAuth({
+        googleClientId: env.GoogleClientId,
+        authType: 'google',
+        openidAuthUrl: '',
+      })
       .setClientTopology({
         executeBaseUrl: env.QuixBackendPublicUrl,
         staticsBaseUrl,
