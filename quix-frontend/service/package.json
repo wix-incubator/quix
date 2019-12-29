@@ -30,7 +30,7 @@
     "@nestjs/platform-express": "^6.0.0",
     "@nestjs/typeorm": "^6.0.0",
     "@types/node-fetch": "^2.5.0",
-    "appmetrics-dash": "^4.1.0",
+    "appmetrics-dash": "^5.1.0",
     "axios": "^0.19.0",
     "cookie-parser": "^1.4.4",
     "dotenv": "^7.0.0",
