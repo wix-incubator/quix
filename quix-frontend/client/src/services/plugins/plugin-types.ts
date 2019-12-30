@@ -31,6 +31,10 @@ export class NotePlugin extends Plugin {
     super(app, id, engine, hooks);
   }
 
+  getRunnerType() {
+    return this.getId();
+  }
+
   getConfig() {
     return this.config;
   }
