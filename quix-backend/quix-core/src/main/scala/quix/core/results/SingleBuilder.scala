@@ -6,6 +6,9 @@ import quix.api.execute.{ActiveQuery, Batch, BatchColumn, Builder}
 
 import scala.collection.mutable.ListBuffer
 
+/** SingleBuilder accepts rows and stores them in memory in order of their arrival.
+ * SingleBuilder is used by internal quix-backend processes such as db-tree traversal
+ * or E2E tests. To receive the rows collected so far, one must call builder.build() */
 class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
 
   private val rows = ListBuffer.empty[Seq[Any]]
@@ -13,6 +16,8 @@ class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
   private var failureCause: Option[Throwable] = None
   private var logMessages = ListBuffer.empty[String]
 
+  /**
+   * @returns the rows collected so far */
   def build(): List[Seq[Any]] = rows.toList
 
   override def errorSubQuery(queryId: String, e: Throwable) = Task {
