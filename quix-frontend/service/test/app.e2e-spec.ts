@@ -249,6 +249,198 @@ describe('Application (e2e)', () => {
       expectObject(searchResults).toNotLeakUserData(user1profile);
     });
   });
+
+  fdescribe('Syhchronize sessions', () => {
+    beforeAndAfter();
+
+    beforeEach(() => {
+      driver.addUser('user1', user1profile).addUser('user2', user2profile);
+    });
+
+    describe('/api/events/latest', () => {
+      it('Should provide latest event id for single event', async () => {
+        await driver.doLogin('user1');
+
+        const [{id: rootFolder}] = await driver.as('user1').get('files');
+        const [notebookId, createAction] = builder.createNotebookAction([
+          {id: rootFolder},
+        ]);
+
+        await driver.as('user1').postEvents(createAction);
+
+        const {latestEventId} = await driver
+          .as('user1')
+          .get('events', 'latest');
+        expect(latestEventId).toBe(notebookId);
+      });
+
+      it('Should provide latest event id for multiple events', async () => {
+        await driver.doLogin('user1');
+
+        const [{id: rootFolder}] = await driver.as('user1').get('files');
+        const [
+          firstNotebookId,
+          firstCreateAction,
+        ] = builder.createNotebookAction([{id: rootFolder}]);
+        const [
+          secondNotebookId,
+          secondCreateAction,
+        ] = builder.createNotebookAction([{id: rootFolder}]);
+
+        await driver
+          .as('user1')
+          .postEvents([firstCreateAction, secondCreateAction]);
+
+        const {latestEventId} = await driver
+          .as('user1')
+          .get('events', 'latest');
+        expect(latestEventId).toBe(secondNotebookId);
+      });
+
+      it('Should provide latest event id for single event, according to user ID', async () => {
+        await driver.doLogin('user1');
+
+        const [{id: user1RootFolder}] = await driver.as('user1').get('files');
+        const [
+          user1NotebookId,
+          user1CreateAction,
+        ] = builder.createNotebookAction([{id: user1RootFolder}]);
+
+        await driver.doLogin('user2');
+
+        const [{id: user2RootFolder}] = await driver.as('user2').get('files');
+        const [
+          user2NotebookId,
+          user2CreateAction,
+        ] = builder.createNotebookAction([{id: user2RootFolder}]);
+
+        await driver.as('user1').postEvents(user1CreateAction);
+        await driver.as('user2').postEvents(user2CreateAction);
+
+        const {latestEventId: user1LatestEventId} = await driver
+          .as('user1')
+          .get('events', 'latest');
+        expect(user1LatestEventId).toBe(user1NotebookId);
+
+        const {latestEventId: user2LatestEventId} = await driver
+          .as('user2')
+          .get('events', 'latest');
+        expect(user2LatestEventId).toBe(user2NotebookId);
+      });
+    });
+
+    describe('/api/events/:id', () => {
+      it('Should provide all events after given event ID', async () => {
+        await driver.doLogin('user1');
+
+        const [{id: rootFolder}] = await driver.as('user1').get('files');
+        const [
+          firstNotebookId,
+          firstCreateAction,
+        ] = builder.createNotebookAction([{id: rootFolder}]);
+        const [
+          secondNotebookId,
+          secondCreateAction,
+        ] = builder.createNotebookAction([{id: rootFolder}]);
+        const [
+          thirdNotebookId,
+          thirdCreateAction,
+        ] = builder.createNotebookAction([{id: rootFolder}]);
+
+        await driver
+          .as('user1')
+          .postEvents([
+            firstCreateAction,
+            secondCreateAction,
+            thirdCreateAction,
+          ]);
+
+        const events = await driver.as('user1').get('events', firstNotebookId);
+
+        expect(events).toEqual([
+          {...secondCreateAction, user: expect.any(String)},
+          {...thirdCreateAction, user: expect.any(String)},
+        ]);
+      });
+
+      it('Should provide all events after given event ID, posted individually', async () => {
+        await driver.doLogin('user1');
+
+        const [{id: rootFolder}] = await driver.as('user1').get('files');
+        const [
+          firstNotebookId,
+          firstCreateAction,
+        ] = builder.createNotebookAction([{id: rootFolder}]);
+        const [
+          secondNotebookId,
+          secondCreateAction,
+        ] = builder.createNotebookAction([{id: rootFolder}]);
+        const [
+          thirdNotebookId,
+          thirdCreateAction,
+        ] = builder.createNotebookAction([{id: rootFolder}]);
+
+        await driver.as('user1').postEvents(firstCreateAction);
+        await driver.as('user1').postEvents(secondCreateAction);
+        await driver.as('user1').postEvents(thirdCreateAction);
+
+        const events = await driver.as('user1').get('events', firstNotebookId);
+
+        expect(events).toEqual([
+          {...secondCreateAction, user: expect.any(String)},
+          {...thirdCreateAction, user: expect.any(String)},
+        ]);
+      });
+
+      it('Should provide all events after given event ID, given more than one user', async () => {
+        await driver.doLogin('user1');
+        const [{id: rootFolder}] = await driver.as('user1').get('files');
+
+        const [
+          firstNotebookId,
+          firstCreateAction,
+        ] = builder.createNotebookAction([{id: rootFolder}]);
+        const [
+          secondNotebookId,
+          secondCreateAction,
+        ] = builder.createNotebookAction([{id: rootFolder}]);
+        const [
+          thirdNotebookId,
+          thirdCreateAction,
+        ] = builder.createNotebookAction([{id: rootFolder}]);
+
+        await driver.doLogin('user2');
+        const [{id: user2RootFolder}] = await driver.as('user2').get('files');
+
+        await driver.as('user1').postEvents(firstCreateAction);
+        await driver.as('user1').postEvents(secondCreateAction);
+        await driver.as('user1').postEvents(thirdCreateAction);
+
+        const [
+          user2FirstNotebookId,
+          user2FirstCreateAction,
+        ] = builder.createNotebookAction([{id: user2RootFolder}]);
+        const [
+          user2SecondNotebookId,
+          user2SecondCreateAction,
+        ] = builder.createNotebookAction([{id: user2RootFolder}]);
+        await driver.as('user2').postEvents(user2FirstCreateAction);
+        await driver.as('user2').postEvents(user2SecondCreateAction);
+
+        const events = await driver.as('user1').get('events', firstNotebookId);
+        const user2Events = await driver
+          .as('user2')
+          .get('events', user2FirstNotebookId);
+        expect(events).toEqual([
+          {...secondCreateAction, user: expect.any(String)},
+          {...thirdCreateAction, user: expect.any(String)},
+        ]);
+        expect(user2Events).toEqual([
+          {...user2SecondCreateAction, user: expect.any(String)},
+        ]);
+      });
+    });
+  });
 });
 
 function resolveIn(n: number = 1000) {

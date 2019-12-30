@@ -19,6 +19,8 @@ import {FileTreePlugin} from './plugins/file-tree-plugin';
 import {FavoritesPlugin} from './plugins/favorites-plugin';
 import {UserPlugin} from './plugins/user-plugin';
 import {NotebookRepository} from 'entities/notebook/notebook.repository';
+import {EventsService} from './events.service';
+import { EventsPlugin } from './plugins/events-plugin';
 
 @Module({
   imports: [
@@ -44,7 +46,9 @@ import {NotebookRepository} from 'entities/notebook/notebook.repository';
     FileTreePlugin,
     FavoritesPlugin,
     UserPlugin,
+    EventsPlugin,
+    EventsService,
   ],
-  exports: [QuixEventBus, DbActionStore],
+  exports: [QuixEventBus, DbActionStore, EventsService],
 })
 export class EventSourcingModule {}
