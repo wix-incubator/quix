@@ -84,4 +84,8 @@ export class RupertNotePlugin extends NotePlugin {
       });
     });
   }
+
+  getRunnerType() {
+    return 'presto';
+  }
 }
