@@ -10,6 +10,8 @@ import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSessio
 import quix.api.execute._
 import quix.api.module.ExecutionModule
 import quix.api.users.{User, Users}
+import quix.core.history.HistoryBuilder
+import quix.core.history.dao.HistoryWriteDao
 import quix.core.results.MultiBuilder
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
@@ -20,6 +22,7 @@ import scala.util.Try
 class SqlStreamingController(val modules: Map[String, ExecutionModule[String, Batch]],
                              val users: Users,
                              val downloads: DownloadableQueries[String, Batch, ExecutionEvent],
+                             val historyWriteDao: HistoryWriteDao,
                              val io: Scheduler)
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
 
@@ -59,7 +62,7 @@ class SqlStreamingController(val modules: Map[String, ExecutionModule[String, Ba
       modules.get(queryType) match {
         case Some(module) =>
           logger.info(s"event=start-execution socket-id=${socket.getId} sql=${payload.code} uri=${socket.getUri} queryType=$queryType")
-          module.start(payload, consumer.id, consumer.user, makeResultBuilder(consumer, payload.session))
+          module.start(payload, consumer.id, consumer.user, makeResultBuilder(consumer, payload.session, queryType))
         case None =>
           logger.warn(s"event=start-execution-failure message=unknown-query-type socket-id=${socket.getId} sql=${payload.code} uri=${socket.getUri} queryType=$queryType")
           Task.unit
@@ -97,12 +100,16 @@ class SqlStreamingController(val modules: Map[String, ExecutionModule[String, Ba
     socket.getAttributes.asScala.mapValues(String.valueOf).toMap
   }
 
-  def makeResultBuilder(consumer: Consumer[ExecutionEvent], session: Map[String, String]) = {
-    if (session.get("mode").contains("download")) {
-      downloads.adapt(new MultiBuilder[String](consumer), consumer)
+  def makeResultBuilder(consumer: Consumer[ExecutionEvent],
+                        session: Map[String, String],
+                        queryType: String): Builder[String, Batch] = {
+    val multiBuilder = new MultiBuilder[String](consumer)
+    val builder = if (session.get("mode").contains("download")) {
+      downloads.adapt(multiBuilder, consumer)
     } else {
-      new MultiBuilder[String](consumer)
+      multiBuilder
     }
+    new HistoryBuilder(builder, historyWriteDao, queryType)
   }
 }
 
