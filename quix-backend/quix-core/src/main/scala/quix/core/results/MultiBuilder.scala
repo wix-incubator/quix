@@ -5,10 +5,12 @@ import monix.eval.Task
 import quix.api.execute.Batch._
 import quix.api.execute._
 
+/** MultiBuilder accepts Consumer[ExecutionEvent] and propagates to it different events from lifecycle of Builder.
+ * For example, {{{start(query: ActiveQuery[Code])}}} will produce {{{Start(query.id, query.statements.size)}}}
+ * */
 class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
   extends Builder[Code, Batch] with LazyLogging {
 
-  val started = System.currentTimeMillis()
   var rows = 0L
   val sentColumnsPerQuery = collection.mutable.Set.empty[String]
   var lastError: Option[Throwable] = None
@@ -70,6 +72,9 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
     }
   }
 
+  /** Sends to consumer SubQueryFields on every unique queryId.
+   * Every query can have only single list of columns, so no duplications are allowed.
+   *  */
   def sendColumns(queryId: String, names: Seq[BatchColumn]) = {
     val sentColumns = sentColumnsPerQuery.contains(queryId)
     if (!sentColumns && names.nonEmpty) {
