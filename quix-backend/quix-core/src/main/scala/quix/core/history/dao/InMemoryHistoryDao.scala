@@ -5,6 +5,7 @@ import java.time.Clock
 import cats.effect.concurrent.Ref
 import monix.eval.Task
 import quix.api.execute.ActiveQuery
+import quix.core.history.dao.InMemoryHistoryDao.{comparator, predicate}
 import quix.core.history.{Execution, ExecutionStatus}
 
 case class InMemoryHistoryDao(state: Ref[Task, Map[String, Execution]], clock: Clock)
@@ -33,20 +34,10 @@ case class InMemoryHistoryDao(state: Ref[Task, Map[String, Execution]], clock: C
 
   override def executions(filter: Filter, sort: Sort, page: Page): Task[List[Execution]] =
     state.get.map { map =>
-      map.values
-        .toList
-        .filter { execution =>
-          filter match {
-            case Filter.None => true
-            case Filter.Status(status) => execution.status == status
-          }
-        }
-        .sortBy { execution =>
-          sort.by match {
-            case SortField.StartTime => execution.startedAt
-          }
-        }
-        .slice(page.offset, page.offset + page.limit)
+      map.values.toList
+        .filter(predicate(filter))
+        .sortWith(comparator(sort))
+        .slice(page.offset, page.endOffset)
     }
 
   private def update(queryId: String, f: Execution => Execution): Task[Unit] =
@@ -61,4 +52,19 @@ case class InMemoryHistoryDao(state: Ref[Task, Map[String, Execution]], clock: C
 object InMemoryHistoryDao {
   def make(clock: Clock): Task[InMemoryHistoryDao] =
     Ref.of[Task, Map[String, Execution]](Map.empty).map(InMemoryHistoryDao(_, clock))
+
+  def predicate(filter: Filter)(execution: Execution): Boolean = filter match {
+    case Filter.None => true
+
+    case Filter.Status(status) =>
+      execution.status == status
+  }
+
+  def comparator(sort: Sort)(e1: Execution, e2: Execution): Boolean = sort match {
+    case Sort(SortField.StartTime, SortOrder.Ascending) =>
+      e1.startedAt isBefore e2.startedAt
+
+    case Sort(SortField.StartTime, SortOrder.Descending) =>
+      e1.startedAt isAfter e2.startedAt
+  }
 }

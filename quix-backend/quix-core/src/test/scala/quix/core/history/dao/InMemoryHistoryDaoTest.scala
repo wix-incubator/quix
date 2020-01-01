@@ -1,13 +1,12 @@
 package quix.core.history.dao
 
-import java.time.{Clock, ZoneOffset}
+import java.time.Clock
 
 import monix.eval.Task
-import quix.core.history.dao.HistoryDaoContractTest._
 
 class InMemoryHistoryDaoTest extends HistoryDaoContractTest {
 
-  override def createDao: Task[HistoryWriteDao with HistoryReadDao] =
-    InMemoryHistoryDao.make(Clock.fixed(now, ZoneOffset.UTC))
+  override def createDao(clock: Clock): Task[HistoryWriteDao with HistoryReadDao] =
+    InMemoryHistoryDao.make(clock)
 
 }

@@ -38,6 +38,7 @@ object SortOrder {
 trait Page {
   def offset: Int
   def limit: Int
+  def endOffset: Int = offset + limit
 }
 
 object Page {

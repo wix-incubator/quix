@@ -1,6 +1,6 @@
 package quix.core.history.dao
 
-import java.time.Instant
+import java.time.{Clock, Instant, ZoneOffset}
 
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
@@ -9,15 +9,17 @@ import quix.api.execute.ActiveQuery
 import quix.api.users.User
 import quix.core.history.ExecutionMatchers._
 import quix.core.history.dao.HistoryDaoContractTest._
-import quix.core.history.{Execution, ExecutionStatus}
+import quix.core.history.{Execution, ExecutionStatus, FakeClock}
+
+import scala.concurrent.duration._
 
 trait HistoryDaoContractTest extends SpecificationWithJUnit {
 
-  def createDao: Task[HistoryWriteDao with HistoryReadDao]
+  def createDao(clock: Clock = defaultClock): Task[HistoryWriteDao with HistoryReadDao]
 
   "return empty list of executions if none was saved" in {
     val result = for {
-      dao <- createDao
+      dao <- createDao()
       executions <- dao.executions()
     } yield executions
 
@@ -26,7 +28,7 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
 
   "return running execution" in {
     val result = for {
-      dao <- createDao
+      dao <- createDao()
       _ <- dao.executionStarted(query, queryType)
       executions <- dao.executions()
     } yield executions
@@ -43,7 +45,7 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
 
   "return succeeded execution" in {
     val result = for {
-      dao <- createDao
+      dao <- createDao()
       _ <- dao.executionStarted(query, queryType)
       _ <- dao.executionSucceeded(queryId)
       executions <- dao.executions()
@@ -56,7 +58,7 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
   "return failed execution" in {
     val error = new RuntimeException("oops")
     val result = for {
-      dao <- createDao
+      dao <- createDao()
       _ <- dao.executionStarted(query, queryType)
       _ <- dao.executionFailed(queryId, error)
       executions <- dao.executions()
@@ -74,7 +76,7 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
     val query5 = query.copy(id = "query-5")
 
     val result = for {
-      dao <- createDao
+      dao <- createDao()
       _ <- dao.executionStarted(query1, queryType)
       _ <- dao.executionStarted(query2, queryType)
       _ <- dao.executionStarted(query3, queryType)
@@ -97,7 +99,7 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
     val query3 = query.copy(id = "query-3")
 
     val result = for {
-      dao <- createDao
+      dao <- createDao()
       _ <- dao.executionStarted(query1, queryType)
       _ <- dao.executionStarted(query2, queryType)
       _ <- dao.executionStarted(query3, queryType)
@@ -116,10 +118,32 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
     }
   }
 
+  "support sorting by start time" in {
+    val clock = FakeClock(now)
+    val query1 = query.copy(id = "query-1")
+    val query2 = query.copy(id = "query-2")
+
+    val result = for {
+      dao <- createDao(clock)
+      _ <- dao.executionStarted(query1, queryType)
+      _ <- Task(clock.sleep(1.second))
+      _ <- dao.executionStarted(query2, queryType)
+      ascending <- dao.executions(sort = Sort(SortField.StartTime, SortOrder.Ascending))
+      descending <- dao.executions(sort = Sort(SortField.StartTime, SortOrder.Descending))
+    } yield (ascending, descending)
+
+    result.runSyncUnsafe() must beLike {
+      case (ascending, descending) =>
+        (ascending must contain(exactly(executionWithId(query1.id), executionWithId(query2.id)).inOrder)) and
+          (descending must contain(exactly(executionWithId(query2.id), executionWithId(query1.id)).inOrder))
+    }
+  }
+
 }
 
 object HistoryDaoContractTest {
   val now = Instant.ofEpochMilli(0)
+  val defaultClock = Clock.fixed(now, ZoneOffset.UTC)
   val queryType = "query-type"
   val user = User("foo@bar.com", "some-user")
   val statements = List("code1", "code2")
