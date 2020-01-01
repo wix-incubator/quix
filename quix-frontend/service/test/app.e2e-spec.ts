@@ -12,7 +12,10 @@ import cookieParser = require('cookie-parser');
 import {sanitizeUserEmail} from 'common/user-sanitizer';
 import {getConnectionToken} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
+import WebSocket from 'ws';
 import './custom-matchers';
+import {WsAdapter} from '@nestjs/platform-ws';
+import uuid from 'uuid';
 
 let envSettingsOverride: Partial<EnvSettings> = {};
 
@@ -51,6 +54,7 @@ describe('Application (e2e)', () => {
 
       app = moduleFixture.createNestApplication();
       app.use(cookieParser());
+      app.useWebSocketAdapter(new WsAdapter(app));
       await app.init();
 
       const configService: ConfigService = moduleFixture.get(ConfigService);
@@ -59,6 +63,7 @@ describe('Application (e2e)', () => {
         await conn.dropDatabase();
         await conn.runMigrations();
       } else {
+        await conn.dropDatabase();
         await conn.synchronize();
       }
 
@@ -250,83 +255,11 @@ describe('Application (e2e)', () => {
     });
   });
 
-  fdescribe('Syhchronize sessions', () => {
+  describe('Syhchronize sessions', () => {
     beforeAndAfter();
 
     beforeEach(() => {
       driver.addUser('user1', user1profile).addUser('user2', user2profile);
-    });
-
-    describe('/api/events/latest', () => {
-      it('Should provide latest event id for single event', async () => {
-        await driver.doLogin('user1');
-
-        const [{id: rootFolder}] = await driver.as('user1').get('files');
-        const [notebookId, createAction] = builder.createNotebookAction([
-          {id: rootFolder},
-        ]);
-
-        await driver.as('user1').postEvents(createAction);
-
-        const {latestEventId} = await driver
-          .as('user1')
-          .get('events', 'latest');
-        expect(latestEventId).toBe(notebookId);
-      });
-
-      it('Should provide latest event id for multiple events', async () => {
-        await driver.doLogin('user1');
-
-        const [{id: rootFolder}] = await driver.as('user1').get('files');
-        const [
-          firstNotebookId,
-          firstCreateAction,
-        ] = builder.createNotebookAction([{id: rootFolder}]);
-        const [
-          secondNotebookId,
-          secondCreateAction,
-        ] = builder.createNotebookAction([{id: rootFolder}]);
-
-        await driver
-          .as('user1')
-          .postEvents([firstCreateAction, secondCreateAction]);
-
-        const {latestEventId} = await driver
-          .as('user1')
-          .get('events', 'latest');
-        expect(latestEventId).toBe(secondNotebookId);
-      });
-
-      it('Should provide latest event id for single event, according to user ID', async () => {
-        await driver.doLogin('user1');
-
-        const [{id: user1RootFolder}] = await driver.as('user1').get('files');
-        const [
-          user1NotebookId,
-          user1CreateAction,
-        ] = builder.createNotebookAction([{id: user1RootFolder}]);
-
-        await driver.doLogin('user2');
-
-        const [{id: user2RootFolder}] = await driver.as('user2').get('files');
-        const [
-          user2NotebookId,
-          user2CreateAction,
-        ] = builder.createNotebookAction([{id: user2RootFolder}]);
-
-        await driver.as('user1').postEvents(user1CreateAction);
-        await driver.as('user2').postEvents(user2CreateAction);
-
-        const {latestEventId: user1LatestEventId} = await driver
-          .as('user1')
-          .get('events', 'latest');
-        expect(user1LatestEventId).toBe(user1NotebookId);
-
-        const {latestEventId: user2LatestEventId} = await driver
-          .as('user2')
-          .get('events', 'latest');
-        expect(user2LatestEventId).toBe(user2NotebookId);
-      });
     });
 
     describe('/api/events/:id', () => {
@@ -358,8 +291,16 @@ describe('Application (e2e)', () => {
         const events = await driver.as('user1').get('events', firstNotebookId);
 
         expect(events).toEqual([
-          {...secondCreateAction, user: expect.any(String)},
-          {...thirdCreateAction, user: expect.any(String)},
+          {
+            ...secondCreateAction,
+            user: expect.any(String),
+            userId: expect.any(String),
+          },
+          {
+            ...thirdCreateAction,
+            user: expect.any(String),
+            userId: expect.any(String),
+          },
         ]);
       });
 
@@ -387,8 +328,16 @@ describe('Application (e2e)', () => {
         const events = await driver.as('user1').get('events', firstNotebookId);
 
         expect(events).toEqual([
-          {...secondCreateAction, user: expect.any(String)},
-          {...thirdCreateAction, user: expect.any(String)},
+          {
+            ...secondCreateAction,
+            user: expect.any(String),
+            userId: expect.any(String),
+          },
+          {
+            ...thirdCreateAction,
+            user: expect.any(String),
+            userId: expect.any(String),
+          },
         ]);
       });
 
@@ -432,11 +381,67 @@ describe('Application (e2e)', () => {
           .as('user2')
           .get('events', user2FirstNotebookId);
         expect(events).toEqual([
-          {...secondCreateAction, user: expect.any(String)},
-          {...thirdCreateAction, user: expect.any(String)},
+          {
+            ...secondCreateAction,
+            user: expect.any(String),
+            userId: expect.any(String),
+          },
+          {
+            ...thirdCreateAction,
+            user: expect.any(String),
+            userId: expect.any(String),
+          },
         ]);
         expect(user2Events).toEqual([
-          {...user2SecondCreateAction, user: expect.any(String)},
+          {
+            ...user2SecondCreateAction,
+            user: expect.any(String),
+            userId: expect.any(String),
+          },
+        ]);
+      });
+    });
+
+    describe('websocket', () => {
+      it(`should close connection if token is not supplied in subcription`, async () => {
+        await app.listenAsync(3000);
+
+        const ws1 = new WebSocket('ws://localhost:3000');
+        await new Promise(resolve => ws1.on('open', resolve));
+        ws1.send(
+          JSON.stringify({event: 'subscribe', data: {token: 'fake-token'}}),
+        );
+        await new Promise(resolve => ws1.on('close', resolve));
+      });
+
+      it(`should send actions only to a single connection`, async () => {
+        await app.listenAsync(3000);
+
+        await driver.doLogin('user1');
+        const token = driver.as('user1').getToken();
+
+        const {ws: ws1, sessionId: sessionId1} = await driver
+          .as('user1')
+          .wsConnect();
+
+        const {ws: ws2, sessionId: sessionId2} = await driver
+          .as('user1')
+          .wsConnect();
+
+        const [{id: rootFolder}] = await driver.as('user1').get('files');
+        const [notebookId, createAction] = builder.createNotebookAction([
+          {id: rootFolder},
+        ]);
+
+        await driver.as('user1').postEvents(createAction, sessionId1);
+
+        expect(driver.getMessages(ws1)).toHaveLength(0);
+
+        expect(driver.getMessages(ws2)).toEqual([
+          {
+            event: 'action',
+            data: createAction,
+          },
         ]);
       });
     });

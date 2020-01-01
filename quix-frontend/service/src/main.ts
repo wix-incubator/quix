@@ -15,6 +15,7 @@ import {
   isMasterProcess,
 } from './utils/create-schema-helpers';
 import {retry} from './utils/retry-promise';
+import {WsAdapter} from '@nestjs/platform-ws';
 
 async function bootstrap() {
   const logger = new Logger();
@@ -42,6 +43,7 @@ async function bootstrap() {
   app.setBaseViewsDir(env.localStaticsPath);
   app.engine('.vm', velocityEngine());
   app.use(cookieParser());
+  app.useWebSocketAdapter(new WsAdapter(app));
   await app.listen(env.HttpPort);
 }
 bootstrap();

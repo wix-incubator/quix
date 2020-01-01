@@ -7,6 +7,7 @@ import {
   UseGuards,
   HttpCode,
   Param,
+  Query,
 } from '@nestjs/common';
 import {AnyAction} from 'shared/entities/common/common-types';
 import {BaseActionValidation} from '../event-sourcing/base-action-validation';
@@ -31,25 +32,25 @@ export class EventsController {
   async pushEvents(
     @Body() userAction: AnyAction | AnyAction[],
     @User() user: IGoogleUser,
+    @Query('sessionId') sessionId: string,
   ) {
     if (Array.isArray(userAction)) {
-      const actions: IAction[] = userAction.map(singleAction =>
-        Object.assign(singleAction, {user: user.email}),
-      );
+      const actions: IAction[] = userAction.map(singleAction => ({
+        ...singleAction,
+        user: user.email,
+        userId: user.id,
+        sessionId,
+      }));
       return this.eventBus.emit(actions);
     } else {
-      const action: IAction = {...userAction, user: user.email};
+      const action: IAction = {
+        ...userAction,
+        user: user.email,
+        userId: user.id,
+        sessionId,
+      };
       return this.eventBus.emit(action);
     }
-  }
-
-  @Get('latest')
-  @UseGuards(AuthGuard())
-  @HttpCode(200)
-  async getLatest(@User() user: IGoogleUser) {
-    const events = this.eventsService.getEvents(user.email);
-    const latestEventId = events[events.length - 1].id;
-    return {latestEventId};
   }
 
   @Get(':id')
