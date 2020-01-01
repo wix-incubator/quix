@@ -2,6 +2,7 @@ import {isArray, find, pull, forEach, get, assign, chain as _} from 'lodash';
 import {utils, inject} from '../../core';
 import StoreLogger, {ServerFrameworkType} from './store-logger';
 import * as Redux from 'redux';
+import { uuid } from '../../core/utils';
 const {scope: scopeUtils} = utils;
 
 export type IBranch<T = any> = (fn: (reducer: Redux.Reducer<T>, ...middleware: Redux.Middleware[]) => void) => void;
@@ -212,6 +213,9 @@ const defaultStoreOptions: StoreOptions = {
   logUrl: '',
   server: 'Scala'
 }
+
+const sessionId = uuid();
+
 export class Store<S = any> {
   private readonly store: ReduxStore<S>; logger: StoreLogger;
   private readonly options: StoreOptions;
@@ -220,8 +224,9 @@ export class Store<S = any> {
     this.options = {...defaultStoreOptions, ...options};
     const {reducers, middlewares} = initBranches(branches);
     const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || Redux.compose;
+    
 
-    this.logger = new StoreLogger(this.options.logUrl, null, this.options.server);
+    this.logger = new StoreLogger(this.options.logUrl, sessionId, this.options.server);
     this.store = Redux.createStore(Redux.combineReducers(reducers), composeEnhancers(Redux.applyMiddleware(...[
       functionMiddleware(this),
       promiseMiddleware(this),
@@ -232,6 +237,17 @@ export class Store<S = any> {
     this.dispatch = dispatch(this.store.dispatch)
     this.dispatchAndLog = dispatchAndLog(this.store.dispatch);
     this.logAndDispatch = logAndDispatch(this.store.dispatch)
+
+    const ws = new WebSocket('ws://localhost:3000');
+    // const token = 'eyJlbWFpbCI6InRlc3RpbmdAcXVpeC5jb20iLCJpZCI6IjExMTExMTExMSIsIm5hbWUiOiJUZXN0aW5nIFVzZXIifQ==';
+    const token = 'eyJlbWFpbCI6InVzZXJAcXVpeC5jb20iLCJpZCI6IjEiLCJuYW1lIjoiRGVmYXVsdCBVc2VyIn0=';
+    ws.onopen = () => {
+      ws.onmessage = (message: MessageEvent) => {
+        debugger;
+        this.dispatch(JSON.parse(message.data).data)
+      };
+      ws.send(JSON.stringify({ event: 'subscribe', data: {token, sessionId} }));
+    };
 
   }
 

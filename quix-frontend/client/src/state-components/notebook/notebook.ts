@@ -35,6 +35,7 @@ export default (app: App, store: Store) => ({
     }, scope);
 
     store.subscribe('notebook.notebook.name', name => {
+      debugger;
       setTitle(({stateName}) => [name]);
     }, scope);
 

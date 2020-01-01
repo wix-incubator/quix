@@ -15,6 +15,7 @@ import {EventsService} from 'modules/event-sourcing/events.service';
 import {IAction} from 'modules/event-sourcing/infrastructure/types';
 import {AnyAction} from 'shared/entities/common/common-types';
 import {cloneDeep} from 'lodash';
+import {auth} from 'modules/auth/common-auth';
 
 @WebSocketGateway()
 export class EventsGateway {
@@ -34,23 +35,19 @@ export class EventsGateway {
   }
 
   @SubscribeMessage('subscribe')
-  @UseGuards(AuthGuard())
   onSubscribe(client: any, data: any): Observable<WsResponse<any>> {
     const {token, sessionId} = data;
 
-    if (
-      token ===
-      'eyJlbWFpbCI6InRlc3RpbmdAcXVpeC5jb20iLCJpZCI6IjExMTExMTExMSIsIm5hbWUiOiJUZXN0aW5nIFVzZXIifQ=='
-    ) {
-      const userId = '111111111';
-      const email = 'testing@quix.com';
-      return this.eventsService.getEventStream(sessionId, userId).pipe(
+    try {
+      const user: IGoogleUser = auth(token);
+
+      return this.eventsService.getEventStream(sessionId, user.id).pipe(
         map((data: IAction) => ({
           event: 'action',
           data: this.sanitizeAction(data),
         })),
       );
-    } else {
+    } catch (e) {
       client.close();
       return EMPTY;
     }
