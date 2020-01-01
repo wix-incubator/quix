@@ -214,7 +214,7 @@ const defaultStoreOptions: StoreOptions = {
   server: 'Scala'
 }
 
-const sessionId = uuid();
+export const sessionId = uuid();
 
 export class Store<S = any> {
   private readonly store: ReduxStore<S>; logger: StoreLogger;
@@ -236,18 +236,7 @@ export class Store<S = any> {
 
     this.dispatch = dispatch(this.store.dispatch)
     this.dispatchAndLog = dispatchAndLog(this.store.dispatch);
-    this.logAndDispatch = logAndDispatch(this.store.dispatch)
-
-    const ws = new WebSocket('ws://localhost:3000');
-    // const token = 'eyJlbWFpbCI6InRlc3RpbmdAcXVpeC5jb20iLCJpZCI6IjExMTExMTExMSIsIm5hbWUiOiJUZXN0aW5nIFVzZXIifQ==';
-    const token = 'eyJlbWFpbCI6InVzZXJAcXVpeC5jb20iLCJpZCI6IjEiLCJuYW1lIjoiRGVmYXVsdCBVc2VyIn0=';
-    ws.onopen = () => {
-      ws.onmessage = (message: MessageEvent) => {
-        debugger;
-        this.dispatch(JSON.parse(message.data).data)
-      };
-      ws.send(JSON.stringify({ event: 'subscribe', data: {token, sessionId} }));
-    };
+    this.logAndDispatch = logAndDispatch(this.store.dispatch);
 
   }
 
