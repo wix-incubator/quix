@@ -2,6 +2,8 @@ package quix.core.history.dao
 
 import java.time.{Clock, Instant, ZoneOffset}
 
+import cats.effect.Resource
+import cats.syntax.apply._
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import org.specs2.mutable.SpecificationWithJUnit
@@ -15,23 +17,19 @@ import scala.concurrent.duration._
 
 trait HistoryDaoContractTest extends SpecificationWithJUnit {
 
-  def createDao(clock: Clock = defaultClock): Task[HistoryWriteDao with HistoryReadDao]
+  def createDao(clock: Clock = defaultClock): Resource[Task, HistoryWriteDao with HistoryReadDao]
 
   "return empty list of executions if none was saved" in {
-    val result = for {
-      dao <- createDao()
-      executions <- dao.executions()
-    } yield executions
+    val result = createDao().use(_.executions())
 
     result.runSyncUnsafe() must beEmpty
   }
 
   "return running execution" in {
-    val result = for {
-      dao <- createDao()
-      _ <- dao.executionStarted(query, queryType)
-      executions <- dao.executions()
-    } yield executions
+    val result = createDao().use { dao =>
+      dao.executionStarted(query, queryType) *>
+        dao.executions()
+    }
 
     result.runSyncUnsafe() must contain(
       Execution(
@@ -44,12 +42,11 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
   }
 
   "return succeeded execution" in {
-    val result = for {
-      dao <- createDao()
-      _ <- dao.executionStarted(query, queryType)
-      _ <- dao.executionSucceeded(queryId)
-      executions <- dao.executions()
-    } yield executions
+    val result = createDao().use { dao =>
+      dao.executionStarted(query, queryType) *>
+        dao.executionSucceeded(queryId) *>
+        dao.executions()
+    }
 
     result.runSyncUnsafe() must
       contain(executionWithStatus(ExecutionStatus.Finished))
@@ -57,12 +54,11 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
 
   "return failed execution" in {
     val error = new RuntimeException("oops")
-    val result = for {
-      dao <- createDao()
-      _ <- dao.executionStarted(query, queryType)
-      _ <- dao.executionFailed(queryId, error)
-      executions <- dao.executions()
-    } yield executions
+    val result = createDao().use { dao =>
+      dao.executionStarted(query, queryType) *>
+        dao.executionFailed(queryId, error) *>
+        dao.executions()
+    }
 
     result.runSyncUnsafe() must
       contain(executionWithStatus(ExecutionStatus.Failed))
@@ -75,16 +71,17 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
     val query4 = query.copy(id = "query-4")
     val query5 = query.copy(id = "query-5")
 
-    val result = for {
-      dao <- createDao()
-      _ <- dao.executionStarted(query1, queryType)
-      _ <- dao.executionStarted(query2, queryType)
-      _ <- dao.executionStarted(query3, queryType)
-      _ <- dao.executionStarted(query4, queryType)
-      _ <- dao.executionStarted(query5, queryType)
-      page1 <- dao.executions(page = Page(0, 3))
-      page2 <- dao.executions(page = Page(3, 3))
-    } yield (page1, page2)
+    val result = createDao().use { dao =>
+      for {
+        _ <- dao.executionStarted(query1, queryType)
+        _ <- dao.executionStarted(query2, queryType)
+        _ <- dao.executionStarted(query3, queryType)
+        _ <- dao.executionStarted(query4, queryType)
+        _ <- dao.executionStarted(query5, queryType)
+        page1 <- dao.executions(page = Page(0, 3))
+        page2 <- dao.executions(page = Page(3, 3))
+      } yield (page1, page2)
+    }
 
     result.runSyncUnsafe() must beLike {
       case (page1, page2) =>
@@ -98,17 +95,18 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
     val query2 = query.copy(id = "query-2")
     val query3 = query.copy(id = "query-3")
 
-    val result = for {
-      dao <- createDao()
-      _ <- dao.executionStarted(query1, queryType)
-      _ <- dao.executionStarted(query2, queryType)
-      _ <- dao.executionStarted(query3, queryType)
-      _ <- dao.executionSucceeded(query2.id)
-      _ <- dao.executionFailed(query3.id, new RuntimeException)
-      running <- dao.executions(filter = Filter.Status(ExecutionStatus.Running))
-      finished <- dao.executions(filter = Filter.Status(ExecutionStatus.Finished))
-      failed <- dao.executions(filter = Filter.Status(ExecutionStatus.Failed))
-    } yield (running, finished, failed)
+    val result = createDao().use { dao =>
+      for {
+        _ <- dao.executionStarted(query1, queryType)
+        _ <- dao.executionStarted(query2, queryType)
+        _ <- dao.executionStarted(query3, queryType)
+        _ <- dao.executionSucceeded(query2.id)
+        _ <- dao.executionFailed(query3.id, new RuntimeException)
+        running <- dao.executions(filter = Filter.Status(ExecutionStatus.Running))
+        finished <- dao.executions(filter = Filter.Status(ExecutionStatus.Finished))
+        failed <- dao.executions(filter = Filter.Status(ExecutionStatus.Failed))
+      } yield (running, finished, failed)
+    }
 
     result.runSyncUnsafe() must beLike {
       case (running, finished, failed) =>
@@ -123,14 +121,15 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
     val query1 = query.copy(id = "query-1")
     val query2 = query.copy(id = "query-2")
 
-    val result = for {
-      dao <- createDao(clock)
-      _ <- dao.executionStarted(query1, queryType)
-      _ <- Task(clock.sleep(1.second))
-      _ <- dao.executionStarted(query2, queryType)
-      ascending <- dao.executions(sort = Sort(SortField.StartTime, SortOrder.Ascending))
-      descending <- dao.executions(sort = Sort(SortField.StartTime, SortOrder.Descending))
-    } yield (ascending, descending)
+    val result = createDao(clock).use { dao =>
+      for {
+        _ <- dao.executionStarted(query1, queryType)
+        _ <- Task(clock.sleep(1.second))
+        _ <- dao.executionStarted(query2, queryType)
+        ascending <- dao.executions(sort = Sort(SortField.StartTime, SortOrder.Ascending))
+        descending <- dao.executions(sort = Sort(SortField.StartTime, SortOrder.Descending))
+      } yield (ascending, descending)
+    }
 
     result.runSyncUnsafe() must beLike {
       case (ascending, descending) =>

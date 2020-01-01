@@ -1,0 +1,11 @@
+CREATE TABLE executions_history (
+    id CHAR(36) NOT NULL PRIMARY KEY,
+    query_type VARCHAR(64) NOT NULL,
+    statements BLOB NOT NULL,
+    user_id VARCHAR(64) NOT NULL,
+    user_email VARCHAR(64) NOT NULL,
+    status ENUM('RUNNING', 'FINISHED', 'FAILED') NOT NULL DEFAULT 'RUNNING',
+    created_at BIGINT UNSIGNED NOT NULL,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP() ON UPDATE CURRENT_TIMESTAMP(),
+    INDEX published_forms (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
