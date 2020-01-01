@@ -12,6 +12,7 @@
     <modules>
         <module>quix-api</module>
         <module>quix-core</module>
+        <module>quix-modules/quix-dummy-module</module>
         <module>quix-modules/quix-presto-module</module>
         <module>quix-modules/quix-athena-module</module>
         <module>quix-modules/quix-jdbc-module</module>
