@@ -3,14 +3,11 @@ import {
   WebSocketGateway,
   WebSocketServer,
   WsResponse,
-  OnGatewayConnection,
 } from '@nestjs/websockets';
-import {from, Observable, EMPTY} from 'rxjs';
+import {Observable, EMPTY} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Server} from 'ws';
-import {User, IGoogleUser} from 'modules/auth';
-import {UseGuards} from '@nestjs/common';
-import {AuthGuard} from '@nestjs/passport';
+import {IGoogleUser} from 'modules/auth';
 import {EventsService} from 'modules/event-sourcing/events.service';
 import {IAction} from 'modules/event-sourcing/infrastructure/types';
 import {AnyAction} from 'shared/entities/common/common-types';
