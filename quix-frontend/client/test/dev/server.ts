@@ -5,7 +5,7 @@ import http from 'http';
 import {renderVM} from './vm';
 import {mock, reset} from '../mocks';
 import expressWs from 'express-ws';
-import {setupMockWs} from './websocket-mock';
+import {setupMockWs, setupSubscriptionMockWs} from './websocket-mock';
 
 const proxyBaseUrl = 'http://localhost:3000';
 
@@ -30,6 +30,7 @@ export function start(port = process.env.PORT || '3000') {
   });
 
   setupMockWs(app);
+  setupSubscriptionMockWs(app);
 
   app.all('/api/*', (req, res) => {
     if (port === '3000' || port === '3100') {

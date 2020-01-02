@@ -90,6 +90,18 @@ export class Mock {
   async reset() {
     return fetch(`${baseURL}/mock/reset`);
   }
+
+  async wsBroadcast(message: any) {
+    const messages = Array.isArray(message) ? message : [message];
+
+    return fetch(`${baseURL}/subscription/mock-broadcast`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(messages)
+    });
+  }
 }
 
 export class URL {
