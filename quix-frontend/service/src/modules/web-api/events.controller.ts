@@ -52,14 +52,4 @@ export class EventsController {
       return this.eventBus.emit(action);
     }
   }
-
-  @Get(':id')
-  @UseGuards(AuthGuard())
-  @HttpCode(200)
-  async getAfter(@User() user: IGoogleUser, @Param('id') id: string) {
-    return takeRightWhile(
-      this.eventsService.getEvents(user.email),
-      event => event.id !== id,
-    );
-  }
 }
