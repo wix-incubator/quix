@@ -19,6 +19,7 @@ const defaultConfigData = {
   modules: [] as ConfigModule[],
   auth: {
     googleClientId: '',
+    authCookieName: '',
   },
   clientTopology: {
     staticsBaseUrl: '',

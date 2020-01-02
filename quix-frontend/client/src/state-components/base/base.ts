@@ -5,8 +5,11 @@ import {App} from '../../lib/app';
 import {IStateComponentConfig} from '../../lib/app/services/plugin-builder';
 import {setSearchText, setSearchPage} from '../../store/app/app-actions';
 import {openSearchResults, closePopup, hasQueuedNotes} from '../../services';
+import { ClientConfigHelper } from '@wix/quix-shared';
+import cookie from 'cookie';
 
-export default (app: App, store: Store) => ({
+
+export default (app: App<ClientConfigHelper>, store: Store) => ({
   name: '',
   abstract: true,
   template,
@@ -18,9 +21,11 @@ export default (app: App, store: Store) => ({
   controller: (scope, params, {syncUrl}) => {
     syncUrl();
 
-    const ws = new WebSocket('ws://localhost:3000');
+    const ws = new WebSocket(`ws://${location.host}`);
     
-    const token = undefined;
+    const {authCookieName} = app.getConfig().getAuth();
+    const cookies = cookie.parse(document.cookie);
+    const token = cookies[authCookieName];
     ws.onopen = () => {
       ws.onmessage = (message: MessageEvent) => {
         store.dispatch(JSON.parse(message.data).data)
