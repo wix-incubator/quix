@@ -50,7 +50,7 @@ export function start(port = process.env.PORT || '3000') {
         {id: 'python', name: 'athena', components: {note: {}}, engine: 'python', syntax: 'python'},
       ],
       auth: {googleClientId: ''},
-      clientTopology: {executeBaseUrl: 'localhost:3000/mock', staticsBaseUrl: '//localhost:3200/', apiBasePath: ''},
+      clientTopology: {executeBaseUrl: `localhost:${port}/mock`, staticsBaseUrl: '//localhost:3200/', apiBasePath: ''},
       mode: {debug: true, demo: false}
     }
     res.send(renderVM('./src/index.vm', {quixConfig: JSON.stringify(quixConfig, null, 2)}));

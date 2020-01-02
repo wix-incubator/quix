@@ -1,6 +1,7 @@
 import {Browser, Page, ElementHandle} from 'puppeteer';
 import {baseURL} from './e2e-common';
 import fetch from 'node-fetch';
+import { Class } from 'utility-types';
 
 const WAIT_TIMEOUT = 5000;
 
@@ -68,7 +69,7 @@ export class Driver {
     return this.page.waitFor(ms);
   }
 
-  createTestkit(TestkitCtor) {
+  createTestkit<T extends Class<any>>(TestkitCtor: T): InstanceType<T> {
     return new TestkitCtor(this.page);
   }
 }
