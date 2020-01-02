@@ -79,7 +79,7 @@ class HttpHelper {
   };
 
   async wsConnect() {
-    const ws = new WebSocket('ws://localhost:3000');
+    const ws = new WebSocket('ws://localhost:3000/subscription');
     const sessionId = uuid.v4();
     await new Promise(resolve => ws.on('open', resolve));
 

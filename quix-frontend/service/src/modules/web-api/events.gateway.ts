@@ -17,22 +17,12 @@ import {AnyAction} from 'shared/entities/common/common-types';
 import {cloneDeep} from 'lodash';
 import {auth} from 'modules/auth/common-auth';
 
-@WebSocketGateway()
+@WebSocketGateway({path: '/subscription'})
 export class EventsGateway {
   @WebSocketServer()
   server!: Server;
 
   constructor(private eventsService: EventsService) {}
-
-  @SubscribeMessage('events')
-  // @UseGuards(AuthGuard())
-  onEvent(client: any, data: any): Observable<WsResponse<any>> {
-    // console.log({data, client});
-
-    return from([1, 2, 3]).pipe(
-      map(item => ({event: 'events', data: {item, test: 'test', user: 'a'}})),
-    );
-  }
 
   @SubscribeMessage('subscribe')
   onSubscribe(client: any, data: any): Observable<WsResponse<any>> {

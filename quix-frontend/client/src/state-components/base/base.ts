@@ -21,7 +21,7 @@ export default (app: App<ClientConfigHelper>, store: Store) => ({
   controller: (scope, params, {syncUrl}) => {
     syncUrl();
 
-    const ws = new WebSocket(`ws://${location.host}`);
+    const ws = new WebSocket(`ws://${location.host}/subscription`);
     
     const {authCookieName} = app.getConfig().getAuth();
     const cookies = cookie.parse(document.cookie);

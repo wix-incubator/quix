@@ -406,7 +406,7 @@ describe('Application (e2e)', () => {
       it(`should close connection if token is not supplied in subcription`, async () => {
         await app.listenAsync(3000);
 
-        const ws1 = new WebSocket('ws://localhost:3000');
+        const ws1 = new WebSocket('ws://localhost:3000/subscription');
         await new Promise(resolve => ws1.on('open', resolve));
         ws1.send(
           JSON.stringify({event: 'subscribe', data: {token: 'fake-token'}}),
