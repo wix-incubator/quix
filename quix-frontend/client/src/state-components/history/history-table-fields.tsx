@@ -6,7 +6,7 @@ import { RowConfig } from "../../lib/ui/components/Table";
 export const historyTableFields: RowConfig<IHistory>[] = [
   {
     name: "id",
-    title: "Item ID",
+    title: "ID",
     filter(_, history: IHistory, index) {
       return (
         <div className="bi-align bi-s-h">
@@ -27,7 +27,7 @@ export const historyTableFields: RowConfig<IHistory>[] = [
   },
   {
     name: "moduleType",
-    title: "Module Type",
+    title: "Note Type",
     filter(_, history: IHistory, index) {
       return (
         <span className="bi-text--md bi-muted">
