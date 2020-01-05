@@ -15,7 +15,7 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
     onHistoryClicked: () => {}
   },
   controller: async (scope: HistoryProps, params, { syncUrl, setTitle }) => {
-    await cache.History.fetch(params.id);
+    await cache.history.fetch(params.id);
 
     syncUrl();
     setTitle();
