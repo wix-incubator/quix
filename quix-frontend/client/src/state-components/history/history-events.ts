@@ -5,5 +5,6 @@ import { IHistory } from "@wix/quix-shared";
 export const onHistoryClick = (scope, store: Store, app: App) => (
   history: IHistory
 ) => {
-  app.go("files", { id: history.rootFolder });
+  // app.go("files", { id: history.rootFolder });
+  console.log(history);
 };

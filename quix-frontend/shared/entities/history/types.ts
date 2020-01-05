@@ -1,9 +1,7 @@
 export interface IHistory {
-  email: string;
   id: string;
-  name: string;
-  avatar: string;
-  rootFolder: string;
-  dateUpdated: number;
-  dateCreated: number;
+  email: string;
+  query: string[];
+  moduleType: string;
+  startedAt: string;
 }

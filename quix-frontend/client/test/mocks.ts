@@ -14,6 +14,7 @@ import {
   createNote,
   createFolderPayload
 } from "@wix/quix-shared";
+import * as moment from "moment";
 
 const mocks = {
   "/api/user": () => createUser(),
@@ -40,13 +41,11 @@ const mocks = {
   ],
   "/api/history": () => [
     createMockHistory({
-      id: "valery@wix.com",
+      id: "1",
       email: "valery@wix.com",
-      avatar: "http://quix.wix.com/assets/user.svg",
-      name: "Valery Frolov",
-      rootFolder: "6c98fe9a-39f7-4674-b003-70f9061bbee5",
-      dateCreated: Date.now(),
-      dateUpdated: Date.now()
+      query: ["SELECT 1", "SELECT 2"],
+      moduleType: "presto",
+      startedAt: moment.utc().format()
     })
   ],
   // '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],

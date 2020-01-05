@@ -1,19 +1,26 @@
 import { IHistory } from "./types";
 import { ExtractActionTypes, ExtractActions } from "../common/actions";
 
-// TODO: Fix schema.
 export const HistoryActions = {
   createNewHistory: (id: string, History: IHistory) => ({
     type: "history.create" as const,
     newHistory: History,
     id
   }),
-  updateHistory: (id: string, avatar: string, name: string, email: string) => ({
-    type: "history.update" as const,
-    name,
+  // TODO: Remove?
+  updateHistory: (
+    id: string,
+    email: string,
+    query: string[],
+    moduleType: string,
+    startedAt: string
+  ) => ({
+    id,
     email,
-    avatar,
-    id
+    query,
+    moduleType,
+    startedAt,
+    type: "history.update" as const
   })
 };
 

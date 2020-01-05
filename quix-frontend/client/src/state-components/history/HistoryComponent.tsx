@@ -48,7 +48,7 @@ export function History(props: HistoryProps) {
       <div className="bi-section-header">
         <div>
           <div className="bi-section-title">
-            history
+            History
             {history && <span className="bi-fade-in"> ({history.length})</span>}
           </div>
         </div>

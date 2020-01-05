@@ -5,13 +5,12 @@ import { RowConfig } from "../../lib/ui/components/Table";
 
 export const historyTableFields: RowConfig<IHistory>[] = [
   {
-    name: "name",
-    title: "history",
+    name: "id",
+    title: "Item ID",
     filter(_, history: IHistory, index) {
       return (
         <div className="bi-align bi-s-h">
-          <img className="quix-history-avatar" src={history.avatar} />
-          <span>{history.name}</span>
+          <span>{history.id}</span>
         </div>
       );
     }
@@ -20,23 +19,30 @@ export const historyTableFields: RowConfig<IHistory>[] = [
     name: "email"
   },
   {
-    name: "dateCreated",
-    title: "Join Date",
+    name: "query",
+    title: "Query",
+    filter(_, history: IHistory, index) {
+      return <pre>{history.query.join(";\n") as any}</pre>;
+    }
+  },
+  {
+    name: "moduleType",
+    title: "Module Type",
     filter(_, history: IHistory, index) {
       return (
-        <span className="bi-text--sm bi-muted">
-          {biRelativeDate()(history.dateCreated as any)}
+        <span className="bi-text--md bi-muted">
+          {history.moduleType as any}
         </span>
       );
     }
   },
   {
-    name: "dateUpdated",
-    title: "Last Login",
+    name: "startedAt",
+    title: "Started At",
     filter(_, history: IHistory, index) {
       return (
-        <span className="bi-text--sm bi-muted">
-          {biRelativeDate()(history.dateUpdated as any)}
+        <span className="bi-text--md bi-muted">
+          {biRelativeDate()(history.startedAt as any)}
         </span>
       );
     }
