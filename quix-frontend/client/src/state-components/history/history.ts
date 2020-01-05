@@ -21,7 +21,7 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
     setTitle();
 
     store.subscribe(
-      "History",
+      "history",
       ({ history, error }) => {
         scope.history = history;
         scope.error = error;
