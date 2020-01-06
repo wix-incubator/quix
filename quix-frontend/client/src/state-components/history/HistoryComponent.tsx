@@ -20,7 +20,7 @@ export function History(props: HistoryProps) {
 
   const displayErrorState = () => (
     <div className="bi-empty-state--error" data-hook="history-error">
-      <div className="bi-empty-state-header">Ooops...</div>
+      <div className="bi-empty-state-header">error_outline</div>
       <div className="bi-empty-state-content">{error.message}</div>
     </div>
   );
