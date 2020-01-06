@@ -39,15 +39,17 @@ const mocks = {
       dateUpdated: Date.now()
     })
   ],
-  "/api/history": () => [
-    createMockHistory({
-      id: "1",
-      email: "valery@wix.com",
-      query: ["SELECT 1", "SELECT 2"],
-      moduleType: "presto",
-      startedAt: moment.utc().format()
-    })
-  ],
+  "/api/history": () => {
+    return [...Array(100).keys()].map(key =>
+      createMockHistory({
+        id: "" + key,
+        email: "valery" + key + "@wix.com",
+        query: ["SELECT 1", "SELECT 2"],
+        moduleType: key % 2 ? "presto" : "athena",
+        startedAt: moment.utc().format()
+      })
+    );
+  },
   // '/api/files': () => [404, {message: 'Couldn\'t fetch notebooks'}],
   // '/api/files': () => [500, {message: 'Failed to fetch files'}],
   "/api/files": () => createMockFiles(),
