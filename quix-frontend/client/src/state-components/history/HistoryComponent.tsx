@@ -49,7 +49,7 @@ export function History(props: HistoryProps) {
         <div>
           <div className="bi-section-title">
             History
-            {history && <span className="bi-fade-in"> ({history.length})</span>}
+            {/* {history && <span className="bi-fade-in"> ({history.length})</span>} */}
           </div>
         </div>
       </div>
