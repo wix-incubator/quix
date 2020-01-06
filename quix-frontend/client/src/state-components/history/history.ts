@@ -12,10 +12,11 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
   scope: {
     history: () => {},
     error: () => {},
-    onHistoryClicked: () => {}
+    onHistoryClicked: () => {},
+    loadMore: () => {console.log("empty")}
   },
   controller: async (scope: HistoryProps, params, { syncUrl, setTitle }) => {
-    await cache.history.fetch(params.id);
+    await cache.history.fetch();
 
     syncUrl();
     setTitle();
@@ -24,6 +25,10 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
       "history",
       ({ history, error }) => {
         scope.history = history;
+        scope.loadMore = () => { 
+          console.log("loading more")
+          return cache.history.fetch(20, 40)
+        }
         scope.error = error;
       },
       scope
