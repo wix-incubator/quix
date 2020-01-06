@@ -21,6 +21,7 @@ import quix.bigquery.db.{BigQueryAutocomplete, BigQueryCatalogs, BigQueryTables}
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
 import quix.core.download.DownloadableQueriesImpl
 import quix.core.executions.{SequentialExecutions, SqlModule}
+import quix.core.history.dao.HistoryReadDao
 import quix.core.utils.JsonOps
 import quix.jdbc._
 import quix.presto._
@@ -28,7 +29,7 @@ import quix.presto.db.{PrestoAutocomplete, PrestoCatalogs, PrestoTables}
 import quix.presto.rest.ScalaJPrestoStateClient
 import quix.python.{PythonConfig, PythonExecutor, PythonModule}
 import quix.web.auth.{DemoUsers, JwtUsers}
-import quix.web.controllers.{DbController, DownloadController, HealthController}
+import quix.web.controllers.{DbController, DownloadController, HealthController, HistoryController}
 
 import scala.util.control.NonFatal
 
@@ -338,7 +339,7 @@ class DownloadConfiguration extends LazyLogging {
 @Configuration
 class Controllers extends LazyLogging {
 
-  @Bean def initDbController(modules: Map[String, ExecutionModule[String, Batch]]) = {
+  @Bean def initDbController(modules: Map[String, ExecutionModule[String, Batch]]): DbController = {
     logger.info("event=[spring-config] bean=[DbController]")
     new DbController(modules)
   }
@@ -348,7 +349,12 @@ class Controllers extends LazyLogging {
     new DownloadController(downloadableQueries)
   }
 
-  @Bean def initHealthController() = {
+  @Bean def initHistoryController(historyReadDao: HistoryReadDao): HistoryController = {
+    logger.info("event=[spring-config] bean=[HistoryController]")
+    new HistoryController(historyReadDao)
+  }
+
+  @Bean def initHealthController: HealthController = {
     logger.info("event=[spring-config] bean=[HealthController]")
     new HealthController
   }

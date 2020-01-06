@@ -36,7 +36,7 @@ class DownloadController(val downloadableQueries: DownloadableQueries[String, Ba
 
           payload match {
             case DownloadableRow(values) =>
-              val line = values.map(quote(_)).mkString(",").getBytes(charset)
+              val line = values.map(quote).mkString(",").getBytes(charset)
               outputStream.write(line)
               outputStream.write('\n')
 

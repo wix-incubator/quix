@@ -14,6 +14,7 @@ import org.springframework.web.socket.server.support.DefaultHandshakeHandler
 import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
 import quix.api.module.ExecutionModule
 import quix.api.users.Users
+import quix.core.history.dao.HistoryWriteDao
 import quix.web.controllers.SqlStreamingController
 
 @Configuration
@@ -22,9 +23,15 @@ class WebsocketsConfig extends LazyLogging {
 
   @Bean def initSqlStreamingController(users: Users,
                                        modules: Map[String, ExecutionModule[String, Batch]],
-                                       downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]) = {
+                                       downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent],
+                                       historyWriteDao: HistoryWriteDao) = {
     logger.info("event=[spring-config] bean=[PrestoController]")
-    new SqlStreamingController(modules, users, downloadableQueries, Scheduler.io("presto-io"))
+    new SqlStreamingController(
+      modules = modules,
+      users = users,
+      downloads = downloadableQueries,
+      historyWriteDao = historyWriteDao,
+      io = Scheduler.io("presto-io"))
   }
 
   @Bean def initWebSocketPolicy(): WebSocketPolicy = {

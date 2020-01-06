@@ -4,14 +4,11 @@ import java.util.UUID
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import monix.execution.Scheduler
+import monix.execution.Scheduler.Implicits.global
 import quix.api.execute.ActiveQuery
 import quix.api.users.User
 import quix.core.results.SingleBuilder
 import quix.presto.rest.ScalaJPrestoStateClient
-
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
 
 object TryPresto extends LazyLogging {
 
@@ -30,9 +27,7 @@ object TryPresto extends LazyLogging {
       builder = new SingleBuilder[String]
     } yield executor.runTask(query, builder).map(_ => builder)
 
-    val futureResults = Task.sequence(results).runToFuture(Scheduler.global)
-
-    val builders = Await.result(futureResults, Duration.Inf)
+    val builders = Task.sequence(results).runSyncUnsafe()
 
     for {
       (builder, index) <- builders.zipWithIndex

@@ -16,6 +16,9 @@
         <presto.version>326</presto.version>
         <specs.version>4.8.1</specs.version>
         <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
+        <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
+        <mysql.connector.version>8.0.18</mysql.connector.version>
+        <logback.version>1.2.3</logback.version>
     </properties>
 
     <dependencies>
@@ -95,6 +98,29 @@
             <groupId>org.specs2</groupId>
             <artifactId>specs2-mock_${scala.dependencies.version}</artifactId>
             <version>${specs.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.wix/wix-embedded-mysql -->
+        <dependency>
+            <groupId>com.wix</groupId>
+            <artifactId>wix-embedded-mysql</artifactId>
+            <version>${wix.embedded.mysql.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.connector.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
             <scope>test</scope>
         </dependency>
 
