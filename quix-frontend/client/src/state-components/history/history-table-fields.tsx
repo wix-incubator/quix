@@ -9,8 +9,8 @@ export const historyTableFields: RowConfig<IHistory>[] = [
     title: "ID",
     filter(_, history: IHistory, index) {
       return (
-        <div className="bi-align bi-s-h">
-          <span>{history.id}</span>
+        <div className="bi-align bi-s-h" title={history.id}>
+          <span>{history.id.substring(0, 8)}</span>
         </div>
       );
     }
