@@ -7,6 +7,11 @@ export const onHistoryClick = (scope, store: Store, app: App) => (
   history: IHistory
 ) => {
   // app.go("files", { id: history.rootFolder });
-  openTempQuery(scope, history.moduleType, history.query.join(";\n"), false);
+  openTempQuery(
+    scope,
+    history.moduleType,
+    history.query.join(";\n") + ";",
+    false
+  );
   console.log(history);
 };

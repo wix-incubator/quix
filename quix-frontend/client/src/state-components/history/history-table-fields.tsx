@@ -22,7 +22,10 @@ export const historyTableFields: RowConfig<IHistory>[] = [
     name: "query",
     title: "Query",
     filter(_, history: IHistory, index) {
-      return <pre>{history.query.join(";\n") as any}</pre>;
+      const hasQuery = history.query.length > 0;
+      const fullQuery = hasQuery ? history.query.join(";\n") + ";" : "";
+      const firstLine = hasQuery ? history.query[0] : "";
+      return <pre title={fullQuery}>{firstLine + "..."}</pre>;
     }
   },
   {
