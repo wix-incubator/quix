@@ -1,27 +1,17 @@
 import * as React from "react";
 import { IHistory } from "@wix/quix-shared";
-import { InfiniteTable } from "./InfiniteTable";
+import { Table } from "../../lib/ui/components/Table";
 import { historyTableFields } from "./history-table-fields";
 
 export interface HistoryProps {
   history: IHistory[];
   error: { message: string };
   onHistoryClicked(history: IHistory): void;
-  loadMore():void
+  loadMore(): void;
 }
 
 export function History(props: HistoryProps) {
-  const { history, error, onHistoryClicked, loadMore } = props;
-
-  const displayLoadingState = () => (
-    <tr key="bi-empty-state--loading">
-      <td colSpan={historyTableFields.length}>
-        <div className="bi-empty-state--loading bi-fade-in">
-          <div className="bi-empty-state-content">Loading history...</div>
-        </div>
-      </td>
-    </tr>
-  );
+  const { history, error, onHistoryClicked } = props;
 
   const displayErrorState = () => (
     <div className="bi-empty-state--error" data-hook="history-error">
@@ -37,11 +27,7 @@ export function History(props: HistoryProps) {
         data-hook="history-content"
       >
         <div className="bi-panel-content bi-c-h">
-          <InfiniteTable
-            pageStart={0}
-            loadMore={() => loadMore()}
-            hasMore={true}
-            loader={displayLoadingState()}
+          <Table
             rows={history}
             rowsConfig={historyTableFields}
             onRowClicked={onHistoryClicked}
@@ -62,10 +48,13 @@ export function History(props: HistoryProps) {
       </div>
       {!history ? (
         <div className="bi-section-content--center">
-          {error ? displayErrorState() : 
-          <div className="bi-empty-state--loading bi-fade-in">
-            <div className="bi-empty-state-content">Loading history...</div>
-          </div>}
+          {error ? (
+            displayErrorState()
+          ) : (
+            <div className="bi-empty-state--loading bi-fade-in">
+              <div className="bi-empty-state-content">Loading history...</div>
+            </div>
+          )}
         </div>
       ) : (
         displayLoadedState()
