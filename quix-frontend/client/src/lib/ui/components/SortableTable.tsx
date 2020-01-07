@@ -106,7 +106,12 @@ export const SortableTable = ({
                   >
                     {row.cells.map(cell => {
                       return (
-                        <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                        <td
+                          {...cell.getCellProps()}
+                          className={"bi-table-cell-" + cell.column.id}
+                        >
+                          {cell.render("Cell")}
+                        </td>
                       );
                     })}
                   </tr>
