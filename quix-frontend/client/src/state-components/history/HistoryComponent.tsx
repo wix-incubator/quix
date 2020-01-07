@@ -1,6 +1,6 @@
 import * as React from "react";
 import { IHistory } from "@wix/quix-shared";
-import { Table } from "../../lib/ui/components/Table";
+import { SortableTable } from "../../lib/ui/components/SortableTable";
 import { historyTableFields } from "./history-table-fields";
 
 export interface HistoryProps {
@@ -27,7 +27,7 @@ export function History(props: HistoryProps) {
         data-hook="history-content"
       >
         <div className="bi-panel-content bi-c-h">
-          <Table
+          <SortableTable
             rows={history}
             rowsConfig={historyTableFields}
             onRowClicked={onHistoryClicked}
