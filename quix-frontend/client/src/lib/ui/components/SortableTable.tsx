@@ -1,5 +1,4 @@
 import * as React from "react";
-// import toHumanCase from "../filters/to-human-case";
 import { useTable, useSortBy } from "react-table";
 
 export const SortableTable = ({ columns, data, onRowClicked }) => {
