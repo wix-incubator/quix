@@ -28,30 +28,30 @@ export const SortableTable = ({ columns, data, onRowClicked }) => {
           {headerGroups.map(headerGroup => (
             <tr {...headerGroup.getHeaderGroupProps()}>
               {headerGroup.headers.map(column => (
-                // Add the sorting props to control sorting. For this example
-                // we can add them into the header props
                 <th {...column.getHeaderProps(column.getSortByToggleProps())}>
                   <div className="bi-table-th-content bi-text--ui bi-text--600">
+                    <span className="bi-tbl-sort-icon bi-icon--sm ng-binding bi-primary">
+                      {column.isSorted
+                        ? column.isSortedDesc
+                          ? "arrow_drop_down"
+                          : "arrow_drop_up"
+                        : "unfold_more"}
+                    </span>
                     <span className="bi-text--600">
                       {column.render("Header")}
                     </span>
-                    {column.isSorted
-                      ? column.isSortedDesc
-                        ? " 🔽"
-                        : " 🔼"
-                      : ""}
                   </div>
-                  {/* Add a sort direction indicator */}
                 </th>
               ))}
             </tr>
           ))}
         </thead>
         <tbody {...getTableBodyProps()}>
-          {firstPageRows.map((row, i) => {
+          {firstPageRows.map((row, index) => {
             prepareRow(row);
             return (
               <tr
+                key={index}
                 {...row.getRowProps()}
                 onClick={() => onRowClicked(row.original)}
                 data-hook="table-row"
