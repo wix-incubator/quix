@@ -1,18 +1,43 @@
 import * as React from "react";
-import { useTable, useSortBy } from "react-table";
+import { useTable, useSortBy, useGlobalFilter } from "react-table";
 
-export const SortableTable = ({ columns, data, onRowClicked }) => {
+function GlobalFilter({
+  preGlobalFilteredRows,
+  globalFilter,
+  setGlobalFilter
+}) {
+  const count = preGlobalFilteredRows.length;
+
+  return (
+    <span>
+      Search:{" "}
+      <input
+        value={globalFilter || ""}
+        onChange={e => {
+          setGlobalFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
+          console.log(e.target.value);
+        }}
+        placeholder={`${count} items...`}
+      />
+    </span>
+  );
+}
+
+export const SortableTable = ({ columns, data, onRowClicked, setFilter, globalFilter }) => {
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     rows,
-    prepareRow
+    prepareRow,
+    preGlobalFilteredRows,
+    setGlobalFilter
   } = useTable(
     {
       columns,
       data
     },
+    useGlobalFilter,
     useSortBy
   );
 
@@ -27,6 +52,11 @@ export const SortableTable = ({ columns, data, onRowClicked }) => {
       }
     >
       <div className={"bi-fade-in"}>
+        <GlobalFilter
+          preGlobalFilteredRows={preGlobalFilteredRows}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+        />
         <table {...getTableProps()} className={"bi-table"}>
           <thead className="bi-tbl-header">
             {headerGroups.map(headerGroup => (
