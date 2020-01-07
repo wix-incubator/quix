@@ -31,7 +31,8 @@ export function History(props: HistoryProps) {
             data={history}
             columns={historyTableFields.map(field => ({
               Header: field.title,
-              accessor: field.name
+              accessor: field.name,
+              Cell: (table) => field.filter ? field.filter(undefined, table.row.original, 0) : table.cell.value.toString()
             }))}
             onRowClicked={onHistoryClicked}
           />
