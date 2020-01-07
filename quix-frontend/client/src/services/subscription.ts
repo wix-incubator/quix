@@ -5,7 +5,7 @@ import {App} from '../lib/app';
 
 export const subscribeToStateChanges = (app: App<ClientConfigHelper>, store: Store) => {
   const ws = new WebSocket(`ws://${location.host}/subscription`);
-    
+
   const {authCookieName} = app.getConfig().getAuth();
   const cookies = cookie.parse(document.cookie);
   const token = cookies[authCookieName];

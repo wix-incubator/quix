@@ -252,6 +252,7 @@ describe('Files ::', () => {
     it('should subscribe to event sourcing mechanism', async function() {
       await gotoEditableRootFolder([]);
       expect(await testkit.hasEmptyState()).to.be.true;
+
       await driver.mock.wsBroadcast(createNotebookEvents);
       expect(await testkit.hasContent()).to.be.true;
     });
