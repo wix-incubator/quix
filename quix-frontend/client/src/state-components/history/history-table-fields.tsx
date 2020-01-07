@@ -3,7 +3,12 @@ import biRelativeDate from "../../lib/ui/filters/relative-date";
 import * as React from "react";
 import { RowConfig } from "../../lib/ui/components/Table";
 interface HighlightedRowConfig<T> extends RowConfig<T> {
-  filter?(value, item: T, index, highlight?: (string) => React.ReactNode): React.ReactNode;
+  filter?(
+    value,
+    item: T,
+    index,
+    highlight?: (string) => React.ReactNode
+  ): React.ReactNode;
 }
 
 export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
@@ -11,7 +16,7 @@ export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
     name: "email",
     title: "Email",
     filter(_, history: IHistory, index, highlight) {
-      return <span>{highlight(history.email)}</span>
+      return <span>{highlight(history.email)}</span>;
     }
   },
   {
@@ -20,7 +25,19 @@ export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
     filter(_, history: IHistory, index, highlight) {
       const hasQuery = history.query.length > 0;
       const fullQuery = hasQuery ? history.query.join(";\n") + ";" : "";
-      return <pre title={fullQuery}>{highlight(fullQuery)}</pre>;
+
+      return (
+        <pre
+          className="bi-text--md bi-muted"
+          style={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            width: "20em"
+          }}
+        >
+          {fullQuery}
+        </pre>
+      );
     }
   },
   {
