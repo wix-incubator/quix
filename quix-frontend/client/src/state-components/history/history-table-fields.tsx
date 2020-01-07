@@ -5,7 +5,8 @@ import { RowConfig } from "../../lib/ui/components/Table";
 
 export const historyTableFields: RowConfig<IHistory>[] = [
   {
-    name: "email"
+    name: "email",
+    title: "Email"
   },
   {
     name: "query",

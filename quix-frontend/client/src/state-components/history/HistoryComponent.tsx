@@ -28,8 +28,11 @@ export function History(props: HistoryProps) {
       >
         <div className="bi-panel-content bi-c-h">
           <SortableTable
-            rows={history}
-            rowsConfig={historyTableFields}
+            data={history}
+            columns={historyTableFields.map(field => ({
+              Header: field.title,
+              accessor: field.name
+            }))}
             onRowClicked={onHistoryClicked}
           />
         </div>

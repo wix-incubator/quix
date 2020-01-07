@@ -1,65 +1,71 @@
 import * as React from "react";
-import toHumanCase from "../filters/to-human-case";
+// import toHumanCase from "../filters/to-human-case";
+import { useTable, useSortBy } from "react-table";
 
-interface TableProps<T> {
-  rows: T[];
-  rowsConfig: RowConfig<T>[];
-  onRowClicked(T): any;
-}
+export const SortableTable = ({ columns, data, onRowClicked }) => {
+  const {
+    getTableProps,
+    getTableBodyProps,
+    headerGroups,
+    rows,
+    prepareRow
+  } = useTable(
+    {
+      columns,
+      data
+    },
+    useSortBy
+  );
 
-export interface RowConfig<T> {
-  name: keyof T;
-  title?: string;
-  filter?(value, item: T, index): React.ReactNode;
-}
+  // We don't want to render all 2000 rows for this example, so cap
+  // it at 20 for this use case
+  const firstPageRows = rows.slice(0, 20);
 
-export const SortableTable = <T extends {}>(props: TableProps<T>) => {
   return (
-    <div
-      className={
-        "bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header"
-      }
-    >
-      <div className={"bi-fade-in"}>
-        <table className={"bi-table"}>
-          <thead className="bi-tbl-header">
-            <tr>
-              {props.rowsConfig.map((rowConfig, index) => (
-                <th key={index}>
-                  <div className="bi-table-th-content bi-text--ui">
+    <div className={"bi-fade-in"}>
+      <table {...getTableProps()} className={"bi-table"}>
+        <thead className="bi-tbl-header">
+          {headerGroups.map(headerGroup => (
+            <tr {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map(column => (
+                // Add the sorting props to control sorting. For this example
+                // we can add them into the header props
+                <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  <div className="bi-table-th-content bi-text--ui bi-text--600">
                     <span className="bi-text--600">
-                      {toHumanCase()(
-                        rowConfig.title || (rowConfig.name as any)
-                      )}
+                      {column.render("Header")}
                     </span>
+                    {column.isSorted
+                      ? column.isSortedDesc
+                        ? " 🔽"
+                        : " 🔼"
+                      : ""}
                   </div>
+                  {/* Add a sort direction indicator */}
                 </th>
               ))}
             </tr>
-          </thead>
-          <tbody>
-            {props.rows.map((rowElement, index) => (
+          ))}
+        </thead>
+        <tbody {...getTableBodyProps()}>
+          {firstPageRows.map((row, i) => {
+            prepareRow(row);
+            return (
               <tr
-                key={index}
-                onClick={() => props.onRowClicked(rowElement)}
+                {...row.getRowProps()}
+                onClick={() => onRowClicked(row.original)}
                 data-hook="table-row"
               >
-                {props.rowsConfig.map((rowConfig, columnIndex) => (
-                  <td key={columnIndex}>
-                    {rowConfig.filter
-                      ? rowConfig.filter(
-                          rowElement[rowConfig.name],
-                          rowElement,
-                          index
-                        )
-                      : rowElement[rowConfig.name]}
-                  </td>
-                ))}
+                {row.cells.map(cell => {
+                  return (
+                    <td {...cell.getCellProps()}>{cell.render("Cell")}</td>
+                  );
+                })}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };
