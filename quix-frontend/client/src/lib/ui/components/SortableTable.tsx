@@ -3,7 +3,7 @@ import { useTable, useSortBy, useGlobalFilter } from "react-table";
 
 function GlobalFilter({
   preGlobalFilteredRows,
-  globalFilter,
+  getFilter,
   setGlobalFilter
 }) {
   const count = preGlobalFilteredRows.length;
@@ -12,10 +12,9 @@ function GlobalFilter({
     <span>
       Search:{" "}
       <input
-        value={globalFilter || ""}
+        value={getFilter() || ""}
         onChange={e => {
           setGlobalFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
-          console.log(e.target.value);
         }}
         placeholder={`${count} items...`}
       />
@@ -23,7 +22,7 @@ function GlobalFilter({
   );
 }
 
-export const SortableTable = ({ columns, data, onRowClicked, setFilter, globalFilter }) => {
+export const SortableTable = ({ columns, data, onRowClicked, setFilter, getFilter }) => {
   const {
     getTableProps,
     getTableBodyProps,
@@ -54,8 +53,8 @@ export const SortableTable = ({ columns, data, onRowClicked, setFilter, globalFi
       <div className={"bi-fade-in"}>
         <GlobalFilter
           preGlobalFilteredRows={preGlobalFilteredRows}
-          globalFilter={globalFilter}
-          setGlobalFilter={setGlobalFilter}
+          getFilter={getFilter}
+          setGlobalFilter={(gf) => {setFilter(gf); setGlobalFilter(gf)}}
         />
         <table {...getTableProps()} className={"bi-table"}>
           <thead className="bi-tbl-header">

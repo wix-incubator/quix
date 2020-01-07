@@ -20,7 +20,7 @@ export function History(props: HistoryProps) {
     </div>
   );
 
-  let globalFilter = "";
+  let filter = "";
   const displayLoadedState = () => (
     <div className="bi-section-content bi-c-h">
       <div
@@ -39,9 +39,9 @@ export function History(props: HistoryProps) {
                   : table.cell.value.toString()
             }))}
             onRowClicked={onHistoryClicked}
-            globalFilter={globalFilter}
+            getFilter={() => filter}
             setFilter={newFilter => {
-              globalFilter = newFilter;
+              filter = newFilter;
             }}
           />
         </div>
