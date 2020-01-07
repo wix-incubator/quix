@@ -2,6 +2,7 @@ import * as React from "react";
 import { IHistory } from "@wix/quix-shared";
 import { SortableTable } from "../../lib/ui/components/SortableTable";
 import { historyTableFields } from "./history-table-fields";
+import Highlighter from "react-highlight-words"
 
 export interface HistoryProps {
   history: IHistory[];
@@ -20,6 +21,19 @@ export function History(props: HistoryProps) {
     </div>
   );
 
+  const highlight = (needle: String) => (haystack: String) => {
+    if(needle) {
+      // return ('' + haystack).replace(new RegExp(`(${needle})`, 'gi'), '<mark>$1</mark>')
+      return <Highlighter
+          searchWords={[needle]}
+          autoEscape={true}
+          textToHighlight={haystack}
+        />
+    } else {
+      return haystack
+    }
+  }
+
   let filter = "";
   const displayLoadedState = () => (
     <div className="bi-section-content bi-c-h">
@@ -35,7 +49,7 @@ export function History(props: HistoryProps) {
               accessor: field.name,
               Cell: table =>
                 field.filter
-                  ? field.filter(undefined, table.row.original, 0)
+                  ? field.filter(undefined, table.row.original, 0, highlight(filter))
                   : table.cell.value.toString()
             }))}
             onRowClicked={onHistoryClicked}
