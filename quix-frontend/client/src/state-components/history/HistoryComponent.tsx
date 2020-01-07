@@ -21,18 +21,11 @@ export function History(props: HistoryProps) {
     </div>
   );
 
-  const highlight = (needle: String) => (haystack: String) => {
-    if(needle) {
-      // return ('' + haystack).replace(new RegExp(`(${needle})`, 'gi'), '<mark>$1</mark>')
-      return <Highlighter
+  const highlight = (needle?: String) => (haystack: String) =>  <Highlighter
           searchWords={[needle]}
           autoEscape={true}
           textToHighlight={haystack}
         />
-    } else {
-      return haystack
-    }
-  }
 
   let filter = "";
   const displayLoadedState = () => (
