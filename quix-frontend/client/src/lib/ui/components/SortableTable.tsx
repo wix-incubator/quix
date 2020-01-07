@@ -1,19 +1,26 @@
 import * as React from "react";
 import { useTable, useSortBy, useGlobalFilter } from "react-table";
+import "../directives/search/search.scss";
 
 function GlobalFilter({ preGlobalFilteredRows, getFilter, setGlobalFilter }) {
-  const count = preGlobalFilteredRows.length;
-
   return (
-    <span>
-      Filter:{" "}
+    <span className="bi-search--rnd ng-pristine ng-untouched ng-valid ng-isolate-scope ng-not-empty">
       <input
+        className="bi-input bi-grow ng-pristine ng-untouched ng-valid ng-empty ng-valid-minlength"
+        ng-class="{
+          'bs-has-context-icon': !!options.contextIcon,
+          'bs-has-text': !!model.text
+        }"
+        ng-model="model.text"
+        ng-keypress="events.onKeypress($event)"
+        placeholder="Filter results..."
         value={getFilter() || ""}
         onChange={e => {
           setGlobalFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
         }}
-        placeholder={`${count} items...`}
-      />
+      ></input>
+
+      <span className="bs-close"></span>
     </span>
   );
 }
