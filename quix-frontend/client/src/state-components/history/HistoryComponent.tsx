@@ -32,7 +32,10 @@ export function History(props: HistoryProps) {
             columns={historyTableFields.map(field => ({
               Header: field.title,
               accessor: field.name,
-              Cell: (table) => field.filter ? field.filter(undefined, table.row.original, 0) : table.cell.value.toString()
+              Cell: table =>
+                field.filter
+                  ? field.filter(undefined, table.row.original, 0)
+                  : table.cell.value.toString()
             }))}
             onRowClicked={onHistoryClicked}
           />
@@ -46,7 +49,7 @@ export function History(props: HistoryProps) {
         <div>
           <div className="bi-section-title">
             History
-            {/* {history && <span className="bi-fade-in"> ({history.length})</span>} */}
+            {history && <span className="bi-fade-in"> ({history.length})</span>}
           </div>
         </div>
       </div>
