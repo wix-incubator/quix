@@ -1,5 +1,10 @@
 import * as React from "react";
-import { useTable, useSortBy, useGlobalFilter, usePagination} from "react-table";
+import {
+  useTable,
+  useSortBy,
+  useGlobalFilter,
+  usePagination
+} from "react-table";
 import "../directives/search/search.scss";
 
 function GlobalFilter({ preGlobalFilteredRows, getFilter, setGlobalFilter }) {
@@ -66,14 +71,78 @@ export const SortableTable = ({
 
   return (
     <>
-      <GlobalFilter
-        preGlobalFilteredRows={preGlobalFilteredRows}
-        getFilter={getFilter}
-        setGlobalFilter={gf => {
-          setFilter(gf);
-          setGlobalFilter(gf);
-        }}
-      />
+      <div>
+        <GlobalFilter
+          preGlobalFilteredRows={preGlobalFilteredRows}
+          getFilter={getFilter}
+          setGlobalFilter={gf => {
+            setFilter(gf);
+            setGlobalFilter(gf);
+          }}
+        />
+
+        <div
+          className="pagination quix-search-pagination bi-button-group bi-fade-in ng-scope"
+          style={{ float: "right" }}
+        >
+          <button
+            className={"bi-button"}
+            onClick={() => previousPage()}
+            disabled={!canPreviousPage}
+          >
+            <i className="bi-icon--sm">keyboard_arrow_left</i>
+          </button>
+          <button
+            className={"bi-button" + (pageIndex === 0 ? "--primary" : "")}
+            onClick={() => gotoPage(0)}
+          >
+            {"1"}
+          </button>
+          <button
+            className={"bi-button" + (pageIndex === 1 ? "--primary" : "")}
+            onClick={() => gotoPage(1)}
+          >
+            {"2"}
+          </button>
+          <button
+            className={"bi-button"}
+            onClick={() => nextPage()}
+            disabled={!canNextPage}
+          >
+            <i className="bi-icon--sm">keyboard_arrow_right</i>
+          </button>
+          {/* <span className="ng-binding">
+          Page{" "}
+          <strong>
+            {pageIndex + 1} of {pageOptions.length}
+          </strong>{" "}
+        </span>
+        <span>
+          | Go to page:{" "}
+          <input
+            type="number"
+            defaultValue={pageIndex + 1}
+            onChange={e => {
+              const pageIdx = e.target.value ? Number(e.target.value) - 1 : 0;
+              gotoPage(pageIdx);
+            }}
+            style={{ width: "100px" }}
+          />
+        </span>{" "}
+        <select
+          value={pageSize}
+          onChange={e => {
+            setPageSize(Number(e.target.value));
+          }}
+        >
+          {[10, 20, 30, 40, 50].map(pageSizeOption => (
+            <option key={pageSizeOption} value={pageSizeOption}>
+              Show {pageSizeOption}
+            </option>
+          ))}
+        </select> */}
+        </div>
+      </div>
       <div
         className={
           "bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header"
@@ -141,50 +210,6 @@ export const SortableTable = ({
             </tbody>
           </table>
         </div>
-      </div>
-      <div className="pagination">
-        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
-          {'<<'}
-        </button>{' '}
-        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-          {'<'}
-        </button>{' '}
-        <button onClick={() => nextPage()} disabled={!canNextPage}>
-          {'>'}
-        </button>{' '}
-        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
-          {'>>'}
-        </button>{' '}
-        <span>
-          Page{' '}
-          <strong>
-            {pageIndex + 1} of {pageOptions.length}
-          </strong>{' '}
-        </span>
-        <span>
-          | Go to page:{' '}
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={e => {
-              const pageIdx = e.target.value ? Number(e.target.value) - 1 : 0
-              gotoPage(pageIdx)
-            }}
-            style={{ width: '100px' }}
-          />
-        </span>{' '}
-        <select
-          value={pageSize}
-          onChange={e => {
-            setPageSize(Number(e.target.value))
-          }}
-        >
-          {[10, 20, 30, 40, 50].map(pageSizeOption => (
-            <option key={pageSizeOption} value={pageSizeOption}>
-              Show {pageSizeOption}
-            </option>
-          ))}
-        </select>
       </div>
     </>
   );
