@@ -44,14 +44,14 @@ class DummyQueryExecutor extends AsyncQueryExecutor[String, Batch] {
 
   /** generates random data set and creates a list of monix Tasks that send it to builder when executed */
   def generateBatches(subQueryId: String, builder: Builder[String, Batch]): Task[Unit] = {
-    val columnsCount = Random.nextInt(10)
+    val columnsCount = Random.nextInt(10) + 5
     val columns = for (i <- 0 to columnsCount) yield BatchColumn(s"column_$i")
     val firstBatch = Batch(columns = Option(columns))
 
-    val batchCount = Random.nextInt(10)
-    val rowCount = Random.nextInt(100)
+    val batchCount = Random.nextInt(10) + 5
+    val rowCount = Random.nextInt(100) + 5
 
-    val batches = for (batch <- 0 to batchCount) yield {
+    val batches = for (batch <- 1 to batchCount) yield {
       val rows = for (i <- 0 to rowCount) yield Seq.fill(columns.size)(batch * i)
 
       Batch(data = rows)
