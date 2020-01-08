@@ -31,7 +31,7 @@ export function History(props: HistoryProps) {
 
   const highlight = (needle?: string) => (haystack: string) => { 
     const needlePresent = !!needle;
-    const wrapLinesCount = needlePresent ? 2 : 0;
+    const wrapLinesCount = needlePresent ? 1 : 0;
     const text = needlePresent ? haystack : getAndTrimFirstLine(haystack, 30)
     return <Highlighter
       searchWords={[needle]}
