@@ -46,7 +46,7 @@ trait Builder[Code, Results] {
   def addSubQuery(subQueryId: String, results: Results): Task[Unit]
 
   /** Sent of every sub query end, quix frontend will use it to stop populating currect tab */
-  def endSubQuery(subQueryId: String): Task[Unit]
+  def endSubQuery(subQueryId: String, statistics: Map[String, Any] = Map.empty): Task[Unit]
 
   def errorSubQuery(subQueryId: String, e: Throwable): Task[Unit]
 

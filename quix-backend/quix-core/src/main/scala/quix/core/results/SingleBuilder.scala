@@ -15,6 +15,7 @@ class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
   private val headers = ListBuffer.empty[BatchColumn]
   private var failureCause: Option[Throwable] = None
   private var logMessages = ListBuffer.empty[String]
+  private var statistics = Map.empty[String, Any]
 
   /**
    * @returns the rows collected so far */
@@ -40,7 +41,9 @@ class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
     rows ++= batch.data
   }
 
-  override def endSubQuery(queryId: String) = Task.unit
+  override def endSubQuery(queryId: String, statistics: Map[String, Any]) = Task {
+    this.statistics = statistics
+  }
 
   override def start(query: ActiveQuery[Code]) = Task.unit
 
