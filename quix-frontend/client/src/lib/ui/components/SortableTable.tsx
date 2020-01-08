@@ -42,33 +42,24 @@ export const SortableTable = ({
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    // rows,
     prepareRow,
     preGlobalFilteredRows,
     setGlobalFilter,
     page,
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
     pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    setPageSize,
-    state: { pageIndex, pageSize }
+    gotoPage
   } = useTable(
     {
       columns,
-      data
+      data,
+      initialState: {
+        pageSize: 20
+      }
     },
     useGlobalFilter,
     useSortBy,
     usePagination
   );
-
-  // We don't want to render all 2000 rows for this example, so cap
-  // it at 20 for this use case
-  // const firstPageRows = rows.slice(0, 20);
 
   return (
     <>
@@ -88,87 +79,22 @@ export const SortableTable = ({
         >
           <ReactPaginate
             containerClassName="quix-search-pagination bi-button-group bi-fade-in ng-scope"
-            className="quix-search-pagination bi-button-group bi-fade-in ng-scope"
             pageCount={pageCount}
             pageRangeDisplayed={3}
             marginPagesDisplayed={1}
             previousLabel={<i className="bi-icon--sm">keyboard_arrow_left</i>}
             nextLabel={<i className="bi-icon--sm">keyboard_arrow_right</i>}
-            // breakClassName={"bi-button"}
             breakLinkClassName={"bi-button"}
             nextLinkClassName={"bi-button"}
+            disabledClassName={"bi-button--disabled"}
             previousLinkClassName={"bi-button"}
-            // pageClassName={"bi-button"}
+            activeLinkClassName={"bi-button--primary bi-button"}
             pageLinkClassName={"bi-button"}
-            // activeClassName={"bi-button--primary"}
-            activeLinkClassName={"bi-button--primary"}
             onPageChange={pageData => {
               gotoPage(pageData.selected);
             }}
-          ></ReactPaginate>
-        </div>
-
-        {/* <div
-          className="pagination quix-search-pagination bi-button-group bi-fade-in ng-scope"
-          style={{ float: "right" }}
-        >
-          <button
-            className={"bi-button"}
-            onClick={() => previousPage()}
-            disabled={!canPreviousPage}
-          >
-            <i className="bi-icon--sm">keyboard_arrow_left</i>
-          </button>
-          <button
-            className={"bi-button" + (pageIndex === 0 ? "--primary" : "")}
-            onClick={() => gotoPage(0)}
-          >
-            {"1"}
-          </button>
-          <button
-            className={"bi-button" + (pageIndex === 1 ? "--primary" : "")}
-            onClick={() => gotoPage(1)}
-          >
-            {"2"}
-          </button>
-          <button
-            className={"bi-button"}
-            onClick={() => nextPage()}
-            disabled={!canNextPage}
-          >
-            <i className="bi-icon--sm">keyboard_arrow_right</i>
-          </button> */}
-        {/* <span className="ng-binding">
-          Page{" "}
-          <strong>
-            {pageIndex + 1} of {pageOptions.length}
-          </strong>{" "}
-        </span>
-        <span>
-          | Go to page:{" "}
-          <input
-            type="number"
-            defaultValue={pageIndex + 1}
-            onChange={e => {
-              const pageIdx = e.target.value ? Number(e.target.value) - 1 : 0;
-              gotoPage(pageIdx);
-            }}
-            style={{ width: "100px" }}
           />
-        </span>{" "}
-        <select
-          value={pageSize}
-          onChange={e => {
-            setPageSize(Number(e.target.value));
-          }}
-        >
-          {[10, 20, 30, 40, 50].map(pageSizeOption => (
-            <option key={pageSizeOption} value={pageSizeOption}>
-              Show {pageSizeOption}
-            </option>
-          ))}
-        </select> */}
-        {/* </div> */}
+        </div>
       </div>
       <div
         className={
