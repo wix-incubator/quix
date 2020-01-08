@@ -103,7 +103,6 @@ export const SortableTable = ({
             // activeClassName={"bi-button--primary"}
             activeLinkClassName={"bi-button--primary"}
             onPageChange={pageData => {
-              setPageSize(1);
               gotoPage(pageData.selected);
             }}
           ></ReactPaginate>
