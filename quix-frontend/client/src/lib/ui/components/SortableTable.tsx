@@ -5,6 +5,7 @@ import {
   useGlobalFilter,
   usePagination
 } from "react-table";
+import ReactPaginate from 'react-paginate';
 import "../directives/search/search.scss";
 
 function GlobalFilter({ preGlobalFilteredRows, getFilter, setGlobalFilter }) {
@@ -80,6 +81,15 @@ export const SortableTable = ({
             setGlobalFilter(gf);
           }}
         />
+
+        <ReactPaginate 
+          pageCount={pageCount} 
+          pageRangeDisplayed={3} 
+          marginPagesDisplayed={1}
+          previousLabel={"<"}
+          nextLabel={">"}
+          onPageChange={(pageData) => gotoPage(pageData.selected)}
+        ></ReactPaginate>
 
         <div
           className="pagination quix-search-pagination bi-button-group bi-fade-in ng-scope"
