@@ -54,7 +54,7 @@ export default (app: App, store: Store) => () => ({
           $init() {
             const plugin = pluginManager.module('note').plugin(scope.note.type);
             this.showSyntaxErrors = plugin.getConfig().syntaxValidation;
-            this.type = plugin.getId();
+            this.type = plugin.getRunnerType();
             this.engine = plugin.getEngine();
           }
         });
