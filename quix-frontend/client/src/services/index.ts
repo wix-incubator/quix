@@ -7,6 +7,7 @@ export {closePopup, openTempQuery, openSearchResults} from './popup';
 export {extractTextAroundMatch as extractLinesAroundMatch} from './search';
 export {browserNotificationsManager} from './notifications';
 export {sanitizeTableToken} from './db';
+export {subscribeToStateChanges} from './subscription';
 
 export {
   IPermissions,

@@ -11,7 +11,7 @@ import quix.api.users.User
 import scala.concurrent.duration._
 
 class SequentialExecutions[Code](val executor: AsyncQueryExecutor[Code, Batch])
-  extends Executions[Code, Batch] with LazyLogging {
+  extends LazyLogging {
 
   val queries: Cache[String, ActiveQuery[Code]] =
     Scaffeine()
@@ -51,7 +51,7 @@ class SequentialExecutions[Code](val executor: AsyncQueryExecutor[Code, Batch])
     }
   }
 
-  override def kill(id: String, user: User): Task[Unit] = Task {
+  def kill(id: String, user: User): Task[Unit] = Task {
     for {
       query <- queries.getIfPresent(id)
     } query.isCancelled = true

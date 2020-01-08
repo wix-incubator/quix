@@ -4,6 +4,8 @@ import request from 'supertest';
 import {IGoogleUser} from 'modules/auth';
 import {testingDefaults} from 'config/env/static-settings';
 import {INotebook, INote, IFolder, IFile, IUser} from 'shared';
+import WebSocket from 'ws';
+import uuid from 'uuid';
 
 const defaultCookie = testingDefaults.AuthCookieName;
 
@@ -19,11 +21,17 @@ interface GetFunctionTypeHelper {
 const createUserCookie = (user: IGoogleUser) =>
   Buffer.from(JSON.stringify(user)).toString('base64');
 
+const wsMessageLog: WeakMap<WebSocket, string[]> = new WeakMap();
+
 class HttpHelper {
   constructor(
     protected _supertest: request.SuperTest<request.Test>,
     protected user?: IGoogleUser,
   ) {}
+
+  public getToken() {
+    return this.user ? createUserCookie(this.user) : '';
+  }
 
   public baseGet(url: string) {
     let chain = this._supertest.get('/api/' + url);
@@ -63,10 +71,36 @@ class HttpHelper {
   postAndExpectFail = (url: string, data: any, errorCode: number) =>
     this.basePost(url, data).expect(errorCode);
 
-  postEvents = (data: any) =>
-    this.basePost('events', data)
+  postEvents = (data: any, sessionId?: string) => {
+    return this.basePost('events', data)
+      .query({sessionId})
       .send(data)
       .expect(200);
+  };
+
+  async wsConnect() {
+    const ws = new WebSocket('ws://localhost:3000/subscription');
+    const sessionId = uuid.v4();
+    await new Promise(resolve => ws.on('open', resolve));
+
+    ws.send(
+      JSON.stringify({
+        event: 'subscribe',
+        data: {token: this.getToken(), sessionId},
+      }),
+    );
+
+    ws.on('message', (data: any) => {
+      const messages = [...(wsMessageLog.get(ws) || []), JSON.parse(data)];
+      wsMessageLog.set(ws, messages);
+    });
+
+    return {ws, sessionId};
+  }
+
+  getMessages(ws: WebSocket): any[] {
+    return wsMessageLog.get(ws) || [];
+  }
 }
 
 export class E2EDriver extends HttpHelper {

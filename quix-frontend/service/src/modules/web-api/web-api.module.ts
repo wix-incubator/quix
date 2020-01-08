@@ -25,6 +25,7 @@ import {UserListController} from './user-list.controller';
 import {FavoritesService} from './favorites/favorites.service';
 import {FavoritesController} from './favorites/favorites.controller';
 import {ModulesController} from './modules/rupert-module.controller';
+import {EventsGateway} from './events.gateway';
 
 @Module({
   imports: [
@@ -54,7 +55,7 @@ import {ModulesController} from './modules/rupert-module.controller';
     FavoritesController,
     ModulesController,
   ],
-  providers: [NotebookService, FoldersService, FavoritesService],
+  providers: [NotebookService, FoldersService, FavoritesService, EventsGateway],
   exports: [],
 })
 export class WebApiModule {}

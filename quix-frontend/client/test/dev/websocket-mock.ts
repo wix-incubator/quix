@@ -85,6 +85,33 @@ export const setupMockWs = (app: express.Express) => {
   app.use('/mock/api/v1/execute/', router);
 }
 
+export const setupSubscriptionMockWs = (app: express.Express) => {
+  const sockets = [];
+  const router = express.Router();
+
+  router.ws('/', (ws, req) => {
+    ws.on('message', async (msg) => {
+      const {event} = JSON.parse(msg.toString());
+
+      if (event === 'subscribe') {
+        sockets.push(ws);
+      }
+    });
+  });
+
+  router.post('/mock-broadcast', (req, res) => {
+    const payload = req.body;
+
+    sockets.forEach(ws => {
+      sendEvents(ws, payload, 0);
+    });
+    
+    res.status(200).send('OK');
+  });
+
+  app.use('/subscription', router);
+}
+
 const promisifiedSend = (WS: WebSocket) => (data: any) => new Promise((resolve, reject) => {
   WS.send(data, (err) => {
     if (err) {

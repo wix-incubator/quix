@@ -144,7 +144,7 @@
     <quix-note
       class="bi-fade-in"
       ng-repeat="note in vm.state.value().notes track by note.id"
-      note="::note"
+      note="note"
       permissions="::permissions.note"
       quix-note-options="{
         fold: vm.notes.get(note).fold === null || vm.notes.get(note).fold,
