@@ -2,6 +2,7 @@ import * as React from "react";
 import { IHistory } from "@wix/quix-shared";
 import { SortableTable } from "../../lib/ui/components/SortableTable";
 import { historyTableFields } from "./history-table-fields";
+import {extractTextAroundMatch} from "../../services/search"
 import Highlighter from "react-highlight-words"
 
 export interface HistoryProps {
@@ -21,10 +22,10 @@ export function History(props: HistoryProps) {
     </div>
   );
 
-  const highlight = (needle?: String) => (haystack: String) =>  <Highlighter
+  const highlight = (needle?: string) => (haystack: string) =>  <Highlighter
           searchWords={[needle]}
           autoEscape={true}
-          textToHighlight={haystack}
+          textToHighlight={extractTextAroundMatch(haystack, needle || "", needle ? 2 : 0)}
         />
 
   let filter = "";
