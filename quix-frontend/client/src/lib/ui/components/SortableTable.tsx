@@ -73,22 +73,18 @@ export const SortableTable = ({
           }}
         />
 
-        <div
-          className="pagination quix-search-pagination bi-button-group bi-fade-in ng-scope"
-          style={{ float: "right" }}
-        >
+        <div style={{ float: "right" }} className={"bi-button-group"}>
           <ReactPaginate
-            containerClassName="quix-search-pagination bi-button-group bi-fade-in ng-scope"
             pageCount={pageCount}
             pageRangeDisplayed={3}
             marginPagesDisplayed={1}
             previousLabel={<i className="bi-icon--sm">keyboard_arrow_left</i>}
             nextLabel={<i className="bi-icon--sm">keyboard_arrow_right</i>}
+            containerClassName={"bi-button-group"}
             breakLinkClassName={"bi-button"}
             nextLinkClassName={"bi-button"}
-            disabledClassName={"bi-button--disabled"}
             previousLinkClassName={"bi-button"}
-            activeLinkClassName={"bi-button--primary bi-button"}
+            activeLinkClassName={"bi-button--primary"}
             pageLinkClassName={"bi-button"}
             onPageChange={pageData => {
               gotoPage(pageData.selected);
