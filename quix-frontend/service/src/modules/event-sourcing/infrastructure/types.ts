@@ -10,6 +10,8 @@ export interface HasId {
 interface ServerFields {
   dateCreated?: Date;
   user: string;
+  userId?: string;
+  sessionId?: string;
 }
 
 export type IAction<T = IEventData, N extends string = string> = BaseAction & {

@@ -1,4 +1,4 @@
-import {ExtractJwt, Strategy} from 'passport-jwt';
+import {ExtractJwt, Strategy as JwtStrategyBase} from 'passport-jwt';
 import {AuthService} from './auth.service';
 import {PassportStrategy} from '@nestjs/passport';
 import {Injectable, UnauthorizedException} from '@nestjs/common';
@@ -6,7 +6,7 @@ import {IGoogleUser} from './types';
 import {ConfigService} from 'config';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(JwtStrategyBase) {
   constructor(
     private readonly authService: AuthService,
     configService: ConfigService,

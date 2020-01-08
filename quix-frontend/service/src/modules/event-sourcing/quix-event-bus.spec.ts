@@ -14,7 +14,7 @@ import {EntityType} from 'common/entity-type.enum';
 import {MockDataBuilder} from 'test/builder';
 import {IAction} from './infrastructure/types';
 
-jest.setTimeout(30000);
+jest.setTimeout(300000);
 
 const defaultUser = 'someUser@wix.com';
 
@@ -402,10 +402,10 @@ describe('event sourcing', () => {
     });
 
     it('notebook move', async () => {
-      const [subFolder1, createSubFolder1] = mockBuilder.createFolderAction(
-        'subFolder1',
-        [{id: folderId}],
-      );
+      const [
+        subFolder1,
+        createSubFolder1,
+      ] = mockBuilder.createFolderAction('subFolder1', [{id: folderId}]);
 
       await driver.emitAsUser(eventBus, [
         createFolderAction,
@@ -423,20 +423,20 @@ describe('event sourcing', () => {
     });
 
     it('folder tree move', async () => {
-      const [subFolder1, createSubFolder1] = mockBuilder.createFolderAction(
-        'subFolder1',
-        [{id: folderId}],
-      );
+      const [
+        subFolder1,
+        createSubFolder1,
+      ] = mockBuilder.createFolderAction('subFolder1', [{id: folderId}]);
 
-      const [subFolder2, createSubFolder2] = mockBuilder.createFolderAction(
-        'subFolder2',
-        [{id: subFolder1}],
-      );
+      const [
+        subFolder2,
+        createSubFolder2,
+      ] = mockBuilder.createFolderAction('subFolder2', [{id: subFolder1}]);
 
-      const [subFolder3, createSubFolder3] = mockBuilder.createFolderAction(
-        'subFolder3',
-        [{id: folderId}],
-      );
+      const [
+        subFolder3,
+        createSubFolder3,
+      ] = mockBuilder.createFolderAction('subFolder3', [{id: folderId}]);
 
       const [
         notebookId,
@@ -488,10 +488,10 @@ describe('event sourcing', () => {
     });
 
     it('delete an empty folder', async () => {
-      const [subFolder1, createSubFolder1] = mockBuilder.createFolderAction(
-        'subFolder1',
-        [{id: folderId}],
-      );
+      const [
+        subFolder1,
+        createSubFolder1,
+      ] = mockBuilder.createFolderAction('subFolder1', [{id: folderId}]);
 
       await driver.emitAsUser(eventBus, [createFolderAction, createSubFolder1]);
       const beforeList = await driver.getUserFileTree(defaultUser);
@@ -506,20 +506,20 @@ describe('event sourcing', () => {
     });
 
     it('recursively delete a folder', async () => {
-      const [subFolder1, createSubFolder1] = mockBuilder.createFolderAction(
-        'subFolder1',
-        [{id: folderId}],
-      );
+      const [
+        subFolder1,
+        createSubFolder1,
+      ] = mockBuilder.createFolderAction('subFolder1', [{id: folderId}]);
 
-      const [subFolder2, createSubFolder2] = mockBuilder.createFolderAction(
-        'subFolder2',
-        [{id: subFolder1}],
-      );
+      const [
+        subFolder2,
+        createSubFolder2,
+      ] = mockBuilder.createFolderAction('subFolder2', [{id: subFolder1}]);
 
-      const [subFolder3, createSubFolder3] = mockBuilder.createFolderAction(
-        'subFolder3',
-        [{id: subFolder2}],
-      );
+      const [
+        subFolder3,
+        createSubFolder3,
+      ] = mockBuilder.createFolderAction('subFolder3', [{id: subFolder2}]);
 
       const [
         notebookId,
@@ -546,10 +546,10 @@ describe('event sourcing', () => {
     });
 
     it('delete notebook favorite after deleting the parent folder', async () => {
-      const [subFolderId, createSubFolder] = mockBuilder.createFolderAction(
-        'subFolder',
-        [{id: folderId}],
-      );
+      const [
+        subFolderId,
+        createSubFolder,
+      ] = mockBuilder.createFolderAction('subFolder', [{id: folderId}]);
 
       const [
         notebookId,

@@ -12,10 +12,16 @@ import {IAction} from '../types';
  * @name EventBus
  * @description
  * acts as an enhanced event emitter, with the added notion of middlewares, and plugins.
- * - event will be emitted only if all middlewares pass the event.
+ * - event will be emitted only if all middlewares pass (== dont throw) the event
  * - all middlewares are called for all events, in a row.
- * - every middleware gets the arguments passed by the first middleware, and a callback to call the next middleware.
- * - middleware is typed as following: (...prevArgs: any[], next: (...nextArgs: any[]) => void))
+ * - every middleware gets the action and can:
+ *     ## call the next middleware with next() function
+ *     ## can pass a new action to next function
+ *     ## can call a "hook" on all registerd plugins
+ *
+ * - a plugin is a collection of hooks - different phases that can be called by middlewares
+ *   a hook gets a context object, where it can pass data to the next hook.
+ *   use case: avoid fetching data twice, if fetch data from DB on Validaton, use it later.
  */
 export class EventBus {
   private middlewares: EventBusMiddlewareDescriptor[];
