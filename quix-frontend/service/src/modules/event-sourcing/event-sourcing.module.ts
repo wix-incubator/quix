@@ -20,7 +20,7 @@ import {FavoritesPlugin} from './plugins/favorites-plugin';
 import {UserPlugin} from './plugins/user-plugin';
 import {NotebookRepository} from 'entities/notebook/notebook.repository';
 import {EventsService} from './events.service';
-import { EventsPlugin } from './plugins/events-plugin';
+import {EventsPlugin} from './plugins/events-plugin';
 
 @Module({
   imports: [

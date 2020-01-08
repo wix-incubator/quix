@@ -71,7 +71,10 @@ class EventBusBuilderT {
       typeof priority === 'number'
         ? priority
         : (Object.keys(this.middlewares).length > 0
-            ? Math.max.apply(null, this.middlewares.map(m => m.priority))
+            ? Math.max.apply(
+                null,
+                this.middlewares.map(m => m.priority),
+              )
             : 0) + 1;
     return priority;
   }

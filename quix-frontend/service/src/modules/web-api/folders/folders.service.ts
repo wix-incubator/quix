@@ -62,7 +62,7 @@ export class FoldersService {
       /* TODO: do this in one query */
       getFileNodeQuery.getOne(),
       this.fileTreeRepo.getChildren(rootId),
-    ]);
+    ] as const); /* remove as const when https://github.com/microsoft/TypeScript/issues/34937 is resolved */
 
     if (node) {
       const path = await this.computePath(node);
