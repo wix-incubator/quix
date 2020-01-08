@@ -5,7 +5,7 @@ import {
   useGlobalFilter,
   usePagination
 } from "react-table";
-import ReactPaginate from 'react-paginate';
+import ReactPaginate from "react-paginate";
 import "../directives/search/search.scss";
 
 function GlobalFilter({ preGlobalFilteredRows, getFilter, setGlobalFilter }) {
@@ -82,16 +82,34 @@ export const SortableTable = ({
           }}
         />
 
-        <ReactPaginate 
-          pageCount={pageCount} 
-          pageRangeDisplayed={3} 
-          marginPagesDisplayed={1}
-          previousLabel={"<"}
-          nextLabel={">"}
-          onPageChange={(pageData) => gotoPage(pageData.selected)}
-        ></ReactPaginate>
-
         <div
+          className="pagination quix-search-pagination bi-button-group bi-fade-in ng-scope"
+          style={{ float: "right" }}
+        >
+          <ReactPaginate
+            containerClassName="quix-search-pagination bi-button-group bi-fade-in ng-scope"
+            className="quix-search-pagination bi-button-group bi-fade-in ng-scope"
+            pageCount={pageCount}
+            pageRangeDisplayed={3}
+            marginPagesDisplayed={1}
+            previousLabel={<i className="bi-icon--sm">keyboard_arrow_left</i>}
+            nextLabel={<i className="bi-icon--sm">keyboard_arrow_right</i>}
+            // breakClassName={"bi-button"}
+            breakLinkClassName={"bi-button"}
+            nextLinkClassName={"bi-button"}
+            previousLinkClassName={"bi-button"}
+            // pageClassName={"bi-button"}
+            pageLinkClassName={"bi-button"}
+            // activeClassName={"bi-button--primary"}
+            activeLinkClassName={"bi-button--primary"}
+            onPageChange={pageData => {
+              setPageSize(1);
+              gotoPage(pageData.selected);
+            }}
+          ></ReactPaginate>
+        </div>
+
+        {/* <div
           className="pagination quix-search-pagination bi-button-group bi-fade-in ng-scope"
           style={{ float: "right" }}
         >
@@ -120,8 +138,8 @@ export const SortableTable = ({
             disabled={!canNextPage}
           >
             <i className="bi-icon--sm">keyboard_arrow_right</i>
-          </button>
-          {/* <span className="ng-binding">
+          </button> */}
+        {/* <span className="ng-binding">
           Page{" "}
           <strong>
             {pageIndex + 1} of {pageOptions.length}
@@ -151,7 +169,7 @@ export const SortableTable = ({
             </option>
           ))}
         </select> */}
-        </div>
+        {/* </div> */}
       </div>
       <div
         className={
