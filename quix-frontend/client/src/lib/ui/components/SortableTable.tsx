@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useTable, useSortBy, useGlobalFilter } from "react-table";
+import { useTable, useSortBy, useGlobalFilter, usePagination} from "react-table";
 import "../directives/search/search.scss";
 
 function GlobalFilter({ preGlobalFilteredRows, getFilter, setGlobalFilter }) {
@@ -36,22 +36,33 @@ export const SortableTable = ({
     getTableProps,
     getTableBodyProps,
     headerGroups,
-    rows,
+    // rows,
     prepareRow,
     preGlobalFilteredRows,
-    setGlobalFilter
+    setGlobalFilter,
+    page,
+    canPreviousPage,
+    canNextPage,
+    pageOptions,
+    pageCount,
+    gotoPage,
+    nextPage,
+    previousPage,
+    setPageSize,
+    state: { pageIndex, pageSize }
   } = useTable(
     {
       columns,
       data
     },
     useGlobalFilter,
-    useSortBy
+    useSortBy,
+    usePagination
   );
 
   // We don't want to render all 2000 rows for this example, so cap
   // it at 20 for this use case
-  const firstPageRows = rows.slice(0, 20);
+  // const firstPageRows = rows.slice(0, 20);
 
   return (
     <>
@@ -95,7 +106,7 @@ export const SortableTable = ({
               ))}
             </thead>
             <tbody {...getTableBodyProps()}>
-              {firstPageRows.map((row, index) => {
+              {page.map((row, index) => {
                 prepareRow(row);
                 return (
                   <tr
@@ -120,6 +131,50 @@ export const SortableTable = ({
             </tbody>
           </table>
         </div>
+      </div>
+      <div className="pagination">
+        <button onClick={() => gotoPage(0)} disabled={!canPreviousPage}>
+          {'<<'}
+        </button>{' '}
+        <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+          {'<'}
+        </button>{' '}
+        <button onClick={() => nextPage()} disabled={!canNextPage}>
+          {'>'}
+        </button>{' '}
+        <button onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage}>
+          {'>>'}
+        </button>{' '}
+        <span>
+          Page{' '}
+          <strong>
+            {pageIndex + 1} of {pageOptions.length}
+          </strong>{' '}
+        </span>
+        <span>
+          | Go to page:{' '}
+          <input
+            type="number"
+            defaultValue={pageIndex + 1}
+            onChange={e => {
+              const pageIdx = e.target.value ? Number(e.target.value) - 1 : 0
+              gotoPage(pageIdx)
+            }}
+            style={{ width: '100px' }}
+          />
+        </span>{' '}
+        <select
+          value={pageSize}
+          onChange={e => {
+            setPageSize(Number(e.target.value))
+          }}
+        >
+          {[10, 20, 30, 40, 50].map(pageSizeOption => (
+            <option key={pageSizeOption} value={pageSizeOption}>
+              Show {pageSizeOption}
+            </option>
+          ))}
+        </select>
       </div>
     </>
   );
