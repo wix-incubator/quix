@@ -20,7 +20,6 @@ export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
     filter(_, history: IHistory, index, highlight) {
       const hasQuery = history.query.length > 0;
       const fullQuery = hasQuery ? history.query.join(";\n") + ";" : "";
-      // const firstLine = hasQuery ? history.query[0].substring(0, 30) : "";
       return <pre title={fullQuery}>{highlight(fullQuery)}</pre>;
     }
   },

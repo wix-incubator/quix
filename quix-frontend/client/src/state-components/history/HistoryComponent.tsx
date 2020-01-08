@@ -22,11 +22,23 @@ export function History(props: HistoryProps) {
     </div>
   );
 
-  const highlight = (needle?: string) => (haystack: string) =>  <Highlighter
-          searchWords={[needle]}
-          autoEscape={true}
-          textToHighlight={extractTextAroundMatch(haystack, needle || "", needle ? 2 : 0)}
-        />
+  const getAndTrimFirstLine = (text: string = "", maxLength: number = 20): string => {
+    const lines = text.split("\n");
+    const firstLine = lines[0];
+    const needsElipsis = lines.length > 1 || firstLine.length > maxLength
+    return firstLine.substring(0, maxLength) + (needsElipsis ? "..." : "");
+  }
+
+  const highlight = (needle?: string) => (haystack: string) => { 
+    const needlePresent = !!needle;
+    const wrapLinesCount = needlePresent ? 2 : 0;
+    const text = needlePresent ? haystack : getAndTrimFirstLine(haystack, 30)
+    return <Highlighter
+      searchWords={[needle]}
+      autoEscape={true}
+      textToHighlight={extractTextAroundMatch(text, needle || "", wrapLinesCount)}
+  />
+  }
 
   let filter = "";
   const displayLoadedState = () => (
