@@ -4,6 +4,8 @@
 
 .bi-button--primary {
   @include button($primary);
+
+  background-color: $primary !important;
 }
 
 .bi-button--secondary {
