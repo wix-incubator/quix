@@ -59,7 +59,7 @@ const appBuilder = create<ClientConfigHelper>({
         pluginManager.module(ModuleComponentType.Note).plugin(id, engine, app);
       });
 
-      pluginManager.module(ModuleComponentType.Note).plugin('rupert', ModuleEngineType.Rupert, app);
+      pluginManager.module(ModuleComponentType.Note).plugin('rupert', 'rupert' as any, app);
 
       initCache(store);
       setupNotifications(staticsBaseUrl);

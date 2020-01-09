@@ -54,7 +54,7 @@
     "yoshi": "^3.23.0"
   },
   "dependencies": {
-    "@wix/quix-shared": "^1.0.0",
+    "@wix/quix-shared": "^1.0.3",
     "angular": "^1.7.0",
     "angular-dragdrop": "^1.0.13",
     "angular-resource": "^1.7.0",
@@ -70,8 +70,8 @@
     "highlight.js": "^9.15.6",
     "jquery": "^3.3.1",
     "jquery-datetimepicker": "^2.5.18",
-    "js-search": "^1.4.3",
     "jquery-ui": "^1.12.1",
+    "js-search": "^1.4.3",
     "lodash": "^4.17.11",
     "moment": "^2.24.0",
     "ng-csv": "^0.3.6",

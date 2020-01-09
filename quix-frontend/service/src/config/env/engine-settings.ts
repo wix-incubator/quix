@@ -13,5 +13,4 @@ const moduleToComponentsMap: Record<
   [ModuleEngineType.Jdbc]: {db: {}, note: {}},
   [ModuleEngineType.Presto]: {db: {}, note: {}},
   [ModuleEngineType.Python]: {note: {}},
-  [ModuleEngineType.Rupert]: {note: {}},
 };
