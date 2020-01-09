@@ -4,7 +4,7 @@ import {Store, sessionId} from '../lib/store';
 import {App} from '../lib/app';
 
 export const subscribeToStateChanges = (app: App<ClientConfigHelper>, store: Store) => {
-  const ws = new WebSocket(`${location.protocol.replace('http', 'ws')}//${location.host}/subscription`);
+  const ws = new WebSocket(`${location.protocol.replace('http', 'ws')}//${location.host}${app.getConfig().getClientTopology().apiBasePath}/subscription`);
 
   const {authCookieName} = app.getConfig().getAuth();
   const cookies = cookie.parse(document.cookie);
