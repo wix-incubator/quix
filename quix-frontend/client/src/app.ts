@@ -7,7 +7,7 @@ import {branches, initCache} from './store';
 import {config as runnerConfig} from './lib/runner';
 import {config as resourcesConfig} from './services/resources';
 import {pluginManager} from './plugins';
-import {ClientConfigHelper, ModuleComponentType, ModuleEngineType} from '@wix/quix-shared';
+import {ClientConfigHelper, ModuleComponentType} from '@wix/quix-shared';
 import {openTempQuery} from './services';
 import {inject} from './lib/core';
 
