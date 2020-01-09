@@ -2,7 +2,7 @@ import { Testkit } from "../../../test/e2e/driver";
 
 const enum Hooks {
   Error = "history-error",
-  Content = "History-content"
+  Content = "history-content"
 }
 
 export class HistoryTestkit extends Testkit {
