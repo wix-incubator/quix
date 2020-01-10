@@ -8,6 +8,7 @@ COPY /quix-modules/quix-athena-module/pom.xml ./quix-modules/quix-athena-module/
 COPY /quix-modules/quix-bigquery-module/pom.xml ./quix-modules/quix-bigquery-module/
 COPY /quix-modules/quix-jdbc-module/pom.xml ./quix-modules/quix-jdbc-module/
 COPY /quix-modules/quix-python-module/pom.xml ./quix-modules/quix-python-module/
+COPY /quix-modules/quix-dummy-module/pom.xml ./quix-modules/quix-dummy-module/
 COPY /quix-webapps/quix-web-spring/pom.xml ./quix-webapps/quix-web-spring/
 
 RUN mvn -B -e -C -T 1C org.apache.maven.plugins:maven-dependency-plugin:3.1.1:go-offline --fail-never
@@ -32,6 +33,9 @@ RUN mvn -T 1C install -pl quix-modules/quix-jdbc-module -am -DskipTests
 
 COPY /quix-modules/quix-python-module/src ./quix-modules/quix-python-module/src
 RUN mvn -T 1C install -pl quix-modules/quix-python-module -am -DskipTests
+
+COPY /quix-modules/quix-dummy-module/src ./quix-modules/quix-dummy-module/src
+RUN mvn -T 1C install -pl quix-modules/quix-dummy-module -am -DskipTests
 
 COPY /quix-webapps/quix-web-spring/src ./quix-webapps/quix-web-spring/src
 RUN mvn -T 1C install -pl quix-webapps/quix-web-spring -am -DskipTests
