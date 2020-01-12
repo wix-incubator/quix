@@ -35,7 +35,7 @@ export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
     title: 'Note Type',
     filter(_, history: IHistory, index, highlight) {
       return (
-        <span className='bi-text--md bi-muted'>
+        <span className='bi-muted'>
           {highlight(history.moduleType)}
         </span>
       );
@@ -46,7 +46,7 @@ export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
     title: 'Started At',
     filter(_, history: IHistory, index) {
       return (
-        <span className='bi-text--md bi-muted'>
+        <span className='bi-text--sm bi-muted'>
           {biRelativeDate()(history.startedAt as any)}
         </span>
       );
