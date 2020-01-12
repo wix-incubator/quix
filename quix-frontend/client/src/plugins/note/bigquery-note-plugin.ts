@@ -9,4 +9,14 @@ export class BigQueryNotePlugin extends NotePlugin {
       canCreate: true,
     });
   }
+
+  formatStats(stats: {[key: string]: any}) {
+    return [{
+      title: 'Bytes processed',
+      value: stats.bytesProcessed,
+    }, {
+      title: 'Bytes billed',
+      value: stats.bytesBilled,
+    }];
+  }
 }

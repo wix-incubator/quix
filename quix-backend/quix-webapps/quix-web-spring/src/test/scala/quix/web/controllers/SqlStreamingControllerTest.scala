@@ -36,7 +36,7 @@ class SqlStreamingControllerTest extends E2EContext with LazyLogging {
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"fields","data":{"id":"query-id","fields":["_col0"]}}"""))
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-id","values":["1"]}}"""))
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-id","percentage":100}}"""))
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-id"}}"""))
+    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-id","statistics":{}}}"""))
   }
 
   @Test
@@ -71,7 +71,7 @@ class SqlStreamingControllerTest extends E2EContext with LazyLogging {
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-1","percentage":0}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-1","values":["1"]}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-1","percentage":100}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-1"}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-1","statistics":{}}}"""))
     }
 
     // second query
@@ -82,7 +82,7 @@ class SqlStreamingControllerTest extends E2EContext with LazyLogging {
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-2","percentage":0}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-2","values":["2"]}}"""))
       assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-2","percentage":100}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-2"}}"""))
+      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-2","statistics":{}}}"""))
     }
 
   }

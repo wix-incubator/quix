@@ -28,8 +28,11 @@
     "@nestjs/jwt": "^6.0.0",
     "@nestjs/passport": "^6.0.0",
     "@nestjs/platform-express": "^6.0.0",
+    "@nestjs/platform-ws": "^6.10.13",
     "@nestjs/typeorm": "^6.0.0",
+    "@nestjs/websockets": "^6.10.13",
     "@types/node-fetch": "^2.5.0",
+    "@types/ws": "^6.0.4",
     "appmetrics-dash": "^5.1.0",
     "axios": "^0.19.0",
     "cookie-parser": "^1.4.4",
@@ -49,7 +52,8 @@
     "tsconfig-paths": "^3.8.0",
     "typeorm": "^0.2.15",
     "uuid": "^3.3.2",
-    "velocity": "^0.7.2"
+    "velocity": "^0.7.2",
+    "ws": "^7.2.1"
   },
   "devDependencies": {
     "@nestjs/testing": "^6.0.0",

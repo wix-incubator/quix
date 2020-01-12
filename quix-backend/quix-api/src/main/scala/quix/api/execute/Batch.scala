@@ -12,7 +12,7 @@ case class BatchError(message: String)
  * @param error optional error
  * @param stats optional stats object for custom properties
  */
-case class Batch(data: Seq[Seq[Any]],
+case class Batch(data: Seq[Seq[Any]] = Seq.empty,
                  columns: Option[Seq[BatchColumn]] = None,
                  error: Option[BatchError] = None,
                  stats: Map[String, Any] = Map.empty)

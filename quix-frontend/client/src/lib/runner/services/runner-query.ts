@@ -60,6 +60,7 @@ export default class RunnerQuery extends srv.eventEmitter.EventEmitter {
   private readonly _results = new srv.collections.BufferedCollection().setChunkSize(20);
   private fastForwardPromise = null;
   private error: IError;
+  private stats: {[key: string]: any};
   private time: ITime = {
     elapsed: null,
     started: null,
@@ -203,6 +204,14 @@ export default class RunnerQuery extends srv.eventEmitter.EventEmitter {
 
   public setErrorMessage(msg) {
     this.error.msg = msg;
+  }
+
+  public getStats() {
+    return this.stats;
+  }
+
+  public setStats(stats: {[key: string]: any}) {
+    this.stats = stats;
   }
 
   public start(): RunnerQuery {

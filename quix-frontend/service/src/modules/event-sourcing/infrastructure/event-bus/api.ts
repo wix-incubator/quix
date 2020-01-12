@@ -62,7 +62,7 @@ export class MiddlewareApi implements IMiddlewareApi {
               return Promise.reject(e);
             }
           }
-          return Promise.reject('no such hook');
+          return Promise.reject(new Error('no such hook'));
         });
       return Promise.all(promises);
     },

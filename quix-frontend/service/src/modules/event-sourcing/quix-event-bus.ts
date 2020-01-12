@@ -13,6 +13,7 @@ import {FileTreePlugin} from './plugins/file-tree-plugin';
 import {FavoritesPlugin} from './plugins/favorites-plugin';
 import {IAction} from './infrastructure/types';
 import {UserPlugin} from './plugins/user-plugin';
+import {EventsPlugin} from './plugins/events-plugin';
 
 @Injectable()
 export class QuixEventBus<A extends IAction = IAction> {
@@ -26,6 +27,7 @@ export class QuixEventBus<A extends IAction = IAction> {
     @Inject(FileTreePlugin) private fileTreePlugin: EventBusPlugin,
     @Inject(FavoritesPlugin) private favoritesPlugin: EventBusPlugin,
     @Inject(UserPlugin) private userPlugin: EventBusPlugin,
+    @Inject(EventsPlugin) private eventsPlugin: EventBusPlugin,
   ) {
     this.bus = EventBusBuilder()
       .addPlugin(this.notebookPlugin)
@@ -33,6 +35,7 @@ export class QuixEventBus<A extends IAction = IAction> {
       .addPlugin(this.fileTreePlugin)
       .addPlugin(this.favoritesPlugin)
       .addPlugin(this.userPlugin)
+      .addPlugin(this.eventsPlugin)
       .addMiddleware(async (action, api, next) => {
         api.hooks
           .call(QuixHookNames.VALIDATION, action)

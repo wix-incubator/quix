@@ -242,4 +242,19 @@ describe('Files ::', () => {
       });
     });
   });
+
+  describe('Synchronization ::', () => {
+    const createNotebookEvents = [
+      { "event": "action", "data": { "type": "notebook.create", "notebook": { "id": "bfeeabd8-e69d-4380-8bb7-25f18e92855f", "name": "New notebook", "notes": [], "isLiked": false, "path": [{ "id": "c682d9db-2028-4fea-a5a9-eafa1fa58314", "name": "My notebooks" }], "owner": "user@quix.com", "ownerDetails": { "id": "", "name": "", "email": "", "avatar": "", "rootFolder": "", "dateCreated": 0, "dateUpdated": 0 }, "dateCreated": 1577967426084, "dateUpdated": 1577967426084 }, "id": "bfeeabd8-e69d-4380-8bb7-25f18e92855f" } },
+      { "event": "action", "data": { "type": "note.create", "id": "c5ef5489-6ad2-44f6-b76f-ac2864f0db79", "note": { "id": "c5ef5489-6ad2-44f6-b76f-ac2864f0db79", "notebookId": "bfeeabd8-e69d-4380-8bb7-25f18e92855f", "name": "New note", "type": "presto", "content": "\n", "owner": "", "dateCreated": 1577967426084, "dateUpdated": 1577967426084 } } }
+    ];    
+
+    it('should subscribe to event sourcing mechanism', async function() {
+      await gotoEditableRootFolder([]);
+      expect(await testkit.hasEmptyState()).to.be.true;
+
+      await driver.mock.wsBroadcast(createNotebookEvents);
+      expect(await testkit.hasContent()).to.be.true;
+    });
+  })
 });

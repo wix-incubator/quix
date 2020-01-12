@@ -4,12 +4,7 @@ import {IGoogleUser} from './types';
 import {PassportStrategy} from '@nestjs/passport';
 import {Injectable, Logger} from '@nestjs/common';
 import {ConfigService} from 'config';
-
-const defaultUser: IGoogleUser = {
-  email: 'user@quix.com',
-  id: '1',
-  name: 'Default User',
-};
+import {fakeAuth} from './common-auth';
 
 class PassportFakeStrategy extends BaseStrategy {
   private readonly logger = new Logger(PassportFakeStrategy.name);
@@ -22,19 +17,9 @@ class PassportFakeStrategy extends BaseStrategy {
 
   authenticate(req: Request) {
     const cookies = req.cookies || {};
-    if (cookies[this.cookieName]) {
-      try {
-        const user = JSON.parse(
-          Buffer.from(cookies[this.cookieName], 'base64').toString(),
-        );
-
-        this.success(user);
-      } catch (e) {
-        this.logger.verbose(`Can't parse cookie, using default user.`);
-        this.success(defaultUser);
-      }
-    }
-    this.success(defaultUser);
+    const token = cookies[this.cookieName];
+    const user = fakeAuth(token);
+    this.success(user);
   }
 }
 

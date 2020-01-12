@@ -32,8 +32,8 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
     Task.sequence(List(resetCount, startTask, detailsTask, subqueryTask)).map(_ => ())
   }
 
-  override def endSubQuery(queryId: String) = {
-    consumer.write(SubQueryEnd(queryId))
+  override def endSubQuery(queryId: String, statistics: Map[String, Any]) = {
+    consumer.write(SubQueryEnd(queryId, statistics))
   }
 
   override def addSubQuery(queryId: String, results: Batch) = {
