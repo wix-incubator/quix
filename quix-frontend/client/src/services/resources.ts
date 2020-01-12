@@ -1,5 +1,5 @@
-import { mapValues } from "lodash";
-import { inject, Config } from "../lib/core";
+import { mapValues } from 'lodash';
+import { inject, Config } from '../lib/core';
 import {
   IFile,
   IFolder,
@@ -7,7 +7,7 @@ import {
   INote,
   IUser,
   IHistory
-} from "@wix/quix-shared";
+} from '@wix/quix-shared';
 
 export const config = new Config<{
   apiBasePath: string;
@@ -17,11 +17,11 @@ const api = (endpoint: TemplateStringsArray) =>
   `${config.get().apiBasePath}/api/` + endpoint[0];
 
 const resource = (
-  action: "get" | "query",
+  action: 'get' | 'query',
   endpoint: string,
   params: Record<string, any>
 ) =>
-  inject("$resource")(
+  inject('$resource')(
     endpoint,
     mapValues(params, (v, k) => `@${k}`)
   )[action](params).$promise;
@@ -29,11 +29,11 @@ const resource = (
 const one = <T>(
   endpoint: string,
   params: Record<string, any> = {}
-): Promise<T> => resource("get", endpoint, params);
+): Promise<T> => resource('get', endpoint, params);
 const many = <T>(
   endpoint: string,
   params: Record<string, any> = {}
-): Promise<T[]> => resource("query", endpoint, params);
+): Promise<T[]> => resource('query', endpoint, params);
 
 export const users = () => many<IUser>(api`users`);
 export const history = () => many<IHistory>(api`history`, { limit: 500 });

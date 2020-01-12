@@ -1,8 +1,8 @@
-import { Testkit } from "../../../test/e2e/driver";
+import { Testkit } from '../../../test/e2e/driver';
 
 const enum Hooks {
-  Error = "history-error",
-  Content = "history-content"
+  Error = 'history-error',
+  Content = 'history-content'
 }
 
 export class HistoryTestkit extends Testkit {
@@ -15,6 +15,6 @@ export class HistoryTestkit extends Testkit {
   }
 
   async numOfHistory() {
-    return (await this.query.hooks("table-row")).length;
+    return (await this.query.hooks('table-row')).length;
   }
 }

@@ -1,15 +1,15 @@
-import { setupNotifications } from "./bootstrap";
-import create from "./lib/app";
-import { hooks } from "./hooks";
-import * as components from "./components";
-import * as stateComponents from "./state-components";
-import { branches, initCache } from "./store";
-import { config as runnerConfig } from "./lib/runner";
-import { config as resourcesConfig } from "./services/resources";
-import { pluginManager } from "./plugins";
-import { ClientConfigHelper, ModuleComponentType } from "@wix/quix-shared";
-import { openTempQuery } from "./services";
-import { inject } from "./lib/core";
+import { setupNotifications } from './bootstrap';
+import create from './lib/app';
+import { hooks } from './hooks';
+import * as components from './components';
+import * as stateComponents from './state-components';
+import { branches, initCache } from './store';
+import { config as runnerConfig } from './lib/runner';
+import { config as resourcesConfig } from './services/resources';
+import { pluginManager } from './plugins';
+import { ClientConfigHelper, ModuleComponentType } from '@wix/quix-shared';
+import { openTempQuery } from './services';
+import { inject } from './lib/core';
 
 const clientConfig = ClientConfigHelper.load(window.quixConfig);
 
@@ -21,40 +21,43 @@ const {
 
 const appBuilder = create<ClientConfigHelper>(
   {
-    id: "quix",
-    title: "Quix"
+    id: 'quix',
+    title: 'Quix'
   },
   {
     auth: clientConfig.getAuth(),
-    statePrefix: "base",
-    defaultUrl: "/home",
-    homeState: "home",
+    statePrefix: 'base',
+    defaultUrl: '/home',
+    homeState: 'home',
     logoUrl: `${staticsBaseUrl}assets/logo_big.png`,
     apiBasePath
   },
-  ["bi.app", "bi.runner", "bi.fileExplorer"]
+  ['bi.app', 'bi.runner', 'bi.fileExplorer']
 )
   .config(clientConfig)
-  .plugin("app", plugin => {
+  .plugin('app', plugin => {
     plugin.components(components);
     plugin.stateComponents(stateComponents);
-    plugin.store(branches, `${apiBasePath}/api/events`, "Node");
+    plugin.store(branches, `${apiBasePath}/api/events`, 'Node');
 
     plugin.menuItem({
-      name: "Notebooks",
-      icon: "description",
+      name: 'Notebooks',
+      icon: 'description',
       template: '<quix-files-sidebar class="bi-c bi-grow"></quix-files-sidebar>'
     });
+
     plugin.menuItem({
-      name: "DB Explorer",
-      icon: "storage",
+      name: 'DB Explorer',
+      icon: 'storage',
       template: '<quix-db-sidebar class="bi-c-h bi-grow"></quix-db-sidebar>'
     });
-    plugin.menuItem({ name: "separator" });
+
+    plugin.menuItem({ name: 'separator' });
+
     plugin.menuItem({
-      name: "Playground",
-      icon: "code",
-      onToggle: () => openTempQuery(inject("$rootScope"))
+      name: 'Playground',
+      icon: 'code',
+      onToggle: () => openTempQuery(inject('$rootScope'))
     });
 
     plugin.onPluginReady((app, store) => {
@@ -86,7 +89,7 @@ const appBuilder = create<ClientConfigHelper>(
 
       app
         .getModule()
-        .controller("app", ["$scope", scope => (scope.app = app)] as any);
+        .controller('app', ['$scope', scope => (scope.app = app)] as any);
     });
   });
 

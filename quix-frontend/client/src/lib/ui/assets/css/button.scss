@@ -1,11 +1,9 @@
-@import "./def/colors.def";
-@import "./def/button.def";
-@import "./def/flex.def";
+@import './def/colors.def';
+@import './def/button.def';
+@import './def/flex.def';
 
 .bi-button--primary {
   @include button($primary);
-
-  background-color: $primary !important;
 }
 
 .bi-button--secondary {
@@ -49,30 +47,30 @@
 
 .bi-theme--lighter {
   .bi-button {
-    @include button-theme("lighter");
+    @include button-theme('lighter');
   }
 }
 
 .bi-theme--light {
   .bi-button {
-    @include button-theme("light");
+    @include button-theme('light');
   }
 
   .bi-theme--lighter {
     .bi-button {
-      @include button-theme("lighter");
+      @include button-theme('lighter');
     }
   }
 }
 
 .bi-theme--dark {
   .bi-button {
-    @include button-theme("dark");
+    @include button-theme('dark');
   }
 }
 
 .bi-theme--darker {
   .bi-button {
-    @include button-theme("darker");
+    @include button-theme('darker');
   }
 }

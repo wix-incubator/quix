@@ -1,12 +1,12 @@
-import * as React from "react";
+import * as React from 'react';
 import {
   useTable,
   useSortBy,
   useGlobalFilter,
   usePagination
-} from "react-table";
-import ReactPaginate from "react-paginate";
-import "../directives/search/search.scss";
+} from 'react-table';
+import ReactPaginate from 'react-paginate';
+import '../directives/search/search.scss';
 
 function GlobalFilter({ preGlobalFilteredRows, getFilter, setGlobalFilter }) {
   return (

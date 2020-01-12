@@ -1,3 +1,3 @@
-export { IHistory } from "./types";
-export { createHistory, createEmptyIHistory } from "./history";
-export { HistoryActionTypes, HistoryActions } from "./actions";
+export { IHistory } from './types';
+export { createHistory } from './history';
+export { HistoryActionTypes, HistoryActions } from './actions';
