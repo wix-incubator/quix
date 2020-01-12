@@ -169,6 +169,10 @@ export class RunnerComponentInstance extends srv.eventEmitter.EventEmitter {
     this.scope.vm.result.setCurrent(query);
   }
 
+  getCurrentQuery() {
+    return this.scope.vm.result.current;
+  }
+
   getUser() {
     return this.user;
   }
@@ -194,6 +198,7 @@ export default () => {
       result: '?result',
       runHint: '?runHint',
       controls: '?controls',
+      stats: '?stats',
     },
     scope: {
       data: '=',
@@ -249,11 +254,15 @@ export default () => {
               $init() {
                 this.toggle(transclude.isSlotFilled('actions'));
               }
-            }
+            },
+            stats: {
+              enabled: true,
+            },
           })
           .withEvents({
             onSelectQuery(query) {
               scope.vm.result.setCurrent(query);
+              scope.vm.stats.reload();
             },
             onToggleRun(mode) {
               if (scope.vm.runner.enabled) {

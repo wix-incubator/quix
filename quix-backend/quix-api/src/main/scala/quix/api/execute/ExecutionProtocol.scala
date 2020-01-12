@@ -4,8 +4,9 @@ sealed trait EventData
 
 /**
  * Event used to communicate changes
+ *
  * @param event event name, shared between quix backend and quix frontend
- * @param data data that arrives with every event
+ * @param data  data that arrives with every event
  */
 sealed case class ExecutionEvent(event: String, data: EventData)
 
@@ -21,7 +22,7 @@ sealed case class SubQueryFields(id: String, fields: Seq[String]) extends EventD
 
 sealed case class SubQueryDetails[Code](id: String, code: Code) extends EventData
 
-sealed case class SubQueryEnd(id: String) extends EventData
+sealed case class SubQueryEnd(id: String, statistics: Map[String, Any]) extends EventData
 
 sealed case class SubQueryError(id: String, message: String) extends EventData
 
@@ -55,7 +56,7 @@ object SubQueryDetails {
 }
 
 object SubQueryEnd {
-  def apply(id: String): ExecutionEvent = ExecutionEvent("query-end", new SubQueryEnd(id))
+  def apply(id: String, statistics: Map[String, Any] = Map.empty): ExecutionEvent = ExecutionEvent("query-end", new SubQueryEnd(id, statistics))
 }
 
 object SubQueryError {

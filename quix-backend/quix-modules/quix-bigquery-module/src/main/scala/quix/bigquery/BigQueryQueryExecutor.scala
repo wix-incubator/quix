@@ -4,14 +4,13 @@ import java.io.ByteArrayInputStream
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException
 import com.google.auth.oauth2.ServiceAccountCredentials
-import com.google.cloud.bigquery.{BigQueryOptions, FieldValue, Job, TableResult}
+import com.google.cloud.bigquery.{BigQueryOptions, FieldValue, Job, JobStatistics, TableResult}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
 import quix.core.utils.TaskOps._
 
 import scala.collection.JavaConverters._
-import scala.concurrent.duration._
 
 class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long)
   extends AsyncQueryExecutor[String, Batch] with LazyLogging {
@@ -60,15 +59,8 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
     } else Task.unit
   }
 
-  def waitForFinish(job: Job, activeQuery: ActiveQuery[String]): Task[Unit] = {
-    Task.eval(job.isDone).flatMap {
-      case false if activeQuery.isCancelled =>
-        for {
-          _ <- Task(job.reload()).delayExecution(advanceTimeout.millis)
-          _ <- waitForFinish(job, activeQuery)
-        } yield ()
-      case _ => Task.unit
-    }
+  def waitForFinish(job: Job, activeQuery: ActiveQuery[String]): Task[Job] = Task {
+    job.waitFor()
   }
 
   override def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
@@ -77,13 +69,24 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
     initClient(query, builder).bracket { job =>
       for {
         _ <- builder.startSubQuery(job.getGeneratedId, query.text, Batch(Seq.empty, error = getError(job)))
-        _ <- waitForFinish(job, query)
-        _ <- loop(query, builder, job, job.getQueryResults()).onErrorHandleWith {
-          e: Throwable => builder.errorSubQuery(job.getGeneratedId, e)
+        completedJob <- waitForFinish(job, query)
+        _ <- loop(query, builder, completedJob, completedJob.getQueryResults()).onErrorHandleWith { e =>
+          builder.errorSubQuery(job.getGeneratedId, e)
         }
-        _ <- builder.endSubQuery(job.getGeneratedId)
+        _ <- builder.endSubQuery(job.getGeneratedId, fetchStatistics(completedJob))
       } yield ()
     }(close)
+  }
+
+  def fetchStatistics(job: Job) = {
+    val jobStatistics = job.getStatistics[JobStatistics.QueryStatistics]
+
+    Map(
+      "cacheHit" -> jobStatistics.getCacheHit,
+      "bytesProcessed" -> jobStatistics.getTotalBytesProcessed,
+      "bytesBilled" -> jobStatistics.getTotalBytesBilled,
+      "type" -> jobStatistics.getStatementType.name(),
+    )
   }
 
   def initClient(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Job] = {

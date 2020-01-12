@@ -55,7 +55,7 @@ class PrestoExecutionsTest extends SpecWithJUnit with Mockito {
 
       there was no(builderSpy).startSubQuery(any(), any(), any())
       there was no(builderSpy).addSubQuery(any(), any())
-      there was no(builderSpy).endSubQuery(any())
+      there was no(builderSpy).endSubQuery(any(), any())
     }
 
     "call builder.start/end on query that returned results" in new ctx {
