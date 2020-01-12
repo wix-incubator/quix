@@ -70,6 +70,10 @@
         <span class="bi-text--sm">Rows</span>
         <b class="bi-text--sm">{{vm.result.current.getResults().bufferSize()}}</b>
       </div>
+
+      <div>
+        <div ng-if="vm.stats.enabled && vm.result.current.finished" ng-transclude="stats"></div>
+      </div>
     </div>
 
     <div class="bi-fade-in" ng-if="!vm.runner.enabled" ng-transclude="runHint"></div>

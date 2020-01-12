@@ -103,6 +103,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
       })
 
       .register('query-end', data => {
+        this.getCurrentQuery().setStats(data.statistics);
         this.getState().endQuery(data.id);
 
         return data;

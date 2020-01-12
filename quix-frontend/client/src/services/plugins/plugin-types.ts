@@ -38,6 +38,10 @@ export class NotePlugin extends Plugin {
   getConfig() {
     return this.config;
   }
+
+  formatStats(stats: {[key: string]: any}) {
+    return [];
+  }
 }
 
 export class DbPlugin extends Plugin {

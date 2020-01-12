@@ -68,7 +68,7 @@ class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-details","data":{"id":"query-id","code":"select * from small_table"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"fields","data":{"id":"query-id","fields":["col1"]}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"row","data":{"id":"query-id","values":[1]}}"""))
-    assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id"}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id","statistics":{}}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"end","data":{"id":"query-id"}}"""))
   }
 
@@ -81,7 +81,7 @@ class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
     assertThat(listener.messagesJ, hasEvent("""{"event":"query-details","data":{"id":"query-id","code":"select * from small_table"}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"fields","data":{"id":"query-id","fields":["col1"]}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"row","data":{"id":"query-id","values":[1]}}"""))
-    assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id"}}"""))
+    assertThat(listener.messagesJ, hasEvent("""{"event":"query-end","data":{"id":"query-id","statistics":{}}}"""))
     assertThat(listener.messagesJ, hasEvent("""{"event":"end","data":{"id":"query-id"}}"""))
   }
 

@@ -82,7 +82,7 @@ class DownloadBuilder[Code](delegate: Builder[Code, Batch],
     } yield ()
   }
 
-  override def endSubQuery(queryId: String): Task[Unit] = {
+  override def endSubQuery(queryId: String, statistics: Map[String, Any]): Task[Unit] = {
     for {
       _ <- stopQuery(queryId)
       _ <- delegate.endSubQuery(queryId)

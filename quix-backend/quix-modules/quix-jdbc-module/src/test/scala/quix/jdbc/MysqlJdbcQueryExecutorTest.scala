@@ -41,7 +41,7 @@ class MysqlJdbcQueryExecutorTest extends SpecWithJUnit with BeforeAll with Befor
 
       there was one(builder).addSubQuery(anyString, any[Batch]())
 
-      there was one(builder).endSubQuery(anyString)
+      there was one(builder).endSubQuery(anyString, any())
     }
 
     "do not call builder.addSubQuery on zero results" in new ctx {
@@ -53,7 +53,7 @@ class MysqlJdbcQueryExecutorTest extends SpecWithJUnit with BeforeAll with Befor
 
       there was no(builder).addSubQuery(anyString, any[Batch]())
 
-      there was one(builder).endSubQuery(anyString)
+      there was one(builder).endSubQuery(anyString, any())
     }
 
     "stop query if query.isCancelled is true" in new ctx {
@@ -65,7 +65,7 @@ class MysqlJdbcQueryExecutorTest extends SpecWithJUnit with BeforeAll with Befor
 
       there was no(builder).addSubQuery(anyString, any[Batch]())
 
-      there was one(builder).endSubQuery(anyString)
+      there was one(builder).endSubQuery(anyString, any())
     }
 
     "support create statements" in new ctx {
@@ -77,7 +77,7 @@ class MysqlJdbcQueryExecutorTest extends SpecWithJUnit with BeforeAll with Befor
 
       there was no(builder).addSubQuery(anyString, any[Batch]())
 
-      there was one(builder).endSubQuery(anyString)
+      there was one(builder).endSubQuery(anyString, any())
 
       there was no(builder).errorSubQuery(anyString, any[Throwable]())
     }
@@ -91,7 +91,7 @@ class MysqlJdbcQueryExecutorTest extends SpecWithJUnit with BeforeAll with Befor
 
       there was no(builder).addSubQuery(anyString, any[Batch]())
 
-      there was one(builder).endSubQuery(anyString)
+      there was one(builder).endSubQuery(anyString, any())
 
       there was no(builder).errorSubQuery(anyString, any[Throwable]())
     }
@@ -105,7 +105,7 @@ class MysqlJdbcQueryExecutorTest extends SpecWithJUnit with BeforeAll with Befor
 
       there was no(builder).addSubQuery(anyString, any[Batch]())
 
-      there was one(builder).endSubQuery(anyString)
+      there was one(builder).endSubQuery(anyString, any())
 
       there was no(builder).errorSubQuery(anyString, any[Throwable]())
     }
@@ -119,7 +119,7 @@ class MysqlJdbcQueryExecutorTest extends SpecWithJUnit with BeforeAll with Befor
 
       there was no(builder).addSubQuery(anyString, any[Batch]())
 
-      there was one(builder).endSubQuery(anyString)
+      there was one(builder).endSubQuery(anyString, any())
 
       there was no(builder).errorSubQuery(anyString, any[Throwable]())
     }
