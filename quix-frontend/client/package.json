@@ -64,6 +64,7 @@
     "angular-ui-sortable": "^0.19.0",
     "antlr4": "^4.7.0",
     "brace": "^0.11.1",
+    "bytes": "^3.1.0",
     "change-case": "^3.1.0",
     "classnames": "^2.2.6",
     "dialog-polyfill": "^0.4.10",
