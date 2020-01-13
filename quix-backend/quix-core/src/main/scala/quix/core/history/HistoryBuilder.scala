@@ -31,8 +31,8 @@ class HistoryBuilder[Results](delegate: Builder[String, Results],
   override def addSubQuery(queryId: String, results: Results): Task[Unit] =
     delegate.addSubQuery(queryId, results)
 
-  override def endSubQuery(queryId: String): Task[Unit] =
-    delegate.endSubQuery(queryId)
+  override def endSubQuery(queryId: String, statistics: Map[String, Any]): Task[Unit] =
+    delegate.endSubQuery(queryId, statistics)
 
   override def errorSubQuery(queryId: String, e: Throwable): Task[Unit] =
     delegate.errorSubQuery(queryId, e)
