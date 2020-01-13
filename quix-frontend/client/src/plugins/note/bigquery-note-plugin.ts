@@ -1,3 +1,4 @@
+import bytes from 'bytes';
 import { ModuleEngineType } from '@wix/quix-shared';
 import { App } from '../../lib/app';
 import { NotePlugin } from '../../services/plugins';
@@ -11,12 +12,17 @@ export class BigQueryNotePlugin extends NotePlugin {
   }
 
   formatStats(stats: {[key: string]: any}) {
+    const bytesConfig = {thousandsSeparator: ',', unitSeparator: ' ', decimalPlaces: 0};
+
     return [{
+      title: 'Cache',
+      value: stats.cacheHit ? 'Hit' : 'Miss',
+    }, {
       title: 'Bytes processed',
-      value: stats.bytesProcessed,
+      value: bytes(stats.bytesProcessed, bytesConfig),
     }, {
       title: 'Bytes billed',
-      value: stats.bytesBilled,
+      value: bytes(stats.bytesBilled, bytesConfig),
     }];
   }
 }
