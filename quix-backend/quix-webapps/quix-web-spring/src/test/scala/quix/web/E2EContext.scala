@@ -8,6 +8,10 @@ import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import scalaj.http.Http
 
+import scala.collection.mutable.ListBuffer
+import scala.concurrent.duration.Duration
+import scala.concurrent.{Await, Promise}
+
 trait E2EContext extends StringJsonHelpersSupport {
   val c = asyncHttpClient()
 
@@ -41,7 +45,7 @@ trait E2EContext extends StringJsonHelpersSupport {
 
 
   def startSocket(awaitFinish: Boolean, texts: List[String], module: String, port: String) = {
-    val listener = new MyListener(texts: List[String])
+    val listener = new MyListener(texts)
 
     val handler = new WebSocketUpgradeHandler.Builder().addWebSocketListener(listener).build()
 
@@ -51,8 +55,7 @@ trait E2EContext extends StringJsonHelpersSupport {
       Thread.sleep(10)
 
     if (awaitFinish) {
-      while (!listener.closed)
-        Thread.sleep(10)
+      listener.awaitClosed()
     }
 
     listener
@@ -63,8 +66,9 @@ class MyListener(payloads: List[String]) extends WebSocketListener with StringJs
 
   import scala.collection.JavaConverters._
 
-  val messages = scala.collection.mutable.ListBuffer.empty[String]
-  var closed = false
+  private val closed = Promise[Unit]
+
+  val messages = ListBuffer.empty[String]
   var opened = false
 
   def messagesJ = messages.asJava
@@ -78,7 +82,7 @@ class MyListener(payloads: List[String]) extends WebSocketListener with StringJs
   }
 
   override def onClose(websocket: WebSocket, code: Int, reason: String): Unit = {
-    closed = true
+    closed.success(())
     opened = false
   }
 
@@ -92,4 +96,7 @@ class MyListener(payloads: List[String]) extends WebSocketListener with StringJs
     while (!messages.contains(message))
       Thread.sleep(10)
   }
+
+  def awaitClosed(atMost: Duration = Duration.Inf): Unit =
+    Await.result(closed.future, atMost)
 }

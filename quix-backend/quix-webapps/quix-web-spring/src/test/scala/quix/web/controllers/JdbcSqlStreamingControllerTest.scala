@@ -1,13 +1,7 @@
 package quix.web.controllers
 
 import com.typesafe.scalalogging.LazyLogging
-import com.wix.mysql.EmbeddedMysql
-import com.wix.mysql.EmbeddedMysql.anEmbeddedMysql
 import com.wix.mysql.ScriptResolver.classPathScript
-import com.wix.mysql.config.Charset.UTF8
-import com.wix.mysql.config.MysqldConfig
-import com.wix.mysql.config.MysqldConfig.aMysqldConfig
-import com.wix.mysql.distribution.Version.v5_6_23
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers
 import org.hamcrest.text.MatchesPattern.matchesPattern
@@ -19,8 +13,8 @@ import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.context.{TestContextManager, TestPropertySource}
 import quix.web.E2EContext
+import quix.web.controllers.MyMatchers._
 import quix.web.spring.SpringConfig
-import MyMatchers._
 
 @RunWith(classOf[SpringRunner])
 @DirtiesContext
@@ -28,24 +22,10 @@ import MyMatchers._
 @TestPropertySource(locations = Array("classpath:test.properties"))
 class JdbcSqlStreamingControllerTest extends E2EContext with LazyLogging {
 
-  new TestContextManager(this.getClass).prepareTestInstance(this)
+  new TestContextManager(getClass).prepareTestInstance(this)
 
-  val prod = createEmbeddedMySqlServer(2222, "prod-user", "prod-pass").start()
-  val dev = createEmbeddedMySqlServer(3333, "dev-user", "dev-pass").start()
-
-
-  def createEmbeddedMySqlServer(port: Int, user: String, pass: String) = {
-    val config: MysqldConfig = aMysqldConfig(v5_6_23)
-      .withCharset(UTF8)
-      .withPort(port)
-      .withUser(user, pass)
-      .build()
-
-    val embeddedServer: EmbeddedMysql.Builder = anEmbeddedMysql(config)
-      .addSchema("aschema", classPathScript("db/001_init.sql"))
-
-    embeddedServer
-  }
+  private val prod = EmbeddedMySql.create(2222, "prod-user", "prod-pass").start()
+  private val dev = EmbeddedMySql.create(3333, "dev-user", "dev-pass").start()
 
   @Before
   def before(): Unit = {
