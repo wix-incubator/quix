@@ -26,7 +26,7 @@ case class FakeBuilder(state: Ref[Task, State]) extends Builder[String, Batch] {
   override def addSubQuery(queryId: String, results: Batch): Task[Unit] =
     state.update(_.addSubQuery(queryId, results))
 
-  override def endSubQuery(queryId: String): Task[Unit] =
+  override def endSubQuery(queryId: String, statistics: Map[String, Any]): Task[Unit] =
     state.update(_.endSubQuery(queryId))
 
   override def errorSubQuery(queryId: String, e: Throwable): Task[Unit] =
