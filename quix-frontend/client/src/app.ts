@@ -11,6 +11,8 @@ import {ClientConfigHelper, ModuleComponentType} from '@wix/quix-shared';
 import {openTempQuery} from './services';
 import {inject} from './lib/core';
 
+export {hooks} from './hooks';
+
 const clientConfig = ClientConfigHelper.load(window.quixConfig);
 
 const {
