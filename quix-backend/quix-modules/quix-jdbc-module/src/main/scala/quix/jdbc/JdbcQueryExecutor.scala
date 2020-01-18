@@ -1,7 +1,9 @@
 package quix.jdbc
 
+import java.net.{ConnectException, SocketException, SocketTimeoutException, UnknownHostException}
 import java.sql.{Connection, DriverManager, ResultSet}
 
+import com.google.common.base.Throwables
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.execute._
@@ -88,7 +90,14 @@ class JdbcQueryExecutor(config: JdbcConfig)
       .bracket(use)(close)
       .logOnError(s"method=runTask event=error query-id=${query.id}")
       .onErrorHandleWith { e =>
-        builder.errorSubQuery(query.id, e)
+        builder.errorSubQuery(query.id, rewriteException(e))
       }
+  }
+
+  def rewriteException(e: Throwable): Throwable = Throwables.getRootCause(e) match {
+    case e@(_: ConnectException | _: SocketTimeoutException | _: SocketException | _: UnknownHostException) =>
+      val message = s"${config.url} can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}"
+      ExceptionPropagatedToClient(message)
+    case _ => e
   }
 }
