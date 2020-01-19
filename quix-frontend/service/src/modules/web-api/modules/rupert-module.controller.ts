@@ -29,7 +29,9 @@ export class ModulesController {
   private getRupertHeaders(user: IGoogleUser) {
     const {RupertApiKey, RupertApiSecret} = this.configService.getEnvSettings();
 
-    const authHeader = `Basic ${new Buffer(RupertApiKey + ':').toString('base64')}`;
+    const authHeader = `Basic ${new Buffer(RupertApiKey + ':').toString(
+      'base64',
+    )}`;
     const userHeader = md5(`${user.email}${RupertApiSecret}`);
 
     return {
