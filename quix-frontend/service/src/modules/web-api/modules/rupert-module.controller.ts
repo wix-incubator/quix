@@ -77,7 +77,11 @@ export class ModulesController {
       execution_time: payload.execution_time,
       rows: payload.rows,
       failure: payload.failure,
-      failure_reason: payload.failure_reason,
+      failure_reason: payload.failure_reason
+        ? payload.failure_reason === 'Connection lost'
+          ? 'Internal server error'
+          : 'Presto error'
+        : null,
       extra_data: {
         note_id: payload.extra_data.note_id,
         note_contents: md5(payload.extra_data.note_contents),

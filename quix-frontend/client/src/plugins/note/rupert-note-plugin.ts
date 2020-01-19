@@ -70,7 +70,7 @@ export class RupertNotePlugin extends NotePlugin {
       const payload = {
         execution_time: Date.now() - runner.getState().getTime().started,
         failure: error ? 1 : 0,
-        failure_reason: error ? (error.msg === 'Connection lost' ? 'Internal server error' : 'Presto error') : null,
+        failure_reason: error && error.msg,
         rows: error ? 0 : runner.getCurrentQuery().getResults().bufferSize(),
         extra_data: {
           note_id: note.id,
