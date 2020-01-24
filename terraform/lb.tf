@@ -12,11 +12,25 @@ resource "aws_alb" "main" {
 
 }
 
-resource "aws_alb_listener_certificate" "frontend_https" {
-  count             = var.enable_ssl ? 1: 0
-  listener_arn      = aws_alb_listener.frontend.arn
+# resource "aws_alb_listener_certificate" "frontend_https" {
+#   count             = var.enable_ssl ? 1: 0
+#   listener_arn      = aws_alb_listener.frontend.arn
+#   certificate_arn   = aws_iam_server_certificate.alb_cert[0].arn
+# }
+
+resource "aws_alb_listener" "frontend_ssl" {
+  load_balancer_arn = aws_alb.main.id
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn   = aws_iam_server_certificate.alb_cert[0].arn
+
+  default_action {
+    target_group_arn = aws_alb_target_group.frontend.id
+    type             = "forward"
+  }
 }
+
 
 resource "aws_alb_target_group" "frontend" {
   name        = "ecs-quix-frontend-alb-tg"

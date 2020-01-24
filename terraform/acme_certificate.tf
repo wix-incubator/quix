@@ -18,6 +18,9 @@ resource "acme_registration" "reg" {
   # server_url      = var.acme_server_url
   account_key_pem    = tls_private_key.acme_registration_private_key[0].private_key_pem
   email_address      = var.acme_registration_email
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 # ----------------------------------------------------------------
@@ -30,6 +33,9 @@ resource "acme_certificate" "certificate" {
    account_key_pem         = tls_private_key.acme_registration_private_key[0].private_key_pem
    common_name             = var.acme_certificate_common_name
    min_days_remaining      = var.min_days_remaining
+   recursive_nameservers = ["8.8.8.8:53"]
+
+
    dns_challenge {
     provider = "route53"
 
@@ -40,24 +46,61 @@ resource "acme_certificate" "certificate" {
     # guaranteed. You may want to explicitly configure them here if you
     # would like to use different credentials to those used by the main
     # Terraform provider
-    # config {
-    #     AWS_ACCESS_KEY_ID     = var.acme_challenge_aws_access_key_id
-    #     AWS_SECRET_ACCESS_KEY = var.acme_challenge_aws_secret_access_key
-    #     AWS_REGION            = var.aws_region
-    #     AWS_PROFILE           = var.aws_acme_profile
-    #
-    # }
+    config = {
+        # AWS_ACCESS_KEY_ID     = var.acme_challenge_aws_access_key_id
+        # AWS_SECRET_ACCESS_KEY = var.acme_challenge_aws_secret_access_key
+        AWS_REGION              = var.aws_region
+        AWS_PROFILE             = var.aws_acme_profile
+        AWS_HOSTED_ZONE_ID      = aws_route53_zone.quix.zone_id
+        AWS_TTL                 = 60
+        AWS_PROPAGATION_TIMEOUT = 120
+    }
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
+resource "aws_acm_certificate" "cert" {
+  count                   = var.enable_ssl ? 1: 0
+
+  domain_name       =  "*.${var.dns_domain_name}"
+
+  validation_method = "DNS"
+
+  tags = merge(
+    {
+      "Name" = "quix-zone"
+    },
+    var.tags,
+  )
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_acm_certificate_validation" "cert" {
+  count              = var.enable_ssl ? 1: 0
+
+  certificate_arn         = aws_acm_certificate.cert[0].arn
+  validation_record_fqdns = ["${aws_route53_record.cert_validation[0].fqdn}"]
+}
+
+
 resource "aws_iam_server_certificate" "alb_cert" {
   count              = var.enable_ssl ? 1: 0
-  name               = "quix-"
+  name               = "wild-quix-${formatdate("YY-MM-DD",timestamp())}"
   certificate_body   = acme_certificate.certificate[0].certificate_pem
   certificate_chain  = acme_certificate.certificate[0].issuer_pem
   private_key        = acme_certificate.certificate[0].private_key_pem
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes = [
+      # Ignore changes to name, e.g. because it's calculating at execution
+      name
+    ]
+
   }
 }

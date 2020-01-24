@@ -113,7 +113,8 @@ variable "create_separate_presto" {
 
 variable "enable_ssl" {
   description  = "Defines if we need to enable SSL for ALB"
-  default = false
+  default = true
+  # default = false
 }
 
 variable "dns_domain_name"          {
@@ -124,17 +125,17 @@ variable "acme_server_url"          {
     default = "https://acme.api.letsencrypt.org/directory"
 }
 variable "acme_registration_email"  {
-    default = "quix-demo@quix-demo.io"
+    default = "quix@quix-demo.io"
 }
 
 
 variable "aws_acme_profile"                 {
-    default = "acme"
+    default = "quix"
 }
 variable "acme_account_key_pem"                 {  default = "" }
 variable "acme_certificate_common_name"         {
     description = "Domain for letsencrypt"
-    default = "quix-demo.io"
+    default = "*.quix-demo.io"
 
 }
 variable "min_days_remaining" {

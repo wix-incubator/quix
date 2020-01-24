@@ -23,5 +23,5 @@ output "presto_alb_url" {
 }
 
 output "fqdn_domain_name" {
-  value = aws_route53_record.quix-letsencrypt.fqdn
+  value = aws_route53_record.www-quix.fqdn
 }
