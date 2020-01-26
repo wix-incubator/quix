@@ -19,6 +19,7 @@
         <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
         <mysql.connector.version>8.0.18</mysql.connector.version>
         <logback.version>1.2.3</logback.version>
+        <aws.sdk.version>1.11.709</aws.sdk.version>
     </properties>
 
     <dependencies>
@@ -75,6 +76,13 @@
             <groupId>io.prestosql</groupId>
             <artifactId>presto-parser</artifactId>
             <version>${presto.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3 -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-s3</artifactId>
+            <version>1.11.710</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.specs2/specs2-core -->
