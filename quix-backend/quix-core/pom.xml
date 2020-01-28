@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wix</groupId>
     <artifactId>quix-core</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
 
     <properties>
         <scala.library.version>2.12.10</scala.library.version>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-api</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.prestosql/presto-parser -->
