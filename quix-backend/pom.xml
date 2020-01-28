@@ -21,4 +21,33 @@
         <module>quix-webapps/quix-web-spring</module>
     </modules>
 
+    <developers>
+        <developer>
+            <name>Valery Frolov</name>
+            <email>valeryf@wix.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/wix/quix.git</connection>
+        <developerConnection>scm:git:git@github.com:wix/quix.git</developerConnection>
+        <url>https://github.com/wix/quix.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
 </project>
