@@ -1,6 +1,41 @@
 # Terraform AWS for QUIX-environment
+This package allows you to easily create your own QUIX on Amazon Web Services with
+[Terraform][https://www.terraform.io/downloads.html] project that builds [VPC
+with Public and Private Subnets][https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Scenario2.html#VPC_Scenario2_Implementation] from the AWS documentation.
 
-## 1.Prepare right [Shared Credentials file for Terraform](https://www.terraform.io/docs/providers/aws/index.html#shared-credentials-file)
+## Getting Started
+
+**Note: Master is the only supported branch. All other branches of this repo should not be considered stable, and is to be used at your own risk.**
+
+
+# Getting Started
+
+## Pre Reqs
+
+We use Terraform to automate parts of the infrastructure for your CircleCI Server install, so you will need to install this first:
+
+* [Terraform](https://www.terraform.io/downloads.html)
+
+**Note: This script only supports terraform version 0.12 and higher. Please update to the most recent version before fetching from upstream.**
+
+
+## Installation
+
+### Basic
+
+1. Clone or download this repository
+
+```bash
+git clone git@github.com:wix/quix.git
+```
+2. Run `terraform init` to install Terraform plugins
+3. Run `terraform apply`
+4. Visit ALB adress supplied at the end of the Terraform output
+5. Follow instructions to setup and configure your installation
+
+### Extra
+
+#### Prepare right [Shared Credentials file for Terraform](https://www.terraform.io/docs/providers/aws/index.html#shared-credentials-file)
 
   > You can use an AWS credentials file to specify your credentials. The default location is $HOME/.aws/credentials on Linux and OS X, or "%USERPROFILE%\.aws\credentials" for Windows
   > users. If we fail to detect credentials inline, or in the environment, Terraform will check this location. You can optionally specify a different location in the configuration by
@@ -21,11 +56,6 @@
   output=json
 ```  
 
-This repository contains a [Terraform][] project that builds [Scenario 2: VPC
-with Public and Private Subnets][scenario_two] from the [AWS documentation][].
-It's from [this blog post][blog_post] describing how it all works and is
-designed to give a working example which can the basis of something much more
-complex.
 
 ### We are using [Terraform S3 BackEnd](https://www.terraform.io/docs/backends/types/s3.html)
 * bucket = "tf-state-backend-bucket"

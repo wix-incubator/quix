@@ -29,12 +29,12 @@ resource "acme_registration" "reg" {
 
 # Create a certificate
 resource "acme_certificate" "certificate" {
-   count                   = var.enable_ssl ? 1: 0
-   account_key_pem         = tls_private_key.acme_registration_private_key[0].private_key_pem
-   common_name             = var.acme_certificate_common_name
-   min_days_remaining      = var.min_days_remaining
-   recursive_nameservers = ["8.8.8.8:53"]
-
+   count                        = var.enable_ssl ? 1: 0
+   account_key_pem              = tls_private_key.acme_registration_private_key[0].private_key_pem
+   common_name                  = var.acme_certificate_common_name
+   subject_alternative_names    = [var.dns_domain_name]
+   min_days_remaining           = var.min_days_remaining
+   recursive_nameservers        = ["8.8.8.8:53"]
 
    dns_challenge {
     provider = "route53"

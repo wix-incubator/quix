@@ -37,10 +37,34 @@ resource "aws_route53_record" "star-quix" {
    records = ["${aws_alb.main.dns_name}"]
    allow_overwrite = "true"
 }
+
+resource "aws_route53_record" "alias_route53_record" {
+   zone_id = aws_route53_zone.quix.zone_id
+   name    =  var.dns_domain_name
+   type    = "A"
+   alias {
+       name                   = aws_alb.main.dns_name
+       zone_id                = aws_alb.main.zone_id
+       evaluate_target_health = true
+    }
+   allow_overwrite = "true"
+}
+
 resource "aws_route53_record" "www-quix" {
    # count              = var.enable_ssl ? 1: 0
    zone_id = aws_route53_zone.quix.zone_id
    name    = "www"
+   type    = "CNAME"
+   ttl     = "60"
+   records = ["${aws_alb.main.dns_name}"]
+   allow_overwrite = "true"
+
+}
+
+resource "aws_route53_record" "www2-quix" {
+   # count              = var.enable_ssl ? 1: 0
+   zone_id = aws_route53_zone.quix.zone_id
+   name    = "www2"
    type    = "CNAME"
    ttl     = "60"
    records = ["${aws_alb.main.dns_name}"]
