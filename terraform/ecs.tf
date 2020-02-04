@@ -223,9 +223,6 @@ resource "aws_ecs_task_definition" "quix" {
 }%{ endif }
 ]
 DEFINITION
-    # depends_on = [
-    #     aws_cloudwatch_log_group.quix-logs
-    # ]
 }
 
 # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html#cfn-ecs-taskdefinition-memory
@@ -267,11 +264,6 @@ resource "aws_ecs_service" "quix" {
   #   container_name   = "presto"
   #   container_port   = var.presto_port
   # }
-  # depends_on = [
-  #     aws_alb_listener.frontend,
-  #     aws_alb_listener.backend,
-  #     aws_alb_listener.presto
-  # ]
 }
 #####
 # Presto Only Service
@@ -286,7 +278,6 @@ resource "aws_ecs_task_definition" "presto" {
   container_definitions = <<DEFINITION
 [
 {
-
   "essential": true,
   "cpu": ${var.fargate_cpu},
   "image": "${var.presto_image}",
@@ -327,9 +318,6 @@ resource "aws_ecs_task_definition" "presto" {
 }
 ]
 DEFINITION
-    # depends_on = [
-    #     aws_cloudwatch_log_group.quix-logs
-    # ]
 }
 
 resource "aws_ecs_service" "presto" {

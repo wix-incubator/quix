@@ -9,14 +9,8 @@ resource "aws_alb" "main" {
     },
     var.tags,
   )
-
 }
 
-# resource "aws_alb_listener_certificate" "frontend_https" {
-#   count             = var.enable_ssl ? 1: 0
-#   listener_arn      = aws_alb_listener.frontend.arn
-#   certificate_arn   = aws_iam_server_certificate.alb_cert[0].arn
-# }
 
 resource "aws_alb_listener" "frontend_ssl" {
   load_balancer_arn = aws_alb.main.id
@@ -88,8 +82,13 @@ resource "aws_alb_listener" "frontend_http" {
   protocol          = "HTTP"
 
   default_action {
-    target_group_arn = aws_alb_target_group.frontend.id
-    type             = "forward"
+      type = "redirect"
+
+     redirect {
+       port        = "443"
+       protocol    = "HTTPS"
+       status_code = "HTTP_301"
+     }
   }
 }
 
