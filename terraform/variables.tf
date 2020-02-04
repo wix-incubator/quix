@@ -114,7 +114,10 @@ variable "create_separate_presto" {
 variable "enable_ssl" {
   description  = "Defines if we need to enable SSL for ALB"
   default = true
-  # default = false
+}
+variable "enable_acme_ssl" {
+  description  = "Defines if we need to enable SSL for ALB via ACME"
+  default = false
 }
 
 variable "dns_domain_name"          {
