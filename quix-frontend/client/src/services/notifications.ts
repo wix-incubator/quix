@@ -12,7 +12,7 @@ interface INotificationTemplate {
 
 class BrowserNotificationsManager {
   private staticsBaseUrl: string;
-  private readonly Notification = window.Notification;
+  private readonly Notification = typeof Notification === 'undefined' ? null : Notification;
   private readonly templates: Record<string, INotificationTemplate> = {};
 
   constructor() {
