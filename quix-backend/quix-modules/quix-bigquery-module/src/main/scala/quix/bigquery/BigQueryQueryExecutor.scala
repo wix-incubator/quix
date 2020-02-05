@@ -40,6 +40,12 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
       case FieldValue.Attribute.PRIMITIVE if !value.isNull =>
         value.getStringValue
 
+      case FieldValue.Attribute.REPEATED =>
+        "[" + value.getRepeatedValue.asScala.map(getValue).mkString(", ") + "]"
+
+      case FieldValue.Attribute.RECORD =>
+        "{" + value.getRecordValue.asScala.map(getValue).mkString(", ") + "}"
+
       case _ => null
     }
   }
