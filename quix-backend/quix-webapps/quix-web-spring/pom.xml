@@ -50,31 +50,31 @@
 
         <dependency>
             <groupId>com.wix</groupId>
-            <artifactId>quix-presto-module</artifactId>
+            <artifactId>quix-presto-module_${scala.dependencies.version}</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
-            <artifactId>quix-athena-module</artifactId>
+            <artifactId>quix-athena-module_${scala.dependencies.version}</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
-            <artifactId>quix-bigquery-module</artifactId>
+            <artifactId>quix-bigquery-module_${scala.dependencies.version}</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
-            <artifactId>quix-python-module</artifactId>
+            <artifactId>quix-python-module_${scala.dependencies.version}</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
-            <artifactId>quix-core</artifactId>
+            <artifactId>quix-core_${scala.dependencies.version}</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
 
@@ -172,7 +172,7 @@
 
         <dependency>
             <groupId>com.wix</groupId>
-            <artifactId>quix-jdbc-module</artifactId>
+            <artifactId>quix-jdbc-module_${scala.dependencies.version}</artifactId>
             <version>1.0.1-SNAPSHOT</version>
         </dependency>
 

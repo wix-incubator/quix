@@ -84,4 +84,5 @@ matrix:
         - pyenv global 3.7
         - python3 -m pip install --upgrade pip
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
-        - sbt ++$TRAVIS_SCALA_VERSION test
+        - sbt ++$TRAVIS_SCALA_VERSION test publishM2
+        - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V && mvn test
