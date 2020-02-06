@@ -123,6 +123,11 @@ variable "auth_cookie" {
 }
 
 
+variable "backend_public_port"          {
+    default = "8443"
+}
+
+
 variable "dns_domain_name"          {
     default = "quix-demo.io"
 }

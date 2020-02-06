@@ -17,7 +17,7 @@ resource "aws_cloudwatch_log_group" "quix-logs" {
 # You can use
 # Presto ALB http://${aws_alb.presto.dns_name}:${var.presto_port}/v1
 locals {
-  backend_url = "http%{ if var.enable_acme_ssl != false || var.enable_ssl != false }s%{ endif }://${var.dns_domain_name}:${var.backend_port}"
+  backend_url = "http%{ if var.enable_acme_ssl != false || var.enable_ssl != false }s%{ endif }://${var.dns_domain_name}:${var.backend_public_port}"
 }
 
 resource "aws_ecs_task_definition" "quix" {
@@ -68,6 +68,10 @@ resource "aws_ecs_task_definition" "quix" {
         }
     },
     "environment": [
+        {
+           "name": "DEMO_MODE",
+           "value": "true"
+        },
         {
            "name": "MODULES",
            "value": "presto"
@@ -158,6 +162,10 @@ resource "aws_ecs_task_definition" "quix" {
       }
   },
   "environment": [
+      {
+         "name": "DEMO_MODE",
+         "value": "true"
+      },
       {
          "name": "MODULES",
          "value": "presto"

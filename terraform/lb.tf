@@ -26,6 +26,20 @@ resource "aws_alb_listener" "frontend_ssl" {
 }
 
 
+resource "aws_alb_listener" "backend_ssl" {
+  load_balancer_arn = aws_alb.main.id
+  port              = var.backend_public_port
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   =  aws_acm_certificate.cert[0].arn
+  # certificate_arn   = aws_iam_server_certificate.alb_cert[0].arn
+
+  default_action {
+    target_group_arn = aws_alb_target_group.backend.id
+    type             = "forward"
+  }
+}
+
 resource "aws_alb_target_group" "frontend" {
   name        = "ecs-quix-frontend-alb-tg"
   port        = var.frontend_port

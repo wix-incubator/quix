@@ -35,6 +35,13 @@ resource "aws_security_group" "lb" {
     to_port     = 443
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+    protocol    = "tcp"
+    from_port   = var.backend_public_port
+    to_port     = var.backend_public_port
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
