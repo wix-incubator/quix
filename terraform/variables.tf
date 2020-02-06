@@ -1,12 +1,3 @@
-variable "aws_access_key" {
-}
-
-variable "aws_secret_key" {
-}
-
-variable "aws_key_path" {
-}
-
 variable "aws_key_name" {
   default = "valeriys"
 }
@@ -109,16 +100,28 @@ variable "create_separate_presto" {
   default = false
 }
 
-# Let's Encrypt Account Registration Config
+# Let's Encrypt Account Registration Config via ACME
 
 variable "enable_ssl" {
   description  = "Defines if we need to enable SSL for ALB"
   default = true
 }
+
 variable "enable_acme_ssl" {
   description  = "Defines if we need to enable SSL for ALB via ACME"
   default = false
 }
+
+variable "enable_google_sso" {
+  description  = "Defines if we need to enable Google SSO"
+  default = true
+}
+
+variable "auth_cookie" {
+  description  = "Defines AUTH_COOKIE"
+  default = "__quixuser"
+}
+
 
 variable "dns_domain_name"          {
     default = "quix-demo.io"
@@ -127,10 +130,10 @@ variable "dns_domain_name"          {
 variable "acme_server_url"          {
     default = "https://acme.api.letsencrypt.org/directory"
 }
+
 variable "acme_registration_email"  {
     default = "quix@quix-demo.io"
 }
-
 
 variable "aws_acme_profile"                 {
     default = "quix"

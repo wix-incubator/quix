@@ -60,3 +60,62 @@ resource "aws_ssm_parameter" "dbport" {
     var.tags,
   )
 }
+
+
+resource "aws_ssm_parameter" "google_sso_client_id" {
+  name  = "google_sso_client_id"
+  type  = "String"
+  value = "google_sso_client_id"
+  tags = merge(
+    {
+      "Name" = "${var.vpc_name}-sso_id"
+    },
+    var.tags,
+  )
+
+  lifecycle {
+      ignore_changes = [
+        # Ignore changes to value, e.g. because updated manually
+        value,
+      ]
+    }
+  overwrite  = false
+}
+
+resource "aws_ssm_parameter" "google_sso_client_secret" {
+  name  = "google_sso_client_secret"
+  type  = "String"
+  value = "google_sso_client_secret"
+  overwrite  = false
+  tags = merge(
+    {
+      "Name" = "${var.vpc_name}-sso_sec"
+    },
+    var.tags,
+  )
+  lifecycle {
+      ignore_changes = [
+        # Ignore changes to value, e.g. because updated manually
+        value,
+      ]
+    }
+}
+
+resource "aws_ssm_parameter" "auth_secret" {
+  name  = "auth_secret"
+  type  = "String"
+  value = "somekeygoeshere"
+  overwrite  = false
+  tags = merge(
+    {
+      "Name" = "${var.vpc_name}-auth_secret"
+    },
+    var.tags,
+  )
+  lifecycle {
+      ignore_changes = [
+        # Ignore changes to value, e.g. because updated manually
+        value,
+      ]
+    }
+}

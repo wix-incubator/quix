@@ -16,6 +16,9 @@ resource "aws_cloudwatch_log_group" "quix-logs" {
 
 # You can use
 # Presto ALB http://${aws_alb.presto.dns_name}:${var.presto_port}/v1
+locals {
+  backend_url = "http%{ if var.enable_acme_ssl != false || var.enable_ssl != false }s%{ endif }://${var.dns_domain_name}:${var.backend_port}"
+}
 
 resource "aws_ecs_task_definition" "quix" {
   family                   = "quix"
@@ -92,7 +95,7 @@ resource "aws_ecs_task_definition" "quix" {
        },
        {
         "name": "BACKEND_PUBLIC_URL",
-        "value": "http://${aws_alb.main.dns_name}:${var.backend_port}"
+        "value": "${local.backend_url}"
        },
        {
          "name": "DB_NAME",
@@ -109,7 +112,28 @@ resource "aws_ecs_task_definition" "quix" {
        {
          "name": "DB_HOST",
          "value": "${aws_ssm_parameter.dbhost.value}"
-       }
+        } %{ if var.enable_google_sso == true },
+        {
+            "name": "AUTH_TYPE",
+            "value": "google"
+        },
+        {
+            "name": "AUTH_COOKIE",
+            "value": "${var.auth_cookie}"
+        },
+        {
+            "name": "GOOGLE_SSO_SECRET",
+            "value": "${aws_ssm_parameter.google_sso_client_secret.value}"
+        },
+        {
+            "name": "GOOGLE_SSO_CLIENT_ID",
+            "value": "${aws_ssm_parameter.google_sso_client_id.value}"
+        },
+        {
+            "name": "AUTH_SECRET",
+            "value": "${aws_ssm_parameter.auth_secret.value}"
+        }
+        %{ endif }
     ]
 },
 {
@@ -144,7 +168,7 @@ resource "aws_ecs_task_definition" "quix" {
       },
       {
        "name": "BACKEND_PUBLIC_URL",
-       "value": "http://${aws_alb.main.dns_name}:${var.backend_port}"
+       "value": "${local.backend_url}"
       },
       {
           "name": "MODULES_PRESTO_API",
@@ -177,7 +201,28 @@ resource "aws_ecs_task_definition" "quix" {
       {
        "name": "DB_HOST",
        "value": "${aws_ssm_parameter.dbhost.value}"
+      }%{ if var.enable_google_sso == true },
+      {
+          "name": "AUTH_TYPE",
+          "value": "google"
+      },
+      {
+          "name": "AUTH_COOKIE",
+          "value": "${var.auth_cookie}"
+      },
+      {
+          "name": "GOOGLE_SSO_SECRET",
+          "value": "${aws_ssm_parameter.google_sso_client_secret.value}"
+      },
+      {
+          "name": "GOOGLE_SSO_CLIENT_ID",
+          "value": "${aws_ssm_parameter.google_sso_client_id.value}"
+      },
+      {
+          "name": "AUTH_SECRET",
+          "value": "${aws_ssm_parameter.auth_secret.value}"
       }
+      %{ endif }
   ]
 }
 %{ if var.create_separate_presto != true }

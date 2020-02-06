@@ -1,0 +1,8 @@
+#data "google_client_config" "default" {
+#}
+#data "google_project" "quix-oss" {
+#}
+#
+# output "project_number" {
+#   value = data.google_project.quix-oss.number
+# }
