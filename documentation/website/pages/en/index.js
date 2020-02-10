@@ -121,7 +121,7 @@ class Index extends React.Component {
             title: 'One-click visualizations',
           },
           {
-            content: 'Search queries accross all users',
+            content: 'Search queries across all users',
             title: 'Search',
           },
           {
