@@ -15,6 +15,12 @@
         <logback-classic.version>1.2.3</logback-classic.version>
     </properties>
 
+    <parent>
+        <groupId>com.wix</groupId>
+        <artifactId>quix</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+    </parent>
+
     <dependencies>
         <dependency>
             <groupId>com.wix</groupId>
