@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wix</groupId>
     <artifactId>quix-core</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <parent>
         <groupId>com.wix</groupId>
         <artifactId>quix</artifactId>
-        <version>1.0.1</version>
+        <version>1.0.2-SNAPSHOT</version>
     </parent>
 
     <dependencies>
@@ -59,7 +59,7 @@
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-api</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.prestosql/presto-parser -->
