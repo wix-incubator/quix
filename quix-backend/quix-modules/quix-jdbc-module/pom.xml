@@ -3,23 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wix</groupId>
     <artifactId>quix-jdbc-module</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-
-    <properties>
-        <scala.library.version>2.12.10</scala.library.version>
-        <scala.dependencies.version>2.12</scala.dependencies.version>
-        <monix.version>3.1.0</monix.version>
-        <specs.version>4.6.0</specs.version>
-        <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
-        <logback.version>1.2.3</logback.version>
-        <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
-        <mysql.connector.version>8.0.18</mysql.connector.version>
-    </properties>
+    <version>1.0.0</version>
 
     <parent>
         <groupId>com.wix</groupId>
         <artifactId>quix</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../..</relativePath>
     </parent>
 
@@ -27,13 +16,13 @@
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.monix/monix -->
@@ -90,11 +79,11 @@
             <version>${logback.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
         <sourceDirectory>src/main/scala</sourceDirectory>
+        <testSourceDirectory>src/test/scala</testSourceDirectory>
         <plugins>
             <plugin>
                 <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
@@ -112,6 +101,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>

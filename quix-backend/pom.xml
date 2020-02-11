@@ -7,7 +7,13 @@
     <groupId>com.wix</groupId>
     <artifactId>quix</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
+
+    <name>Quix</name>
+    <description>Quix is an easy-to-use notebook manager with support for Presto, Athena, BigQuery, MySQL, PostgreSQL,
+        ClickHouse and more.
+    </description>
+    <url>https://github.com/wix/quix</url>
 
     <modules>
         <module>quix-api</module>
@@ -20,6 +26,30 @@
         <module>quix-modules/quix-python-module</module>
         <module>quix-webapps/quix-web-spring</module>
     </modules>
+
+    <properties>
+        <aws.athena.version>1.11.568</aws.athena.version>
+        <bigquery.version>1.102.0</bigquery.version>
+        <jackson.version>2.10.1</jackson.version>
+        <logback-classic.version>1.2.3</logback-classic.version>
+        <logback.version>1.2.3</logback.version>
+        <monix.version>3.1.0</monix.version>
+        <mysql.connector.version>8.0.18</mysql.connector.version>
+        <nuprocess.version>1.2.5</nuprocess.version>
+        <presto.version>326</presto.version>
+        <py4j.version>0.10.8.1</py4j.version>
+        <scaffeine.version>2.6.0</scaffeine.version>
+        <scala.dependencies.version>2.12</scala.dependencies.version>
+        <scala.library.version>2.12.10</scala.library.version>
+        <scala.library.version>2.12.7</scala.library.version>
+        <scala.logging.version>3.9.2</scala.logging.version>
+        <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
+        <scala.maven.plugin.version>4.3.1</scala.maven.plugin.version>
+        <scalaj.version>2.4.2</scalaj.version>
+        <specs.version>4.6.0</specs.version>
+        <specs.version>4.8.1</specs.version>
+        <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
+    </properties>
 
     <developers>
         <developer>
@@ -77,32 +107,30 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>3.2.1</version>
+                        <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
+                        <groupId>net.alchim31.maven</groupId>
+                        <artifactId>scala-maven-plugin</artifactId>
+                        <version>${scala.maven.plugin.version}</version>
                         <executions>
                             <execution>
-                                <id>attach-sources</id>
                                 <goals>
-                                    <goal>jar-no-fork</goal>
+                                    <goal>compile</goal>
                                 </goals>
                             </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.1.1</version>
-                        <executions>
                             <execution>
                                 <id>attach-javadocs</id>
                                 <goals>
-                                    <goal>jar</goal>
+                                    <goal>doc-jar</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>add-source</goal>
                                 </goals>
                             </execution>
                         </executions>
                     </plugin>
-
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>

@@ -3,22 +3,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wix</groupId>
     <artifactId>quix-athena-module</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-
-    <properties>
-        <scala.library.version>2.12.7</scala.library.version>
-        <scala.dependencies.version>2.12</scala.dependencies.version>
-        <aws.athena.version>1.11.568</aws.athena.version>
-        <scala.logging.version>3.9.2</scala.logging.version>
-        <logback.version>1.2.3</logback.version>
-        <specs.version>4.8.1</specs.version>
-        <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
-    </properties>
+    <version>1.0.0</version>
 
     <parent>
         <groupId>com.wix</groupId>
         <artifactId>quix</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
         <relativePath>../..</relativePath>
     </parent>
 
@@ -26,13 +16,13 @@
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
 
         <dependency>
@@ -79,11 +69,11 @@
             <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
         <sourceDirectory>src/main/scala</sourceDirectory>
+        <testSourceDirectory>src/test/scala</testSourceDirectory>
         <plugins>
             <plugin>
                 <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
@@ -101,5 +91,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

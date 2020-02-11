@@ -5,26 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wix</groupId>
     <artifactId>quix-core</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-
-    <properties>
-        <scala.library.version>2.12.10</scala.library.version>
-        <scala.dependencies.version>2.12</scala.dependencies.version>
-        <scaffeine.version>2.6.0</scaffeine.version>
-        <scala.logging.version>3.9.2</scala.logging.version>
-        <jackson.version>2.10.1</jackson.version>
-        <presto.version>326</presto.version>
-        <specs.version>4.8.1</specs.version>
-        <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
-        <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
-        <mysql.connector.version>8.0.18</mysql.connector.version>
-        <logback.version>1.2.3</logback.version>
-    </properties>
+    <version>1.0.0</version>
 
     <parent>
         <groupId>com.wix</groupId>
         <artifactId>quix</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.0.0</version>
     </parent>
 
     <dependencies>
@@ -73,7 +59,7 @@
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.prestosql/presto-parser -->
@@ -129,12 +115,14 @@
             <version>${logback.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
+        <sourceDirectory>src/main/scala</sourceDirectory>
+        <testSourceDirectory>src/test/scala</testSourceDirectory>
         <plugins>
             <plugin>
+                <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
                 <version>${scala.maven.plugin.version}</version>
@@ -149,5 +137,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
