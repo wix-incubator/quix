@@ -14,6 +14,7 @@ export function start(port = process.env.PORT || '3000') {
   const server = http.createServer(app);
   expressWs(app, server);
 
+  // tslint:disable-next-line: deprecation
   app.use(bodyParser.json());
 
   app.post('/mock/pattern', (req, res) => {
