@@ -39,6 +39,10 @@ export class NotePlugin extends Plugin {
     return this.config;
   }
 
+  getDateFormat() {
+    return 'YYYY/MM/DD HH:mm';
+  }
+
   formatStats(stats: {[key: string]: any}) {
     return [];
   }

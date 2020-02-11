@@ -110,6 +110,7 @@ export default () => {
             showSyntaxErrors: true,
             fitContent: false,
             shareParams: false,
+            dateFormat: null,
           })
           .withVM({
             selection: null,

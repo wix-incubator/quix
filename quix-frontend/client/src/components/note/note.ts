@@ -58,6 +58,7 @@ export default (app: App, store: Store) => () => ({
             this.showSyntaxErrors = plugin.getConfig().syntaxValidation;
             this.type = plugin.getRunnerType();
             this.engine = plugin.getEngine();
+            this.dateFormat = plugin.getDateFormat();
           }
         });
 
