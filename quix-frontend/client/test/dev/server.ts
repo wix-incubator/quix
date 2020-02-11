@@ -1,5 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import request from 'request';
 import http from 'http';
 import {renderVM} from './vm';
@@ -14,8 +13,7 @@ export function start(port = process.env.PORT || '3000') {
   const server = http.createServer(app);
   expressWs(app, server);
 
-  // tslint:disable-next-line: deprecation
-  app.use(bodyParser.json());
+  app.use(express.json());
 
   app.post('/mock/pattern', (req, res) => {
     const {pattern, payload} = req.body;
