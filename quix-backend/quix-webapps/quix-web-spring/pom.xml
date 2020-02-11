@@ -53,31 +53,31 @@
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-presto-module</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-athena-module</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-bigquery-module</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-python-module</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-core</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.pauldijou/jwt-core -->
@@ -175,7 +175,7 @@
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-jdbc-module</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->

@@ -7,9 +7,9 @@
     <groupId>com.wix</groupId>
     <artifactId>quix</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
-    <name>Quix</name>
+    <name>quix</name>
     <description>Quix is an easy-to-use notebook manager with support for Presto, Athena, BigQuery, MySQL, PostgreSQL,
         ClickHouse and more.
     </description>
@@ -41,12 +41,9 @@
         <scaffeine.version>2.6.0</scaffeine.version>
         <scala.dependencies.version>2.12</scala.dependencies.version>
         <scala.library.version>2.12.10</scala.library.version>
-        <scala.library.version>2.12.7</scala.library.version>
         <scala.logging.version>3.9.2</scala.logging.version>
-        <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
         <scala.maven.plugin.version>4.3.1</scala.maven.plugin.version>
         <scalaj.version>2.4.2</scalaj.version>
-        <specs.version>4.6.0</specs.version>
         <specs.version>4.8.1</specs.version>
         <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
     </properties>
@@ -85,6 +82,16 @@
     </distributionManagement>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>${scala.maven.plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
             <!-- based on https://central.sonatype.org/pages/apache-maven.html -->
             <plugin>
@@ -106,31 +113,6 @@
             <id>release</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
-                        <groupId>net.alchim31.maven</groupId>
-                        <artifactId>scala-maven-plugin</artifactId>
-                        <version>${scala.maven.plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>compile</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>doc-jar</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>add-source</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
