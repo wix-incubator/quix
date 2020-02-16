@@ -1,33 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>quix</groupId>
+    <groupId>com.wix</groupId>
     <artifactId>quix-bigquery-module</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
 
-    <properties>
-        <scala.library.version>2.12.10</scala.library.version>
-        <scala.dependencies.version>2.12</scala.dependencies.version>
-        <bigquery.version>1.102.0</bigquery.version>
-        <specs.version>4.8.1</specs.version>
-        <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
-        <scala.logging.version>3.9.2</scala.logging.version>
-        <logback-classic.version>1.2.3</logback-classic.version>
-    </properties>
+    <parent>
+        <groupId>com.wix</groupId>
+        <artifactId>quix</artifactId>
+        <version>1.0.2-SNAPSHOT</version>
+        <relativePath>../..</relativePath>
+    </parent>
 
     <dependencies>
         <dependency>
-            <groupId>quix</groupId>
+            <groupId>com.wix</groupId>
             <artifactId>quix-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>quix</groupId>
+            <groupId>com.wix</groupId>
             <artifactId>quix-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -73,27 +68,34 @@
             <version>${specs.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
-        <sourceDirectory>src/main/scala</sourceDirectory>
         <plugins>
             <plugin>
                 <!-- https://mvnrepository.com/artifact/net.alchim31.maven/scala-maven-plugin -->
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
-                <version>${scala.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <goals>
                             <goal>compile</goal>
-                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>doc-jar</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>add-source</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
 </project>

@@ -25,4 +25,8 @@ export class BigQueryNotePlugin extends NotePlugin {
       value: bytes(stats.bytesBilled, bytesConfig),
     }];
   }
+
+  getDateFormat() {
+    return 'YYYY/MM/DD HH:mm:ss';
+  }
 }

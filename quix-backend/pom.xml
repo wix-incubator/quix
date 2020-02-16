@@ -4,10 +4,16 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>quix</groupId>
+    <groupId>com.wix</groupId>
     <artifactId>quix</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
+
+    <name>quix</name>
+    <description>Quix is an easy-to-use notebook manager with support for Presto, Athena, BigQuery, MySQL, PostgreSQL,
+        ClickHouse and more.
+    </description>
+    <url>https://github.com/wix/quix</url>
 
     <modules>
         <module>quix-api</module>
@@ -20,5 +26,110 @@
         <module>quix-modules/quix-python-module</module>
         <module>quix-webapps/quix-web-spring</module>
     </modules>
+
+    <properties>
+        <aws.athena.version>1.11.568</aws.athena.version>
+        <bigquery.version>1.102.0</bigquery.version>
+        <jackson.version>2.10.1</jackson.version>
+        <logback-classic.version>1.2.3</logback-classic.version>
+        <logback.version>1.2.3</logback.version>
+        <monix.version>3.1.0</monix.version>
+        <mysql.connector.version>8.0.18</mysql.connector.version>
+        <nuprocess.version>1.2.5</nuprocess.version>
+        <presto.version>326</presto.version>
+        <py4j.version>0.10.8.1</py4j.version>
+        <scaffeine.version>2.6.0</scaffeine.version>
+        <scala.dependencies.version>2.12</scala.dependencies.version>
+        <scala.library.version>2.12.10</scala.library.version>
+        <scala.logging.version>3.9.2</scala.logging.version>
+        <scala.maven.plugin.version>4.3.1</scala.maven.plugin.version>
+        <scalaj.version>2.4.2</scalaj.version>
+        <specs.version>4.8.1</specs.version>
+        <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
+    </properties>
+
+    <developers>
+        <developer>
+            <name>Valery Frolov</name>
+            <email>valeryf@wix.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/wix/quix.git</connection>
+        <developerConnection>scm:git:git@github.com:wix/quix.git</developerConnection>
+        <url>https://github.com/wix/quix.git</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>${scala.maven.plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!-- based on https://central.sonatype.org/pages/apache-maven.html -->
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

@@ -65,6 +65,6 @@ EXPOSE 8081
 
 WORKDIR /quix-webapps/quix-web-spring
 
-COPY --from=maven /quix-webapps/quix-web-spring/target/*.jar ./
+COPY --from=maven /quix-webapps/quix-web-spring/target/quix-web-spring-*.jar ./quix.jar
 
-CMD ["java", "-jar", "quix-web-spring-1.0.0.jar"]
+CMD ["java", "-jar", "quix.jar"]
