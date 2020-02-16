@@ -11,9 +11,10 @@ import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.server.HandshakeInterceptor
 import org.springframework.web.socket.server.jetty.JettyRequestUpgradeStrategy
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
-import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
+import quix.api.execute.Batch
 import quix.api.module.ExecutionModule
 import quix.api.users.Users
+import quix.core.download.{DownloadConfig, QueryResultsStorage}
 import quix.core.history.dao.HistoryWriteDao
 import quix.web.controllers.SqlStreamingController
 
@@ -23,13 +24,15 @@ class WebsocketsConfig extends LazyLogging {
 
   @Bean def initSqlStreamingController(users: Users,
                                        modules: Map[String, ExecutionModule[String, Batch]],
-                                       downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent],
+                                       downloadConfig: DownloadConfig,
+                                       queryResultsStorage: QueryResultsStorage,
                                        historyWriteDao: HistoryWriteDao) = {
     logger.info("event=[spring-config] bean=[PrestoController]")
     new SqlStreamingController(
       modules = modules,
       users = users,
-      downloads = downloadableQueries,
+      downloadConfig = downloadConfig,
+      queryResultsStorage = queryResultsStorage,
       historyWriteDao = historyWriteDao,
       io = Scheduler.io("presto-io"))
   }

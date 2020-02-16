@@ -10,6 +10,7 @@ import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSessio
 import quix.api.execute._
 import quix.api.module.ExecutionModule
 import quix.api.users.{User, Users}
+import quix.core.download.{DownloadConfig, DownloadableBuilder, QueryResultsStorage}
 import quix.core.history.HistoryBuilder
 import quix.core.history.dao.HistoryWriteDao
 import quix.core.results.MultiBuilder
@@ -21,7 +22,8 @@ import scala.util.Try
 
 class SqlStreamingController(val modules: Map[String, ExecutionModule[String, Batch]],
                              val users: Users,
-                             val downloads: DownloadableQueries[String, Batch, ExecutionEvent],
+                             val downloadConfig: DownloadConfig,
+                             val queryResultsStorage: QueryResultsStorage,
                              val historyWriteDao: HistoryWriteDao,
                              val io: Scheduler)
   extends TextWebSocketHandler with LazyLogging with StringJsonHelpersSupport {
@@ -105,7 +107,7 @@ class SqlStreamingController(val modules: Map[String, ExecutionModule[String, Ba
                         queryType: String): Builder[String, Batch] = {
     val multiBuilder = new MultiBuilder[String](consumer)
     val builder = if (session.get("mode").contains("download")) {
-      downloads.adapt(multiBuilder, consumer)
+      new DownloadableBuilder(multiBuilder, downloadConfig, queryResultsStorage, consumer)
     } else {
       multiBuilder
     }

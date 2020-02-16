@@ -21,7 +21,7 @@
         <scala.logging.version>3.9.2</scala.logging.version>
         <logback.version>1.2.3</logback.version>
         <specs.version>4.8.1</specs.version>
-        <scala.maven.plugin.version>4.3.1</scala.maven.plugin.version>
+        <scala.maven.plugin.version>4.3.0</scala.maven.plugin.version>
         <jwt.version>2.1.0</jwt.version>
         <typesafe.config.version>1.4.0</typesafe.config.version>
         <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>

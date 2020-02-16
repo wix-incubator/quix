@@ -12,14 +12,14 @@ import monix.eval.Coeval
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration, DependsOn}
 import org.springframework.core.env.Environment
-import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
+import quix.api.execute.Batch
 import quix.api.module.ExecutionModule
 import quix.api.users.DummyUsers
 import quix.athena._
 import quix.bigquery._
 import quix.bigquery.db.{BigQueryAutocomplete, BigQueryCatalogs, BigQueryTables}
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
-import quix.core.download.DownloadableQueriesImpl
+import quix.core.download.{DownloadConfig, QueryResultsStorage}
 import quix.core.executions.{SequentialExecutions, SqlModule}
 import quix.core.history.dao.HistoryReadDao
 import quix.core.utils.JsonOps
@@ -330,9 +330,31 @@ class ModulesConfiguration extends LazyLogging {
 @Configuration
 class DownloadConfiguration extends LazyLogging {
 
-  @Bean def initDownloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent] = {
-    logger.info(s"event=[spring-config] bean=[DownloadableQueries]")
-    new DownloadableQueriesImpl
+  @Bean def initDownloadConfig(env: Environment): DownloadConfig = {
+    val downloadsDir = env.getProperty(s"downloads.temp.dir", "/tmp/quix/downloads")
+
+    val cloud = env.getProperty("downloads.cloud.storage", "none")
+
+    val cloudConfig = cloud match {
+      case "s3" =>
+        Map(
+          "bucket" -> env.getRequiredProperty("download.s3.bucket"),
+          "region" -> env.getRequiredProperty("download.s3.region"),
+          "accessKey" -> env.getRequiredProperty("download.s3.access"),
+          "secretKey" -> env.getRequiredProperty("download.s3.secret"),
+        )
+
+      case _ =>
+        Map.empty[String, String]
+    }
+
+    DownloadConfig(downloadsDir, cloudConfig)
+  }
+
+  @Bean def initQueryResultsStorage(downloadConfig: DownloadConfig): QueryResultsStorage = {
+    logger.info(s"event=[spring-config] bean=[QueryResultsStorage]")
+
+    QueryResultsStorage(downloadConfig)
   }
 }
 
@@ -344,9 +366,9 @@ class Controllers extends LazyLogging {
     new DbController(modules)
   }
 
-  @Bean def initDownloadController(downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]): DownloadController = {
+  @Bean def initDownloadController(queryResultsStorage: QueryResultsStorage): DownloadController = {
     logger.info("event=[spring-config] bean=[DownloadController]")
-    new DownloadController(downloadableQueries)
+    new DownloadController(queryResultsStorage)
   }
 
   @Bean def initHistoryController(historyReadDao: HistoryReadDao): HistoryController = {
