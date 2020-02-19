@@ -22,6 +22,7 @@ import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb
 import quix.core.download.{DownloadConfig, QueryResultsStorage}
 import quix.core.executions.{SequentialExecutions, SqlModule}
 import quix.core.history.dao.HistoryReadDao
+import quix.core.sql.StopWordSqlSplitter
 import quix.core.utils.JsonOps
 import quix.jdbc._
 import quix.presto._
@@ -237,7 +238,7 @@ class ModulesConfiguration extends LazyLogging {
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      new SqlModule(new SequentialExecutions[String](executor), Some(db))
+      new SqlModule(new SequentialExecutions[String](executor), Some(db), new StopWordSqlSplitter("TEMP", "FUNCTION"))
     }
 
     for (module <- getModules(env, "bigquery"))
