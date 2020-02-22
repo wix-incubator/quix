@@ -1,44 +1,33 @@
-FROM maven:3.6.0-alpine as maven
+FROM maven:slim as maven
 
-COPY pom.xml ./
-COPY quix-api/pom.xml ./quix-api/
-COPY quix-core/pom.xml ./quix-core/
-COPY /quix-modules/quix-presto-module/pom.xml ./quix-modules/quix-presto-module/
-COPY /quix-modules/quix-athena-module/pom.xml ./quix-modules/quix-athena-module/
-COPY /quix-modules/quix-bigquery-module/pom.xml ./quix-modules/quix-bigquery-module/
-COPY /quix-modules/quix-jdbc-module/pom.xml ./quix-modules/quix-jdbc-module/
-COPY /quix-modules/quix-python-module/pom.xml ./quix-modules/quix-python-module/
-COPY /quix-modules/quix-dummy-module/pom.xml ./quix-modules/quix-dummy-module/
-COPY /quix-webapps/quix-web-spring/pom.xml ./quix-webapps/quix-web-spring/
+ARG SBT_VERSION=1.3.8
 
-RUN mvn -B -e -C -T 1C org.apache.maven.plugins:maven-dependency-plugin:3.1.1:go-offline --fail-never
+# Install sbt
+RUN \
+  curl -L -o sbt-$SBT_VERSION.deb https://dl.bintray.com/sbt/debian/sbt-$SBT_VERSION.deb && \
+  dpkg -i sbt-$SBT_VERSION.deb && \
+  rm sbt-$SBT_VERSION.deb && \
+  apt-get update && \
+  apt-get install sbt && \
+  sbt sbtVersion
 
 COPY quix-api/src ./quix-api/src
-RUN mvn -T 1C install -pl quix-api -am -DskipTests
-
 COPY quix-core/src ./quix-core/src
-RUN mvn -T 1C install -pl quix-core -am -DskipTests
-
 COPY /quix-modules/quix-presto-module/src ./quix-modules/quix-presto-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-presto-module -am -DskipTests
-
 COPY /quix-modules/quix-athena-module/src ./quix-modules/quix-athena-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-athena-module -am -DskipTests
-
 COPY /quix-modules/quix-bigquery-module/src ./quix-modules/quix-bigquery-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-bigquery-module -am -DskipTests
-
 COPY /quix-modules/quix-jdbc-module/src ./quix-modules/quix-jdbc-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-jdbc-module -am -DskipTests
-
 COPY /quix-modules/quix-python-module/src ./quix-modules/quix-python-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-python-module -am -DskipTests
-
 COPY /quix-modules/quix-dummy-module/src ./quix-modules/quix-dummy-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-dummy-module -am -DskipTests
-
 COPY /quix-webapps/quix-web-spring/src ./quix-webapps/quix-web-spring/src
-RUN mvn -T 1C install -pl quix-webapps/quix-web-spring -am -DskipTests
+COPY /quix-webapps/quix-web-spring/pom.xml ./quix-webapps/quix-web-spring/pom.xml
+
+COPY build.sbt .
+COPY version.sbt .
+RUN sbt publishM2
+
+WORKDIR /quix-webapps/quix-web-spring
+RUN mvn install -DskipTests
 
 FROM ubuntu:19.10
 
