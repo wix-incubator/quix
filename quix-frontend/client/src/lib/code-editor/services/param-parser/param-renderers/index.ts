@@ -20,7 +20,7 @@ function compile(scope, param, html, overrides: Partial<IParam> = {}) {
   return inject('$compile')(html)(childScope);
 }
 
-function getHtml(param: IParam) {
+function getHtml(param: IParam, options: {dateFormat?: string} = {}) {
   switch (param.type) {
     case 'string':
       return renderInput('text');
@@ -31,7 +31,7 @@ function getHtml(param: IParam) {
     case 'datetime':
       (param as any).widgetValue = param.value;
 
-      return renderDatetime();
+      return renderDatetime(options.dateFormat);
     case 'option':
       return renderOption();
     case 'list':
@@ -43,6 +43,6 @@ function getHtml(param: IParam) {
   }
 }
 
-export function renderParam(scope, param: IParam, overrides?: Partial<IParam>) {
-  return compile(scope, param, getHtml(param), overrides);
+export function renderParam(scope, param: IParam, options, overrides?: Partial<IParam>) {
+  return compile(scope, param, getHtml(param, options), overrides);
 }

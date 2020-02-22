@@ -39,8 +39,49 @@ export class NotePlugin extends Plugin {
     return this.config;
   }
 
+  getDateFormat() {
+    return 'YYYY/MM/DD HH:mm';
+  }
+
   formatStats(stats: {[key: string]: any}) {
     return [];
+  }
+
+  renderNote(scope: any) {
+    return `
+      <bi-sql-runner
+        class="bi-c-h bi-grow"
+        ng-if="::vm.engine !== 'python'"
+        ng-model="note.content"
+        ng-change="events.onContentChange()"
+        bsr-options="::{
+          fitContent: true,
+          params: true,
+          focus: options.focusEditor,
+          showSyntaxErrors: vm.showSyntaxErrors,
+          shareParams: true,
+          autoRun: options.autoRun,
+          dateFormat: vm.dateFormat
+        }"
+        type="vm.type"
+        runner="runner"
+        download-file-name="getDownloadFileName(query)"
+        on-save="events.onSave()"
+        on-run="events.onRun()"
+        on-editor-load="events.onEditorInstanceLoad(instance)"
+        on-runner-load="events.onRunnerInstanceLoad(instance)"
+        on-runner-created="events.onRunnerCreated(runner)"
+        on-runner-destroyed="events.onRunnerDestroyed(runner)"
+        on-params-share="events.onShare(note, params)"
+        readonly="!permissions.edit"
+      >
+        <controls>
+          <quix-npc></quix-npc>
+        </controls>
+
+        <stats class="bi-align bi-s-h--x15" bi-html="renderStats()"></stats>
+      </bi-sql-runner>
+    `;
   }
 }
 
