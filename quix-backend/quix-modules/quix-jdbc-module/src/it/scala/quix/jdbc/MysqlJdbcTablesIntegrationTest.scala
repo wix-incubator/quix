@@ -4,7 +4,7 @@ import monix.execution.Scheduler.Implicits.global
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.{AfterAll, BeforeAll, BeforeEach, Scope}
 
-class MysqlJdbcTablesTest extends SpecWithJUnit with BeforeAll with BeforeEach with AfterAll {
+class MysqlJdbcTablesIntegrationTest extends SpecWithJUnit with BeforeAll with BeforeEach with AfterAll {
   sequential
 
   class ctx extends Scope {

@@ -10,7 +10,7 @@ import quix.api.execute.{ActiveQuery, Batch}
 import quix.api.users.User
 import quix.core.results.SingleBuilder
 
-class MysqlJdbcQueryExecutorTest extends SpecWithJUnit with BeforeAll with BeforeEach with AfterAll with Mockito {
+class MysqlJdbcQueryExecutorIntegrationTest extends SpecWithJUnit with BeforeAll with BeforeEach with AfterAll with Mockito {
   sequential
 
   class ctx extends Scope {
