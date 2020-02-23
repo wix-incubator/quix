@@ -74,7 +74,10 @@ lazy val quixCore = (project in file("quix-core"))
     // https://mvnrepository.com/artifact/io.prestosql/presto-parser
     libraryDependencies += "io.prestosql" % "presto-parser" % "329",
 
-    libraryDependencies ++= loggingDeps,
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3
+    libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.11.728",
+
+      libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
 
     // https://mvnrepository.com/artifact/com.wix/wix-embedded-mysql
