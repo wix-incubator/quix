@@ -31,17 +31,17 @@ case class PythonRunningProcess(queryId: String, var gatewayServer: Option[Gatew
       _ <- Task(logger.info(s"method=close event=cleanup-start query-id=$queryId"))
 
       _ <- Task(gatewayServer.map(_.shutdown())).attempt
-        .flatMap(_ => Task(gatewayServer = None))
+        .flatMap(_ => Task(this.gatewayServer = None))
 
       _ <- Task(process.map(_.destroy(true))).attempt
-        .flatMap(_ => Task(process = None))
+        .flatMap(_ => Task(this.process = None))
 
       _ <- Task(file.map(f => Files.deleteIfExists(Paths.get(f.getParent.toString, "quix.py")))).attempt
 
       _ <- Task(file.map(Files.deleteIfExists)).attempt
 
       _ <- Task(file.map(_.getParent).map(Files.deleteIfExists)).attempt
-        .flatMap(_ => Task(file = None))
+        .flatMap(_ => Task(this.file = None))
       _ <- Task(logger.info(s"method=close event=cleanup-done query-id=$queryId"))
     } yield ()
 

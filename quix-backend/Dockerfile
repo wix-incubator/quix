@@ -24,7 +24,7 @@ COPY /quix-webapps/quix-web-spring/pom.xml ./quix-webapps/quix-web-spring/pom.xm
 
 COPY build.sbt .
 COPY version.sbt .
-RUN sbt publishM2
+RUN sbt +publishM2
 
 WORKDIR /quix-webapps/quix-web-spring
 RUN mvn install -DskipTests

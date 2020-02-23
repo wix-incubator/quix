@@ -39,12 +39,12 @@ class RefreshableAutocomplete(autocomplete: Autocomplete,
   }
 
   def startUpdate() = {
-    Task(state = state.copy(expirationDate = System.currentTimeMillis() + staleThreshold))
+    Task(this.state = this.state.copy(expirationDate = System.currentTimeMillis() + staleThreshold))
   }
 
   def update(newData: Map[String, List[String]]) = {
     Task {
-      state = state.copy(data = newData)
+      this.state = this.state.copy(data = newData)
       newData
     }
   }

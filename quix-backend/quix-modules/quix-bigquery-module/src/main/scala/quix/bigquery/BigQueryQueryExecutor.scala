@@ -18,7 +18,7 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
   def toBatch(job: Job, result: TableResult, rowsSoFar: Long): Batch = {
     val rows = for {
       row <- result.getValues.asScala.toSeq
-    } yield row.asScala.map(getValue)
+    } yield row.asScala.map(getValue).toList
 
     val percentage = if (result.getTotalRows > 0) {
       ((rowsSoFar + rows.size).toDouble / result.getTotalRows * 100).toInt
@@ -31,7 +31,7 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
 
   def toColumns(result: TableResult): Option[Seq[BatchColumn]] = {
     Option(result.getSchema).map { schema =>
-      schema.getFields.asScala.map(f => BatchColumn(f.getName))
+      schema.getFields.asScala.map(f => BatchColumn(f.getName)).toList
     }
   }
 

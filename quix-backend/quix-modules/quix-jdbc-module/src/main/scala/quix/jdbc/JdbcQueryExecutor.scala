@@ -43,7 +43,7 @@ class JdbcQueryExecutor(config: JdbcConfig)
         rows += row
       } while (!query.isCancelled && rows.size < config.batchSize && rs.next())
 
-      Batch(rows, Some(columns))
+      Batch(rows.toList, Some(columns))
     }
 
   def drainResultSet(query: ActiveQuery[String],

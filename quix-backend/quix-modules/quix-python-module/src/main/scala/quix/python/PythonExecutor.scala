@@ -62,7 +62,7 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
       s"""
          |from packages import Packages
          |packages = Packages('$dir', '${config.indexUrl}', '${config.extraIndexUrl}')
-         |packages.install(${config.packages.map(lib => ''' + lib + ''').mkString(", ")})
+         |packages.install(${config.packages.map(lib => '\'' + lib + '\'').mkString(", ")})
          |
          |""".stripMargin
 

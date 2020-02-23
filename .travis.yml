@@ -1,4 +1,4 @@
-matrix:
+jobs:
   include:
     - stage: test
       name: "Shared"
@@ -57,8 +57,9 @@ matrix:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - npm run test:mysql
         - npm run test:e2e
-    - state: test
-      name: "Backend"
+    - &scala-builds
+      stage: test
+      name: "Scala 2.12"
       env: PROJECT=backend
       language: scala
       jdk: openjdk8
@@ -80,9 +81,17 @@ matrix:
       install:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
       script:
-        - pyenv versions
+        - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - pyenv global 3.7
         - python3 -m pip install --upgrade pip
-        - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - sbt ++$TRAVIS_SCALA_VERSION test publishM2
         - mvn --quiet -f quix-webapps/quix-web-spring/pom.xml test
+    - <<: *scala-builds
+      name: "Scala 2.13"
+      scala:
+        - 2.13.1
+      script:
+        - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
+        - pyenv global 3.7
+        - python3 -m pip install --upgrade pip
+        - sbt ++$TRAVIS_SCALA_VERSION test publishM2
