@@ -35,12 +35,12 @@ class PythonBridge(val queryId: String) {
 
   def tab_columns(tabId: String, columns: java.util.ArrayList[Any]): Unit = {
     for (subscriber <- subscriberOpt)
-      subscriber.onNext(TabFields(tabId, columns.asScala.map(_.toString)))
+      subscriber.onNext(TabFields(tabId, columns.asScala.map(_.toString).toList))
   }
 
   def tab_row(tabId: String, columns: java.util.ArrayList[Any]): Unit = {
     for (subscriber <- subscriberOpt)
-      subscriber.onNext(TabRow(tabId, columns.asScala.map(_.toString)))
+      subscriber.onNext(TabRow(tabId, columns.asScala.map(_.toString).toList))
   }
 
   def tab_end(tabId: String): Unit = {

@@ -64,6 +64,7 @@ matrix:
       jdk: openjdk8
       scala:
         - 2.12.10
+        - 2.13.1
       cache:
         directories:
           - $HOME/.m2

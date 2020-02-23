@@ -38,7 +38,7 @@ class BigQueryTestQueryExecutor extends AsyncQueryExecutor[String, Batch] {
 
   override def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
     for {
-      _ <- Task.eval(resultBuilder = builder)
+      _ <- Task.eval(this.resultBuilder = builder)
       execution <- Task.eval(executions.dequeue())
       _ <- execution.act(query, builder)
     } yield ()

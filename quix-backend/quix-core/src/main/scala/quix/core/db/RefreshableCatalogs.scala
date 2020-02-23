@@ -40,12 +40,12 @@ class RefreshableCatalogs(catalogs: Catalogs,
   }
 
   def startUpdate() = {
-    Task(state = state.copy(expirationDate = System.currentTimeMillis() + staleThreshold))
+    Task(this.state = this.state.copy(expirationDate = System.currentTimeMillis() + staleThreshold))
   }
 
   def update(newCatalogs: List[Catalog]) = {
     Task {
-      state = state.copy(data = newCatalogs)
+      this.state = this.state.copy(data = newCatalogs)
       newCatalogs
     }
   }
