@@ -90,5 +90,8 @@ jobs:
     - language: scala
       scala:
         - 2.12.10
+      script: sbt --version
+    - language: scala
+      scala:
         - 2.13.1
-      script: scala -version
+      script: sbt --version
