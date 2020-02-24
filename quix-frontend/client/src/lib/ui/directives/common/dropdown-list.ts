@@ -280,7 +280,7 @@ export class DropdownList {
       return true;
     });
 
-    if (vm.options.filtered && options.filterBy.length) {
+    if (vm.options.filtered && options.filterBy.length && !this.scope.readonly) {
       this.searcher = new JsSearch.Search(options.filterBy[0]);
 
       options.filterBy.forEach(prop => this.searcher.addIndex(prop));
