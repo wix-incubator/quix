@@ -2,7 +2,7 @@ package quix.core.results
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, Batch, BatchColumn, Builder}
+import quix.api.v1.execute.{ActiveQuery, Batch, BatchColumn, Builder}
 
 import scala.collection.mutable.ListBuffer
 

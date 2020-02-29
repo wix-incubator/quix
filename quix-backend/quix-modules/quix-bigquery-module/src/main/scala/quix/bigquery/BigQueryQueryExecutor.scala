@@ -7,7 +7,7 @@ import com.google.auth.oauth2.ServiceAccountCredentials
 import com.google.cloud.bigquery.{BigQueryOptions, FieldValue, Job, JobStatistics, TableResult}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute._
+import quix.api.v1.execute._
 import quix.core.utils.TaskOps._
 
 import scala.collection.JavaConverters._

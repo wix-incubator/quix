@@ -5,8 +5,8 @@ import java.time.{Clock, Instant}
 import cats.effect.Resource
 import cats.syntax.apply._
 import monix.eval.Task
-import quix.api.execute.ActiveQuery
-import quix.api.users.User
+import quix.api.v1.execute.ActiveQuery
+import quix.api.v1.users.User
 import quix.core.history.dao.MySqlHistoryDao._
 import quix.core.history.{Execution, ExecutionStatus}
 

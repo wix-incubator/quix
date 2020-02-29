@@ -6,8 +6,8 @@ import monix.execution.Scheduler.Implicits.global
 import org.specs2.mock.Mockito
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.{AfterAll, BeforeAll, BeforeEach, Scope}
-import quix.api.execute.{ActiveQuery, Batch}
-import quix.api.users.User
+import quix.api.v1.execute.{ActiveQuery, Batch}
+import quix.api.v1.users.User
 import quix.core.results.SingleBuilder
 
 class MysqlJdbcQueryExecutorIntegrationTest extends SpecWithJUnit with BeforeAll with BeforeEach with AfterAll with Mockito {

@@ -2,8 +2,8 @@ package quix.core.results
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute.Batch._
-import quix.api.execute._
+import quix.api.v1.execute.Batch._
+import quix.api.v1.execute._
 
 /** MultiBuilder accepts Consumer[ExecutionEvent] and propagates to it different events from lifecycle of Builder.
  * For example, {{{start(query: ActiveQuery[Code])}}} will produce {{{Start(query.id, query.statements.size)}}}

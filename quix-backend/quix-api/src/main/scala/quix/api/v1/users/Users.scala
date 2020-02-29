@@ -1,4 +1,4 @@
-package quix.api.users
+package quix.api.v1.users
 
 sealed case class User(email: String, id: String = "")
 

@@ -1,4 +1,4 @@
-package quix.api.execute
+package quix.api.v1.execute
 
 import java.util.concurrent.{BlockingQueue, CountDownLatch}
 
@@ -17,15 +17,15 @@ case class ErrorDuringDownload(message: String) extends DownloadPayload
  */
 case class DownloadableQuery(id: String, results: BlockingQueue[DownloadPayload], var isRunning: Boolean = true, latch: CountDownLatch)
 
-/** Used to support downloadable results for every [[quix.api.execute.Builder]] and [[quix.api.execute.Consumer]]
+/** Used to support downloadable results for every [[quix.api.v1.execute.Builder]] and [[quix.api.v1.execute.Consumer]]
  * types
  *
  */
 trait DownloadableQueries[Code, Results, Message] {
-  /** Call to fetch instance of [[quix.api.execute.DownloadableQuery]]
+  /** Call to fetch instance of [[quix.api.v1.execute.DownloadableQuery]]
    *
    * @param queryId
-   * @return instance of [[quix.api.execute.DownloadableQuery]] if queryId is executed at this moment
+   * @return instance of [[quix.api.v1.execute.DownloadableQuery]] if queryId is executed at this moment
    */
   def get(queryId: String): Option[DownloadableQuery]
 

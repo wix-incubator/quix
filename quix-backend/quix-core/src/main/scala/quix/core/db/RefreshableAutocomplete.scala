@@ -1,7 +1,7 @@
 package quix.core.db
 
 import monix.eval.Task
-import quix.api.db.Autocomplete
+import quix.api.v1.db.Autocomplete
 
 import scala.concurrent.duration._
 

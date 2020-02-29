@@ -5,8 +5,8 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.athena.AmazonAthenaClient
 import com.typesafe.scalalogging.LazyLogging
 import monix.execution.Scheduler.Implicits.global
-import quix.api.execute.ActiveQuery
-import quix.api.users.User
+import quix.api.v1.execute.ActiveQuery
+import quix.api.v1.users.User
 import quix.core.results.SingleBuilder
 
 object TryAthena extends LazyLogging {

@@ -4,7 +4,7 @@ import java.time.Clock
 
 import cats.effect.concurrent.Ref
 import monix.eval.Task
-import quix.api.execute.ActiveQuery
+import quix.api.v1.execute.ActiveQuery
 import quix.core.history.dao.InMemoryHistoryDao.{comparator, predicate}
 import quix.core.history.{Execution, ExecutionStatus}
 

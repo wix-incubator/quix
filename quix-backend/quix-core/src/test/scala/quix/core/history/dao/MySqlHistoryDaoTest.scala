@@ -11,7 +11,7 @@ import com.wix.mysql.config.MysqldConfig.aMysqldConfig
 import com.wix.mysql.distribution.Version.v5_6_23
 import monix.eval.Task
 import org.specs2.specification.{AfterAll, BeforeAll, BeforeEach}
-import quix.api.execute.ActiveQuery
+import quix.api.v1.execute.ActiveQuery
 import quix.core.history.Execution
 
 class MySqlHistoryDaoTest

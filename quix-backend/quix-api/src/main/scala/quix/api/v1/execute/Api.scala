@@ -1,9 +1,9 @@
-package quix.api.execute
+package quix.api.v1.execute
 
 import java.io.IOException
 
 import monix.eval.Task
-import quix.api.users.User
+import quix.api.v1.users.User
 
 /** End consumer of quix backend messages.
  * In case of quix frontend, it is a websocket channel.

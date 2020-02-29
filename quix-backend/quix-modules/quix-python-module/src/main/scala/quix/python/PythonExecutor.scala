@@ -9,7 +9,7 @@ import monix.eval.Task
 import monix.execution.atomic.AtomicInt
 import monix.reactive.{Observable, OverflowStrategy}
 import py4j.GatewayServer
-import quix.api.execute._
+import quix.api.v1.execute._
 
 class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryExecutor[String, Batch] with LazyLogging {
 

@@ -1,7 +1,7 @@
-package quix.api.execute
+package quix.api.v1.execute
 
 import monix.eval.Task
-import quix.api.users.User
+import quix.api.v1.users.User
 
 
 case class ActiveQuery[Code](id: String,
@@ -20,7 +20,7 @@ case class ActiveQuery[Code](id: String,
  * Builder is used to propagate messages between AsyncQueryExecutor and quix frontend
  *
  * @tparam Code    designates type of incoming code, usually String
- * @tparam Results designates type of outgoing messages, usually [[quix.api.execute.Batch]]
+ * @tparam Results designates type of outgoing messages, usually [[quix.api.v1.execute.Batch]]
  */
 
 trait Builder[Code, Results] {

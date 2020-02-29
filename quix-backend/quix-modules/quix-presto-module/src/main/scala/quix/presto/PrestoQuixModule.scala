@@ -1,7 +1,7 @@
 package quix.presto
 
-import quix.api.db.Db
-import quix.api.execute._
+import quix.api.v1.db.Db
+import quix.api.v1.execute._
 import quix.core.executions.{SequentialExecutions, SqlModule}
 
 case class PrestoConfig(statementsApi: String, healthApi: String, queryInfoApi: String, schema: String, catalog: String, source: String)

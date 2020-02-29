@@ -4,8 +4,8 @@ import java.time.{Clock, Instant, ZoneOffset}
 
 import monix.execution.Scheduler.Implicits.global
 import org.specs2.mutable.SpecificationWithJUnit
-import quix.api.execute.{ActiveQuery, Batch}
-import quix.api.users.User
+import quix.api.v1.execute.{ActiveQuery, Batch}
+import quix.api.v1.users.User
 import quix.core.history.ExecutionMatchers._
 import quix.core.history.HistoryBuilderTest._
 import quix.core.history.dao.InMemoryHistoryDao

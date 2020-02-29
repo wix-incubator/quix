@@ -4,7 +4,7 @@ import java.sql.{Connection, DriverManager, ResultSet}
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute._
+import quix.api.v1.execute._
 import quix.core.utils.TaskOps._
 
 import scala.collection.mutable.ListBuffer

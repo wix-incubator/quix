@@ -5,8 +5,8 @@ import java.util.UUID
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
-import quix.api.execute.ActiveQuery
-import quix.api.users.User
+import quix.api.v1.execute.ActiveQuery
+import quix.api.v1.users.User
 import quix.core.results.SingleBuilder
 import quix.presto.rest.ScalaJPrestoStateClient
 

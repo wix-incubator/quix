@@ -1,7 +1,7 @@
 package quix.presto
 
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Batch, Builder}
+import quix.api.v1.execute.{ActiveQuery, AsyncQueryExecutor, Batch, Builder}
 import quix.presto.rest._
 
 import scala.collection.mutable

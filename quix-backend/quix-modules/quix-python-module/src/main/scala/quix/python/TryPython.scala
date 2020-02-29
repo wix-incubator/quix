@@ -1,7 +1,7 @@
 package quix.python
 
-import quix.api.execute.ActiveQuery
-import quix.api.users.User
+import quix.api.v1.execute.ActiveQuery
+import quix.api.v1.users.User
 import quix.core.results.SingleBuilder
 
 object TryPython {

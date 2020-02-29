@@ -2,7 +2,7 @@ package quix.presto.rest
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, ExceptionPropagatedToClient}
+import quix.api.v1.execute.{ActiveQuery, ExceptionPropagatedToClient}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.core.utils.TaskOps._

@@ -3,7 +3,7 @@ package quix.core.history
 import cats.effect.concurrent.Ref
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
-import quix.api.execute.{ActiveQuery, Batch, Builder}
+import quix.api.v1.execute.{ActiveQuery, Batch, Builder}
 
 case class FakeBuilder(state: Ref[Task, State]) extends Builder[String, Batch] {
 

@@ -8,7 +8,7 @@ import com.amazonaws.services.athena.AmazonAthenaClient
 import com.amazonaws.services.athena.model.{AmazonAthenaException, GetQueryResultsResult, QueryExecutionState, StartQueryExecutionResult, Row => AthenaRow}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute._
+import quix.api.v1.execute._
 import quix.core.utils.TaskOps._
 
 import scala.concurrent.duration.{FiniteDuration, _}

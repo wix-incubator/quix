@@ -5,8 +5,8 @@ import java.util.UUID
 import com.github.blemale.scaffeine.{Cache, Scaffeine}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute._
-import quix.api.users.User
+import quix.api.v1.execute._
+import quix.api.v1.users.User
 
 import scala.concurrent.duration._
 

@@ -1,7 +1,7 @@
 package quix.core.db
 
 import com.typesafe.scalalogging.LazyLogging
-import quix.api.db.Catalog
+import quix.api.v1.db.Catalog
 
 object DbOps extends LazyLogging {
   def mergeNewAndOldCatalogs(newCatalogs: List[Catalog], oldCatalogs: List[Catalog]): List[Catalog] = {

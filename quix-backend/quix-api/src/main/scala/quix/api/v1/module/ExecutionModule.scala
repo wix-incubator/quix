@@ -1,9 +1,9 @@
-package quix.api.module
+package quix.api.v1.module
 
 import monix.eval.Task
-import quix.api.db.Db
-import quix.api.execute.{Builder, StartCommand}
-import quix.api.users.User
+import quix.api.v1.db.Db
+import quix.api.v1.execute.{Builder, StartCommand}
+import quix.api.v1.users.User
 
 /** Every quix note type must implement ExecutionModule to support query execution and db tree exploration
  *
@@ -12,13 +12,13 @@ import quix.api.users.User
  */
 trait ExecutionModule[Code, Results] {
 
-  /** Describes execution of code passed via [[quix.api.execute.StartCommand]] and invocations
-   * of [[quix.api.execute.Builder]] methods.
+  /** Describes execution of code passed via [[quix.api.v1.execute.StartCommand]] and invocations
+   * of [[quix.api.v1.execute.Builder]] methods.
    *
    * @param command includes the code that must be executed. Might contains multiple statements
    * @param id      query id
    * @param user    user that asked to execute command
-   * @param builder instance of [[quix.api.execute.Builder]] that serves as communication channel to quix frontend
+   * @param builder instance of [[quix.api.v1.execute.Builder]] that serves as communication channel to quix frontend
    * @return description of execution by means of [[monix.eval.Task]]
    */
   def start(command: StartCommand[Code], id: String, user: User, builder: Builder[Code, Results]): Task[Unit]

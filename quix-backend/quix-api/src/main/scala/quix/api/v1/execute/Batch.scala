@@ -1,11 +1,11 @@
-package quix.api.execute
+package quix.api.v1.execute
 
 case class BatchColumn(name: String)
 
 case class BatchError(message: String)
 
-/** Used in [[quix.api.execute.Builder]] to send batched payloads from [[quix.api.module.ExecutionModule]] to
- * [[quix.api.execute.Consumer]]
+/** Used in [[quix.api.v1.execute.Builder]] to send batched payloads from [[quix.api.v1.module.ExecutionModule]] to
+ * [[quix.api.v1.execute.Consumer]]
  *
  * @param data list of rows
  * @param columns optional list of column names

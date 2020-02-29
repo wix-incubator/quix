@@ -4,7 +4,7 @@ import java.net.{ConnectException, SocketException, SocketTimeoutException}
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute._
+import quix.api.v1.execute._
 import quix.core.utils.TaskOps._
 import quix.presto.rest.{PrestoState, PrestoStateClient, PrestoStateToResults}
 
