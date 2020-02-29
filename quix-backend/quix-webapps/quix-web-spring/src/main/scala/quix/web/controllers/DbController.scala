@@ -3,9 +3,9 @@ package quix.web.controllers
 import monix.execution.Scheduler.Implicits.global
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation._
-import quix.api.db.{Catalog, Schema, Table}
-import quix.api.execute.Batch
-import quix.api.module.ExecutionModule
+import quix.api.v1.db.{Catalog, Schema, Table}
+import quix.api.v1.execute.Batch
+import quix.api.v1.module.ExecutionModule
 
 @Controller
 @RequestMapping(Array("/api"))

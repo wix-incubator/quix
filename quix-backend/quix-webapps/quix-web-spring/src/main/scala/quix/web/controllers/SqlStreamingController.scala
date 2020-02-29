@@ -7,9 +7,9 @@ import monix.eval.Task
 import monix.execution.{CancelableFuture, Scheduler}
 import org.springframework.web.socket.handler.{ConcurrentWebSocketSessionDecorator, TextWebSocketHandler}
 import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSession}
-import quix.api.execute._
-import quix.api.module.ExecutionModule
-import quix.api.users.{User, Users}
+import quix.api.v1.execute._
+import quix.api.v1.module.ExecutionModule
+import quix.api.v1.users.{User, Users}
 import quix.core.download.{DownloadConfig, DownloadableBuilder, QueryResultsStorage}
 import quix.core.history.HistoryBuilder
 import quix.core.history.dao.HistoryWriteDao

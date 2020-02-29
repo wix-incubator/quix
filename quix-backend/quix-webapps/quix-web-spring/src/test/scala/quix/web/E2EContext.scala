@@ -3,7 +3,7 @@ package quix.web
 
 import org.asynchttpclient.Dsl.asyncHttpClient
 import org.asynchttpclient.ws.{WebSocket, WebSocketListener, WebSocketUpgradeHandler}
-import quix.api.execute.{ExecutionEvent, StartCommand}
+import quix.api.v1.execute.{ExecutionEvent, StartCommand}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import scalaj.http.Http

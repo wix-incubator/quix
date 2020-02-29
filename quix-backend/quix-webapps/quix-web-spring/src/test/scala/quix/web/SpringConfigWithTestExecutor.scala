@@ -1,8 +1,8 @@
 package quix.web
 
 import org.springframework.context.annotation.{Bean, Configuration, Import, Primary}
-import quix.api.execute.Batch
-import quix.api.module.ExecutionModule
+import quix.api.v1.execute.Batch
+import quix.api.v1.module.ExecutionModule
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
 import quix.presto.db.{PrestoAutocomplete, PrestoCatalogs, PrestoTables}
 import quix.presto.{PrestoQuixModule, TestQueryExecutor}
