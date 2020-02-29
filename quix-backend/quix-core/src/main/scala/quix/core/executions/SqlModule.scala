@@ -1,10 +1,10 @@
 package quix.core.executions
 
 import monix.eval.Task
-import quix.api.db.Db
-import quix.api.execute.{Batch, Builder, StartCommand}
-import quix.api.module.ExecutionModule
-import quix.api.users.User
+import quix.api.v1.db.Db
+import quix.api.v1.execute.{Batch, Builder, StartCommand}
+import quix.api.v1.module.ExecutionModule
+import quix.api.v1.users.User
 import quix.core.sql.{PrestoLikeSplitter, SqlSplitter}
 
 class SqlModule(val executions: SequentialExecutions[String],

@@ -7,8 +7,8 @@ import cats.syntax.apply._
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import org.specs2.mutable.SpecificationWithJUnit
-import quix.api.execute.ActiveQuery
-import quix.api.users.User
+import quix.api.v1.execute.ActiveQuery
+import quix.api.v1.users.User
 import quix.core.history.ExecutionMatchers._
 import quix.core.history.dao.HistoryDaoContractTest._
 import quix.core.history.{Execution, ExecutionStatus, FakeClock}

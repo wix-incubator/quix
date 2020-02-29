@@ -1,4 +1,4 @@
-package quix.api.execute
+package quix.api.v1.execute
 
 sealed trait EventData
 

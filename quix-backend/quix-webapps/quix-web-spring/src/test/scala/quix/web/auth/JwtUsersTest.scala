@@ -3,7 +3,7 @@ package quix.web.auth
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
 import pdi.jwt.{Jwt, JwtAlgorithm}
-import quix.api.users.RequestNotAuthenticated
+import quix.api.v1.users.RequestNotAuthenticated
 
 class JwtUsersTest extends SpecWithJUnit {
 

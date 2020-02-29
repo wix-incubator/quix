@@ -1,7 +1,7 @@
 package quix.core.db
 
 import monix.eval.Task
-import quix.api.db.{Catalog, Catalogs}
+import quix.api.v1.db.{Catalog, Catalogs}
 
 import scala.concurrent.duration._
 

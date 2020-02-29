@@ -1,7 +1,7 @@
 package quix.web.auth
 
 import pdi.jwt.{Jwt, JwtAlgorithm}
-import quix.api.users.{RequestNotAuthenticated, User, Users}
+import quix.api.v1.users.{RequestNotAuthenticated, User, Users}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 

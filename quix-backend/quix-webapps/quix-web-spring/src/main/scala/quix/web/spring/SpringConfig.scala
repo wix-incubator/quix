@@ -12,9 +12,9 @@ import monix.eval.Coeval
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration, DependsOn}
 import org.springframework.core.env.Environment
-import quix.api.execute.Batch
-import quix.api.module.ExecutionModule
-import quix.api.users.DummyUsers
+import quix.api.v1.execute.Batch
+import quix.api.v1.module.ExecutionModule
+import quix.api.v1.users.DummyUsers
 import quix.athena._
 import quix.bigquery._
 import quix.bigquery.db.{BigQueryAutocomplete, BigQueryCatalogs, BigQueryTables}

@@ -2,7 +2,7 @@ package quix.bigquery.db
 
 import com.google.cloud.bigquery.{BigQuery, DatasetId}
 import monix.eval.Task
-import quix.api.db.{Catalog, Catalogs, Schema, Table}
+import quix.api.v1.db.{Catalog, Catalogs, Schema, Table}
 import quix.bigquery.BigQueryConfig
 
 import scala.collection.JavaConverters._

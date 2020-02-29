@@ -1,7 +1,7 @@
 package quix.web.controllers
 
 import org.specs2.mutable.SpecWithJUnit
-import quix.api.execute.{Empty, StartCommand}
+import quix.api.v1.execute.{Empty, StartCommand}
 
 class ExecutionEventTest extends SpecWithJUnit {
 

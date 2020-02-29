@@ -3,7 +3,7 @@ package quix.bigquery
 import com.google.cloud.bigquery._
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.execute.ActiveQuery
+import quix.api.v1.execute.ActiveQuery
 
 class GoogleBigQueryClient(bigQuery: BigQuery, config: BigQueryConfig) extends BigQueryClient with LazyLogging {
 

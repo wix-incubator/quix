@@ -1,8 +1,8 @@
 package quix.bigquery.db
 
 import monix.eval.Task
-import quix.api.db.{Autocomplete, Catalog, Catalogs}
-import quix.api.execute.{AsyncQueryExecutor, Batch}
+import quix.api.v1.db.{Autocomplete, Catalog, Catalogs}
+import quix.api.v1.execute.{AsyncQueryExecutor, Batch}
 
 class BigQueryAutocomplete(val catalogs: Catalogs,
                            val queryExecutor: AsyncQueryExecutor[String, Batch]) extends Autocomplete {

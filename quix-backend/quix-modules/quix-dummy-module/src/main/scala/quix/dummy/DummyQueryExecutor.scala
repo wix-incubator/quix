@@ -1,7 +1,7 @@
 package quix.dummy
 
 import monix.eval.Task
-import quix.api.execute._
+import quix.api.v1.execute._
 
 import scala.util.Random
 

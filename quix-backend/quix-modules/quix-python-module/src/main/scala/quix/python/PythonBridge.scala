@@ -13,7 +13,7 @@ class PythonBridge(val queryId: String) {
   var subscriberOpt: Option[Subscriber[PythonMessage]] = None
 
   /** Python bridge will produce a stream of [[PythonMessage]] messages to communicate with quix.
-   * Each message would trigger some update of [[quix.api.execute.Builder]]
+   * Each message would trigger some update of [[quix.api.v1.execute.Builder]]
    *
    * @param subscriber monix Subscriber that will receive every update from python
    */

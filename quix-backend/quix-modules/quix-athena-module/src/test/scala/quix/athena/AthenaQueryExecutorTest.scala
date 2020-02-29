@@ -7,8 +7,8 @@ import org.specs2.matcher.MustMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
-import quix.api.execute.{ActiveQuery, BatchColumn}
-import quix.api.users.User
+import quix.api.v1.execute.{ActiveQuery, BatchColumn}
+import quix.api.v1.users.User
 import quix.core.results.SingleBuilder
 
 class AthenaQueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito {

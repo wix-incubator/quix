@@ -1,10 +1,10 @@
 package quix.python
 
 import monix.eval.Task
-import quix.api.db.Db
-import quix.api.execute.{ActiveQuery, Batch, Builder, StartCommand}
-import quix.api.module.ExecutionModule
-import quix.api.users.User
+import quix.api.v1.db.Db
+import quix.api.v1.execute.{ActiveQuery, Batch, Builder, StartCommand}
+import quix.api.v1.module.ExecutionModule
+import quix.api.v1.users.User
 
 class PythonModule(val executor: PythonExecutor) extends ExecutionModule[String, Batch] {
 

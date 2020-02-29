@@ -1,6 +1,6 @@
 package quix.core.executions
 
-import quix.api.execute._
+import quix.api.v1.execute._
 
 abstract class DelegatingBuilder[Code, Results](val delegate : Builder[Code, Results]) extends Builder[Code, Results] {
   override def start(query: ActiveQuery[Code]) = 

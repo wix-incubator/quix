@@ -3,8 +3,8 @@ package quix.core.executions
 import java.util.UUID
 
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Batch}
-import quix.api.users.User
+import quix.api.v1.execute.{ActiveQuery, AsyncQueryExecutor, Batch}
+import quix.api.v1.users.User
 import quix.core.results.SingleBuilder
 
 /** SingleQueryExecutor exposes useful methods for executing single queries with small amount of rows */

@@ -1,7 +1,7 @@
 package quix.jdbc
 
 import monix.eval.Task
-import quix.api.db.{Autocomplete, Catalog}
+import quix.api.v1.db.{Autocomplete, Catalog}
 
 class JdbcAutocomplete(val catalogs: JdbcCatalogs) extends Autocomplete {
   override def fast: Task[Map[String, List[String]]] = {

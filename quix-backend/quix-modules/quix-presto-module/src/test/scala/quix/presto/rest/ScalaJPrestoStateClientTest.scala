@@ -8,8 +8,8 @@ import monix.execution.Scheduler
 import monix.execution.Scheduler.Implicits.traced
 import org.specs2.matcher.{MustMatchers, Scope}
 import org.specs2.mutable.SpecWithJUnit
-import quix.api.execute.{ActiveQuery, ExceptionPropagatedToClient}
-import quix.api.users.User
+import quix.api.v1.execute.{ActiveQuery, ExceptionPropagatedToClient}
+import quix.api.v1.users.User
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.presto.PrestoConfig

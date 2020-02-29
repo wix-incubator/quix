@@ -4,7 +4,7 @@ import monix.execution.Scheduler.Implicits.global
 import org.specs2.matcher.MustMatchers
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
-import quix.api.db.Kolumn
+import quix.api.v1.db.Kolumn
 import quix.presto.TestQueryExecutor
 
 class PrestoTablesTest extends SpecWithJUnit with MustMatchers {

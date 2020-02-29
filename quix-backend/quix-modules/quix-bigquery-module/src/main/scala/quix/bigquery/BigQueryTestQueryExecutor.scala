@@ -1,7 +1,7 @@
 package quix.bigquery
 
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Batch, Builder}
+import quix.api.v1.execute.{ActiveQuery, AsyncQueryExecutor, Batch, Builder}
 
 import scala.collection.mutable
 import scala.concurrent.duration.{Duration, FiniteDuration}

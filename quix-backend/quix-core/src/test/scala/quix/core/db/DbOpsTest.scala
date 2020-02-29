@@ -2,7 +2,7 @@ package quix.core.db
 
 import org.specs2.matcher.MustMatchers
 import org.specs2.mutable.SpecWithJUnit
-import quix.api.db.{Catalog, Kolumn, Schema, Table}
+import quix.api.v1.db.{Catalog, Kolumn, Schema, Table}
 
 class DbOpsTest extends SpecWithJUnit with MustMatchers  {
 

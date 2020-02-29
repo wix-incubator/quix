@@ -1,8 +1,8 @@
 package quix.presto.db
 
 import monix.eval.Task
-import quix.api.db.{Kolumn, Table, Tables}
-import quix.api.execute.{AsyncQueryExecutor, Batch}
+import quix.api.v1.db.{Kolumn, Table, Tables}
+import quix.api.v1.execute.{AsyncQueryExecutor, Batch}
 import quix.core.executions.SingleQueryExecutor
 
 import scala.concurrent.duration._

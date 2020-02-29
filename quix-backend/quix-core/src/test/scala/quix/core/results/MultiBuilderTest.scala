@@ -4,9 +4,9 @@ import monix.eval.Task
 import monix.execution.Scheduler
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
-import quix.api.execute.Batch._
-import quix.api.execute._
-import quix.api.users.User
+import quix.api.v1.execute.Batch._
+import quix.api.v1.execute._
+import quix.api.v1.users.User
 
 import scala.collection.mutable.ListBuffer
 

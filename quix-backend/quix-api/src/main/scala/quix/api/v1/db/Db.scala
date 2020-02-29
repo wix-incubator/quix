@@ -1,4 +1,4 @@
-package quix.api.db
+package quix.api.v1.db
 
 import monix.eval.Task
 

@@ -2,7 +2,7 @@ package quix.core.history
 
 import java.time.Instant
 
-import quix.api.users.User
+import quix.api.v1.users.User
 
 case class Execution(id: String,
                      queryType: String,

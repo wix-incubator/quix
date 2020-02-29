@@ -1,7 +1,7 @@
 package quix.athena
 
 import monix.eval.Task
-import quix.api.db.{Autocomplete, Catalog, Catalogs}
+import quix.api.v1.db.{Autocomplete, Catalog, Catalogs}
 
 class AthenaAutocomplete(val catalogs: Catalogs) extends Autocomplete {
 

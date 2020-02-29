@@ -4,7 +4,7 @@ import java.nio.file.{Files, Paths}
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.execution.Scheduler.Implicits.global
-import quix.api.users.User
+import quix.api.v1.users.User
 import quix.core.executions.SequentialExecutions
 import quix.core.results.SingleBuilder
 

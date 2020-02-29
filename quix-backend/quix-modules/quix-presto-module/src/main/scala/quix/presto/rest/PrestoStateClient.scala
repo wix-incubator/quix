@@ -1,7 +1,7 @@
 package quix.presto.rest
 
 import monix.eval.Task
-import quix.api.execute.ActiveQuery
+import quix.api.v1.execute.ActiveQuery
 
 trait PrestoStateClient {
 

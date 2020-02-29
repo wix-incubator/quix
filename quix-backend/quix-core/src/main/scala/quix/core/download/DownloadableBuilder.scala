@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.GZIPOutputStream
 
 import monix.eval.Task
-import quix.api.execute._
+import quix.api.v1.execute._
 import quix.core.executions.DelegatingBuilder
 
 class DownloadableBuilder[Code](delegate: Builder[Code, Batch],

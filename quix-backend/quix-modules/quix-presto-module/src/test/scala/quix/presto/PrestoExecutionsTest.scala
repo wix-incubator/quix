@@ -6,7 +6,7 @@ import org.specs2.matcher.Matcher
 import org.specs2.mock.Mockito
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
-import quix.api.users.User
+import quix.api.v1.users.User
 import quix.core.executions.SequentialExecutions
 import quix.core.results.SingleBuilder
 

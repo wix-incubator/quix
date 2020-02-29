@@ -2,7 +2,7 @@ package quix.core.history
 
 import cats.syntax.apply._
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, Builder}
+import quix.api.v1.execute.{ActiveQuery, Builder}
 import quix.core.history.dao.HistoryWriteDao
 
 class HistoryBuilder[Results](delegate: Builder[String, Results],
