@@ -1,11 +1,11 @@
 package quix.presto.rest
 
 import monix.eval.Task
-import quix.api.v1.execute.ActiveQuery
+import quix.api.v2.execute.SubQuery
 
 trait PrestoStateClient {
 
-  def init(query: ActiveQuery[String]): Task[PrestoState]
+  def init(query: SubQuery): Task[PrestoState]
 
   def advance(uri: String): Task[PrestoState]
 

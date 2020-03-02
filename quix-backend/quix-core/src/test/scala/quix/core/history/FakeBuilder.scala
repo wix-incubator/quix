@@ -3,37 +3,38 @@ package quix.core.history
 import cats.effect.concurrent.Ref
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
-import quix.api.v1.execute.{ActiveQuery, Batch, Builder}
+import quix.api.v1.execute.Batch
+import quix.api.v2.execute.{Builder, Query}
 
-case class FakeBuilder(state: Ref[Task, State]) extends Builder[String, Batch] {
+case class FakeBuilder(state: Ref[Task, State]) extends Builder {
 
-  override def start(query: ActiveQuery[String]): Task[Unit] =
+  override def start(query: Query): Task[Unit] =
     state.update(_.start(query))
 
-  override def end(query: ActiveQuery[String]): Task[Unit] =
+  override def end(query: Query): Task[Unit] =
     state.update(_.end(query))
 
-  override def error(queryId: String, e: Throwable): Task[Unit] =
-    state.update(_.error(queryId, e))
+  override def error(subQueryId: String, e: Throwable): Task[Unit] =
+    state.update(_.error(subQueryId, e))
 
   override def rowCount: Long = get(_.rows)
 
   override def lastError: Option[Throwable] = get(_.lastError)
 
-  override def startSubQuery(queryId: String, code: String, results: Batch): Task[Unit] =
-    state.update(_.startSubQuery(queryId, code, results))
+  override def startSubQuery(queryId: String, code: String): Task[Unit] =
+    state.update(_.startSubQuery(queryId, code))
 
-  override def addSubQuery(queryId: String, results: Batch): Task[Unit] =
-    state.update(_.addSubQuery(queryId, results))
+  override def addSubQuery(subQueryId: String, results: Batch): Task[Unit] =
+    state.update(_.addSubQuery(subQueryId, results))
 
-  override def endSubQuery(queryId: String, statistics: Map[String, Any]): Task[Unit] =
-    state.update(_.endSubQuery(queryId))
+  override def endSubQuery(subQueryId: String, statistics: Map[String, Any]): Task[Unit] =
+    state.update(_.endSubQuery(subQueryId))
 
-  override def errorSubQuery(queryId: String, e: Throwable): Task[Unit] =
-    state.update(_.error(queryId, e))
+  override def errorSubQuery(subQueryId: String, e: Throwable): Task[Unit] =
+    state.update(_.error(subQueryId, e))
 
-  override def log(queryId: String, line: String, level: String): Task[Unit] =
-    state.update(_.addLogLine(queryId, line, level))
+  override def log(subQueryId: String, line: String, level: String): Task[Unit] =
+    state.update(_.addLogLine(subQueryId, line, level))
 
   private def get[A](f: State => A): A =
     state.get.map(f).runSyncUnsafe()
@@ -45,18 +46,18 @@ object FakeBuilder {
     Ref.of[Task, State](State.Empty).map(FakeBuilder(_))
 }
 
-case class State(queries: Map[String, Query],
-                 subQueries: Map[String, SubQuery],
+case class State(queries: Map[String, HistoricalQuery],
+                 subQueries: Map[String, HistoricalSubQuery],
                  errors: List[Error],
                  log: List[LogLine]) {
 
   def rows: Long = subQueries.values.foldLeft(0L)(_ + _.rows)
 
-  def start(query: ActiveQuery[String]): State =
-    copy(queries = queries + (query.id -> Query(query, QueryStatus.Started)))
+  def start(execution: Query): State =
+    copy(queries = queries + (execution.id -> HistoricalQuery(execution, QueryStatus.Started)))
 
-  def end(query: ActiveQuery[String]): State =
-    copy(queries = queries + (query.id -> Query(query, QueryStatus.Ended)))
+  def end(query: Query): State =
+    copy(queries = queries + (query.id -> HistoricalQuery(query, QueryStatus.Ended)))
 
   def error(queryId: String, e: Throwable): State =
     copy(errors = Error(queryId, e) :: errors)
@@ -64,8 +65,8 @@ case class State(queries: Map[String, Query],
   def lastError: Option[Throwable] =
     errors.headOption.map(_.error)
 
-  def startSubQuery(queryId: String, code: String, results: Batch): State =
-    copy(subQueries = subQueries + (queryId -> SubQuery(code, results)))
+  def startSubQuery(queryId: String, code: String): State =
+    copy(subQueries = subQueries + (queryId -> SubQuery(code)))
 
   def addSubQuery(queryId: String, results: Batch): State =
     copy(subQueries = updateSubQuery(queryId, _.addResults(results)))
@@ -76,7 +77,7 @@ case class State(queries: Map[String, Query],
   def addLogLine(queryId: String, line: String, level: String): State =
     copy(log = LogLine(queryId, line, level) :: log)
 
-  private def updateSubQuery(queryId: String, f: SubQuery => SubQuery): Map[String, SubQuery] =
+  private def updateSubQuery(queryId: String, f: HistoricalSubQuery => HistoricalSubQuery): Map[String, HistoricalSubQuery] =
     subQueries.get(queryId).fold(subQueries)(query => subQueries + (queryId -> f(query)))
 }
 
@@ -87,29 +88,32 @@ object State {
 sealed trait QueryStatus
 
 object QueryStatus {
+
   case object Started extends QueryStatus
+
   case object Ended extends QueryStatus
+
 }
 
-case class Query(query: ActiveQuery[String], status: QueryStatus)
+case class HistoricalQuery(query: Query, status: QueryStatus)
 
-case class SubQuery(code: String,
-                    results: List[Batch],
-                    status: QueryStatus) {
+case class HistoricalSubQuery(code: String,
+                              results: List[Batch],
+                              status: QueryStatus) {
 
   def rows: Long = results.foldLeft(0L)(_ + _.data.size)
 
-  def addResults(moreResults: Batch): SubQuery =
+  def addResults(moreResults: Batch): HistoricalSubQuery =
     copy(results = moreResults :: results)
 
-  def ended: SubQuery =
+  def ended: HistoricalSubQuery =
     copy(status = QueryStatus.Ended)
 
 }
 
 object SubQuery {
-  def apply(code: String, results: Batch): SubQuery =
-    SubQuery(code, List(results), QueryStatus.Started)
+  def apply(code: String): HistoricalSubQuery =
+    HistoricalSubQuery(code, List.empty, QueryStatus.Started)
 }
 
 case class Error(queryId: String, error: Throwable)

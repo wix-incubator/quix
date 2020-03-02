@@ -2,10 +2,10 @@ package quix.athena
 
 import com.amazonaws.services.athena.model.{GetQueryExecutionResult, GetQueryResultsResult, StartQueryExecutionResult}
 import monix.eval.Task
-import quix.api.v1.execute.ActiveQuery
+import quix.api.v2.execute.SubQuery
 
 trait AthenaClient {
-  def init(query: ActiveQuery[String]): Task[StartQueryExecutionResult]
+  def init(query: SubQuery): Task[StartQueryExecutionResult]
 
   def get(queryId: String): Task[GetQueryExecutionResult]
 

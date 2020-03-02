@@ -6,52 +6,52 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.GZIPOutputStream
 
 import monix.eval.Task
-import quix.api.v1.execute._
+import quix.api.v1.execute.{Batch, BatchColumn, Consumer, Download, ExecutionEvent}
+import quix.api.v2.execute._
 import quix.core.executions.DelegatingBuilder
 
-class DownloadableBuilder[Code](delegate: Builder[Code, Batch],
+class DownloadableBuilder[Code](delegate: Builder,
                                 downloadConfig: DownloadConfig,
                                 queryResultsStorage: QueryResultsStorage,
                                 consumer: Consumer[ExecutionEvent])
-  extends DelegatingBuilder[Code, Batch](delegate) {
+  extends DelegatingBuilder(delegate) {
   val sentColumnsPerQuery = collection.mutable.Set.empty[String]
   val openStreams = new ConcurrentHashMap[String, OutputStream]
 
-  override def startSubQuery(queryId: String, code: Code, results: Batch): Task[Unit] = {
+  override def startSubQuery(subQueryId: String, code: String): Task[Unit] = {
     for {
-      _ <- delegate.startSubQuery(queryId, code, results.copy(data = List.empty))
-      _ <- createNewFile(queryId)
-      _ <- addSubQuery(queryId, results)
+      _ <- delegate.startSubQuery(subQueryId, code)
+      _ <- createNewFile(subQueryId)
     } yield ()
   }
 
-  override def addSubQuery(queryId: String, results: Batch): Task[Unit] = {
-    sendColumns(queryId, results.columns) >>
-      use(queryId, results.data)
+  override def addSubQuery(subQueryId: String, results: Batch): Task[Unit] = {
+    sendColumns(subQueryId, results.columns) >>
+      use(subQueryId, results.data)
   }
 
-  override def endSubQuery(queryId: String, statistics: Map[String, Any]): Task[Unit] = {
+  override def endSubQuery(subQueryId: String, stats: Map[String, Any]): Task[Unit] = {
     for {
-      _ <- delegate.endSubQuery(queryId, statistics).attempt
-      _ <- close(queryId)
-      _ <- consumer.write(Download(queryId, "/api/download/" + queryId))
-      _ <- Task(sentColumnsPerQuery.remove(queryId))
+      _ <- delegate.endSubQuery(subQueryId, stats).attempt
+      _ <- close(subQueryId)
+      _ <- consumer.write(Download(subQueryId, "/api/download/" + subQueryId))
+      _ <- Task(sentColumnsPerQuery.remove(subQueryId))
     } yield ()
   }
 
-  override def errorSubQuery(queryId: String, e: Throwable): Task[Unit] = {
+  override def errorSubQuery(subQueryId: String, e: Throwable): Task[Unit] = {
     for {
-      _ <- delegate.errorSubQuery(queryId, e).attempt
-      _ <- cancel(queryId)
-      _ <- Task(sentColumnsPerQuery.remove(queryId))
+      _ <- delegate.errorSubQuery(subQueryId, e).attempt
+      _ <- cancel(subQueryId)
+      _ <- Task(sentColumnsPerQuery.remove(subQueryId))
     } yield ()
   }
 
-  def sendColumns(queryId: String, columnsOpt: Option[Seq[BatchColumn]]) = {
+  def sendColumns(subQueryId: String, columnsOpt: Option[Seq[BatchColumn]]) = {
     columnsOpt match {
-      case Some(columns) if !sentColumnsPerQuery.contains(queryId) =>
-        use(queryId, Seq(columns.map(_.name))) >>
-          Task(sentColumnsPerQuery.add(queryId))
+      case Some(columns) if !sentColumnsPerQuery.contains(subQueryId) =>
+        use(subQueryId, Seq(columns.map(_.name))) >>
+          Task(sentColumnsPerQuery.add(subQueryId))
 
       case _ => Task.unit
 

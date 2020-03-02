@@ -1,7 +1,7 @@
 package quix.bigquery
 
 import monix.eval.Task
-import quix.api.v1.execute.{ActiveQuery, AsyncQueryExecutor, Batch, Builder}
+import quix.api.v2.execute.{Builder, Executor, SubQuery}
 
 import scala.collection.mutable
 import scala.concurrent.duration.{Duration, FiniteDuration}
@@ -12,13 +12,13 @@ class SingleBigQueryExecution(exception: Option[Exception] = Option.empty[Except
                               columns: List[String] = Nil,
                               delay: FiniteDuration = Duration.Zero) {
 
-  def act(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = Task.unit
+  def act(query: SubQuery, builder: Builder): Task[Unit] = Task.unit
 }
 
-class BigQueryTestQueryExecutor extends AsyncQueryExecutor[String, Batch] {
+class BigQueryTestQueryExecutor extends Executor {
 
   val executions: mutable.Queue[SingleBigQueryExecution] = mutable.Queue.empty
-  var resultBuilder: Builder[String, Batch] = _
+  var resultBuilder: Builder = _
 
   def withException(e: Exception) = {
     executions.enqueue(new SingleBigQueryExecution(exception = Some(e)))
@@ -36,7 +36,7 @@ class BigQueryTestQueryExecutor extends AsyncQueryExecutor[String, Batch] {
     this
   }
 
-  override def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
+  override def execute(query: SubQuery, builder: Builder): Task[Unit] = {
     for {
       _ <- Task.eval(this.resultBuilder = builder)
       execution <- Task.eval(executions.dequeue())

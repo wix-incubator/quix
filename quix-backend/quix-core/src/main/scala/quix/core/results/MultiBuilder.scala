@@ -3,48 +3,48 @@ package quix.core.results
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.v1.execute.Batch._
-import quix.api.v1.execute._
+import quix.api.v1.execute.{Batch, BatchColumn, BatchError, Consumer, End, Error, ExceptionPropagatedToClient, ExecutionEvent, Log, Progress, Row, Start, SubQueryDetails, SubQueryEnd, SubQueryError, SubQueryFields, SubQueryStart}
+import quix.api.v2.execute._
 
 /** MultiBuilder accepts Consumer[ExecutionEvent] and propagates to it different events from lifecycle of Builder.
- * For example, {{{start(query: ActiveQuery[Code])}}} will produce {{{Start(query.id, query.statements.size)}}}
+ * For example, {{{start(query: Execution)}}} will produce {{{Start(query.id, query.statements.size)}}}
  * */
-class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
-  extends Builder[Code, Batch] with LazyLogging {
+class MultiBuilder(val consumer: Consumer[ExecutionEvent])
+  extends Builder with LazyLogging {
 
   var rows = 0L
   val sentColumnsPerQuery = collection.mutable.Set.empty[String]
   var lastError: Option[Throwable] = None
 
-  override def start(query: ActiveQuery[Code]) = {
-    consumer.write(Start(query.id, query.statements.size))
+  override def start(query: Query) = {
+    consumer.write(Start(query.id, query.subQueries.size))
   }
 
-  override def end(query: ActiveQuery[Code]) = {
+  override def end(query: Query) = {
     consumer.write(End(query.id))
   }
 
-  override def startSubQuery(queryId: String, code: Code, results: Batch) = {
+  override def startSubQuery(subQueryId: String, code : String) = {
     val resetCount = Task(this.rows = 0L)
-    val startTask = consumer.write(SubQueryStart(queryId))
-    val detailsTask = consumer.write(SubQueryDetails[Code](queryId, code))
-    val subqueryTask = addSubQuery(queryId, results)
+    val startTask = consumer.write(SubQueryStart(subQueryId))
+    val detailsTask = consumer.write(SubQueryDetails(subQueryId, code))
 
-    Task.sequence(List(resetCount, startTask, detailsTask, subqueryTask)).map(_ => ())
+    Task.sequence(List(resetCount, startTask, detailsTask)).map(_ => ())
   }
 
-  override def endSubQuery(queryId: String, statistics: Map[String, Any]) = {
-    consumer.write(SubQueryEnd(queryId, statistics))
+  override def endSubQuery(subQueryId : String, stats : Map[String, Any]) = {
+    consumer.write(SubQueryEnd(subQueryId, stats))
   }
 
-  override def addSubQuery(queryId: String, results: Batch) = {
-    val columnTask: Task[Unit] = results.columns.map(columns => sendColumns(queryId, columns)).getOrElse(Task.unit)
-    val progressTask: Task[Unit] = results.percentage.map(percentage => sendProgress(queryId, percentage)).getOrElse(Task.unit)
-    val errorTask: Task[Unit] = results.error.map(error => sendErrors(queryId, error)).getOrElse(Task.unit)
+  override def addSubQuery(subQueryId : String, results: Batch) = {
+    val columnTask: Task[Unit] = results.columns.map(columns => sendColumns(subQueryId, columns)).getOrElse(Task.unit)
+    val progressTask: Task[Unit] = results.percentage.map(percentage => sendProgress(subQueryId, percentage)).getOrElse(Task.unit)
+    val errorTask: Task[Unit] = results.error.map(error => sendErrors(subQueryId, error)).getOrElse(Task.unit)
 
     rows += results.data.size
 
     val rowTask = Task.traverse(results.data) { row =>
-      consumer.write(Row(queryId, row))
+      consumer.write(Row(subQueryId, row))
     }
 
     Task.sequence(Seq(columnTask, progressTask, errorTask, rowTask)).map(_ => ())
@@ -59,10 +59,10 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
     consumer.write(Progress(queryId, percentage))
   }
 
-  override def errorSubQuery(queryId: String, e: Throwable) = {
+  override def errorSubQuery(subQueryId: String, e: Throwable) = {
     lastError = Some(e)
     val errorMessage = makeErrorMessage(e)
-    consumer.write(SubQueryError(queryId, errorMessage))
+    consumer.write(SubQueryError(subQueryId, errorMessage))
   }
 
   private def makeErrorMessage(e: Throwable) = {
@@ -91,7 +91,7 @@ class MultiBuilder[Code](val consumer: Consumer[ExecutionEvent])
     consumer.write(Error(queryId, errorMessage))
   }
 
-  override def log(queryId: String, line: String, level: String): Task[Unit] = {
-    consumer.write(Log(queryId, line, level))
+  override def log(subQueryId: String, line: String, level: String): Task[Unit] = {
+    consumer.write(Log(subQueryId, line, level))
   }
 }

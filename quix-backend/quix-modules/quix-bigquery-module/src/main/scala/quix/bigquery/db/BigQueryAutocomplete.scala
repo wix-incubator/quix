@@ -2,10 +2,10 @@ package quix.bigquery.db
 
 import monix.eval.Task
 import quix.api.v1.db.{Autocomplete, Catalog, Catalogs}
-import quix.api.v1.execute.{AsyncQueryExecutor, Batch}
+import quix.api.v2.execute.Executor
 
 class BigQueryAutocomplete(val catalogs: Catalogs,
-                           val queryExecutor: AsyncQueryExecutor[String, Batch]) extends Autocomplete {
+                           val queryExecutor: Executor) extends Autocomplete {
 
   override def fast: Task[Map[String, List[String]]] = catalogs.fast.map(extractAutoCompleteItems)
 

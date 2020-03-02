@@ -2,12 +2,12 @@ package quix.bigquery.db
 
 import monix.eval.Task
 import quix.api.v1.db._
-import quix.api.v1.execute.{AsyncQueryExecutor, Batch}
+import quix.api.v2.execute.Executor
 import quix.core.executions.SingleQueryExecutor
 
 import scala.concurrent.duration._
 
-class BigQueryTables(val queryExecutor: AsyncQueryExecutor[String, Batch],
+class BigQueryTables(val queryExecutor: Executor,
                      val timeout: Long) extends Tables with SingleQueryExecutor {
 
   override def get(catalog: String, schema: String, table: String): Task[Table] = {

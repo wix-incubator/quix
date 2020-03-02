@@ -1,11 +1,11 @@
 package quix.web
 
 import org.springframework.context.annotation.{Bean, Configuration, Import, Primary}
-import quix.api.v1.execute.Batch
-import quix.api.v1.module.ExecutionModule
+import quix.api.v2.execute.ExecutionModule
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
+import quix.core.executions.SqlModule
+import quix.presto.TestQueryExecutor
 import quix.presto.db.{PrestoAutocomplete, PrestoCatalogs, PrestoTables}
-import quix.presto.{PrestoQuixModule, TestQueryExecutor}
 import quix.python.{PythonExecutor, PythonModule}
 import quix.web.spring._
 
@@ -17,10 +17,10 @@ class SpringConfigWithTestExecutor {
 
   @Bean
   @Primary
-  def initModules: Map[String, ExecutionModule[String, Batch]] = {
+  def initModules: Map[String, ExecutionModule] = {
     Map(
-      "presto-prod" -> PrestoQuixModule(MockBeans.queryExecutor, Some(MockBeans.db)),
-      "presto-dev" -> PrestoQuixModule(MockBeans.queryExecutor, Some(MockBeans.db)),
+      "presto-prod" -> new SqlModule(MockBeans.queryExecutor, Some(MockBeans.db)),
+      "presto-dev" -> new SqlModule(MockBeans.queryExecutor, Some(MockBeans.db)),
       "snake" -> new PythonModule(new PythonExecutor)
     )
   }

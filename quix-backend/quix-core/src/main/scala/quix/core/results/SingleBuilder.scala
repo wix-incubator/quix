@@ -2,14 +2,15 @@ package quix.core.results
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.v1.execute.{ActiveQuery, Batch, BatchColumn, Builder}
+import quix.api.v1.execute.{Batch, BatchColumn}
+import quix.api.v2.execute.{Builder, Query, SubQuery}
 
 import scala.collection.mutable.ListBuffer
 
 /** SingleBuilder accepts rows and stores them in memory in order of their arrival.
  * SingleBuilder is used by internal quix-backend processes such as db-tree traversal
  * or E2E tests. To receive the rows collected so far, one must call builder.build() */
-class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
+class SingleBuilder extends Builder with LazyLogging {
 
   private val rows = ListBuffer.empty[Seq[Any]]
   private val headers = ListBuffer.empty[BatchColumn]
@@ -21,13 +22,13 @@ class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
    * @returns the rows collected so far */
   def build(): List[Seq[Any]] = rows.toList
 
-  override def errorSubQuery(queryId: String, e: Throwable) = Task {
+  override def errorSubQuery(subQueryId: String, e: Throwable) = Task {
     failureCause = Option(e)
   }
 
-  override def startSubQuery(queryId: String, code: Code, results: Batch) = handleBatch(results)
+  override def startSubQuery(subQueryId: String, code : String) = Task.unit
 
-  override def addSubQuery(queryId: String, results: Batch) = handleBatch(results)
+  override def addSubQuery(subQueryId: String, results: Batch) = handleBatch(results)
 
   def handleBatch(batch: Batch): Task[Unit] = Task {
     batch.error foreach { error =>
@@ -41,13 +42,13 @@ class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
     rows ++= batch.data
   }
 
-  override def endSubQuery(queryId: String, statistics: Map[String, Any]) = Task {
-    this.statistics = statistics
+  override def endSubQuery(subQueryId: String, stats : Map[String, Any]) = Task {
+    this.statistics = stats
   }
 
-  override def start(query: ActiveQuery[Code]) = Task.unit
+  override def start(query: Query) = Task.unit
 
-  override def end(query: ActiveQuery[Code]) = Task.unit
+  override def end(query: Query) = Task.unit
 
   def isFailure = failureCause.isDefined
 
@@ -61,7 +62,7 @@ class SingleBuilder[Code] extends Builder[Code, Batch] with LazyLogging {
 
   def columns = headers.toList
 
-  override def log(queryId: String, line: String, level: String): Task[Unit] = Task {
+  override def log(subQueryId: String, line: String, level: String): Task[Unit] = Task {
     logMessages += line
   }
 

@@ -3,11 +3,11 @@ package quix.bigquery
 import com.google.cloud.bigquery._
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.v1.execute.ActiveQuery
+import quix.api.v2.execute.SubQuery
 
 class GoogleBigQueryClient(bigQuery: BigQuery, config: BigQueryConfig) extends BigQueryClient with LazyLogging {
 
-  override def init(query: ActiveQuery[String]): Task[Job] = {
+  override def init(query: SubQuery): Task[Job] = {
     for {
       jobInfo <- Task.now(JobInfo.of(QueryJobConfiguration.newBuilder(query.text).build))
       _ <- Task(logger.info(s"method=init query-id=${query.id} query-sql=[${query.text.replace("\n", "-newline-")}] config=$config"))

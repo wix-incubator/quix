@@ -3,6 +3,7 @@ package quix.presto.rest
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.v1.execute.{ActiveQuery, ExceptionPropagatedToClient}
+import quix.api.v2.execute.{Query, SubQuery}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.core.utils.TaskOps._
@@ -14,10 +15,8 @@ import scala.concurrent.duration._
 class ScalaJPrestoStateClient(config: PrestoConfig)
   extends PrestoStateClient with StringJsonHelpersSupport with LazyLogging {
 
-  override def init(query: ActiveQuery[String]): Task[PrestoState] = {
+  override def init(query: SubQuery): Task[PrestoState] = {
     for {
-      _ <- Task.eval(logger.info(s"method=init query-id=${query.id} query-sql=[${query.text.replace("\n", "-newline-")}] statements-api=${config.statementsApi}"))
-
       state <- Task
         .eval(ScalaJPrestoOps.buildInitRequest(query, config).asString)
         .retry(2, 1.second)

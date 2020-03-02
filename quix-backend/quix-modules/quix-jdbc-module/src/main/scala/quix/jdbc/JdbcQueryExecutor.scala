@@ -5,6 +5,7 @@ import java.sql.{Connection, DriverManager, ResultSet}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.v1.execute._
+import quix.api.v2.execute.{Builder, Executor, SubQuery}
 import quix.core.utils.TaskOps._
 
 import scala.collection.mutable.ListBuffer
@@ -18,10 +19,9 @@ case class JdbcConfig(url: String,
                       batchSize: Int = 2000)
 
 class JdbcQueryExecutor(config: JdbcConfig)
-  extends AsyncQueryExecutor[String, Batch]
-    with LazyLogging {
+  extends Executor with LazyLogging {
 
-  def prepareBatch(query: ActiveQuery[String], rs: ResultSet): Task[Batch] =
+  def prepareBatch(rs: ResultSet): Task[Batch] =
     Task {
       val rows = ListBuffer.empty[Seq[Any]]
       val columnCount = rs.getMetaData.getColumnCount
@@ -41,27 +41,24 @@ class JdbcQueryExecutor(config: JdbcConfig)
           }
 
         rows += row
-      } while (!query.isCancelled && rows.size < config.batchSize && rs.next())
+      } while (rows.size < config.batchSize && rs.next())
 
       Batch(rows.toList, Some(columns))
     }
 
-  def drainResultSet(query: ActiveQuery[String],
-                     rb: Builder[String, Batch],
+  def drainResultSet(query: SubQuery,
+                     rb: Builder,
                      rs: ResultSet): Task[Unit] = {
-    if (rs != null && !query.isCancelled && rs.next()) {
+    if (!query.canceled.get && rs != null && rs.next()) {
       for {
-        batch <- prepareBatch(query, rs)
-        _ <- rb.addSubQuery(query.id + query.current, batch)
+        batch <- prepareBatch(rs)
+        _ <- rb.addSubQuery(query.id, batch)
         _ <- drainResultSet(query, rb, rs)
       } yield ()
-    } else {
-      Task.unit
-    }
+    } else Task.unit
   }
 
-  def runTask(query: ActiveQuery[String],
-              builder: Builder[String, Batch]): Task[Unit] = {
+  def execute(query: SubQuery, builder: Builder): Task[Unit] = {
 
     val connect: Task[Connection] = {
       for {
@@ -76,11 +73,11 @@ class JdbcQueryExecutor(config: JdbcConfig)
 
     val use = (con: Connection) => {
       for {
-        _ <- builder.startSubQuery(query.id + query.current, query.text, Batch(Nil))
+        _ <- builder.startSubQuery(query.id, query.text)
         statement <- Task(con.createStatement())
         _ <- Task(statement.execute(query.text))
         _ <- drainResultSet(query, builder, statement.getResultSet)
-        _ <- builder.endSubQuery(query.id + query.current)
+        _ <- builder.endSubQuery(query.id, Map.empty)
       } yield ()
     }
 

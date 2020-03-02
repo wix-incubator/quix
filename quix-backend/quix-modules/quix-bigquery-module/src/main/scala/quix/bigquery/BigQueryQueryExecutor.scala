@@ -7,13 +7,14 @@ import com.google.auth.oauth2.ServiceAccountCredentials
 import com.google.cloud.bigquery.{BigQueryOptions, FieldValue, Job, JobStatistics, TableResult}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.v1.execute._
+import quix.api.v1.execute.{Batch, BatchColumn, BatchError}
+import quix.api.v2.execute.{Executor, SubQuery, _}
 import quix.core.utils.TaskOps._
 
 import scala.collection.JavaConverters._
 
 class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long)
-  extends AsyncQueryExecutor[String, Batch] with LazyLogging {
+  extends Executor with LazyLogging {
 
   def toBatch(job: Job, result: TableResult, rowsSoFar: Long): Batch = {
     val rows = for {
@@ -29,7 +30,7 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
       .withPercentage(percentage)
   }
 
-  def toColumns(result: TableResult): Option[Seq[BatchColumn]] = {
+  def toColumns(result: TableResult) = {
     Option(result.getSchema).map { schema =>
       schema.getFields.asScala.map(f => BatchColumn(f.getName)).toList
     }
@@ -55,8 +56,8 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
       yield BatchError(error.getMessage)
   }
 
-  def loop(query: ActiveQuery[String], builder: Builder[String, Batch], job: Job, result: TableResult): Task[Unit] = {
-    if (result != null && !query.isCancelled) {
+  def loop(query: SubQuery, builder: Builder, job: Job, result: TableResult): Task[Unit] = {
+    if (result != null && !query.canceled.get) {
       for {
         _ <- builder.addSubQuery(job.getGeneratedId, toBatch(job, result, builder.rowCount))
         nextPage <- Task(result.getNextPage)
@@ -65,16 +66,16 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
     } else Task.unit
   }
 
-  def waitForFinish(job: Job, activeQuery: ActiveQuery[String]): Task[Job] = Task {
+  def waitForFinish(job: Job, activeQuery: SubQuery): Task[Job] = Task {
     job.waitFor()
   }
 
-  override def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
+  override def execute(query: SubQuery, builder: Builder): Task[Unit] = {
     def close(job: Job) = client.close(job.getJobId.getJob)
 
     initClient(query, builder).bracket { job =>
       for {
-        _ <- builder.startSubQuery(job.getGeneratedId, query.text, Batch(Seq.empty, error = getError(job)))
+        _ <- builder.startSubQuery(job.getGeneratedId, query.text)
         completedJob <- waitForFinish(job, query)
         _ <- loop(query, builder, completedJob, completedJob.getQueryResults()).onErrorHandleWith { e =>
           builder.errorSubQuery(job.getGeneratedId, e)
@@ -95,7 +96,7 @@ class BigQueryQueryExecutor(val client: BigQueryClient, val advanceTimeout: Long
     )
   }
 
-  def initClient(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Job] = {
+  def initClient(query: SubQuery, builder: Builder): Task[Job] = {
     val log = Task(logger.info(s"method=initClient event=start query-id=${query.id} user=${query.user.email} sql=${query.text}"))
 
     val clientTask = client

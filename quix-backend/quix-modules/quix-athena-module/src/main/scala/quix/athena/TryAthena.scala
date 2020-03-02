@@ -5,8 +5,8 @@ import com.amazonaws.regions.Regions
 import com.amazonaws.services.athena.AmazonAthenaClient
 import com.typesafe.scalalogging.LazyLogging
 import monix.execution.Scheduler.Implicits.global
-import quix.api.v1.execute.ActiveQuery
 import quix.api.v1.users.User
+import quix.api.v2.execute.ImmutableSubQuery
 import quix.core.results.SingleBuilder
 
 object TryAthena extends LazyLogging {
@@ -21,9 +21,9 @@ object TryAthena extends LazyLogging {
     val client = new AwsAthenaClient(athena, config)
     val queryExecutor = new AthenaQueryExecutor(client)
 
-    val results = new SingleBuilder[String]
+    val results = new SingleBuilder
 
-    val task = queryExecutor.runTask(new ActiveQuery[String]("id", Seq("SELECT *\nFROM default.elb_logs\nLIMIT 1000"), User("valeryf")), results)
+    val task = queryExecutor.execute(ImmutableSubQuery("SELECT *\nFROM default.elb_logs\nLIMIT 1000", User("valeryf")), results)
 
     task.runSyncUnsafe()
 

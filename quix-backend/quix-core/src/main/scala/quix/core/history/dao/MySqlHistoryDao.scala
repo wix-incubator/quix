@@ -5,7 +5,7 @@ import java.time.{Clock, Instant}
 import cats.effect.Resource
 import cats.syntax.apply._
 import monix.eval.Task
-import quix.api.v1.execute.ActiveQuery
+import quix.api.v2.execute.{Query => ActiveQuery}
 import quix.api.v1.users.User
 import quix.core.history.dao.MySqlHistoryDao._
 import quix.core.history.{Execution, ExecutionStatus}
@@ -99,16 +99,16 @@ class MySqlHistoryWriteDao(connection: Connection, clock: Clock) extends History
     "UPDATE executions_history SET status = 'FAILED' WHERE id = ? LIMIT 1"
   }
 
-  override def executionStarted(query: ActiveQuery[String], queryType: String): Task[Unit] =
+  override def executionStarted(query: ActiveQuery, queryType: String): Task[Unit] =
     startStatement.use { statement =>
       for {
         now <- instant
         _ <- Task(statement.setString(1, query.id))
         _ <- Task(statement.setString(2, queryType))
         // TODO - this is not a good way to save multiple statements, better use a JSON list
-        _ <- Task(statement.setString(3, query.statements.mkString(separator)))
-        _ <- Task(statement.setString(4, query.user.id))
-        _ <- Task(statement.setString(5, query.user.email))
+        _ <- Task(statement.setString(3, query.subQueries.map(_.text).mkString(separator)))
+        _ <- Task(statement.setString(4, query.subQueries.map(_.user).head.id))
+        _ <- Task(statement.setString(5, query.subQueries.map(_.user).head.email))
         _ <- Task(statement.setLong(6, now.toEpochMilli))
         _ <- Task(statement.executeUpdate())
       } yield ()

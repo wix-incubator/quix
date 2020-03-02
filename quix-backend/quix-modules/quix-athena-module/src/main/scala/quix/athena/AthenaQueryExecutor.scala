@@ -8,7 +8,8 @@ import com.amazonaws.services.athena.AmazonAthenaClient
 import com.amazonaws.services.athena.model.{AmazonAthenaException, GetQueryResultsResult, QueryExecutionState, StartQueryExecutionResult, Row => AthenaRow}
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.v1.execute._
+import quix.api.v1.execute.{Batch, BatchColumn}
+import quix.api.v2.execute._
 import quix.core.utils.TaskOps._
 
 import scala.concurrent.duration.{FiniteDuration, _}
@@ -16,14 +17,14 @@ import scala.concurrent.duration.{FiniteDuration, _}
 class AthenaQueryExecutor(val client: AthenaClient,
                           val initialAdvanceDelay: FiniteDuration = 100.millis,
                           val maxAdvanceDelay: FiniteDuration = 15.seconds)
-  extends AsyncQueryExecutor[String, Batch] with LazyLogging {
+  extends Executor with LazyLogging {
 
-  def waitLoop(queryId: String, activeQuery: ActiveQuery[String], builder: Builder[String, Batch], delay: FiniteDuration = initialAdvanceDelay): Task[QueryExecutionState] = {
+  def waitLoop(queryId: String, activeQuery: SubQuery, builder: Builder, delay: FiniteDuration = initialAdvanceDelay): Task[QueryExecutionState] = {
     val runningStatuses = Set(QueryExecutionState.RUNNING, QueryExecutionState.QUEUED).map(_.toString)
     val failed = Set(QueryExecutionState.FAILED, QueryExecutionState.CANCELLED).map(_.toString)
 
     client.get(queryId).map(_.getQueryExecution).flatMap {
-      case query if runningStatuses.contains(query.getStatus.getState) && !activeQuery.isCancelled =>
+      case query if runningStatuses.contains(query.getStatus.getState) && !activeQuery.canceled.get =>
         for {
           _ <- Task(logger.info(s"method=waitLoop event=not-finished query-id=$queryId user=${activeQuery.user.email} status=${query.getStatus.getState} delay=$delay"))
           _ <- builder.addSubQuery(queryId, Batch(data = List.empty))
@@ -32,21 +33,21 @@ class AthenaQueryExecutor(val client: AthenaClient,
 
       case query if failed.contains(query.getStatus.getState) =>
         for {
-          _ <- Task(logger.info(s"method=waitLoop event=failed query-id=$queryId user=${activeQuery.user.email} delay=$delay status=${query.getStatus.getState} canceled=${activeQuery.isCancelled}"))
+          _ <- Task(logger.info(s"method=waitLoop event=failed query-id=$queryId user=${activeQuery.user.email} delay=$delay status=${query.getStatus.getState} canceled=${activeQuery.canceled.get}"))
           _ <- builder.errorSubQuery(queryId, new IllegalStateException(s"Query failed with status ${query.getStatus.getState} with reason = ${query.getStatus.getStateChangeReason}"))
         } yield QueryExecutionState.fromValue(query.getStatus.getState)
 
-      case query if query.getStatus.getState == QueryExecutionState.SUCCEEDED.toString || activeQuery.isCancelled =>
-        Task.eval(logger.info(s"method=waitLoop event=finished query-id=$queryId user=${activeQuery.user.email} delay=$delay status=${query.getStatus.getState} canceled=${activeQuery.isCancelled}"))
+      case query if query.getStatus.getState == QueryExecutionState.SUCCEEDED.toString || activeQuery.canceled.get =>
+        Task.eval(logger.info(s"method=waitLoop event=finished query-id=$queryId user=${activeQuery.user.email} delay=$delay status=${query.getStatus.getState} canceled=${activeQuery.canceled.get}"))
           .map(_ => QueryExecutionState.fromValue(query.getStatus.getState))
     }
   }
 
-  def drainResults(queryId: String, nextToken: Option[String], builder: Builder[String, Batch], query: ActiveQuery[String]): Task[Option[String]] = {
+  def drainResults(queryId: String, nextToken: Option[String], builder: Builder, query: SubQuery): Task[Option[String]] = {
     val log = Task(logger.info(s"method=drainResults event=start query-id=$queryId user=${query.user.email} tokenOpt=$nextToken"))
 
     val tokenTask = nextToken match {
-      case Some(_) if !query.isCancelled =>
+      case Some(_) if !query.canceled.get =>
         for {
           nextState <- advance(builder, queryId, query, nextToken)
 
@@ -62,14 +63,14 @@ class AthenaQueryExecutor(val client: AthenaClient,
     log.flatMap(_ => tokenTask)
   }
 
-  def fetchFirstBatch(queryId: String, builder: Builder[String, Batch], query: ActiveQuery[String]): Task[Option[String]] = {
-    val log = Task(logger.info(s"method=fetchFirstBatch event=start query-id=$queryId user=${query.user.email} cancelled=${query.isCancelled}"))
+  def fetchFirstBatch(queryId: String, builder: Builder, query: SubQuery): Task[Option[String]] = {
+    val log = Task(logger.info(s"method=fetchFirstBatch event=start query-id=$queryId user=${query.user.email} cancelled=${query.canceled.get()}"))
 
-    val batch = if (query.isCancelled) Task.now(None)
+    val batch = if (query.canceled.get) Task.now(None)
     else for {
       state <- advance(builder, queryId, query)
       _ <- builder.addSubQuery(queryId, makeBatch(state, isFirst = true))
-      _ <- Task(logger.info(s"method=fetchFirstBatch event=done query-id=$queryId user=${query.user.email} cancelled=${query.isCancelled} tokenOpt=${state.getNextToken}"))
+      _ <- Task(logger.info(s"method=fetchFirstBatch event=done query-id=$queryId user=${query.user.email} cancelled=${query.canceled.get()} tokenOpt=${state.getNextToken}"))
     } yield Option(state.getNextToken)
 
     log.flatMap(_ => batch)
@@ -130,29 +131,25 @@ class AthenaQueryExecutor(val client: AthenaClient,
     }
   }
 
-  def advance(builder: Builder[String, Batch], queryId: String, query: ActiveQuery[String], token: Option[String] = None): Task[GetQueryResultsResult] = {
-    val log = Task(logger.info(s"method=advance event=start query-id=$queryId user=${query.user.email} cancelled=${query.isCancelled}"))
+  def advance(builder: Builder, queryId: String, query: SubQuery, token: Option[String] = None): Task[GetQueryResultsResult] = {
 
-    val clientAdvance =
-      client.advance(queryId, token)
-        .onErrorHandleWith {
-          case e@(_: ConnectException | _: SocketTimeoutException | _: SocketException) =>
-            val ex = new IllegalStateException(s"Athena can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}", e)
-            builder.errorSubQuery(queryId, ex)
-              .flatMap(_ => Task.raiseError(ex))
+    client.advance(queryId, token)
+      .onErrorHandleWith {
+        case e@(_: ConnectException | _: SocketTimeoutException | _: SocketException) =>
+          val ex = new IllegalStateException(s"Athena can't be reached, please try later. Underlying exception name is ${e.getClass.getSimpleName}", e)
+          builder.errorSubQuery(queryId, ex)
+            .flatMap(_ => Task.raiseError(ex))
 
-          case ex: Exception =>
-            val log = Task(logger.warn(s"method=advance event=error query-id=$queryId user=${query.user.email} cancelled=${query.isCancelled}", ex))
+        case ex: Exception =>
+          val log = Task(logger.warn(s"method=advance event=error query-id=$queryId user=${query.user.email} cancelled=${query.canceled.get()}", ex))
 
-            builder.errorSubQuery(queryId, ex)
-              .flatMap(_ => log)
-              .flatMap(_ => Task.raiseError(ex))
-        }
-
-    log.flatMap(_ => clientAdvance)
+          builder.errorSubQuery(queryId, ex)
+            .flatMap(_ => log)
+            .flatMap(_ => Task.raiseError(ex))
+      }
   }
 
-  def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
+  def execute(query: SubQuery, builder: Builder): Task[Unit] = {
     val close = (startExecution: StartQueryExecutionResult) => client.close(startExecution.getQueryExecutionId)
 
     initClient(query, builder).bracket { startExecution =>
@@ -170,7 +167,7 @@ class AthenaQueryExecutor(val client: AthenaClient,
         _ <- Task.eval(logger.info(s"method=runAsync event=start query-id=${query.id} user=${query.user.email} " +
           s"sql=${query.text.replace("\n", "-newline-").replace("\\s", "-space-")}"))
 
-        _ <- builder.startSubQuery(startExecution.getQueryExecutionId, query.text, Batch(data = List.empty))
+        _ <- builder.startSubQuery(startExecution.getQueryExecutionId, query.text)
         _ <- queryLoop.onErrorFallbackTo(Task.unit)
         _ <- builder.endSubQuery(startExecution.getQueryExecutionId)
 
@@ -179,7 +176,7 @@ class AthenaQueryExecutor(val client: AthenaClient,
     }(close)
   }
 
-  def initClient(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[StartQueryExecutionResult] = {
+  def initClient(query: SubQuery, builder: Builder): Task[StartQueryExecutionResult] = {
     val log = Task(logger.info(s"method=initClient event=start query-id=${query.id} user=${query.user.email} sql=${query.text}"))
 
     val clientTask = client

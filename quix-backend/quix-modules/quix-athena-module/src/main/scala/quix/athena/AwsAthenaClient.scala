@@ -4,10 +4,11 @@ import com.amazonaws.services.athena.AmazonAthena
 import com.amazonaws.services.athena.model._
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.v1.execute.ActiveQuery
+import quix.api.v2.execute.SubQuery
 
 class AwsAthenaClient(athena: AmazonAthena, config: AthenaConfig) extends AthenaClient with LazyLogging {
-  override def init(query: ActiveQuery[String]): Task[StartQueryExecutionResult] = Task {
+
+  override def init(query: SubQuery): Task[StartQueryExecutionResult] = Task {
     logger.info(s"method=init query-id=${query.id} query-sql=[${query.text.replace("\n", "-newline-")}] config=$config")
 
     val request =

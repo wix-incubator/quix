@@ -13,14 +13,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration, DependsOn}
 import org.springframework.core.env.Environment
 import quix.api.v1.execute.Batch
-import quix.api.v1.module.ExecutionModule
+import quix.api.v2.execute.ExecutionModule
 import quix.api.v1.users.DummyUsers
 import quix.athena._
 import quix.bigquery._
 import quix.bigquery.db.{BigQueryAutocomplete, BigQueryCatalogs, BigQueryTables}
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
 import quix.core.download.{DownloadConfig, QueryResultsStorage}
-import quix.core.executions.{SequentialExecutions, SqlModule}
+import quix.core.executions.{SqlModule}
 import quix.core.history.dao.HistoryReadDao
 import quix.core.sql.StopWordSqlSplitter
 import quix.core.utils.JsonOps
@@ -41,7 +41,7 @@ class SpringConfig {
 }
 
 object Registry {
-  val modules = scala.collection.mutable.Map.empty[String, ExecutionModule[String, Batch]]
+  val modules = scala.collection.mutable.Map.empty[String, ExecutionModule]
 }
 
 @Configuration
@@ -127,7 +127,6 @@ class ModulesConfiguration extends LazyLogging {
 
       val client = new ScalaJPrestoStateClient(config)
       val executor = new QueryExecutor(client)
-      val executions = new SequentialExecutions[String](executor)
 
       val emptyDbTimeout = {
         env.getProperty(s"modules.$presto.db.empty.timeout", classOf[Long],
@@ -148,7 +147,7 @@ class ModulesConfiguration extends LazyLogging {
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      new SqlModule(executions, Some(db))
+      new SqlModule(executor, Some(db))
     }
 
     for (module <- getModules(env, "presto"))
@@ -191,7 +190,7 @@ class ModulesConfiguration extends LazyLogging {
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      new SqlModule(new SequentialExecutions[String](executor), Some(db))
+      new SqlModule(executor, Some(db))
     }
 
     for (module <- getModules(env, "athena"))
@@ -238,7 +237,7 @@ class ModulesConfiguration extends LazyLogging {
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      new SqlModule(new SequentialExecutions[String](executor), Some(db), new StopWordSqlSplitter("TEMP", "FUNCTION"))
+      new SqlModule(executor, Some(db), new StopWordSqlSplitter("TEMP", "FUNCTION"))
     }
 
     for (module <- getModules(env, "bigquery"))
@@ -276,7 +275,7 @@ class ModulesConfiguration extends LazyLogging {
       val autocomplete = new RefreshableAutocomplete(jdbcAutocomplete, emptyDbTimeout, 1000L * 60 * 5)
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      new SqlModule(new SequentialExecutions[String](executor), Option(db))
+      new SqlModule(executor, Option(db))
     }
 
     for (module <- getModules(env, "jdbc")) {
@@ -316,7 +315,7 @@ class ModulesConfiguration extends LazyLogging {
 
   @Bean
   @DependsOn(Array("initPresto", "initAthena", "initJdbc", "initBigQuery", "initPython"))
-  def initKnownModules: Map[String, ExecutionModule[String, Batch]] = {
+  def initKnownModules: Map[String, ExecutionModule] = {
     logger.info(s"*******************************************************")
     logger.info(s"****************          Modules are")
     Registry.modules.keySet.toList.sorted.foreach { module =>
@@ -362,7 +361,7 @@ class DownloadConfiguration extends LazyLogging {
 @Configuration
 class Controllers extends LazyLogging {
 
-  @Bean def initDbController(modules: Map[String, ExecutionModule[String, Batch]]): DbController = {
+  @Bean def initDbController(modules: Map[String, ExecutionModule]): DbController = {
     logger.info("event=[spring-config] bean=[DbController]")
     new DbController(modules)
   }

@@ -6,8 +6,8 @@ import org.specs2.matcher.MustMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
-import quix.api.v1.execute.ActiveQuery
 import quix.api.v1.users.User
+import quix.api.v2.execute.ImmutableSubQuery
 import quix.core.results.SingleBuilder
 
 class BigQueryQueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito {
@@ -16,8 +16,8 @@ class BigQueryQueryExecutorTest extends SpecWithJUnit with MustMatchers with Moc
 
     val client = mock[BigQueryClient]
     val executor = new BigQueryQueryExecutor(client, 1000L)
-    val query = new ActiveQuery[String]("query-id", Seq("select 1"), User("bigquery-test"))
-    val builder = spy(new SingleBuilder[String])
+    val query = ImmutableSubQuery(id = "query-id", text = "select 1", user = User("bigquery-test"))
+    val builder = spy(new SingleBuilder)
   }
 
   "BigQueryQueryExecutor" should {
