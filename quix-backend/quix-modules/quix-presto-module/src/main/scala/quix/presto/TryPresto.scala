@@ -1,12 +1,10 @@
 package quix.presto
 
-import java.util.UUID
-
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
-import quix.api.v1.execute.ActiveQuery
 import quix.api.v1.users.User
+import quix.api.v2.execute.ImmutableSubQuery
 import quix.core.results.SingleBuilder
 import quix.presto.rest.ScalaJPrestoStateClient
 
@@ -24,8 +22,8 @@ object TryPresto extends LazyLogging {
     val results = for {
       i <- 1 to 5
       query = activeQuery(s"-- query $i\n select 1")
-      builder = new SingleBuilder[String]
-    } yield executor.runTask(query, builder).map(_ => builder)
+      builder = new SingleBuilder
+    } yield executor.execute(query, builder).map(_ => builder)
 
     val builders = Task.sequence(results).runSyncUnsafe()
 
@@ -34,8 +32,7 @@ object TryPresto extends LazyLogging {
     } logger.info(s"builder $index got ${builder.build().length} rows")
   }
 
-  def activeQuery(text: String): ActiveQuery[String] = {
-    val id = UUID.randomUUID().toString
-    ActiveQuery(id, Seq(text), User(id = "user", email = "user@quix"))
+  def activeQuery(text: String) = {
+    ImmutableSubQuery(text, User(id = "user", email = "user@quix"))
   }
 }

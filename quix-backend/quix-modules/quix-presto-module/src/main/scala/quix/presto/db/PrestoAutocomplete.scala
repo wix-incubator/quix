@@ -2,11 +2,11 @@ package quix.presto.db
 
 import monix.eval.Task
 import quix.api.v1.db.{Autocomplete, Catalog}
-import quix.api.v1.execute.{AsyncQueryExecutor, Batch}
+import quix.api.v2.execute.Executor
 import quix.core.executions.SingleQueryExecutor
 
 class PrestoAutocomplete(val catalogs: PrestoCatalogs,
-                         val queryExecutor: AsyncQueryExecutor[String, Batch])
+                         val queryExecutor: Executor)
   extends Autocomplete with SingleQueryExecutor {
 
   override def fast: Task[Map[String, List[String]]] = {

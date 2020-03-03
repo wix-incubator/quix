@@ -2,10 +2,9 @@ package quix.presto
 
 import java.net.{ConnectException, SocketException, SocketTimeoutException}
 
-import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.v1.execute._
-import quix.core.utils.TaskOps._
+import quix.api.v1.execute.ExceptionPropagatedToClient
+import quix.api.v2.execute._
 import quix.presto.rest.{PrestoState, PrestoStateClient, PrestoStateToResults}
 
 import scala.concurrent.duration._
@@ -13,33 +12,7 @@ import scala.concurrent.duration._
 class QueryExecutor(val client: PrestoStateClient,
                     val initialAdvanceDelay: FiniteDuration = 100.millis,
                     val maxAdvanceDelay: FiniteDuration = 33.seconds)
-  extends AsyncQueryExecutor[String, Batch] with LazyLogging {
-
-  def loop(prestoId: String, state: String, rows: Int, nextUri: Option[String], builder: Builder[String, Batch], query: ActiveQuery[String], delay: FiniteDuration = initialAdvanceDelay): Task[Option[String]] = {
-    val log = Task(logger.info(s"method=loop event=start query-id=${query.id} user=${query.user.email} presto-id=$prestoId state=$state rows=$rows"))
-
-    val task = nextUri match {
-      case Some(uri) if !query.isCancelled =>
-        for {
-          nextState <- advance(uri, builder, prestoId, query, delay)
-
-          _ <- builder.addSubQuery(prestoId, PrestoStateToResults(nextState))
-            .logOnError(s"method=loop event=error-addSubQuery query-id=${query.id} user=${query.user.email} presto-id=$prestoId")
-
-          state = nextState.stats.state
-          rows = nextState.data.map(_.size).getOrElse(0)
-
-          futureState <- loop(prestoId, state, rows, nextState.nextUri, builder, query, nextDelay(delay, nextState))
-        } yield futureState
-
-      case _ =>
-        for {
-          _ <- Task(logger.info(s"method=loop event=stop canceled=${query.isCancelled} query-id=${query.id} user=${query.user.email} presto-id=$prestoId state=$state"))
-        } yield nextUri
-    }
-
-    log.flatMap(_ => task)
-  }
+  extends Executor {
 
   // if got no results from presto, wait twice longer for next page
   def nextDelay(delay: FiniteDuration, state: PrestoState): FiniteDuration = {
@@ -47,60 +20,65 @@ class QueryExecutor(val client: PrestoStateClient,
       delay.mul(2).min(maxAdvanceDelay) else initialAdvanceDelay
   }
 
-  def advance(uri: String, builder: Builder[String, Batch], queryId: String, query: ActiveQuery[String], delay: FiniteDuration = initialAdvanceDelay): Task[PrestoState] = {
-    val log = Task(logger.info(s"method=advance query-id=${query.id} user=${query.user.email} presto-id=$queryId uri=$uri delay=${delay.toMillis / 1000.0}"))
+  def loop(prestoId: String, nextUri: Option[String], builder: Builder, query: SubQuery, delay: FiniteDuration): Task[Option[String]] = {
+    Task(query.canceled.get()).flatMap {
+      case true =>
+        Task(Option.empty[String])
 
-    val task = client.advance(uri)
+      case false =>
+        nextUri.map { uri =>
+          for {
+            nextState <- advance(uri, builder, query, delay)
+            _ <- builder.addSubQuery(prestoId, PrestoStateToResults(nextState))
+            futureState <- loop(prestoId, nextState.nextUri, builder, query, nextDelay(delay, nextState))
+          } yield futureState
+        }.getOrElse(Task(Option.empty[String]))
+    }
+  }
+
+  def advance(uri: String, builder: Builder, query: SubQuery, delay: FiniteDuration): Task[PrestoState] = {
+    client.advance(uri)
       .delayExecution(delay)
       .onErrorHandleWith { originalException =>
         val exception = rewriteException(originalException)
-        builder.errorSubQuery(queryId, exception)
+        builder.errorSubQuery(query.id, exception)
           .flatMap(_ => Task.raiseError(exception))
       }
-
-    log.flatMap(_ => task)
   }
 
-  def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
+  override def execute(query: SubQuery, builder: Builder): Task[Unit] = {
     val executionTask = initClient(query, builder).bracket { firstState =>
       for {
-        _ <- builder.startSubQuery(firstState.id, query.text, PrestoStateToResults(firstState))
-          .logOnError(s"method=runAsync event=error-startSubQuery query-id=${query.id} user=${query.user.email} presto-id=${firstState.id}")
+        _ <- builder.startSubQuery(firstState.id, query.text)
+        _ <- builder.addSubQuery(firstState.id, PrestoStateToResults(firstState))
 
-        _ <- loop(firstState.id, firstState.stats.state, firstState.data.map(_.size).getOrElse(0), firstState.nextUri, builder, query)
+        _ <- loop(firstState.id, firstState.nextUri, builder, query, initialAdvanceDelay)
 
         _ <- builder.endSubQuery(firstState.id)
         info <- client.info(firstState)
-          .logOnError(s"method=runAsync event=error-endSubQuery query-id=${query.id} user=${query.user.email} presto-id=${firstState.id}")
       } yield info
     }(client.close)
 
     val task = for {
-      _ <- Task(logger.info(s"method=runAsync event=start query-id=${query.id} user=${query.user.email} " +
-        s"sql=${query.text.replace("\n", "-newline-").replace("\\s", "-space-")}"))
       info <- executionTask
       _ <- Task {
-        query.catalog = info.setCatalog
-        query.schema = info.setSchema
-
-        query.session = (query.session ++ info.setSessionProperties)
-          .filter {case (key, _) => !info.resetSessionProperties.contains(key)}
+        info.setCatalog.foreach(catalog => query.session.put("X-Presto-Catalog", catalog))
+        info.setSchema.foreach(schema => query.session.put("X-Presto-Schema", schema))
+        info.setSessionProperties.foreach { case (k, v) => query.session.put(k, v) }
+        info.resetSessionProperties.foreach(key => query.session.remove(key))
       }
-      _ <- Task(logger.info(s"method=runAsync event=end query-id=${query.id} user=${query.user.email} rows=${builder.rowCount}"))
     } yield ()
 
     task
+
   }
 
-  def initClient(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[PrestoState] = {
-    val log = Task(logger.info(s"method=initClient event=start query-id=${query.id} user=${query.user.email}"))
-    val task = client.init(query).onErrorHandleWith { originalException =>
+  def initClient(query: SubQuery, builder: Builder): Task[PrestoState] = {
+    client.init(query).onErrorHandleWith { originalException =>
       val exception = rewriteException(originalException)
       builder.error(query.id, exception)
         .flatMap(_ => Task.raiseError(exception))
     }
-
-    log.flatMap(_ => task)
   }
 
   def rewriteException(e: Throwable): Throwable = e match {

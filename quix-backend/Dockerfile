@@ -11,6 +11,12 @@ RUN \
   apt-get install sbt && \
   sbt sbtVersion
 
+COPY build.sbt .
+COPY version.sbt .
+RUN sbt update
+COPY /quix-webapps/quix-web-spring/pom.xml ./quix-webapps/quix-web-spring/pom.xml
+RUN mvn -B -f /quix-webapps/quix-web-spring/pom.xml dependency:resolve --fail-never
+
 COPY quix-api/src ./quix-api/src
 COPY quix-core/src ./quix-core/src
 COPY /quix-modules/quix-presto-module/src ./quix-modules/quix-presto-module/src
@@ -20,14 +26,9 @@ COPY /quix-modules/quix-jdbc-module/src ./quix-modules/quix-jdbc-module/src
 COPY /quix-modules/quix-python-module/src ./quix-modules/quix-python-module/src
 COPY /quix-modules/quix-dummy-module/src ./quix-modules/quix-dummy-module/src
 COPY /quix-webapps/quix-web-spring/src ./quix-webapps/quix-web-spring/src
-COPY /quix-webapps/quix-web-spring/pom.xml ./quix-webapps/quix-web-spring/pom.xml
 
-COPY build.sbt .
-COPY version.sbt .
 RUN sbt +publishM2
-
-WORKDIR /quix-webapps/quix-web-spring
-RUN mvn install -DskipTests
+RUN mvn -f /quix-webapps/quix-web-spring/pom.xml install -DskipTests
 
 FROM ubuntu:19.10
 

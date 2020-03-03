@@ -4,12 +4,11 @@ import monix.execution.Scheduler.Implicits.global
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation._
 import quix.api.v1.db.{Catalog, Schema, Table}
-import quix.api.v1.execute.Batch
-import quix.api.v1.module.ExecutionModule
+import quix.api.v2.execute.ExecutionModule
 
 @Controller
 @RequestMapping(Array("/api"))
-class DbController(modules: Map[String, ExecutionModule[String, Batch]]) {
+class DbController(modules: Map[String, ExecutionModule]) {
 
   @CrossOrigin(origins = Array("*"), allowedHeaders = Array("*"))
   @RequestMapping(value = Array("/db/config"), method = Array(RequestMethod.GET))

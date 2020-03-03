@@ -7,9 +7,9 @@ import monix.eval.Task
 import monix.execution.{CancelableFuture, Scheduler}
 import org.springframework.web.socket.handler.{ConcurrentWebSocketSessionDecorator, TextWebSocketHandler}
 import org.springframework.web.socket.{CloseStatus, TextMessage, WebSocketSession}
-import quix.api.v1.execute._
-import quix.api.v1.module.ExecutionModule
+import quix.api.v1.execute.{Consumer, Empty, Error, EventData, ExecutionEvent, Pong, StartCommand}
 import quix.api.v1.users.{User, Users}
+import quix.api.v2.execute.{Builder, ExecutionModule}
 import quix.core.download.{DownloadConfig, DownloadableBuilder, QueryResultsStorage}
 import quix.core.history.HistoryBuilder
 import quix.core.history.dao.HistoryWriteDao
@@ -20,7 +20,7 @@ import quix.core.utils.TaskOps._
 
 import scala.util.Try
 
-class SqlStreamingController(val modules: Map[String, ExecutionModule[String, Batch]],
+class SqlStreamingController(val modules: Map[String, ExecutionModule],
                              val users: Users,
                              val downloadConfig: DownloadConfig,
                              val queryResultsStorage: QueryResultsStorage,
@@ -48,7 +48,7 @@ class SqlStreamingController(val modules: Map[String, ExecutionModule[String, Ba
         handlePingMessage(socket)
 
       case ExecutionEvent("execute", command: StartCommand[String]) =>
-        val threadSafeSocket = new ConcurrentWebSocketSessionDecorator(socket, 1000, 1024 * 1024 )
+        val threadSafeSocket = new ConcurrentWebSocketSessionDecorator(socket, 1000, 1024 * 1024)
         handleExecutionMessage(threadSafeSocket, command, user)
 
       case _ =>
@@ -104,8 +104,8 @@ class SqlStreamingController(val modules: Map[String, ExecutionModule[String, Ba
 
   def makeResultBuilder(consumer: Consumer[ExecutionEvent],
                         session: Map[String, String],
-                        queryType: String): Builder[String, Batch] = {
-    val multiBuilder = new MultiBuilder[String](consumer)
+                        queryType: String): Builder = {
+    val multiBuilder = new MultiBuilder(consumer)
     val builder = if (session.get("mode").contains("download")) {
       new DownloadableBuilder(multiBuilder, downloadConfig, queryResultsStorage, consumer)
     } else {

@@ -10,6 +10,7 @@ import org.specs2.matcher.{MustMatchers, Scope}
 import org.specs2.mutable.SpecWithJUnit
 import quix.api.v1.execute.{ActiveQuery, ExceptionPropagatedToClient}
 import quix.api.v1.users.User
+import quix.api.v2.execute.ImmutableSubQuery
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.presto.PrestoConfig
@@ -20,8 +21,7 @@ class ScalaJPrestoStateClientTest extends SpecWithJUnit with MustMatchers with S
   class ctx extends Scope {
     val config = PrestoConfig("statements", "health", "queryInfo", "default-schema", "default-catalog", "default-source")
     val client = new ScalaJPrestoStateClient(config)
-    val queryId = UUID.randomUUID().toString
-    val query = ActiveQuery(queryId, Seq("select 1"), User("user@quix"))
+    val query = ImmutableSubQuery("select 1", User("user@quix"))
     val advanceUri = "localhost/1"
 
     val stateJson = s"""{"id":"presto-id","infoUri":"info-uri","nextUri":"next-uri","stats":{"state":"RUNNING","scheduled":false,"totalSplits":0,"queuedSplits":0,"runningSplits":0,"completedSplits":123}}"""

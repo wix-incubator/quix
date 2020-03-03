@@ -5,7 +5,7 @@ import java.nio.file.{Files, Paths}
 import com.typesafe.scalalogging.LazyLogging
 import monix.execution.Scheduler.Implicits.global
 import quix.api.v1.users.User
-import quix.core.executions.SequentialExecutions
+import quix.api.v2.execute.ImmutableSubQuery
 import quix.core.results.SingleBuilder
 
 object TryBigQuery extends LazyLogging {
@@ -17,13 +17,11 @@ object TryBigQuery extends LazyLogging {
 
     val text = "SELECT * FROM `bigquery-public-data.samples.github_nested` LIMIT 20000"
 
-    val builder = new SingleBuilder[String]
+    val builder = new SingleBuilder
 
-    val executions = new SequentialExecutions[String](client)
+    val query = ImmutableSubQuery(text, User("valeryf@wix.com", "valeryf"))
 
-    val task = executions.execute(Seq.fill(2)(text), User("valeryf@wix.com", "valeryf"), builder)
-
-    task.runSyncUnsafe()
+    client.execute(query, builder).runSyncUnsafe()
 
     logger.info(s"rows=${builder.build().size}")
   }

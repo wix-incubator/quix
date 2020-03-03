@@ -11,9 +11,8 @@ import org.springframework.web.socket.WebSocketHandler
 import org.springframework.web.socket.server.HandshakeInterceptor
 import org.springframework.web.socket.server.jetty.JettyRequestUpgradeStrategy
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
-import quix.api.v1.execute.Batch
-import quix.api.v1.module.ExecutionModule
 import quix.api.v1.users.Users
+import quix.api.v2.execute.ExecutionModule
 import quix.core.download.{DownloadConfig, QueryResultsStorage}
 import quix.core.history.dao.HistoryWriteDao
 import quix.web.controllers.SqlStreamingController
@@ -23,7 +22,7 @@ import quix.web.controllers.SqlStreamingController
 class WebsocketsConfig extends LazyLogging {
 
   @Bean def initSqlStreamingController(users: Users,
-                                       modules: Map[String, ExecutionModule[String, Batch]],
+                                       modules: Map[String, ExecutionModule],
                                        downloadConfig: DownloadConfig,
                                        queryResultsStorage: QueryResultsStorage,
                                        historyWriteDao: HistoryWriteDao) = {
