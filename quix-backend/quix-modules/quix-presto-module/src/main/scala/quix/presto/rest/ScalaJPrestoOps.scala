@@ -6,17 +6,21 @@ import scalaj.http.{Http, HttpRequest}
 
 object ScalaJPrestoOps {
   def makeHeaders(query: SubQuery, config: PrestoConfig): Map[String, String] = {
-    val extraValues = for ((key, value) <- query.session)
+    val session = query.session
+
+    val extraValues = for ((key, value) <- session if !key.startsWith("X-Presto"))
       yield key + "=" + value
 
+    val prestoHeaders = session.filter { case (key, _) => key.startsWith("X-Presto") }
+
     Map(
-      "x-presto-user" -> query.user.email,
-      "x-presto-catalog" -> query.session.getOrElse("x-presto-catalog", config.catalog),
-      "x-presto-schema" -> query.session.getOrElse("x-presto-schema", config.schema),
-      "x-presto-source" -> config.source,
+      "X-Presto-User" -> query.user.email,
+      "X-Presto-Catalog" -> config.catalog,
+      "X-Presto-Schema" -> config.schema,
+      "X-Presto-Source" -> config.source,
       "Content-Type" -> "text/plain",
       "Accept" -> "application/json",
-      "x-presto-session" -> extraValues.mkString(", "))
+      "X-Presto-Session" -> extraValues.mkString(", ")) ++ prestoHeaders
   }
 
   def buildInitRequest(query: SubQuery, config: PrestoConfig): HttpRequest = {

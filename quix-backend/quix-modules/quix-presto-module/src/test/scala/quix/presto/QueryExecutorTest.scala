@@ -89,8 +89,8 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       // verify
       eventually {
-        there was one(builder).startSubQuery(query.id, query.text)
-        there was one(builder).endSubQuery(query.id)
+        there was one(builder).startSubQuery(stateWithoutNext.id, query.text)
+        there was one(builder).endSubQuery(stateWithoutNext.id)
       }
     }
 
@@ -105,11 +105,11 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       // verify
       eventually {
-        there was one(builder).startSubQuery(query.id, query.text)
+        there was one(builder).startSubQuery(stateWithNextUri.id, query.text)
 
-        there was one(builder).addSubQuery(query.id, PrestoStateToResults(stateWithoutNext))
+        there was one(builder).addSubQuery(stateWithNextUri.id, PrestoStateToResults(stateWithoutNext))
 
-        there was one(builder).endSubQuery(query.id)
+        there was one(builder).endSubQuery(stateWithNextUri.id)
       }
     }
 
@@ -123,11 +123,11 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       // verify
       eventually {
-        there was one(builder).startSubQuery(query.id, query.text)
+        there was one(builder).startSubQuery(stateWithNextUri.id, query.text)
 
-        there was one(builder).addSubQuery(query.id, PrestoStateToResults(stateWithoutNext))
+        there was one(builder).addSubQuery(stateWithNextUri.id, PrestoStateToResults(stateWithoutNext))
 
-        there was one(builder).endSubQuery(query.id)
+        there was one(builder).endSubQuery(stateWithNextUri.id)
       }
     }
 
@@ -141,9 +141,9 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       // verify
       eventually {
-        there was one(builder).startSubQuery(query.id, query.text)
+        there was one(builder).startSubQuery(stateWithNextUri.id, query.text)
 
-        there was one(builder).addSubQuery(query.id, PrestoStateToResults(stateWithoutNext))
+        there was one(builder).addSubQuery(stateWithNextUri.id, PrestoStateToResults(stateWithoutNext))
 
         there was one(builder).endSubQuery(anyString, any[Map[String, String]]())
       }
@@ -238,8 +238,8 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
       executor.execute(query, builder).runToFuture(scheduler)
 
       eventually {
-        query.session must havePair("x-presto-catalog", "some-catalog")
-        query.session must havePair("x-presto-schema", "some-schema")
+        query.session must havePair("X-Presto-Catalog", "some-catalog")
+        query.session must havePair("X-Presto-Schema", "some-schema")
       }
     }
 

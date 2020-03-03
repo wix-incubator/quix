@@ -22,7 +22,7 @@ class ScalaJPrestoOpsTest extends SpecWithJUnit with MustMatchers {
       val request = factory.buildInitRequest(query, config)
 
       request.method must_=== "POST"
-      request.headers must contain("x-presto-user" -> query.user.email)
+      request.headers must contain("X-Presto-User" -> query.user.email)
     }
 
     // https://github.com/prestodb/presto/wiki/HTTP-Protocol
@@ -31,22 +31,22 @@ class ScalaJPrestoOpsTest extends SpecWithJUnit with MustMatchers {
       val request = factory.buildInitRequest(queryWithSession, config)
 
       request.method must_=== "POST"
-      request.headers must contain("x-presto-session" -> "foo=1, bar=2")
+      request.headers must contain("X-Presto-Session" -> "foo=1, bar=2")
     }
 
     "use catalog/schema from active query" in new ctx {
-      val queryWithCatalogs = query.copy(session = mutable.Map("x-presto-catalog" -> "catalog", "x-presto-schema" -> "schema"))
+      val queryWithCatalogs = query.copy(session = mutable.Map("X-Presto-Catalog" -> "catalog", "X-Presto-Schema" -> "schema"))
       val request = factory.buildInitRequest(queryWithCatalogs, config)
 
-      request.headers must contain("x-presto-catalog" -> "catalog")
-      request.headers must contain("x-presto-schema" -> "schema")
+      request.headers must contain("X-Presto-Catalog" -> "catalog")
+      request.headers must contain("X-Presto-Schema" -> "schema")
     }
 
     "fallback to default catalog/schema values from config if missing in active query" in new ctx {
       val request = factory.buildInitRequest(query, config)
 
-      request.headers must contain("x-presto-catalog" -> "default-catalog")
-      request.headers must contain("x-presto-schema" -> "default-schema")
+      request.headers must contain("X-Presto-Catalog" -> "default-catalog")
+      request.headers must contain("X-Presto-Schema" -> "default-schema")
     }
   }
 

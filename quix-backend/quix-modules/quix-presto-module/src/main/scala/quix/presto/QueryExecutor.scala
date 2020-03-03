@@ -62,8 +62,8 @@ class QueryExecutor(val client: PrestoStateClient,
     val task = for {
       info <- executionTask
       _ <- Task {
-        info.setCatalog.foreach(catalog => query.session.put("x-presto-catalog", catalog))
-        info.setSchema.foreach(schema => query.session.put("x-presto-schema", schema))
+        info.setCatalog.foreach(catalog => query.session.put("X-Presto-Catalog", catalog))
+        info.setSchema.foreach(schema => query.session.put("X-Presto-Schema", schema))
         info.setSessionProperties.foreach { case (k, v) => query.session.put(k, v) }
         info.resetSessionProperties.foreach(key => query.session.remove(key))
       }
