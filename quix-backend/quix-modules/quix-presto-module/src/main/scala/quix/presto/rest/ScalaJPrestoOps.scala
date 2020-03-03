@@ -1,5 +1,7 @@
 package quix.presto.rest
 
+import java.net.URLEncoder
+
 import quix.api.v2.execute.SubQuery
 import quix.presto.PrestoConfig
 import scalaj.http.{Http, HttpRequest}
@@ -9,7 +11,7 @@ object ScalaJPrestoOps {
     val session = query.session.get
 
     val extraValues = for ((key, value) <- session if !key.startsWith("X-Presto"))
-      yield key + "=" + value
+      yield key + "=" + URLEncoder.encode(value, "UTF-8")
 
     val prestoHeaders = session.filter { case (key, _) => key.startsWith("X-Presto") }
 
