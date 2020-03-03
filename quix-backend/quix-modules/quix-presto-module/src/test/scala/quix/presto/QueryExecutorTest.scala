@@ -11,7 +11,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
 import quix.api.v1.users.User
-import quix.api.v2.execute.ImmutableSubQuery
+import quix.api.v2.execute.{ImmutableSubQuery, MutableSession}
 import quix.core.results.SingleBuilder
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
@@ -238,8 +238,8 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
       executor.execute(query, builder).runToFuture(scheduler)
 
       eventually {
-        query.session must havePair("X-Presto-Catalog", "some-catalog")
-        query.session must havePair("X-Presto-Schema", "some-schema")
+        query.session.get must havePair("X-Presto-Catalog", "some-catalog")
+        query.session.get must havePair("X-Presto-Schema", "some-schema")
       }
     }
 
@@ -254,13 +254,13 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
       executor.execute(query, builder).runToFuture(scheduler)
 
       eventually {
-        query.session must havePair("some.session.key", "true")
+        query.session.get must havePair("some.session.key", "true")
       }
     }
 
     "unset session properties of active if query info has resetSessionProperties" in new ctx {
       // mock
-      val queryWithSession = query.copy(session = mutable.Map("first.session.key" -> "false", "second.session.key" -> "true"))
+      val queryWithSession = query.copy(session = MutableSession("first.session.key" -> "false", "second.session.key" -> "true"))
       client.init(queryWithSession) returns Task.now(stateWithNextUri)
       client.advance(anyString) returns Task.now(stateWithoutNext)
       client.info(any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
@@ -271,13 +271,13 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       eventually {
         // existed before execution
-        queryWithSession.session must havePair("second.session.key", "true")
+        queryWithSession.session.get must havePair("second.session.key", "true")
 
         // was added during execution
-        queryWithSession.session must havePair("some.session.key", "true")
+        queryWithSession.session.get must havePair("some.session.key", "true")
 
         // was removed during execution
-        queryWithSession.session must not haveKey "first.session.key"
+        queryWithSession.session.get must not haveKey "first.session.key"
       }
     }
   }

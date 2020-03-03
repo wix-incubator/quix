@@ -1,37 +1,7 @@
 package quix.api.v2.execute
 
-import java.util.UUID
-
 import monix.eval.Task
-import monix.execution.atomic.Atomic
 import quix.api.v1.execute.Batch
-import quix.api.v1.users.User
-
-import scala.collection.mutable
-
-trait SubQuery {
-  def id: String
-
-  def text: String
-
-  def session: mutable.Map[String, String]
-
-  def user: User
-
-  def canceled: Atomic[Boolean]
-}
-
-case class ImmutableSubQuery(text: String, user: User,
-                             canceled: Atomic[Boolean] = Atomic(false),
-                             id: String = UUID.randomUUID().toString,
-                             session: mutable.Map[String, String] = mutable.Map.empty) extends SubQuery
-
-case class Query(subQueries: Seq[SubQuery], id: String = UUID.randomUUID().toString, canceled: Atomic[Boolean] = Atomic(false))
-
-/** Used to execute single query and stream the results back to Builder */
-trait Executor {
-  def execute(query: SubQuery, builder: Builder): Task[Unit]
-}
 
 /**
  * Builder is used to propagate messages between AsyncQueryExecutor and quix frontend
@@ -68,7 +38,6 @@ trait Builder {
    *
    * @param line  message to log
    * @param level supported levels are INFO and ERROR
-   * */
+   **/
   def log(subQueryId: String, line: String, level: String = "INFO"): Task[Unit]
 }
-

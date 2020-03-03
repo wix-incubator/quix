@@ -4,7 +4,7 @@ import org.specs2.matcher.MustMatchers
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
 import quix.api.v1.users.User
-import quix.api.v2.execute.ImmutableSubQuery
+import quix.api.v2.execute.{ImmutableSubQuery, MutableSession}
 import quix.presto.PrestoConfig
 
 import scala.collection.mutable
@@ -27,7 +27,7 @@ class ScalaJPrestoOpsTest extends SpecWithJUnit with MustMatchers {
 
     // https://github.com/prestodb/presto/wiki/HTTP-Protocol
     "add custom query session params as single comma-separated x-presto-session http header" in new ctx {
-      val queryWithSession = query.copy(session = mutable.Map("foo" -> "1", "bar" -> "2"))
+      val queryWithSession = query.copy(session = MutableSession("foo" -> "1", "bar" -> "2"))
       val request = factory.buildInitRequest(queryWithSession, config)
 
       request.method must_=== "POST"
@@ -35,7 +35,7 @@ class ScalaJPrestoOpsTest extends SpecWithJUnit with MustMatchers {
     }
 
     "use catalog/schema from active query" in new ctx {
-      val queryWithCatalogs = query.copy(session = mutable.Map("X-Presto-Catalog" -> "catalog", "X-Presto-Schema" -> "schema"))
+      val queryWithCatalogs = query.copy(session = MutableSession("X-Presto-Catalog" -> "catalog", "X-Presto-Schema" -> "schema"))
       val request = factory.buildInitRequest(queryWithCatalogs, config)
 
       request.headers must contain("X-Presto-Catalog" -> "catalog")

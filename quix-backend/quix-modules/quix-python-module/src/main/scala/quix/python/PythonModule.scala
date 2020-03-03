@@ -11,7 +11,7 @@ import scala.collection.mutable
 class PythonModule(val executor: PythonExecutor) extends ExecutionModule {
 
   def start(command: StartCommand[String], id: String, user: User, builder: Builder): Task[Unit] = {
-    val subQuery = ImmutableSubQuery(command.code, user, session = mutable.Map(command.session.toList: _*))
+    val subQuery = ImmutableSubQuery(command.code, user)
     val query = Query(List(subQuery), canceled = subQuery.canceled)
 
     for {

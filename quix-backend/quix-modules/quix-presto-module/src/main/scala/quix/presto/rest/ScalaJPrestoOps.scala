@@ -6,7 +6,7 @@ import scalaj.http.{Http, HttpRequest}
 
 object ScalaJPrestoOps {
   def makeHeaders(query: SubQuery, config: PrestoConfig): Map[String, String] = {
-    val session = query.session
+    val session = query.session.get
 
     val extraValues = for ((key, value) <- session if !key.startsWith("X-Presto"))
       yield key + "=" + value
