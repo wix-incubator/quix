@@ -8,7 +8,8 @@ trait Session {
   def get: Map[String, String]
 }
 
-class MutableSession(private var state: Map[String, String] = Map.empty) extends Session {
+class MutableSession(val session: () => Map[String, String] = () => Map.empty,
+                     private var state: Map[String, String] = Map.empty) extends Session {
   override def put(key: String, value: String): Unit = state = state.updated(key, value)
 
   override def remove(key: String): Unit = state = state - key
@@ -16,14 +17,8 @@ class MutableSession(private var state: Map[String, String] = Map.empty) extends
   override def get: Map[String, String] = state
 }
 
-class SessionWithMore(delegate: Session, more: () => Map[String, String]) extends Session {
-  override def put(key: String, value: String): Unit = delegate.put(key, value)
-
-  override def remove(key: String): Unit = delegate.remove(key)
-
-  override def get: Map[String, String] = delegate.get ++ more()
-}
-
 object MutableSession {
-  def apply(kv: (String, String)*): MutableSession = new MutableSession(kv.toMap)
+  def apply(kv: (String, String)*): MutableSession = new MutableSession(state = kv.toMap)
+
+  def apply(session: () => Map[String, String]): MutableSession = new MutableSession(session = session)
 }
