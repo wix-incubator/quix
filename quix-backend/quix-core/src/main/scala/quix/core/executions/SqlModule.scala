@@ -1,7 +1,6 @@
 package quix.core.executions
 
 import monix.eval.Task
-import monix.execution.atomic.Atomic
 import quix.api.v1.db.Db
 import quix.api.v1.execute.StartCommand
 import quix.api.v1.users.User
@@ -13,18 +12,11 @@ class SqlModule(val executor: Executor,
                 val splitter: SqlSplitter = PrestoLikeSplitter) extends ExecutionModule {
 
   override def start(command: StartCommand[String], id: String, user: User, builder: Builder): Task[Unit] = {
-    val canceled = Atomic(false)
-    val session = scala.collection.mutable.Map.empty[String, String]
-
-    val subQueries = splitter.split(command.code).map { sql =>
-      ImmutableSubQuery(sql, user, canceled = canceled, session = session)
-    }
-
-    val query = Query(subQueries, id, canceled)
+    val query = splitter.split(command, id, user)
 
     for {
       _ <- builder.start(query)
-      _ <- Task.traverse(subQueries) { q =>
+      _ <- Task.traverse(query.subQueries) { q =>
         Task(builder.lastError).flatMap {
           case None =>
             executor.execute(q, builder)
