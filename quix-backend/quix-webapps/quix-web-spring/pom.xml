@@ -24,6 +24,7 @@
         <typesafe.config.version>1.4.0</typesafe.config.version>
         <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
         <async.http.version>2.10.4</async.http.version>
+        <mysql.version>8.0.18</mysql.version>
         <spring.jdbc.version>5.2.2.RELEASE</spring.jdbc.version>
         <scalatest.version>3.1.0</scalatest.version>
     </properties>
@@ -171,6 +172,13 @@
             <groupId>com.wix</groupId>
             <artifactId>quix-jdbc-module_${scala.dependencies.version}</artifactId>
             <version>1.0.3-SNAPSHOT</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
         </dependency>
 
         <dependency>
