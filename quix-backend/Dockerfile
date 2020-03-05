@@ -47,6 +47,7 @@ RUN apt-get update && \
   libsnappy-dev \
   language-pack-en \
   build-essential \
+  wget \
   && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --no-cache --upgrade pip setuptools wheel py4j
@@ -56,5 +57,27 @@ EXPOSE 8081
 WORKDIR /quix-webapps/quix-web-spring
 
 COPY --from=maven /quix-webapps/quix-web-spring/target/quix-web-spring-*.jar ./quix.jar
+
+RUN wget -q -P BOOT-INF/lib/ \
+    https://s3.amazonaws.com/redshift-downloads/drivers/jdbc/1.2.41.1065/RedshiftJDBC42-no-awssdk-1.2.41.1065.jar \
+    https://repo1.maven.org/maven2/ru/yandex/clickhouse/clickhouse-jdbc/0.2.4/clickhouse-jdbc-0.2.4.jar \
+    https://repo1.maven.org/maven2/org/postgresql/postgresql/42.2.10/postgresql-42.2.10.jar \
+    https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.19/mysql-connector-java-8.0.19.jar \
+    https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.30.1/sqlite-jdbc-3.30.1.jar \
+    https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/2.5.4/mariadb-java-client-2.5.4.jar \
+    https://repo1.maven.org/maven2/org/hsqldb/hsqldb/2.5.0/hsqldb-2.5.0.jar \
+    https://maven.ceon.pl/artifactory/repo/com/oracle/ojdbc/ojdbc10/19.3.0.0/ojdbc10-19.3.0.0.jar \
+    https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/8.2.1.jre11/mssql-jdbc-8.2.1.jre11.jar
+
+RUN jar uf0 quix.jar \
+    BOOT-INF/lib/RedshiftJDBC42-no-awssdk-1.2.41.1065.jar \
+    BOOT-INF/lib/clickhouse-jdbc-0.2.4.jar \
+    BOOT-INF/lib/postgresql-42.2.10.jar \
+    BOOT-INF/lib/mysql-connector-java-8.0.19.jar \
+    BOOT-INF/lib/sqlite-jdbc-3.30.1.jar \
+    BOOT-INF/lib/mariadb-java-client-2.5.4.jar \
+    BOOT-INF/lib/hsqldb-2.5.0.jar \
+    BOOT-INF/lib/ojdbc10-19.3.0.0.jar \
+    BOOT-INF/lib/mssql-jdbc-8.2.1.jre11.jar
 
 CMD ["java", "-jar", "quix.jar"]
