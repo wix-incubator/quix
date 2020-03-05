@@ -24,9 +24,6 @@
         <typesafe.config.version>1.4.0</typesafe.config.version>
         <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
         <async.http.version>2.10.4</async.http.version>
-        <clickhouse.version>0.2</clickhouse.version>
-        <postgres.version>42.2.9</postgres.version>
-        <mysql.version>8.0.18</mysql.version>
         <spring.jdbc.version>5.2.2.RELEASE</spring.jdbc.version>
         <scalatest.version>3.1.0</scalatest.version>
     </properties>
@@ -176,13 +173,6 @@
             <version>1.0.3-SNAPSHOT</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>org.specs2</groupId>
             <artifactId>specs2-junit_${scala.dependencies.version}</artifactId>
@@ -211,36 +201,6 @@
             <artifactId>async-http-client</artifactId>
             <version>${async.http.version}</version>
             <scope>test</scope>
-        </dependency>
-
-        <!-- jdbc drivers -->
-
-        <!-- https://github.com/yandex/clickhouse-jdbc -->
-        <dependency>
-            <groupId>ru.yandex.clickhouse</groupId>
-            <artifactId>clickhouse-jdbc</artifactId>
-            <version>${clickhouse.version}</version>
-            <!-- quix-bigquery-module module brings and uses latest guava dependency -->
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgres.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.version}</version>
         </dependency>
 
     </dependencies>
