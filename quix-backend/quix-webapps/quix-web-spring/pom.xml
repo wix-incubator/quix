@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wix</groupId>
     <artifactId>quix-web-spring</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.4-SNAPSHOT</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -49,31 +49,31 @@
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-presto-module_${scala.dependencies.version}</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-athena-module_${scala.dependencies.version}</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-bigquery-module_${scala.dependencies.version}</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-python-module_${scala.dependencies.version}</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-core_${scala.dependencies.version}</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.pauldijou/jwt-core -->
@@ -171,7 +171,7 @@
         <dependency>
             <groupId>com.wix</groupId>
             <artifactId>quix-jdbc-module_${scala.dependencies.version}</artifactId>
-            <version>1.0.3-SNAPSHOT</version>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
