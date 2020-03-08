@@ -59,7 +59,6 @@ WORKDIR /quix-webapps/quix-web-spring
 COPY --from=maven /quix-webapps/quix-web-spring/target/quix-web-spring-*.jar ./quix.jar
 
 RUN wget -q -P BOOT-INF/lib/ \
-    https://s3.amazonaws.com/redshift-downloads/drivers/jdbc/1.2.41.1065/RedshiftJDBC42-no-awssdk-1.2.41.1065.jar \
     https://repo1.maven.org/maven2/ru/yandex/clickhouse/clickhouse-jdbc/0.2.4/clickhouse-jdbc-0.2.4.jar \
     https://repo1.maven.org/maven2/org/postgresql/postgresql/42.2.10/postgresql-42.2.10.jar \
     https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.19/mysql-connector-java-8.0.19.jar \
@@ -70,7 +69,6 @@ RUN wget -q -P BOOT-INF/lib/ \
     https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/8.2.1.jre11/mssql-jdbc-8.2.1.jre11.jar
 
 RUN jar uf0 quix.jar \
-    BOOT-INF/lib/RedshiftJDBC42-no-awssdk-1.2.41.1065.jar \
     BOOT-INF/lib/clickhouse-jdbc-0.2.4.jar \
     BOOT-INF/lib/postgresql-42.2.10.jar \
     BOOT-INF/lib/mysql-connector-java-8.0.19.jar \
