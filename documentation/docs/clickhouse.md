@@ -9,25 +9,10 @@ Using jdbc note you can use quix to query ClickHouse. You will be able to execut
 
 
 ## Setup
-To setup PostgreSQL note you have to perform the following two steps :
+To setup [ClickHouse](https://clickhouse.tech/) note you have to perform the following :
 
-### 1. Add new jdbc dependency
-Find the needed version of clickhouse jdbc driver on https://github.com/ClickHouse/clickhouse-jdbc and copy the dependency definition to `https://github.com/wix/quix/blob/master/quix-backend/quix-webapps/quix-web-spring/pom.xml`.
 
-For example this is the dependency of 42.2.7 for java8 : 
-```xml
-<dependency>
-    <groupId>ru.yandex.clickhouse</groupId>
-    <artifactId>clickhouse-jdbc</artifactId>
-    <version>0.2</version>
-</dependency>
-```
-
-If you are using docker to run quix, run `docker-compose build` to prepare a new image
-
-If you are deploying standalone jar, run `mvn clean install` to prepare new jar. 
-
-### 2. Pick new name and update .env
+### 1. Pick new name and update .env
 
 Add/update following properties to .env file to configure your new note    
 
