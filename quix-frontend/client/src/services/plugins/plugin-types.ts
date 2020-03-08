@@ -1,5 +1,5 @@
-import { IFile, TModuleComponentType, ModuleEngineType } from '@wix/quix-shared';
-import { App } from '../../lib/app';
+import {IFile, TModuleComponentType, ModuleEngineType} from '@wix/quix-shared';
+import {App} from '../../lib/app';
 
 export const resolvePluginType = (type: TModuleComponentType) => {
   if (PluginMap[type]) {
@@ -7,12 +7,15 @@ export const resolvePluginType = (type: TModuleComponentType) => {
   }
 
   throw new Error(`"${type}" doesn't mach any known plugin type`);
-}
+};
 
 export class Plugin {
-  constructor (app: App, protected readonly id: string, protected readonly engine: ModuleEngineType, hooks: any) {
- 
-  }
+  constructor(
+    app: App,
+    protected readonly id: string,
+    protected readonly engine: ModuleEngineType,
+    hooks: any,
+  ) {}
 
   public getId() {
     return this.id;
@@ -24,10 +27,16 @@ export class Plugin {
 }
 
 export class NotePlugin extends Plugin {
-  constructor (app: App, id: string, engine: ModuleEngineType, hooks: any, private readonly config: {
-    syntaxValidation: boolean;
-    canCreate: boolean;
-  }) {
+  constructor(
+    app: App,
+    id: string,
+    engine: ModuleEngineType,
+    hooks: any,
+    private readonly config: {
+      syntaxValidation: boolean;
+      canCreate: boolean;
+    },
+  ) {
     super(app, id, engine, hooks);
   }
 
@@ -86,7 +95,7 @@ export class NotePlugin extends Plugin {
 }
 
 export class DbPlugin extends Plugin {
-  constructor (app: App, id: string, engine: ModuleEngineType, hooks: any) {
+  constructor(app: App, id: string, engine: ModuleEngineType, hooks: any) {
     super(app, id, engine, hooks);
   }
 
@@ -98,6 +107,8 @@ export class DbPlugin extends Plugin {
 export const PluginMap = {
   note: NotePlugin,
   db: DbPlugin,
-}
+};
 
-export type TPluginMap = {[K in keyof typeof PluginMap]: InstanceType<typeof PluginMap[K]>}
+export type TPluginMap = {
+  [K in keyof typeof PluginMap]: InstanceType<typeof PluginMap[K]>;
+};

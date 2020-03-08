@@ -1,4 +1,4 @@
-import { App } from '../lib/app';
+import {App} from '../lib/app';
 import * as DbPlugins from './db';
 import * as NotePlugins from './note';
 
@@ -31,7 +31,7 @@ export const pluginFactory = {
       case 'python':
         return new NotePlugins.PythonNotePlugin(app, id, hooks);
       default:
-        throw new Error(`No definition for "${engine}" engine note plugin`);
+        return new NotePlugins.DefaultNotePlugin(app);
     }
-  }
-}
+  },
+};
