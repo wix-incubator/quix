@@ -5,6 +5,11 @@ Quix is an easy-to-use notebook manager with support for [Presto](https://wix.gi
 * [Online demo](https://quix-demo.io/)
 * [Installation](https://wix.github.io/quix/docs/installation)
 
+## Intro
+Check out these blog posts introducing Quix on Wix Engineering Blog : 
+* [Introducing Quix: Presto-based Notebook Manager for Fast and Easy Data Exploration ](https://www.wix.engineering/post/introducing-quix-presto-based-notebook-manager-for-fast-and-easy-data-exploration)
+* [Quix Version 1: Now also Supporting Amazon Athena, Google BigQuery and Generic JDBC](https://www.wix.engineering/post/quix-version-1-now-also-supporting-amazon-athena-google-bigquery-and-generic-jdbc)
+
 ## Quick start
 Using `docker-compose`, this will run Quix with a MySQL container and an example Presto installation. Quix will run in a single-user mode without authentication. 
 
