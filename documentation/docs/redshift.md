@@ -1,19 +1,22 @@
 ---
 id: redshift
-title: Redshift
+title: Amazon Redshift
 sidebar_label: Redshift
 ---
 
 ## Features
-Work with Amazon Redshift straight from Quix, execute multiple queries in parallel, explore the db tree, visualize and download the results into csv.
+Query Amazon Redshift data warehouse straight from Quix, execute multiple queries in parallel, explore the db tree, visualize and download the results into csv.
 
 
 ## Setup
-To setup Redshift note you have to perform the following three steps :
+To setup Amazon Redshift note you have to perform the following steps :
 
 ### 1. Obtain link to redshift jdbc driver 
 Go to https://docs.aws.amazon.com/redshift/latest/mgmt/configure-jdbc-connection.html#download-jdbc-driver and choose the jar file that you need.
-For example, https://s3.amazonaws.com/redshift-downloads/drivers/jdbc/1.2.41.1065/RedshiftJDBC42-no-awssdk-1.2.41.1065.jar 
+For example, 
+```
+https://s3.amazonaws.com/redshift-downloads/drivers/jdbc/1.2.41.1065/RedshiftJDBC42-no-awssdk-1.2.41.1065.jar
+``` 
 
 ### 2. Update [Dockerfile](https://github.com/wix/quix/blob/master/quix-backend/Dockerfile) 
 You need to update the Dockerfile that prepares image of quix-backend to include the missing jar. 
@@ -28,12 +31,15 @@ RUN jar uf0 quix.jar \
 ```
 ### 3. Build the quix-backend image
 
-Run `docker-compose build backend` to prepare a new image of quix-backend
+Execute the following command to prepare a new docker image of quix-backend 
+```
+docker-compose build backend
+``` 
 
 
-### 2. Pick new name and update .env
+### 4. Pick new name and update .env
 
-Add/update following properties to .env file to configure your new postgresql note    
+Add/update following properties to .env file to configure your new Amazon Redshift note    
 
 | Variables        | Meaning           | Example  |
 | ------------- |:-------------:| -----:|

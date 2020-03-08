@@ -52,6 +52,14 @@
       "presto": {
         "title": "Presto",
         "sidebar_label": "Presto"
+      },
+      "python": {
+        "title": "Python",
+        "sidebar_label": "Python"
+      },
+      "redshift": {
+        "title": "Amazon Redshift",
+        "sidebar_label": "Redshift"
       }
     },
     "links": {
@@ -62,7 +70,7 @@
     "categories": {
       "Introduction": "Introduction",
       "Getting Started": "Getting Started",
-      "Supported databases": "Supported databases"
+      "Supported datasources": "Supported datasources"
     }
   },
   "pages-strings": {
