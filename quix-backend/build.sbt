@@ -23,7 +23,7 @@ lazy val publishSettings = Seq(
 )
 
 lazy val compileOptions = Seq(
-  crossScalaVersions := Seq("2.12.10", "2.13.1"),
+  crossScalaVersions := Seq("2.12.11", "2.13.2"),
 )
 
 lazy val noPublish = Seq(publish := {}, publishLocal := {}, publishArtifact := false)
@@ -43,15 +43,15 @@ val loggingDeps = Seq(
 )
 
 val specs2Deps = Seq(
-  "org.specs2" %% "specs2-core" % "4.8.3" % "test",
-  "org.specs2" %% "specs2-junit" % "4.8.3" % "test",
-  "org.specs2" %% "specs2-mock" % "4.8.3" % "test",
+  "org.specs2" %% "specs2-core" % "4.9.4" % "test",
+  "org.specs2" %% "specs2-junit" % "4.9.4" % "test",
+  "org.specs2" %% "specs2-mock" % "4.9.4" % "test",
 )
 
 lazy val quixApi = (project in file("quix-api"))
   .settings(Seq(
     name := "Quix Api",
-    libraryDependencies += "io.monix" %% "monix" % "3.1.0"
+    libraryDependencies += "io.monix" %% "monix" % "3.2.1"
   ) ++ baseSettings)
 
 lazy val quixCore = (project in file("quix-core"))
@@ -62,13 +62,13 @@ lazy val quixCore = (project in file("quix-core"))
     libraryDependencies += "com.github.blemale" %% "scaffeine" % "3.1.0",
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-    libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.10.2",
+    libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.10.4",
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-scala
-    libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.10.2",
+    libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.10.4",
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jdk8
-    libraryDependencies += "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % "2.10.2",
+    libraryDependencies += "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % "2.10.4",
 
     // https://mvnrepository.com/artifact/io.prestosql/presto-parser
     libraryDependencies += "io.prestosql" % "presto-parser" % "329",
@@ -113,7 +113,7 @@ lazy val quixDummyModule = (project in file("quix-modules/quix-dummy-module"))
   .settings(Seq(
     name := "Quix Dummy Module",
 
-    libraryDependencies += "io.monix" %% "monix" % "3.1.0",
+    libraryDependencies += "io.monix" %% "monix" % "3.2.1",
     libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
   ) ++ baseSettings ++ noPublish)
@@ -123,7 +123,7 @@ lazy val quixJdbcModule = (project in file("quix-modules/quix-jdbc-module"))
   .settings(Seq(
     name := "Quix Jdbc Module",
 
-    libraryDependencies += "io.monix" %% "monix" % "3.1.0",
+    libraryDependencies += "io.monix" %% "monix" % "3.2.1",
     libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
     // https://mvnrepository.com/artifact/com.wix/wix-embedded-mysql
@@ -138,7 +138,7 @@ lazy val quixPrestoModule = (project in file("quix-modules/quix-presto-module"))
   .settings(Seq(
     name := "Quix Presto Module",
 
-    libraryDependencies += "io.monix" %% "monix" % "3.1.0",
+    libraryDependencies += "io.monix" %% "monix" % "3.2.1",
     libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
     // https://mvnrepository.com/artifact/io.prestosql/presto-parser
