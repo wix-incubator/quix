@@ -17,10 +17,11 @@ class ScalaJPrestoStateClient(config: PrestoConfig)
 
   override def init(query: SubQuery): Task[PrestoState] = {
     for {
+      _ <- Task(logger.info(s"method=init query-id=${query.id} query-sql=[${query.text.replace("\n", " ")}"))
       state <- Task
         .eval(ScalaJPrestoOps.buildInitRequest(query, config).asString)
         .retry(2, 1.second)
-        .logOnError(s"event=init-presto-client-error query-id=${query.id} query-sql=[${query.text.replace("\n", "-newline-")}]")
+        .logOnError(s"event=init-presto-client-error query-id=${query.id} query-sql=[${query.text.replace("\n", " ")}]")
         .flatMap(response => readPrestoState[PrestoState](response))
     } yield state
   }
