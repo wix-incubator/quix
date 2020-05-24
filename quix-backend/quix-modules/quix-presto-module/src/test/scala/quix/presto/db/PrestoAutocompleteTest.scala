@@ -37,6 +37,7 @@ class PrestoAutocompleteTest extends SpecWithJUnit with MustMatchers {
 
     "use catalogs.full as a baseline for calculating of autocomplete.full items " in new ctx {
       executor
+        .withResults(List(List("catalog")))
         .withResults(List(List("catalog", "schema", "table")))
         .withResults(List(List("column")))
 

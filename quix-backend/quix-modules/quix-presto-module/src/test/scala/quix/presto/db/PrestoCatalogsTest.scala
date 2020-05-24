@@ -40,7 +40,9 @@ class PrestoCatalogsTest extends SpecWithJUnit with MustMatchers {
 
   "PrestoCatalogs.full" should {
     "return full catalogs tree if presto is live" in new ctx {
-      executor.withResults(List(List("test-catalog", "test-schema", "test-table")))
+      executor
+        .withResults(List(List("test-catalog")))
+        .withResults(List(List("test-catalog", "test-schema", "test-table")))
 
       fullCatalogs must contain(Catalog("test-catalog", List(Schema("test-schema", List(Table("test-table", List.empty))))))
     }
