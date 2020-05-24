@@ -59,7 +59,7 @@ lazy val quixCore = (project in file("quix-core"))
   .settings(Seq(
     name := "Quix Core",
 
-    libraryDependencies += "com.github.blemale" %% "scaffeine" % "3.2.1",
+    libraryDependencies += "com.github.blemale" %% "scaffeine" % "3.1.0",
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
     libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.10.4",
