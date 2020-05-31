@@ -1,4 +1,4 @@
-# Quix ![Support](https://img.shields.io/npm/l/@wix/quix-client) [![Build Status](https://travis-ci.com/wix/quix.svg?branch=master)](https://travis-ci.com/wix/quix)
+# Quix ![Support](https://img.shields.io/npm/l/@wix/quix-client) [![Build Status](https://travis-ci.com/wix/quix.svg?branch=master)](https://travis-ci.com/wix/quix) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.wix/quix-api_2.13/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.wix/quix-api_2.13)
 
 Quix is an easy-to-use notebook manager with support for [Presto](https://wix.github.io/quix/docs/presto), [Athena](https://wix.github.io/quix/docs/athena), [BigQuery](https://wix.github.io/quix/docs/bigquery), [MySQL](https://wix.github.io/quix/docs/mysql), [PostgreSQL](https://wix.github.io/quix/docs/postgresql), [ClickHouse](https://wix.github.io/quix/docs/clickhouse) and more.
 
