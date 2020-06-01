@@ -16,8 +16,7 @@ import quix.core.results.SingleBuilder
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.presto.rest.{PrestoQueryInfo, PrestoState, PrestoStateClient, PrestoStateToResults}
-
-import scala.collection.mutable
+import org.mockito.ArgumentMatchers.{eq => eqTo}
 import scala.concurrent.duration._
 
 class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito with StringJsonHelpersSupport {
@@ -159,7 +158,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri, any())
+        there was one(client).close(eqTo(stateWithNextUri), any())
       }
     }
 
@@ -175,7 +174,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri, any())
+        there was one(client).close(eqTo(stateWithNextUri), any())
       }
     }
 
@@ -191,7 +190,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri, any())
+        there was one(client).close(eqTo(stateWithNextUri), any())
       }
     }
 
@@ -208,7 +207,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri, any())
+        there was one(client).close(eqTo(stateWithNextUri), any())
       }
     }
 

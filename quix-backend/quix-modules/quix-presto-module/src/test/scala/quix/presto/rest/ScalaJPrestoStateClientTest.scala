@@ -32,8 +32,8 @@ class ScalaJPrestoStateClientTest extends SpecWithJUnit with MustMatchers with S
   "ScalaJPrestoStateClient" should {
     "pass sanity" in new ctx {
       client.init(query) must beAnInstanceOf[Task[PrestoState]]
-      client.advance(advanceUri) must beAnInstanceOf[Task[PrestoState]]
-      client.close(state) must beAnInstanceOf[Task[PrestoState]]
+      client.advance(advanceUri, query) must beAnInstanceOf[Task[PrestoState]]
+      client.close(state, query) must beAnInstanceOf[Task[PrestoState]]
     }
 
     "handle 200 responses and convert them into valid presto state objects" in new ctx {
