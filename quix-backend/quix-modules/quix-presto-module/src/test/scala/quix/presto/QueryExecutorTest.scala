@@ -68,7 +68,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     "notify builder on exceptions in client.advance" in new ctx {
       // mock
       val exception = new RuntimeException("boom!")
-      client.advance(anyString) returns Task.raiseError(exception)
+      client.advance(anyString, any()) returns Task.raiseError(exception)
 
       // call
       executor.advance("some-uri", builder, query, testDelay).runToFuture(scheduler)
@@ -97,7 +97,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     "notify builder on success of client.init / client.advance" in new ctx {
       // mock
       client.init(query) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithoutNext)
+      client.advance(anyString, any()) returns Task.now(stateWithoutNext)
 
       // call
       executor.execute(query, builder).runToFuture(scheduler)
@@ -116,7 +116,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     "notify builder on success of client.init / multiple client.advances" in new ctx {
       // mock
       client.init(query) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
+      client.advance(anyString, any()) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
 
       // call
       executor.execute(query, builder).runToFuture(scheduler)
@@ -134,7 +134,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     "cancel execution if query.isCanceled == true" in new ctx {
       // mock
       client.init(any()) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
+      client.advance(anyString, any()) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
 
       // call
       executor.execute(query, builder).runToFuture(scheduler)
@@ -152,14 +152,14 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     "close presto client if query.isCanceled == true" in new ctx {
       // mock
       client.init(any()) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithNextUri)
+      client.advance(anyString, any()) returns Task.now(stateWithNextUri)
 
       // call
       executor.execute(query.copy(canceled = Atomic(true)), builder).runToFuture(scheduler)
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri)
+        there was one(client).close(stateWithNextUri, any())
       }
     }
 
@@ -167,7 +167,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
       // mock
       val exception = new RuntimeException("boom!")
       client.init(any()) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.raiseError(exception)
+      client.advance(anyString, any()) returns Task.raiseError(exception)
 
       // call
       executor.execute(query, builder).runToFuture(scheduler)
@@ -175,7 +175,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri)
+        there was one(client).close(stateWithNextUri, any())
       }
     }
 
@@ -191,7 +191,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri)
+        there was one(client).close(stateWithNextUri, any())
       }
     }
 
@@ -199,7 +199,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
       // mock
       val exception = new RuntimeException("boom!")
       client.init(any()) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
+      client.advance(anyString, any()) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
       builder.addSubQuery(any(), any()) throws exception
 
       // call
@@ -208,7 +208,7 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri)
+        there was one(client).close(stateWithNextUri, any())
       }
     }
 
@@ -230,9 +230,9 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     "update active query with catalog/schema if query info has setCatalog / setSchema commands" in new ctx {
       // mock
       client.init(query) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithoutNext)
-      client.info(any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
-      client.close(any()) returns Task.unit
+      client.advance(anyString, any()) returns Task.now(stateWithoutNext)
+      client.info(any(), any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
+      client.close(any(), any()) returns Task.unit
 
       // call
       executor.execute(query, builder).runToFuture(scheduler)
@@ -246,9 +246,9 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     "update active query with session params if query info has setSessionProperties" in new ctx {
       // mock
       client.init(query) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithoutNext)
-      client.info(any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
-      client.close(any()) returns Task.unit
+      client.advance(anyString, any()) returns Task.now(stateWithoutNext)
+      client.info(any(), any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
+      client.close(any(), any()) returns Task.unit
 
       // call
       executor.execute(query, builder).runToFuture(scheduler)
@@ -262,9 +262,9 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
       // mock
       val queryWithSession = query.copy(session = MutableSession("first.session.key" -> "false", "second.session.key" -> "true"))
       client.init(queryWithSession) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithoutNext)
-      client.info(any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
-      client.close(any()) returns Task.unit
+      client.advance(anyString, any()) returns Task.now(stateWithoutNext)
+      client.info(any(), any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
+      client.close(any(), any()) returns Task.unit
 
       // call
       executor.execute(queryWithSession, builder).runToFuture(scheduler)
