@@ -2,12 +2,13 @@ package quix.presto.rest
 
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
-import quix.api.v1.execute.{ActiveQuery, ExceptionPropagatedToClient}
-import quix.api.v2.execute.{Query, SubQuery}
+import quix.api.v1.execute.ExceptionPropagatedToClient
+import quix.api.v2.execute.SubQuery
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.core.utils.TaskOps._
 import quix.presto.PrestoConfig
+import quix.presto.rest.ScalaJPrestoOps.makeHeaders
 import scalaj.http.{Http, HttpResponse}
 
 import scala.concurrent.duration._
@@ -36,12 +37,12 @@ class ScalaJPrestoStateClient(config: PrestoConfig)
     responseTask.logOnError(s"event=read-presto-state-error response.code=${response.code} response.body=${response.body}")
   }
 
-  override def advance(uri: String): Task[PrestoState] = {
+  override def advance(uri: String, query: SubQuery): Task[PrestoState] = {
     for {
       _ <- Task.eval(logger.info(s"method=advance uri=$uri"))
 
       response <- Task
-        .eval(Http(uri).asString)
+        .eval(Http(uri).headers(makeHeaders(query, config)).asString)
         .retry(2, 1.second)
         .logOnError(s"event=advance-presto-client-error uri=$uri")
 
@@ -49,9 +50,9 @@ class ScalaJPrestoStateClient(config: PrestoConfig)
     } yield state
   }
 
-  override def close(state: PrestoState): Task[Unit] = {
+  override def close(state: PrestoState, query: SubQuery): Task[Unit] = {
     val infoTask = for {
-      queryInfo <- info(state)
+      queryInfo <- info(state, query)
       _ <- Task.eval(logger.info(s"method=close " +
         s"event=info " +
         s"state=${queryInfo.state} " +
@@ -74,11 +75,11 @@ class ScalaJPrestoStateClient(config: PrestoConfig)
     } yield ()
   }
 
-  override def info(state: PrestoState): Task[PrestoQueryInfo] = {
+  override def info(state: PrestoState, query: SubQuery): Task[PrestoQueryInfo] = {
     for {
       _ <- Task.eval(logger.info(s"method=info state=${state.stats.state} presto-id=${state.id}"))
 
-      response <- Task.eval(Http(config.queryInfoApi + state.id).asString)
+      response <- Task.eval(Http(config.queryInfoApi + state.id).headers(makeHeaders(query, config)).asString)
 
       queryInfo <- readPrestoState[PrestoQueryInfo](response)
     } yield queryInfo

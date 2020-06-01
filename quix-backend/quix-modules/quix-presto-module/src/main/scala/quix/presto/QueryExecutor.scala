@@ -37,7 +37,7 @@ class QueryExecutor(val client: PrestoStateClient,
   }
 
   def advance(uri: String, builder: Builder, query: SubQuery, delay: FiniteDuration): Task[PrestoState] = {
-    client.advance(uri)
+    client.advance(uri, query)
       .delayExecution(delay)
       .onErrorHandleWith { originalException =>
         val exception = rewriteException(originalException)
@@ -55,9 +55,9 @@ class QueryExecutor(val client: PrestoStateClient,
         _ <- loop(firstState.id, firstState.nextUri, builder, query, initialAdvanceDelay)
 
         _ <- builder.endSubQuery(firstState.id)
-        info <- client.info(firstState)
+        info <- client.info(firstState, query)
       } yield info
-    }(client.close)
+    }(state => client.close(state, query))
 
     val task = for {
       info <- executionTask
