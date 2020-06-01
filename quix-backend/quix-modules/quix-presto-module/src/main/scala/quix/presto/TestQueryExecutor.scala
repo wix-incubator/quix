@@ -39,7 +39,7 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
       }
 
 
-      override def advance(uri: String): Task[PrestoState] = Task.eval {
+      override def advance(uri: String, query: SubQuery): Task[PrestoState] = Task.eval {
         if (index + 1 <= results.size) {
           val stats = PrestoStats("RUNNING", true, 0, results.size, 0, 0, index, 0, 0, 0, 0, 0)
           val state = PrestoState(queryId, "info-uri", None, Some("next-uri"), prestoColumns, Option(List(results(index))), stats, None, None)
@@ -53,9 +53,9 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
         }
       }
 
-      override def close(state: PrestoState): Task[Unit] = Task.unit
+      override def close(state: PrestoState, query: SubQuery): Task[Unit] = Task.unit
 
-      override def info(state: PrestoState): Task[PrestoQueryInfo] = Task.eval {
+      override def info(state: PrestoState, query: SubQuery): Task[PrestoQueryInfo] = Task.eval {
         val queryStats = PrestoQueryStats("0", "0", 0, "", "", "", 0)
         PrestoQueryInfo(queryId, "FINISHED", queryStats, None, None, Map.empty, List.empty)
       }
