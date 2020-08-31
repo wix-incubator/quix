@@ -7,8 +7,8 @@ trait Users {
   def auth[T](headers: Map[String, String])(code: User => T): T
 }
 
-object DummyUsers extends Users {
-  override def auth[T](headers: Map[String, String])(code: User => T): T = code(User("dummy-user"))
+class DummyUsers(val user: String) extends Users {
+  override def auth[T](headers: Map[String, String])(code: User => T): T = code(User(user))
 }
 
 case class RequestNotAuthenticated(msg: String) extends RuntimeException(msg)

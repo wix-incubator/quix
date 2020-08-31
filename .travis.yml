@@ -82,7 +82,8 @@ jobs:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
       script:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
-        - pyenv global 3.7
+        - pyenv versions
+        - pyenv global 3.7.1
         - python3 -m pip install --upgrade pip
         - sbt ++$TRAVIS_SCALA_VERSION test publishM2
         - mvn --quiet -f quix-webapps/quix-web-spring/pom.xml test
@@ -92,6 +93,7 @@ jobs:
         - 2.13.2
       script:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
-        - pyenv global 3.7
+        - pyenv versions
+        - pyenv global 3.7.1
         - python3 -m pip install --upgrade pip
         - sbt ++$TRAVIS_SCALA_VERSION test publishM2
