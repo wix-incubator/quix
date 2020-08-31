@@ -51,12 +51,12 @@ class AuthConfig extends LazyLogging {
     logger.info("event=[spring-config] bean=[Users]")
 
     val authType = Coeval(env.getRequiredProperty("auth.type"))
+    val dummyUsers = new DummyUsers(env.getProperty("auth.user", "dummy-user"))
 
     val auth = authType.map {
       case "fake" =>
-        val user = env.getProperty("auth.user", "dummy-user")
         logger.info(s"event=init-users-fake")
-        new DummyUsers(user)
+        dummyUsers
 
       case "google" =>
         logger.info(s"event=init-users-google")
@@ -70,10 +70,10 @@ class AuthConfig extends LazyLogging {
 
       case unknown =>
         logger.warn(s"event=init-users-failure reason=unknown-auth-type auth-type=$unknown")
-        DummyUsers
+        dummyUsers
     }.onErrorRecoverWith { case NonFatal(e) =>
       logger.warn(s"event=init-users-failure reason=exception exception=[${e.getMessage}]")
-      Coeval(DummyUsers)
+      Coeval(dummyUsers)
     }
 
     env.getProperty("demo.mode", "false").toLowerCase match {
