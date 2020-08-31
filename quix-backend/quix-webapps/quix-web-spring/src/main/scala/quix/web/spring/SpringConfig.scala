@@ -54,8 +54,9 @@ class AuthConfig extends LazyLogging {
 
     val auth = authType.map {
       case "fake" =>
+        val user = env.getProperty("auth.user", "dummy-user")
         logger.info(s"event=init-users-fake")
-        DummyUsers
+        DummyUsers(user)
 
       case "google" =>
         logger.info(s"event=init-users-google")
