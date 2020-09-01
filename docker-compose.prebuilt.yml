@@ -47,7 +47,7 @@ services:
     volumes:
       - "db_volume:/var/lib/mysql"
   presto:
-    image: "starburstdata/presto"
+    image: "starburstdata/presto:340-e"
     ports:
       - "8181:8080"
 
