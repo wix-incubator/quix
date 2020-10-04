@@ -100,8 +100,9 @@ variable "create_separate_presto" {
   default = false
 }
 
-# Let's Encrypt Account Registration Config via ACME
-
+/*
+    Let's Encrypt Account Registration Config via ACME
+*/
 variable "enable_ssl" {
   description  = "Defines if we need to enable SSL for ALB"
   default = true
@@ -122,11 +123,9 @@ variable "auth_cookie" {
   default = "__quixuser"
 }
 
-
 variable "backend_public_port"          {
     default = "8443"
 }
-
 
 variable "dns_domain_name"          {
     default = "quix-demo.io"
@@ -143,12 +142,16 @@ variable "acme_registration_email"  {
 variable "aws_acme_profile"                 {
     default = "quix"
 }
-variable "acme_account_key_pem"                 {  default = "" }
+
+variable "acme_account_key_pem"                 {
+    default = ""
+}
+
 variable "acme_certificate_common_name"         {
     description = "Domain for letsencrypt"
     default = "*.quix-demo.io"
-
 }
+
 variable "min_days_remaining" {
   description = "The minimum amount of days remaining on the expiration of a certificate before a renewal is attempted"
   default     = 14

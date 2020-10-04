@@ -101,7 +101,7 @@ terraform destroy -var-file terraform.tfvars
 * [scenario_two](http://docs.aws.amazon.com/AmazonVPC/latest/UserGuide/VPC_Scenario2.html)
 * [AWS documentation](http://aws.amazon.com/documentation/)
 * [blog_post](https://nickcharlton.net/posts/terraform-aws-vpc.html)
-
+* [ECS Resources: The amount of memory used by the task.](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ecs-taskdefinition.html#cfn-ecs-taskdefinition-memory)
 ## Author
 
 Copyright (c) 2019 Valeriy Soloviov <weldpua2008@gmail.com>.

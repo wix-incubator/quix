@@ -1,3 +1,6 @@
+/*
+SSM parameters in AWS Systems Manager Parameter Store
+*/
 resource "aws_ssm_parameter" "dbhost" {
   name  = "quix-rds-host"
   type  = "String"

@@ -15,7 +15,6 @@ resource "tls_private_key" "acme_registration_private_key" {
 # Set up a registration using the registration private key
 resource "acme_registration" "reg" {
   count              = var.enable_acme_ssl ? 1: 0
-  # server_url      = var.acme_server_url
   account_key_pem    = tls_private_key.acme_registration_private_key[0].private_key_pem
   email_address      = var.acme_registration_email
   lifecycle {
@@ -47,8 +46,6 @@ resource "acme_certificate" "certificate" {
     # would like to use different credentials to those used by the main
     # Terraform provider
     config = {
-        # AWS_ACCESS_KEY_ID     = var.acme_challenge_aws_access_key_id
-        # AWS_SECRET_ACCESS_KEY = var.acme_challenge_aws_secret_access_key
         AWS_REGION              = var.aws_region
         AWS_PROFILE             = var.aws_acme_profile
         AWS_HOSTED_ZONE_ID      = aws_route53_zone.quix.zone_id

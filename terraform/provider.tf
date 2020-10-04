@@ -7,10 +7,3 @@ provider "aws" {
 provider "acme" {
   server_url = "https://acme-v02.api.letsencrypt.org/directory"
 }
-
-# provider "google" {
-#   credentials = file("~/quix-oss-gcp.json")
-#   project     = "quix-oss"
-#   region  = "us-central1"
-#   zone    = "us-central1-c"
-# }

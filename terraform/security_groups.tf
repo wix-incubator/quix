@@ -1,5 +1,8 @@
-### Security
-# ALB Security group for ALB
+/*
+Specifies AWS security groups
+*/
+
+// Security group for ALB
 resource "aws_security_group" "lb" {
   name        = "ecs-alb-main"
   description = "controls access to the ALB Main"
@@ -53,7 +56,7 @@ resource "aws_security_group" "lb" {
   # }
 }
 
-# ALB Security group for ALB Presto
+// Security group for ALB Presto
 resource "aws_security_group" "presto_lb" {
   name        = "ecs-alb-presto"
   description = "controls access to the ALB Presto"
@@ -79,7 +82,7 @@ resource "aws_security_group" "presto_lb" {
 }
 
 
-# Traffic to the ECS Cluster should only come from the ALB
+// Traffic to the ECS Cluster should only come from the ALB
 resource "aws_security_group" "ecs_tasks" {
   name        = "tf-ecs-tasks"
   description = "allow inbound access from the ALB only"

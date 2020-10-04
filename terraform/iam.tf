@@ -1,6 +1,6 @@
-#####################################
-# IAM Settings
-#####################################
+/*
+    IAM Settings
+*/
 data "aws_iam_policy_document" "task-assume-role-policy" {
   statement {
     actions = ["sts:AssumeRole"]

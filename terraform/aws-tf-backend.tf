@@ -1,6 +1,5 @@
 data "aws_caller_identity" "current" {}
 
-# TERRAFORM STATE Bucket
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "terraform-state.quix-oss"
   acl    = "private"
@@ -14,16 +13,11 @@ resource "aws_s3_bucket" "terraform_state" {
   tags = merge(
     {
      Name = "TerraformStateBucket",
-     Description = "Terraform state locking table for account ${data.aws_caller_identity.current.account_id}."
+     Description = "Terraform state locking bucket for account ${data.aws_caller_identity.current.account_id}."
     },
     var.tags,
   )
 }
-
-
-# ---------------------------------
-# Dynamodb tables for locking state
-# ---------------------------------
 
 resource "aws_dynamodb_table" "tf_backend_state_lock_table" {
   # count = true
