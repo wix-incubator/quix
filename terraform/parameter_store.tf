@@ -39,7 +39,7 @@ resource "aws_ssm_parameter" "dbpwd" {
 }
 
 resource "aws_ssm_parameter" "dbname" {
-    name  = "quix-rds-name"
+  name  = "quix-rds-name"
   type  = "String"
   value = aws_db_instance.quix-rds.name
 
@@ -52,7 +52,7 @@ resource "aws_ssm_parameter" "dbname" {
 }
 
 resource "aws_ssm_parameter" "dbport" {
-    name  = "quix-rds-port"
+  name  = "quix-rds-port"
   type  = "String"
   value = aws_db_instance.quix-rds.port
 
@@ -77,19 +77,19 @@ resource "aws_ssm_parameter" "google_sso_client_id" {
   )
 
   lifecycle {
-      ignore_changes = [
-        # Ignore changes to value, e.g. because updated manually
-        value,
-      ]
-    }
-  overwrite  = false
+    ignore_changes = [
+      # Ignore changes to value, e.g. because updated manually
+      value,
+    ]
+  }
+  overwrite = false
 }
 
 resource "aws_ssm_parameter" "google_sso_client_secret" {
-  name  = "google_sso_client_secret"
-  type  = "String"
-  value = "google_sso_client_secret"
-  overwrite  = false
+  name      = "google_sso_client_secret"
+  type      = "String"
+  value     = "google_sso_client_secret"
+  overwrite = false
   tags = merge(
     {
       "Name" = "${var.vpc_name}-sso_sec"
@@ -97,18 +97,18 @@ resource "aws_ssm_parameter" "google_sso_client_secret" {
     var.tags,
   )
   lifecycle {
-      ignore_changes = [
-        # Ignore changes to value, e.g. because updated manually
-        value,
-      ]
-    }
+    ignore_changes = [
+      # Ignore changes to value, e.g. because updated manually
+      value,
+    ]
+  }
 }
 
 resource "aws_ssm_parameter" "auth_secret" {
-  name  = "auth_secret"
-  type  = "String"
-  value = "somekeygoeshere"
-  overwrite  = false
+  name      = "auth_secret"
+  type      = "String"
+  value     = "somekeygoeshere"
+  overwrite = false
   tags = merge(
     {
       "Name" = "${var.vpc_name}-auth_secret"
@@ -116,9 +116,9 @@ resource "aws_ssm_parameter" "auth_secret" {
     var.tags,
   )
   lifecycle {
-      ignore_changes = [
-        # Ignore changes to value, e.g. because updated manually
-        value,
-      ]
-    }
+    ignore_changes = [
+      # Ignore changes to value, e.g. because updated manually
+      value,
+    ]
+  }
 }

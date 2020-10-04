@@ -13,14 +13,14 @@ resource "aws_ecs_cluster" "main" {
 }
 
 resource "aws_cloudwatch_log_group" "quix-logs" {
-  name = "quix-logs"
+  name              = "quix-logs"
   retention_in_days = "14"
 }
 
 # You can use
 # Presto ALB http://${aws_alb.presto.dns_name}:${var.presto_port}/v1
 locals {
-  backend_url = "http%{ if var.enable_acme_ssl != false || var.enable_ssl != false }s%{ endif }://${var.dns_domain_name}:${var.backend_public_port}"
+  backend_url = "http%{if var.enable_acme_ssl != false || var.enable_ssl != false}s%{endif}://${var.dns_domain_name}:${var.backend_public_port}"
 }
 
 resource "aws_ecs_task_definition" "quix" {
@@ -30,7 +30,7 @@ resource "aws_ecs_task_definition" "quix" {
   cpu                      = var.fargate_cpu * 16
   memory                   = var.fargate_memory * 32
   execution_role_arn       = aws_iam_role.ecs_task_role.arn
-  container_definitions = <<DEFINITION
+  container_definitions    = <<DEFINITION
 [
   {
       "ulimits": [
@@ -119,7 +119,7 @@ resource "aws_ecs_task_definition" "quix" {
        {
          "name": "DB_HOST",
          "value": "${aws_ssm_parameter.dbhost.value}"
-        } %{ if var.enable_google_sso == true },
+        } %{if var.enable_google_sso == true},
         {
             "name": "AUTH_TYPE",
             "value": "google"
@@ -140,7 +140,7 @@ resource "aws_ecs_task_definition" "quix" {
             "name": "AUTH_SECRET",
             "value": "${aws_ssm_parameter.auth_secret.value}"
         }
-        %{ endif }
+        %{endif}
     ]
 },
 {
@@ -212,7 +212,7 @@ resource "aws_ecs_task_definition" "quix" {
       {
        "name": "DB_HOST",
        "value": "${aws_ssm_parameter.dbhost.value}"
-      }%{ if var.enable_google_sso == true },
+      }%{if var.enable_google_sso == true},
       {
           "name": "AUTH_TYPE",
           "value": "google"
@@ -233,16 +233,16 @@ resource "aws_ecs_task_definition" "quix" {
           "name": "AUTH_SECRET",
           "value": "${aws_ssm_parameter.auth_secret.value}"
       }
-      %{ endif }
+      %{endif}
   ]
 }
-%{ if var.create_separate_presto != true }
+%{if var.create_separate_presto != true}
 ,{
 
   "essential": true,
   "cpu": ${var.fargate_cpu},
   "image": "${var.presto_image}",
-  "memory": ${var.fargate_memory*8},
+  "memory": ${var.fargate_memory * 8},
   "name": "presto",
   "networkMode": "awsvpc",
   "logConfiguration": {
@@ -276,7 +276,7 @@ resource "aws_ecs_task_definition" "quix" {
       "hostPort": ${var.presto_port}
     }
   ]
-}%{ endif }
+}%{endif}
 ]
 DEFINITION
 }
@@ -303,7 +303,7 @@ resource "aws_ecs_service" "quix" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    security_groups = [aws_security_group.ecs_tasks.id,]
+    security_groups = [aws_security_group.ecs_tasks.id, ]
     subnets         = aws_subnet.private.*.id
   }
 
@@ -317,7 +317,7 @@ resource "aws_ecs_service" "quix" {
     container_name   = "quix-backend"
     container_port   = var.backend_port
   }
-/*
+  /*
     dedicated ALB for presto
   load_balancer {
     target_group_arn = aws_alb_target_group.presto.id
@@ -329,20 +329,20 @@ resource "aws_ecs_service" "quix" {
 #####
 # Presto Only Service
 resource "aws_ecs_task_definition" "presto" {
-  count                    = var.create_separate_presto ? 1: 0
+  count                    = var.create_separate_presto ? 1 : 0
   family                   = "presto"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.fargate_cpu * 4
   memory                   = var.fargate_memory * 8
   execution_role_arn       = aws_iam_role.ecs_task_role.arn
-  container_definitions = <<DEFINITION
+  container_definitions    = <<DEFINITION
 [
 {
   "essential": true,
   "cpu": ${var.fargate_cpu},
   "image": "${var.presto_image}",
-  "memory": ${var.fargate_memory*8},
+  "memory": ${var.fargate_memory * 8},
   "name": "presto",
   "networkMode": "awsvpc",
   "logConfiguration": {
@@ -382,12 +382,12 @@ DEFINITION
 }
 
 resource "aws_ecs_service" "presto" {
-  count                     = var.create_separate_presto ? 1: 0
-  name                      = "ecs-service-presto"
-  cluster                    = aws_ecs_cluster.main.id
-  task_definition            = aws_ecs_task_definition.presto[0].arn
-  desired_count              = "1"
-  launch_type                = "FARGATE"
+  count           = var.create_separate_presto ? 1 : 0
+  name            = "ecs-service-presto"
+  cluster         = aws_ecs_cluster.main.id
+  task_definition = aws_ecs_task_definition.presto[0].arn
+  desired_count   = "1"
+  launch_type     = "FARGATE"
 
   network_configuration {
     security_groups = [aws_security_group.ecs_tasks.id]

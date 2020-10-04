@@ -4,7 +4,7 @@ variable "aws_key_name" {
 
 variable "vpc_name" {
   description = "VPC Name"
-  default = "quix"
+  default     = "quix"
 }
 
 variable "aws_region" {
@@ -66,11 +66,11 @@ variable "mapPublicIP" {
 }
 
 variable "tags" {
-  default     = {
-      ManagedByTerraform = true
-      Terraform = true
-      Project = "Quix"
-      Environment = "production"
+  default = {
+    ManagedByTerraform = true
+    Terraform          = true
+    Project            = "Quix"
+    Environment        = "production"
 
   }
   type        = map(string)
@@ -79,7 +79,7 @@ variable "tags" {
 
 
 variable "tf_dynamodb_lock_table_enabled" {
-  default = 1
+  default     = 1
   description = "Affects terraform-aws-backend module behavior. Set to false or 0 to prevent this module from creating the DynamoDB table to use for terraform state locking and consistency. More info on locking for aws/s3 backends: https://www.terraform.io/docs/backends/types/s3.html. More information about how terraform handles booleans here: https://www.terraform.io/docs/configuration/variables.html"
 }
 
@@ -96,60 +96,60 @@ variable "tf_lock_table_write_capacity" {
 }
 
 variable "create_separate_presto" {
-  description  = "Defines if we need to create Presto ECS & talk to it via ALB"
-  default = false
+  description = "Defines if we need to create Presto ECS & talk to it via ALB"
+  default     = false
 }
 
 /*
     Let's Encrypt Account Registration Config via ACME
 */
 variable "enable_ssl" {
-  description  = "Defines if we need to enable SSL for ALB"
-  default = true
+  description = "Defines if we need to enable SSL for ALB"
+  default     = true
 }
 
 variable "enable_acme_ssl" {
-  description  = "Defines if we need to enable SSL for ALB via ACME"
-  default = false
+  description = "Defines if we need to enable SSL for ALB via ACME"
+  default     = false
 }
 
 variable "enable_google_sso" {
-  description  = "Defines if we need to enable Google SSO"
-  default = true
+  description = "Defines if we need to enable Google SSO"
+  default     = true
 }
 
 variable "auth_cookie" {
-  description  = "Defines AUTH_COOKIE"
-  default = "__quixuser"
+  description = "Defines AUTH_COOKIE"
+  default     = "__quixuser"
 }
 
-variable "backend_public_port"          {
-    default = "8443"
+variable "backend_public_port" {
+  default = "8443"
 }
 
-variable "dns_domain_name"          {
-    default = "quix-demo.io"
+variable "dns_domain_name" {
+  default = "quix-demo.io"
 }
 
-variable "acme_server_url"          {
-    default = "https://acme.api.letsencrypt.org/directory"
+variable "acme_server_url" {
+  default = "https://acme.api.letsencrypt.org/directory"
 }
 
-variable "acme_registration_email"  {
-    default = "quix@quix-demo.io"
+variable "acme_registration_email" {
+  default = "quix@quix-demo.io"
 }
 
-variable "aws_acme_profile"                 {
-    default = "quix"
+variable "aws_acme_profile" {
+  default = "quix"
 }
 
-variable "acme_account_key_pem"                 {
-    default = ""
+variable "acme_account_key_pem" {
+  default = ""
 }
 
-variable "acme_certificate_common_name"         {
-    description = "Domain for letsencrypt"
-    default = "*.quix-demo.io"
+variable "acme_certificate_common_name" {
+  description = "Domain for letsencrypt"
+  default     = "*.quix-demo.io"
 }
 
 variable "min_days_remaining" {
@@ -157,5 +157,5 @@ variable "min_days_remaining" {
   default     = 14
 }
 
-variable "acme_challenge_aws_access_key_id"     { default = ""}
-variable "acme_challenge_aws_secret_access_key" { default = ""}
+variable "acme_challenge_aws_access_key_id" { default = "" }
+variable "acme_challenge_aws_secret_access_key" { default = "" }

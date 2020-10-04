@@ -20,7 +20,7 @@ resource "aws_alb_listener" "frontend_ssl" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   =  aws_acm_certificate.cert[0].arn
+  certificate_arn   = aws_acm_certificate.cert[0].arn
 
   default_action {
     target_group_arn = aws_alb_target_group.frontend.id
@@ -34,7 +34,7 @@ resource "aws_alb_listener" "backend_ssl" {
   port              = var.backend_public_port
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   =  aws_acm_certificate.cert[0].arn
+  certificate_arn   = aws_acm_certificate.cert[0].arn
 
   default_action {
     target_group_arn = aws_alb_target_group.backend.id
@@ -81,15 +81,15 @@ resource "aws_alb_target_group" "backend" {
     var.tags,
   )
   health_check {
-   healthy_threshold   = 2
-   unhealthy_threshold = 10
-   timeout             = "5"
-   port                = var.backend_port
-   path                = "/health/keep_alive"
-   protocol            = "HTTP"
-   interval            = 10
-   matcher             = "200-499"
- }
+    healthy_threshold   = 2
+    unhealthy_threshold = 10
+    timeout             = "5"
+    port                = var.backend_port
+    path                = "/health/keep_alive"
+    protocol            = "HTTP"
+    interval            = 10
+    matcher             = "200-499"
+  }
 }
 
 resource "aws_alb_listener" "frontend_http" {
@@ -98,13 +98,13 @@ resource "aws_alb_listener" "frontend_http" {
   protocol          = "HTTP"
 
   default_action {
-      type = "redirect"
+    type = "redirect"
 
-     redirect {
-       port        = "443"
-       protocol    = "HTTPS"
-       status_code = "HTTP_301"
-     }
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }
 
@@ -121,11 +121,11 @@ resource "aws_alb_listener" "backend" {
 
 
 resource "aws_alb" "presto" {
-  count =         var.create_separate_presto ? 1: 0
+  count           = var.create_separate_presto ? 1 : 0
   name            = "ecs-quix-presto-alb"
   subnets         = aws_subnet.private.*.id
   security_groups = [aws_security_group.presto_lb.id]
-  internal = true
+  internal        = true
   tags = merge(
     {
       "Name" = "alb-presto-${var.vpc_name}"
@@ -136,7 +136,7 @@ resource "aws_alb" "presto" {
 }
 
 resource "aws_alb_target_group" "presto" {
-  count =     var.create_separate_presto ? 1: 0
+  count       = var.create_separate_presto ? 1 : 0
   name        = "ecs-quix-presto-alb-tg"
   port        = var.presto_port
   protocol    = "HTTP"
@@ -149,19 +149,19 @@ resource "aws_alb_target_group" "presto" {
     var.tags,
   )
   health_check {
-   healthy_threshold   = 2
-   unhealthy_threshold = 5
-   timeout             = "5"
-   port                = var.presto_port
-   path                = "/"
-   protocol            = "HTTP"
-   interval            = 10
-   matcher             = "200-499"
- }
+    healthy_threshold   = 2
+    unhealthy_threshold = 5
+    timeout             = "5"
+    port                = var.presto_port
+    path                = "/"
+    protocol            = "HTTP"
+    interval            = 10
+    matcher             = "200-499"
+  }
 }
 
 resource "aws_alb_listener" "presto" {
-  count =         var.create_separate_presto ? 1: 0
+  count             = var.create_separate_presto ? 1 : 0
   load_balancer_arn = aws_alb.presto[0].id
   port              = var.presto_port
   protocol          = "HTTP"

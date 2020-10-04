@@ -62,10 +62,10 @@ resource "aws_security_group" "presto_lb" {
   description = "controls access to the ALB Presto"
   vpc_id      = aws_vpc.main.id
   ingress {
-    protocol    = "tcp"
-    from_port   = var.presto_port
-    to_port     = var.presto_port
-    cidr_blocks = ["10.0.0.0/8"]
+    protocol        = "tcp"
+    from_port       = var.presto_port
+    to_port         = var.presto_port
+    cidr_blocks     = ["10.0.0.0/8"]
     security_groups = [aws_security_group.ecs_tasks.id]
 
   }
@@ -89,24 +89,24 @@ resource "aws_security_group" "ecs_tasks" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-     from_port       = 3306
-     to_port         = 3306
-     protocol        = "tcp"
-     cidr_blocks = ["10.0.0.0/8"]
-   }
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
 
-   ingress {
-     from_port       = 5432
-     to_port         = 5432
-     protocol        = "tcp"
-     cidr_blocks = ["10.0.0.0/8"]
-   }
-   ingress {
-     from_port       = 6379
-     to_port         = 6379
-     protocol        = "tcp"
-     cidr_blocks = ["10.0.0.0/8"]
-   }
+  ingress {
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
+  ingress {
+    from_port   = 6379
+    to_port     = 6379
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/8"]
+  }
 
   ingress {
     protocol    = "tcp"
@@ -135,9 +135,9 @@ resource "aws_security_group" "ecs_tasks" {
   }
 
   ingress {
-    protocol        = "tcp"
-    from_port       = "80"
-    to_port         = "80"
+    protocol    = "tcp"
+    from_port   = "80"
+    to_port     = "80"
     cidr_blocks = ["10.0.0.0/8"]
 
     # security_groups = [aws_security_group.lb.id]

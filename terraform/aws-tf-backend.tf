@@ -5,15 +5,15 @@ resource "aws_s3_bucket" "terraform_state" {
   acl    = "private"
 
   versioning {
-      enabled = true
+    enabled = true
   }
-  lifecycle{
-      prevent_destroy = true
+  lifecycle {
+    prevent_destroy = true
   }
   tags = merge(
     {
-     Name = "TerraformStateBucket",
-     Description = "Terraform state locking bucket for account ${data.aws_caller_identity.current.account_id}."
+      Name        = "TerraformStateBucket",
+      Description = "Terraform state locking bucket for account ${data.aws_caller_identity.current.account_id}."
     },
     var.tags,
   )
@@ -33,7 +33,7 @@ resource "aws_dynamodb_table" "tf_backend_state_lock_table" {
 
   tags = merge(
     {
-     Description = "Terraform state locking table for account ${data.aws_caller_identity.current.account_id}."
+      Description = "Terraform state locking table for account ${data.aws_caller_identity.current.account_id}."
     },
     var.tags,
   )
