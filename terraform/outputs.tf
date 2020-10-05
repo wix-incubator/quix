@@ -25,7 +25,3 @@ output "presto_alb_url" {
 output "fqdn_domain_name" {
   value = aws_route53_record.www-quix.fqdn
 }
-#
-# output "project_number" {
-#   value = data.google_project.quix-oss.number
-# }
