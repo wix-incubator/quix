@@ -1,44 +1,34 @@
-FROM maven:3.6.0-alpine as maven
+FROM maven:slim as maven
 
-COPY pom.xml ./
-COPY quix-api/pom.xml ./quix-api/
-COPY quix-core/pom.xml ./quix-core/
-COPY /quix-modules/quix-presto-module/pom.xml ./quix-modules/quix-presto-module/
-COPY /quix-modules/quix-athena-module/pom.xml ./quix-modules/quix-athena-module/
-COPY /quix-modules/quix-bigquery-module/pom.xml ./quix-modules/quix-bigquery-module/
-COPY /quix-modules/quix-jdbc-module/pom.xml ./quix-modules/quix-jdbc-module/
-COPY /quix-modules/quix-python-module/pom.xml ./quix-modules/quix-python-module/
-COPY /quix-modules/quix-dummy-module/pom.xml ./quix-modules/quix-dummy-module/
-COPY /quix-webapps/quix-web-spring/pom.xml ./quix-webapps/quix-web-spring/
+ARG SBT_VERSION=1.3.8
 
-RUN mvn -B -e -C -T 1C org.apache.maven.plugins:maven-dependency-plugin:3.1.1:go-offline --fail-never
+# Install sbt
+RUN \
+  curl -L -o sbt-$SBT_VERSION.deb https://dl.bintray.com/sbt/debian/sbt-$SBT_VERSION.deb && \
+  dpkg -i sbt-$SBT_VERSION.deb && \
+  rm sbt-$SBT_VERSION.deb && \
+  apt-get update && \
+  apt-get install sbt && \
+  sbt sbtVersion
+
+COPY build.sbt .
+COPY version.sbt .
+RUN sbt update
+COPY /quix-webapps/quix-web-spring/pom.xml ./quix-webapps/quix-web-spring/pom.xml
+RUN mvn -B -f /quix-webapps/quix-web-spring/pom.xml dependency:resolve --fail-never
 
 COPY quix-api/src ./quix-api/src
-RUN mvn -T 1C install -pl quix-api -am -DskipTests
-
 COPY quix-core/src ./quix-core/src
-RUN mvn -T 1C install -pl quix-core -am -DskipTests
-
 COPY /quix-modules/quix-presto-module/src ./quix-modules/quix-presto-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-presto-module -am -DskipTests
-
 COPY /quix-modules/quix-athena-module/src ./quix-modules/quix-athena-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-athena-module -am -DskipTests
-
 COPY /quix-modules/quix-bigquery-module/src ./quix-modules/quix-bigquery-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-bigquery-module -am -DskipTests
-
 COPY /quix-modules/quix-jdbc-module/src ./quix-modules/quix-jdbc-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-jdbc-module -am -DskipTests
-
 COPY /quix-modules/quix-python-module/src ./quix-modules/quix-python-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-python-module -am -DskipTests
-
 COPY /quix-modules/quix-dummy-module/src ./quix-modules/quix-dummy-module/src
-RUN mvn -T 1C install -pl quix-modules/quix-dummy-module -am -DskipTests
-
 COPY /quix-webapps/quix-web-spring/src ./quix-webapps/quix-web-spring/src
-RUN mvn -T 1C install -pl quix-webapps/quix-web-spring -am -DskipTests
+
+RUN sbt +publishM2
+RUN mvn -f /quix-webapps/quix-web-spring/pom.xml install -DskipTests
 
 FROM ubuntu:19.10
 
@@ -57,6 +47,7 @@ RUN apt-get update && \
   libsnappy-dev \
   language-pack-en \
   build-essential \
+  wget \
   && rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --no-cache --upgrade pip setuptools wheel py4j
@@ -65,6 +56,26 @@ EXPOSE 8081
 
 WORKDIR /quix-webapps/quix-web-spring
 
-COPY --from=maven /quix-webapps/quix-web-spring/target/*.jar ./
+COPY --from=maven /quix-webapps/quix-web-spring/target/quix-web-spring-*.jar ./quix.jar
 
-CMD ["java", "-jar", "quix-web-spring-1.0.0.jar"]
+RUN wget -q -P BOOT-INF/lib/ \
+    https://repo1.maven.org/maven2/ru/yandex/clickhouse/clickhouse-jdbc/0.2.4/clickhouse-jdbc-0.2.4.jar \
+    https://repo1.maven.org/maven2/org/postgresql/postgresql/42.2.10/postgresql-42.2.10.jar \
+    https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.19/mysql-connector-java-8.0.19.jar \
+    https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.30.1/sqlite-jdbc-3.30.1.jar \
+    https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/2.5.4/mariadb-java-client-2.5.4.jar \
+    https://repo1.maven.org/maven2/org/hsqldb/hsqldb/2.5.0/hsqldb-2.5.0.jar \
+    https://maven.ceon.pl/artifactory/repo/com/oracle/ojdbc/ojdbc10/19.3.0.0/ojdbc10-19.3.0.0.jar \
+    https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/8.2.1.jre11/mssql-jdbc-8.2.1.jre11.jar
+
+RUN jar uf0 quix.jar \
+    BOOT-INF/lib/clickhouse-jdbc-0.2.4.jar \
+    BOOT-INF/lib/postgresql-42.2.10.jar \
+    BOOT-INF/lib/mysql-connector-java-8.0.19.jar \
+    BOOT-INF/lib/sqlite-jdbc-3.30.1.jar \
+    BOOT-INF/lib/mariadb-java-client-2.5.4.jar \
+    BOOT-INF/lib/hsqldb-2.5.0.jar \
+    BOOT-INF/lib/ojdbc10-19.3.0.0.jar \
+    BOOT-INF/lib/mssql-jdbc-8.2.1.jre11.jar
+
+CMD ["java", "-jar", "quix.jar"]

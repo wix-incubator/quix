@@ -12,16 +12,17 @@ import monix.eval.Coeval
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration, DependsOn}
 import org.springframework.core.env.Environment
-import quix.api.execute.{Batch, DownloadableQueries, ExecutionEvent}
-import quix.api.module.ExecutionModule
-import quix.api.users.DummyUsers
+import quix.api.v1.execute.Batch
+import quix.api.v2.execute.ExecutionModule
+import quix.api.v1.users.DummyUsers
 import quix.athena._
 import quix.bigquery._
 import quix.bigquery.db.{BigQueryAutocomplete, BigQueryCatalogs, BigQueryTables}
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
-import quix.core.download.DownloadableQueriesImpl
-import quix.core.executions.{SequentialExecutions, SqlModule}
+import quix.core.download.{DownloadConfig, QueryResultsStorage}
+import quix.core.executions.{SqlModule}
 import quix.core.history.dao.HistoryReadDao
+import quix.core.sql.StopWordSqlSplitter
 import quix.core.utils.JsonOps
 import quix.jdbc._
 import quix.presto._
@@ -40,7 +41,7 @@ class SpringConfig {
 }
 
 object Registry {
-  val modules = scala.collection.mutable.Map.empty[String, ExecutionModule[String, Batch]]
+  val modules = scala.collection.mutable.Map.empty[String, ExecutionModule]
 }
 
 @Configuration
@@ -50,11 +51,12 @@ class AuthConfig extends LazyLogging {
     logger.info("event=[spring-config] bean=[Users]")
 
     val authType = Coeval(env.getRequiredProperty("auth.type"))
+    val dummyUsers = new DummyUsers(env.getProperty("auth.user", "dummy-user"))
 
     val auth = authType.map {
       case "fake" =>
         logger.info(s"event=init-users-fake")
-        DummyUsers
+        dummyUsers
 
       case "google" =>
         logger.info(s"event=init-users-google")
@@ -68,10 +70,10 @@ class AuthConfig extends LazyLogging {
 
       case unknown =>
         logger.warn(s"event=init-users-failure reason=unknown-auth-type auth-type=$unknown")
-        DummyUsers
+        dummyUsers
     }.onErrorRecoverWith { case NonFatal(e) =>
       logger.warn(s"event=init-users-failure reason=exception exception=[${e.getMessage}]")
-      Coeval(DummyUsers)
+      Coeval(dummyUsers)
     }
 
     env.getProperty("demo.mode", "false").toLowerCase match {
@@ -126,7 +128,6 @@ class ModulesConfiguration extends LazyLogging {
 
       val client = new ScalaJPrestoStateClient(config)
       val executor = new QueryExecutor(client)
-      val executions = new SequentialExecutions[String](executor)
 
       val emptyDbTimeout = {
         env.getProperty(s"modules.$presto.db.empty.timeout", classOf[Long],
@@ -147,7 +148,7 @@ class ModulesConfiguration extends LazyLogging {
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      new SqlModule(executions, Some(db))
+      new SqlModule(executor, Some(db))
     }
 
     for (module <- getModules(env, "presto"))
@@ -190,7 +191,7 @@ class ModulesConfiguration extends LazyLogging {
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      new SqlModule(new SequentialExecutions[String](executor), Some(db))
+      new SqlModule(executor, Some(db))
     }
 
     for (module <- getModules(env, "athena"))
@@ -237,7 +238,7 @@ class ModulesConfiguration extends LazyLogging {
 
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      new SqlModule(new SequentialExecutions[String](executor), Some(db))
+      new SqlModule(executor, Some(db), new StopWordSqlSplitter("TEMP", "FUNCTION"))
     }
 
     for (module <- getModules(env, "bigquery"))
@@ -275,7 +276,7 @@ class ModulesConfiguration extends LazyLogging {
       val autocomplete = new RefreshableAutocomplete(jdbcAutocomplete, emptyDbTimeout, 1000L * 60 * 5)
       val db = new RefreshableDb(catalogs, autocomplete, tables)
 
-      new SqlModule(new SequentialExecutions[String](executor), Option(db))
+      new SqlModule(executor, Option(db))
     }
 
     for (module <- getModules(env, "jdbc")) {
@@ -315,7 +316,7 @@ class ModulesConfiguration extends LazyLogging {
 
   @Bean
   @DependsOn(Array("initPresto", "initAthena", "initJdbc", "initBigQuery", "initPython"))
-  def initKnownModules: Map[String, ExecutionModule[String, Batch]] = {
+  def initKnownModules: Map[String, ExecutionModule] = {
     logger.info(s"*******************************************************")
     logger.info(s"****************          Modules are")
     Registry.modules.keySet.toList.sorted.foreach { module =>
@@ -330,23 +331,45 @@ class ModulesConfiguration extends LazyLogging {
 @Configuration
 class DownloadConfiguration extends LazyLogging {
 
-  @Bean def initDownloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent] = {
-    logger.info(s"event=[spring-config] bean=[DownloadableQueries]")
-    new DownloadableQueriesImpl
+  @Bean def initDownloadConfig(env: Environment): DownloadConfig = {
+    val downloadsDir = env.getProperty(s"downloads.temp.dir", "/tmp/quix/downloads")
+
+    val cloud = env.getProperty("downloads.cloud.storage", "none")
+
+    val cloudConfig = cloud match {
+      case "s3" =>
+        Map(
+          "bucket" -> env.getRequiredProperty("download.s3.bucket"),
+          "region" -> env.getRequiredProperty("download.s3.region"),
+          "accessKey" -> env.getRequiredProperty("download.s3.access"),
+          "secretKey" -> env.getRequiredProperty("download.s3.secret"),
+        )
+
+      case _ =>
+        Map.empty[String, String]
+    }
+
+    DownloadConfig(downloadsDir, cloudConfig)
+  }
+
+  @Bean def initQueryResultsStorage(downloadConfig: DownloadConfig): QueryResultsStorage = {
+    logger.info(s"event=[spring-config] bean=[QueryResultsStorage]")
+
+    QueryResultsStorage(downloadConfig)
   }
 }
 
 @Configuration
 class Controllers extends LazyLogging {
 
-  @Bean def initDbController(modules: Map[String, ExecutionModule[String, Batch]]): DbController = {
+  @Bean def initDbController(modules: Map[String, ExecutionModule]): DbController = {
     logger.info("event=[spring-config] bean=[DbController]")
     new DbController(modules)
   }
 
-  @Bean def initDownloadController(downloadableQueries: DownloadableQueries[String, Batch, ExecutionEvent]): DownloadController = {
+  @Bean def initDownloadController(queryResultsStorage: QueryResultsStorage): DownloadController = {
     logger.info("event=[spring-config] bean=[DownloadController]")
-    new DownloadController(downloadableQueries)
+    new DownloadController(queryResultsStorage)
   }
 
   @Bean def initHistoryController(historyReadDao: HistoryReadDao): HistoryController = {

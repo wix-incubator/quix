@@ -1,7 +1,7 @@
 package quix.presto.rest
 
 import com.fasterxml.jackson.annotation.{JsonIgnoreProperties, JsonProperty}
-import quix.api.execute.{Batch, BatchColumn, BatchError}
+import quix.api.v1.execute.{Batch, BatchColumn, BatchError}
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 case class PrestoState(id: String,

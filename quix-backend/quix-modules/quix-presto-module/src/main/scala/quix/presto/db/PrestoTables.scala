@@ -1,13 +1,13 @@
 package quix.presto.db
 
 import monix.eval.Task
-import quix.api.db.{Kolumn, Table, Tables}
-import quix.api.execute.{AsyncQueryExecutor, Batch}
+import quix.api.v1.db.{Kolumn, Table, Tables}
+import quix.api.v2.execute.Executor
 import quix.core.executions.SingleQueryExecutor
 
 import scala.concurrent.duration._
 
-class PrestoTables(val queryExecutor: AsyncQueryExecutor[String, Batch], val timeout: Long)
+class PrestoTables(val queryExecutor: Executor, val timeout: Long)
   extends Tables with SingleQueryExecutor {
 
   override def get(catalog: String, schema: String, table: String): Task[Table] = {

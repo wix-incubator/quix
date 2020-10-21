@@ -3,7 +3,7 @@ package quix.jdbc
 import java.sql.{Connection, DriverManager, ResultSet}
 
 import monix.eval.Task
-import quix.api.db.{Catalog, Catalogs, Schema, Table}
+import quix.api.v1.db.{Catalog, Catalogs, Schema, Table}
 
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration._

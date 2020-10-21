@@ -4,7 +4,7 @@ import java.time.Clock
 
 import cats.effect.concurrent.Ref
 import monix.eval.Task
-import quix.api.execute.ActiveQuery
+import quix.api.v2.execute.Query
 import quix.core.history.dao.InMemoryHistoryDao.{comparator, predicate}
 import quix.core.history.{Execution, ExecutionStatus}
 
@@ -13,13 +13,13 @@ case class InMemoryHistoryDao(state: Ref[Task, Map[String, Execution]], clock: C
 
   private val instant = Task(clock.instant)
 
-  override def executionStarted(query: ActiveQuery[String], queryType: String): Task[Unit] =
+  override def executionStarted(query: Query, queryType: String): Task[Unit] =
     instant.flatMap { now =>
       val execution = Execution(
         id = query.id,
         queryType = queryType,
-        statements = query.statements,
-        user = query.user,
+        statements = query.subQueries.map(_.text),
+        user = query.subQueries.map(_.user).head,
         startedAt = now,
         status = ExecutionStatus.Running)
 

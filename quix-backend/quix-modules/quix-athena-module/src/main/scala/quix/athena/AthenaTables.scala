@@ -1,11 +1,11 @@
 package quix.athena
 
 import monix.eval.Task
-import quix.api.db._
-import quix.api.execute.{AsyncQueryExecutor, Batch}
+import quix.api.v1.db._
+import quix.api.v2.execute.Executor
 import quix.core.executions.SingleQueryExecutor
 
-class AthenaTables(val queryExecutor: AsyncQueryExecutor[String, Batch]) extends Tables with SingleQueryExecutor {
+class AthenaTables(val queryExecutor: Executor) extends Tables with SingleQueryExecutor {
   override def get(catalog: String, schema: String, table: String): Task[Table] = {
     val sql = s"describe `$schema`.`$table`"
 

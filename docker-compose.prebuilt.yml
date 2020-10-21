@@ -1,7 +1,7 @@
 version: '3'
 services:
   backend:
-    image: wixquix/quix-backend:release-v1
+    image: wixquix/quix-backend:latest
     ports:
       - "8081:8081"
     depends_on:
@@ -14,7 +14,7 @@ services:
       - AUTH_SECRET
       - AUTH_TYPE
   frontend:
-    image: wixquix/quix-frontend:release-v1
+    image: wixquix/quix-frontend:latest
     ports:
       - "3000:3000"
     depends_on:
@@ -47,7 +47,7 @@ services:
     volumes:
       - "db_volume:/var/lib/mysql"
   presto:
-    image: "starburstdata/presto"
+    image: "starburstdata/presto:340-e"
     ports:
       - "8181:8080"
 

@@ -87,6 +87,7 @@ export default () => {
             fitContent: false,
             shareParams: false,
             autoRun: false,
+            dateFormat: null,
           })
           .withVM({
             selection: null,

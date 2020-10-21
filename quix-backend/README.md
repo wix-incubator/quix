@@ -1,5 +1,5 @@
 # Quix Backend
-Quix backend is based on SpringBoot and Scala, and is built with Maven.
+Quix backend is based on SpringBoot and Scala, and is built with sbt and Maven.
  
 ## Installation
 
@@ -7,9 +7,10 @@ Quix backend is based on SpringBoot and Scala, and is built with Maven.
 * Presto
 * Docker
 * Maven 3.6
+* sbt 1.3.8
 
 ### Building
-The default build will download all dependencies inside the Docker container. This build is safer and doesn't require Maven to be installed locally, but takes longer.
+The default build will download all dependencies inside the Docker container. This build is safer and doesn't require sbt/Maven to be installed locally, but takes longer.
 ``` 
 docker build -t quix-backend .
 ```

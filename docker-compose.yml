@@ -15,7 +15,7 @@ services:
       - AUTH_SECRET
       - AUTH_TYPE
   presto:
-    image: "starburstdata/presto"
+    image: "starburstdata/presto:340-e"
     ports:
       - "8181:8080"
   postgres:

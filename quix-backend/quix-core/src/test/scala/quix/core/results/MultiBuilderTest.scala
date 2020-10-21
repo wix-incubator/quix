@@ -1,12 +1,15 @@
 package quix.core.results
 
+import java.util.UUID
+
 import monix.eval.Task
 import monix.execution.Scheduler
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
-import quix.api.execute.Batch._
-import quix.api.execute._
-import quix.api.users.User
+import quix.api.v1.execute.Batch._
+import quix.api.v1.execute._
+import quix.api.v1.users.User
+import quix.api.v2.execute.{Query, ImmutableSubQuery}
 
 import scala.collection.mutable.ListBuffer
 
@@ -14,16 +17,17 @@ class MultiBuilderTest extends SpecWithJUnit {
 
   class ctx extends Scope {
     val consumer = new TestConsumer[ExecutionEvent]
-    val builder = new MultiBuilder[String](consumer)
-    val query = ActiveQuery[String]("id", Seq("text"), User("test"))
+    val builder = new MultiBuilder(consumer)
+    val query = ImmutableSubQuery("text", User("test"))
+    val execution = Query(Seq(query), canceled = query.canceled)
   }
 
   "MultiBuilder.start" should {
     "send Start event on start(query)" in new ctx {
-      builder.start(query).runToFuture(Scheduler.global)
+      builder.start(execution).runToFuture(Scheduler.global)
 
       eventually {
-        consumer.payloads must contain(Start(query.id, query.statements.size))
+        consumer.payloads must contain(Start(execution.id, execution.subQueries.size))
       }
     }
   }
@@ -31,10 +35,10 @@ class MultiBuilderTest extends SpecWithJUnit {
   "MultiBuilder.end" should {
 
     "send End event on end(query)" in new ctx {
-      builder.end(query).runToFuture(Scheduler.global)
+      builder.end(execution).runToFuture(Scheduler.global)
 
       eventually {
-        consumer.payloads must contain(End(query.id))
+        consumer.payloads must contain(End(execution.id))
       }
     }
   }
@@ -42,7 +46,7 @@ class MultiBuilderTest extends SpecWithJUnit {
   "MultiBuilder.startSubQuery" should {
 
     "send StartQuery & SubQueryDetails event on every startSubQuery(queryId, code, results)" in new ctx {
-      builder.startSubQuery("query-id", "code", Batch(List.empty)).runToFuture(Scheduler.global)
+      builder.startSubQuery("query-id", "code").runToFuture(Scheduler.global)
 
       eventually {
         consumer.payloads must contain(SubQueryStart("query-id"))
@@ -52,7 +56,8 @@ class MultiBuilderTest extends SpecWithJUnit {
 
     "send SubQueryFields if columns are present in results during startSubQuery(queryId, code, results)" in new ctx {
       val batch = Batch(List.empty, Option(List(BatchColumn("column"))))
-      builder.startSubQuery("query-id", "code", batch).runToFuture(Scheduler.global)
+      builder.startSubQuery("query-id", "code").runToFuture(Scheduler.global)
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
 
       eventually {
         consumer.payloads must contain(SubQueryFields("query-id", List("column")))
@@ -61,8 +66,9 @@ class MultiBuilderTest extends SpecWithJUnit {
 
     "send SubQueryFields only once if columns are present in results during startSubQuery(queryId, code, results)" in new ctx {
       val batch = Batch(List.empty, Option(List(BatchColumn("column"))))
-      builder.startSubQuery("query-id", "code", batch).runToFuture(Scheduler.global)
-      builder.startSubQuery("query-id", "code", batch).runToFuture(Scheduler.global)
+      builder.startSubQuery("query-id", "code").runToFuture(Scheduler.global)
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
 
       eventually {
         consumer.payloads.filter(_ == SubQueryFields("query-id", List("column"))) must haveSize(1)
@@ -71,7 +77,8 @@ class MultiBuilderTest extends SpecWithJUnit {
 
     "send Progress if present in results during startSubQuery(queryId, code, results)" in new ctx {
       val batch = Batch(List.empty).withPercentage(100)
-      builder.startSubQuery("query-id", "code", batch).runToFuture(Scheduler.global)
+      builder.startSubQuery("query-id", "code").runToFuture(Scheduler.global)
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
 
       eventually {
         consumer.payloads must contain(Progress("query-id", 100))
@@ -80,8 +87,9 @@ class MultiBuilderTest extends SpecWithJUnit {
 
     "send Progress on every batch during startSubQuery(queryId, code, results)" in new ctx {
       val batch = Batch(List.empty).withPercentage(100)
-      builder.startSubQuery("query-id", "code", batch).runToFuture(Scheduler.global)
-      builder.startSubQuery("query-id", "code", batch).runToFuture(Scheduler.global)
+      builder.startSubQuery("query-id", "code").runToFuture(Scheduler.global)
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
 
       eventually {
         consumer.payloads.filter(_ == Progress("query-id", 100)) must haveSize(2)
@@ -90,7 +98,8 @@ class MultiBuilderTest extends SpecWithJUnit {
 
     "send Error if present in results during startSubQuery(queryId, code, results)" in new ctx {
       val batch = Batch(List.empty, error = Option(BatchError("boom!")))
-      builder.startSubQuery("query-id", "code", batch).runToFuture(Scheduler.global)
+      builder.startSubQuery("query-id", "code").runToFuture(Scheduler.global)
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
 
       eventually {
         consumer.payloads must contain(Error("query-id", "boom!"))
@@ -99,7 +108,8 @@ class MultiBuilderTest extends SpecWithJUnit {
 
     "send Row events if data is present in results during startSubQuery(queryId, code, results)" in new ctx {
       val batch = Batch(List(List("a", "b", "c"), List("d", "e", "f")))
-      builder.startSubQuery("query-id", "code", batch).runToFuture(Scheduler.global)
+      builder.startSubQuery("query-id", "code").runToFuture(Scheduler.global)
+      builder.addSubQuery("query-id", batch).runToFuture(Scheduler.global)
 
       eventually {
         consumer.payloads must contain(Row("query-id", List("a", "b", "c")))

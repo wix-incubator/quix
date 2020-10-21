@@ -1,7 +1,10 @@
 package quix.python
 
-import quix.api.execute.ActiveQuery
-import quix.api.users.User
+import java.util.UUID
+
+import quix.api.v1.execute.ActiveQuery
+import quix.api.v1.users.User
+import quix.api.v2.execute.{Query, ImmutableSubQuery}
 import quix.core.results.SingleBuilder
 
 object TryPython {
@@ -10,9 +13,9 @@ object TryPython {
 
   def main(args: Array[String]): Unit = {
     val executor = new PythonExecutor()
-    val query = ActiveQuery("id", Seq(importQuix), User("default"))
-    val builder = new SingleBuilder[String]
-    val task = executor.runTask(query, builder)
+    val query = ImmutableSubQuery(importQuix, User("default"))
+    val builder = new SingleBuilder
+    val task = executor.execute(query, builder)
 
     task.runSyncUnsafe()
 

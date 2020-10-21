@@ -1,18 +1,30 @@
 package quix.core.executions
 
 import monix.eval.Task
-import quix.api.db.Db
-import quix.api.execute.{Batch, Builder, StartCommand}
-import quix.api.module.ExecutionModule
-import quix.api.users.User
-import quix.core.sql.PrestoSqlOps
+import quix.api.v1.db.Db
+import quix.api.v1.execute.StartCommand
+import quix.api.v1.users.User
+import quix.api.v2.execute._
+import quix.core.sql.{PrestoLikeSplitter, SqlSplitter}
 
-class SqlModule(val executions: SequentialExecutions[String], val db: Option[Db]) extends ExecutionModule[String, Batch] {
-  override def start(command: StartCommand[String], id: String, user: User, builder: Builder[String, Batch]): Task[Unit] = {
-    val sqls = PrestoSqlOps.splitToStatements(command.code)
+class SqlModule(val executor: Executor,
+                val db: Option[Db],
+                val splitter: SqlSplitter = PrestoLikeSplitter) extends ExecutionModule {
 
-    executions
-      .execute(sqls, user, builder)
-      .doOnCancel(executions.kill(id, user))
+  override def start(command: StartCommand[String], id: String, user: User, builder: Builder): Task[Unit] = {
+    val query = splitter.split(command, id, user)
+
+    for {
+      _ <- builder.start(query)
+      _ <- Task.traverse(query.subQueries) { q =>
+        Task(builder.lastError).flatMap {
+          case None =>
+            executor.execute(q, builder)
+          case Some(e) =>
+            Task.raiseError(e)
+        }
+      }.attempt
+      _ <- builder.end(query)
+    } yield ()
   }
 }

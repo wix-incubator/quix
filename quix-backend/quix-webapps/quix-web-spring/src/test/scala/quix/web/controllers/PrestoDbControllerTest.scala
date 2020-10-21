@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFIN
 import org.springframework.test.annotation.DirtiesContext
 import org.springframework.test.context.junit4.SpringRunner
 import org.springframework.test.context.{TestContextManager, TestPropertySource}
-import quix.api.db.{Catalog, Kolumn, Schema, Table}
+import quix.api.v1.db.{Catalog, Kolumn, Schema, Table}
 import quix.core.db.State
 import quix.web.{E2EContext, MockBeans, SpringConfigWithTestExecutor}
 

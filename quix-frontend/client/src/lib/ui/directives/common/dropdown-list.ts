@@ -280,8 +280,15 @@ export class DropdownList {
       return true;
     });
 
-    if (vm.options.filtered && options.filterBy.length) {
+    if (vm.options.filtered && options.filterBy.length && !this.scope.readonly) {
       this.searcher = new JsSearch.Search(options.filterBy[0]);
+      this.searcher.indexStrategy = new JsSearch.AllSubstringsIndexStrategy();
+      this.searcher.tokenizer = {
+        tokenize: text =>
+          text
+            .split(/[^a-z0-9\-'\.]+/i)
+            .filter(t => !!t)
+      };
 
       options.filterBy.forEach(prop => this.searcher.addIndex(prop));
       this.searcher.addDocuments(vm.options.filtered);

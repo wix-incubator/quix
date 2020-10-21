@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>quix</groupId>
+    <groupId>com.wix</groupId>
     <artifactId>quix-web-spring</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.4-SNAPSHOT</version>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -26,8 +24,6 @@
         <typesafe.config.version>1.4.0</typesafe.config.version>
         <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
         <async.http.version>2.10.4</async.http.version>
-        <clickhouse.version>0.2</clickhouse.version>
-        <postgres.version>42.2.9</postgres.version>
         <mysql.version>8.0.18</mysql.version>
         <spring.jdbc.version>5.2.2.RELEASE</spring.jdbc.version>
         <scalatest.version>3.1.0</scalatest.version>
@@ -51,33 +47,33 @@
         </dependency>
 
         <dependency>
-            <groupId>quix</groupId>
-            <artifactId>quix-presto-module</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>com.wix</groupId>
+            <artifactId>quix-presto-module_${scala.dependencies.version}</artifactId>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>quix</groupId>
-            <artifactId>quix-athena-module</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>com.wix</groupId>
+            <artifactId>quix-athena-module_${scala.dependencies.version}</artifactId>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>quix</groupId>
-            <artifactId>quix-bigquery-module</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>com.wix</groupId>
+            <artifactId>quix-bigquery-module_${scala.dependencies.version}</artifactId>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>quix</groupId>
-            <artifactId>quix-python-module</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>com.wix</groupId>
+            <artifactId>quix-python-module_${scala.dependencies.version}</artifactId>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <dependency>
-            <groupId>quix</groupId>
-            <artifactId>quix-core</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>com.wix</groupId>
+            <artifactId>quix-core_${scala.dependencies.version}</artifactId>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.pauldijou/jwt-core -->
@@ -173,9 +169,9 @@
         </dependency>
 
         <dependency>
-            <groupId>quix</groupId>
-            <artifactId>quix-jdbc-module</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <groupId>com.wix</groupId>
+            <artifactId>quix-jdbc-module_${scala.dependencies.version}</artifactId>
+            <version>1.0.4-SNAPSHOT</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
@@ -215,36 +211,6 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- jdbc drivers -->
-
-        <!-- https://github.com/yandex/clickhouse-jdbc -->
-        <dependency>
-            <groupId>ru.yandex.clickhouse</groupId>
-            <artifactId>clickhouse-jdbc</artifactId>
-            <version>${clickhouse.version}</version>
-            <!-- quix-bigquery-module module brings and uses latest guava dependency -->
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgres.version}</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>${mysql.version}</version>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -278,6 +244,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>

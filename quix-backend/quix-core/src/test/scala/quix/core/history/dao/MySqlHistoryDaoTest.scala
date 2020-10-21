@@ -1,4 +1,5 @@
 package quix.core.history.dao
+
 import java.time.Clock
 
 import cats.effect.Resource
@@ -11,7 +12,7 @@ import com.wix.mysql.config.MysqldConfig.aMysqldConfig
 import com.wix.mysql.distribution.Version.v5_6_23
 import monix.eval.Task
 import org.specs2.specification.{AfterAll, BeforeAll, BeforeEach}
-import quix.api.execute.ActiveQuery
+import quix.api.v2.execute.{Query => ActiveQuery}
 import quix.core.history.Execution
 
 class MySqlHistoryDaoTest
@@ -33,7 +34,7 @@ class MySqlHistoryDaoTest
       val reader = new MySqlHistoryReadDao(connection)
       val writer = new MySqlHistoryWriteDao(connection, clock)
       new HistoryWriteDao with HistoryReadDao {
-        override def executionStarted(query: ActiveQuery[String], queryType: String): Task[Unit] =
+        override def executionStarted(query: ActiveQuery, queryType: String): Task[Unit] =
           writer.executionStarted(query, queryType)
 
         override def executionSucceeded(queryId: String): Task[Unit] =

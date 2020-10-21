@@ -1,25 +1,31 @@
 package quix.presto.rest
 
-import quix.api.execute.ActiveQuery
+import java.net.URLEncoder
+
+import quix.api.v2.execute.SubQuery
 import quix.presto.PrestoConfig
 import scalaj.http.{Http, HttpRequest}
 
 object ScalaJPrestoOps {
-  def makeHeaders(query: ActiveQuery[String], config: PrestoConfig): Map[String, String] = {
-    val extraValues = for ((key, value) <- query.session)
-      yield key + "=" + value
+  def makeHeaders(query: SubQuery, config: PrestoConfig): Map[String, String] = {
+    val session = query.session.get
+
+    val extraValues = for ((key, value) <- session if !key.startsWith("X-Presto"))
+      yield key + "=" + URLEncoder.encode(value, "UTF-8")
+
+    val prestoHeaders = session.filter { case (key, _) => key.startsWith("X-Presto") }
 
     Map(
-      "x-presto-user" -> query.user.email,
-      "x-presto-catalog" -> query.catalog.getOrElse(config.catalog),
-      "x-presto-schema" -> query.schema.getOrElse(config.schema),
-      "x-presto-source" -> config.source,
+      "X-Presto-User" -> query.user.email,
+      "X-Presto-Catalog" -> config.catalog,
+      "X-Presto-Schema" -> config.schema,
+      "X-Presto-Source" -> config.source,
       "Content-Type" -> "text/plain",
       "Accept" -> "application/json",
-      "x-presto-session" -> extraValues.mkString(", "))
+      "X-Presto-Session" -> extraValues.mkString(", ")) ++ prestoHeaders
   }
 
-  def buildInitRequest(query: ActiveQuery[String], config: PrestoConfig): HttpRequest = {
+  def buildInitRequest(query: SubQuery, config: PrestoConfig): HttpRequest = {
     Http(config.statementsApi)
       .headers(makeHeaders(query, config))
       .postData(query.text.getBytes("UTF-8"))

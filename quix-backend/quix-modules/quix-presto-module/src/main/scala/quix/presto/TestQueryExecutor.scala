@@ -1,7 +1,7 @@
 package quix.presto
 
 import monix.eval.Task
-import quix.api.execute.{ActiveQuery, AsyncQueryExecutor, Batch, Builder}
+import quix.api.v2.execute.{Builder, Executor, SubQuery}
 import quix.presto.rest._
 
 import scala.collection.mutable
@@ -20,11 +20,11 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
     } else None
   }
 
-  def act(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
+  def act(query: SubQuery, builder: Builder): Task[Unit] = {
     val client = new PrestoStateClient {
       var index = 0
 
-      override def init(query: ActiveQuery[String]): Task[PrestoState] = {
+      override def init(query: SubQuery): Task[PrestoState] = {
         exception match {
           case Some(e) =>
             Task.raiseError(e)
@@ -39,7 +39,7 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
       }
 
 
-      override def advance(uri: String): Task[PrestoState] = Task.eval {
+      override def advance(uri: String, query: SubQuery): Task[PrestoState] = Task.eval {
         if (index + 1 <= results.size) {
           val stats = PrestoStats("RUNNING", true, 0, results.size, 0, 0, index, 0, 0, 0, 0, 0)
           val state = PrestoState(queryId, "info-uri", None, Some("next-uri"), prestoColumns, Option(List(results(index))), stats, None, None)
@@ -53,9 +53,9 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
         }
       }
 
-      override def close(state: PrestoState): Task[Unit] = Task.unit
+      override def close(state: PrestoState, query: SubQuery): Task[Unit] = Task.unit
 
-      override def info(state: PrestoState): Task[PrestoQueryInfo] = Task.eval {
+      override def info(state: PrestoState, query: SubQuery): Task[PrestoQueryInfo] = Task.eval {
         val queryStats = PrestoQueryStats("0", "0", 0, "", "", "", 0)
         PrestoQueryInfo(queryId, "FINISHED", queryStats, None, None, Map.empty, List.empty)
       }
@@ -64,14 +64,14 @@ class SingleExecution(exception: Option[Exception] = Option.empty[Exception],
         PrestoHealth(0, 0, 0, 0, 0, 0, 0, 0, 0)
       }
     }
-    new QueryExecutor(client).runTask(query, builder).delayExecution(delay)
+    new QueryExecutor(client).execute(query, builder).delayExecution(delay)
   }
 }
 
-class TestQueryExecutor extends AsyncQueryExecutor[String, Batch] {
+class TestQueryExecutor extends Executor {
 
   val executions: mutable.Queue[SingleExecution] = mutable.Queue.empty
-  var resultBuilder: Builder[String, Batch] = _
+  var resultBuilder: Builder = _
 
   def withException(e: Exception) = {
     executions.enqueue(new SingleExecution(exception = Some(e)))
@@ -94,9 +94,9 @@ class TestQueryExecutor extends AsyncQueryExecutor[String, Batch] {
     this
   }
 
-  override def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
+  override def execute(query: SubQuery, builder: Builder): Task[Unit] = {
     for {
-      _ <- Task.eval(resultBuilder = builder)
+      _ <- Task.eval(this.resultBuilder = builder)
       execution <- Task.eval(executions.dequeue())
       _ <- execution.act(query, builder)
     } yield ()

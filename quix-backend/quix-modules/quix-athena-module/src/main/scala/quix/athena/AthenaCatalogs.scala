@@ -1,11 +1,11 @@
 package quix.athena
 
 import monix.eval.Task
-import quix.api.db.{Catalog, Catalogs, Schema, Table}
-import quix.api.execute.{AsyncQueryExecutor, Batch}
+import quix.api.v1.db.{Catalog, Catalogs, Schema, Table}
+import quix.api.v2.execute.Executor
 import quix.core.executions.SingleQueryExecutor
 
-class AthenaCatalogs(val queryExecutor: AsyncQueryExecutor[String, Batch]) extends Catalogs with SingleQueryExecutor {
+class AthenaCatalogs(val queryExecutor: Executor) extends Catalogs with SingleQueryExecutor {
 
   override def fast: Task[List[Catalog]] = {
     for {schemas <- executeForSingleColumn("show databases")}

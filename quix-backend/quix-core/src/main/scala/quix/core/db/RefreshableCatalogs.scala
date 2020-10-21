@@ -1,7 +1,7 @@
 package quix.core.db
 
 import monix.eval.Task
-import quix.api.db.{Catalog, Catalogs}
+import quix.api.v1.db.{Catalog, Catalogs}
 
 import scala.concurrent.duration._
 
@@ -40,12 +40,12 @@ class RefreshableCatalogs(catalogs: Catalogs,
   }
 
   def startUpdate() = {
-    Task(state = state.copy(expirationDate = System.currentTimeMillis() + staleThreshold))
+    Task(this.state = this.state.copy(expirationDate = System.currentTimeMillis() + staleThreshold))
   }
 
   def update(newCatalogs: List[Catalog]) = {
     Task {
-      state = state.copy(data = newCatalogs)
+      this.state = this.state.copy(data = newCatalogs)
       newCatalogs
     }
   }

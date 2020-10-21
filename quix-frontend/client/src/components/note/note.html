@@ -90,6 +90,7 @@
             showSyntaxErrors: vm.showSyntaxErrors,
             shareParams: true,
             autoRun: options.autoRun,
+            dateFormat: vm.dateFormat
           }"
           type="vm.type"
           runner="runner"
@@ -107,7 +108,7 @@
             <quix-npc></quix-npc>
           </controls>
 
-          <stats bi-html="renderStats()"></stats>
+          <stats class="bi-align bi-s-h--x15" bi-html="renderStats()"></stats>
         </bi-sql-runner>
 
         <bi-python-runner
@@ -121,6 +122,8 @@
             focus: options.focusEditor,
             showSyntaxErrors: vm.showSyntaxErrors,
             shareParams: true,
+            autoRun: options.autoRun,
+            dateFormat: vm.dateFormat
           }"
           type="vm.type"
           runner="runner"

@@ -1,7 +1,7 @@
 package quix.core.db
 
 import monix.eval.Task
-import quix.api.db.{Catalog, Db, Table, Tables}
+import quix.api.v1.db.{Catalog, Db, Table, Tables}
 
 class RefreshableDb(catalogs: RefreshableCatalogs, autocomplete: RefreshableAutocomplete, tables: Tables) extends Db {
 

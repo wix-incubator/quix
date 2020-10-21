@@ -13,7 +13,7 @@ class PythonBridge(val queryId: String) {
   var subscriberOpt: Option[Subscriber[PythonMessage]] = None
 
   /** Python bridge will produce a stream of [[PythonMessage]] messages to communicate with quix.
-   * Each message would trigger some update of [[quix.api.execute.Builder]]
+   * Each message would trigger some update of [[quix.api.v1.execute.Builder]]
    *
    * @param subscriber monix Subscriber that will receive every update from python
    */
@@ -35,12 +35,12 @@ class PythonBridge(val queryId: String) {
 
   def tab_columns(tabId: String, columns: java.util.ArrayList[Any]): Unit = {
     for (subscriber <- subscriberOpt)
-      subscriber.onNext(TabFields(tabId, columns.asScala.map(_.toString)))
+      subscriber.onNext(TabFields(tabId, columns.asScala.map(_.toString).toList))
   }
 
   def tab_row(tabId: String, columns: java.util.ArrayList[Any]): Unit = {
     for (subscriber <- subscriberOpt)
-      subscriber.onNext(TabRow(tabId, columns.asScala.map(_.toString)))
+      subscriber.onNext(TabRow(tabId, columns.asScala.map(_.toString).toList))
   }
 
   def tab_end(tabId: String): Unit = {

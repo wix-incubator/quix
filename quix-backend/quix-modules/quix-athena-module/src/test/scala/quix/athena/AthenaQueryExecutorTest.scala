@@ -3,12 +3,14 @@ package quix.athena
 import com.amazonaws.services.athena.model._
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
+import monix.execution.atomic.Atomic
 import org.specs2.matcher.MustMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
-import quix.api.execute.{ActiveQuery, BatchColumn}
-import quix.api.users.User
+import quix.api.v1.execute.BatchColumn
+import quix.api.v1.users.User
+import quix.api.v2.execute.ImmutableSubQuery
 import quix.core.results.SingleBuilder
 
 class AthenaQueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito {
@@ -16,9 +18,8 @@ class AthenaQueryExecutorTest extends SpecWithJUnit with MustMatchers with Mocki
   class ctx extends Scope {
     val athena = mock[AthenaClient]
     val executor = new AthenaQueryExecutor(athena)
-    val query = new ActiveQuery[String]("query-id", Seq("select 1"), User("athena-test"))
-    val builder = spy(new SingleBuilder[String])
-
+    val query = ImmutableSubQuery(id = "query-id", text = "select 1", user = User("athena-test"))
+    val builder = spy(new SingleBuilder)
   }
 
   "AthenaQueryExecutor" should {
@@ -64,7 +65,7 @@ class AthenaQueryExecutorTest extends SpecWithJUnit with MustMatchers with Mocki
               .withState(QueryExecutionState.RUNNING))))
 
       // call
-      val queryExecution = executor.waitLoop("query-id", query.copy(isCancelled = true), builder).runSyncUnsafe()
+      val queryExecution = executor.waitLoop("query-id", query.copy(canceled = Atomic(true)), builder).runSyncUnsafe()
 
       // verify
       queryExecution must_=== QueryExecutionState.RUNNING
@@ -79,7 +80,7 @@ class AthenaQueryExecutorTest extends SpecWithJUnit with MustMatchers with Mocki
               .withState(QueryExecutionState.QUEUED))))
 
       // call
-      val queryExecution = executor.waitLoop("query-id", query.copy(isCancelled = true), builder).runSyncUnsafe()
+      val queryExecution = executor.waitLoop("query-id", query.copy(canceled = Atomic(true)), builder).runSyncUnsafe()
 
       // verify
       queryExecution must_=== QueryExecutionState.QUEUED

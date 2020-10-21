@@ -4,8 +4,9 @@ import java.time.{Clock, Instant, ZoneOffset}
 
 import monix.execution.Scheduler.Implicits.global
 import org.specs2.mutable.SpecificationWithJUnit
-import quix.api.execute.{ActiveQuery, Batch}
-import quix.api.users.User
+import quix.api.v1.execute.Batch
+import quix.api.v1.users.User
+import quix.api.v2.execute.{ImmutableSubQuery, Query}
 import quix.core.history.ExecutionMatchers._
 import quix.core.history.HistoryBuilderTest._
 import quix.core.history.dao.InMemoryHistoryDao
@@ -23,7 +24,8 @@ class HistoryBuilderTest extends SpecificationWithJUnit {
       dao <- makeDao
       builder = new HistoryBuilder(delegate, dao, queryType)
       _ <- builder.start(query1)
-      _ <- builder.startSubQuery(subQuery, code1, batch1)
+      _ <- builder.startSubQuery(subQuery, code1.text)
+      _ <- builder.addSubQuery(subQuery, batch1)
       _ <- builder.addSubQuery(subQuery, batch2)
       _ <- builder.endSubQuery(subQuery)
       _ <- builder.end(query1)
@@ -38,9 +40,9 @@ class HistoryBuilderTest extends SpecificationWithJUnit {
       equalTo(
         State(
           queries = Map(
-            query1.id -> Query(query1, QueryStatus.Ended),
-            query2.id -> Query(query2, QueryStatus.Started)),
-          subQueries = Map(subQuery -> SubQuery(code1, List(batch2, batch1), QueryStatus.Ended)),
+            query1.id -> HistoricalQuery(query1, QueryStatus.Ended),
+            query2.id -> HistoricalQuery(query2, QueryStatus.Started)),
+          subQueries = Map(subQuery -> HistoricalSubQuery(code1.text, List(batch2, batch1), QueryStatus.Ended)),
           errors = List(Error(subQuery, error2), Error(query2.id, error1)),
           log = List(LogLine(query2.id, "some-log", "INFO"))))
   }
@@ -78,12 +80,12 @@ class HistoryBuilderTest extends SpecificationWithJUnit {
 
 object HistoryBuilderTest {
   val user = User("foo@bar.com", "some-user")
-  val code1 = "code1"
-  val code2 = "code2"
-  val code3 = "code3"
+  val code1 = ImmutableSubQuery("code1", user)
+  val code2 = ImmutableSubQuery("code2", user)
+  val code3 = ImmutableSubQuery("code3", user)
   val queryType = "query-type"
-  val query1 = ActiveQuery("query1", List(code1, code2), user)
-  val query2 = ActiveQuery("query2", List(code3), user)
+  val query1 = Query(List(code1, code2), id = "query1")
+  val query2 = Query(List(code3), id = "query2")
   val batch1 = Batch(List(List(1), List(2)))
   val batch2 = Batch(List(List(3)))
   val error1 = new RuntimeException("foo")

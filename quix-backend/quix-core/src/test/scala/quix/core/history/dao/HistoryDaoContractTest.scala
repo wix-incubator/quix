@@ -7,8 +7,8 @@ import cats.syntax.apply._
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import org.specs2.mutable.SpecificationWithJUnit
-import quix.api.execute.ActiveQuery
-import quix.api.users.User
+import quix.api.v1.users.User
+import quix.api.v2.execute.{ImmutableSubQuery, Query}
 import quix.core.history.ExecutionMatchers._
 import quix.core.history.dao.HistoryDaoContractTest._
 import quix.core.history.{Execution, ExecutionStatus, FakeClock}
@@ -145,7 +145,10 @@ object HistoryDaoContractTest {
   val defaultClock = Clock.fixed(now, ZoneOffset.UTC)
   val queryType = "query-type"
   val user = User("foo@bar.com", "some-user")
-  val statements = List("code1", "code2")
   val queryId = "query-id"
-  val query = ActiveQuery(queryId, statements, user)
+
+  val query1 = ImmutableSubQuery("code1", user)
+  val query2 = ImmutableSubQuery("code2", user)
+  val query = Query(Seq(query1, query2), id = queryId)
+  val statements = query.subQueries.map(_.text)
 }

@@ -107,6 +107,7 @@ export default () => {
             customParams: true,
             fitContent: false,
             shareParams: false,
+            dateFormat: null,
           })
           .withVM({
             param: {
@@ -172,7 +173,9 @@ export default () => {
           })
           .withState('bce', 'bce', {});
 
-        scope.renderParam = (param: IParam) => ({html: renderParam(scope, param, editor.getParams().getParamOverrides(param.key))});
+        scope.renderParam = (param: IParam) => ({
+          html: renderParam(scope, param, {dateFormat: scope.options.dateFormat}, editor.getParams().getParamOverrides(param.key))
+        });
 
         if (!scope.options.customParams) {
           inject('$timeout')(() => element.find('.bce-custom-param-toggle').remove());

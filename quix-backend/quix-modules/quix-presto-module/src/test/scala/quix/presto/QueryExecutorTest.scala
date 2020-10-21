@@ -5,26 +5,27 @@ import java.util.UUID
 
 import monix.eval.Task
 import monix.execution.Scheduler
+import monix.execution.atomic.Atomic
 import org.specs2.matcher.MustMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
-import quix.api.execute.ActiveQuery
-import quix.api.users.User
+import quix.api.v1.users.User
+import quix.api.v2.execute.{ImmutableSubQuery, MutableSession}
 import quix.core.results.SingleBuilder
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
 import quix.presto.rest.{PrestoQueryInfo, PrestoState, PrestoStateClient, PrestoStateToResults}
-
+import org.mockito.ArgumentMatchers.{eq => eqTo}
 import scala.concurrent.duration._
 
 class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito with StringJsonHelpersSupport {
 
   class ctx extends Scope {
     val client = mock[PrestoStateClient]
-    val builder = spy(new SingleBuilder[String])
+    val builder = spy(new SingleBuilder)
     val queryId = UUID.randomUUID().toString
-    val query = ActiveQuery(queryId, Seq("select 1"), User("user@quix"))
+    val query = ImmutableSubQuery("select 1", User("user@quix"), id = queryId)
     val stateWithoutNext = {
       s"""{"id":"presto-id","infoUri":"info-uri","stats":{"state":"PLANNING","scheduled":false,"totalSplits":0,"queuedSplits":0,"runningSplits":0,"completedSplits":456}}"""
     }.as[PrestoState]
@@ -66,11 +67,10 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     "notify builder on exceptions in client.advance" in new ctx {
       // mock
       val exception = new RuntimeException("boom!")
-      client.advance(anyString) returns Task.raiseError(exception)
+      client.advance(anyString, any()) returns Task.raiseError(exception)
 
       // call
-      executor.advance("some-uri", builder, query.id, query).runToFuture(scheduler)
-
+      executor.advance("some-uri", builder, query, testDelay).runToFuture(scheduler)
 
       // verify
       eventually {
@@ -83,12 +83,12 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
       client.init(query) returns Task.now(stateWithoutNext)
 
       // call
-      executor.runTask(query, builder).runToFuture(scheduler)
+      executor.execute(query, builder).runToFuture(scheduler)
 
 
       // verify
       eventually {
-        there was one(builder).startSubQuery(stateWithoutNext.id, query.text, PrestoStateToResults(stateWithoutNext))
+        there was one(builder).startSubQuery(stateWithoutNext.id, query.text)
         there was one(builder).endSubQuery(stateWithoutNext.id)
       }
     }
@@ -96,72 +96,69 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     "notify builder on success of client.init / client.advance" in new ctx {
       // mock
       client.init(query) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithoutNext)
+      client.advance(anyString, any()) returns Task.now(stateWithoutNext)
 
       // call
-      executor.runTask(query, builder).runToFuture(scheduler)
+      executor.execute(query, builder).runToFuture(scheduler)
 
 
       // verify
       eventually {
-        there was one(builder).startSubQuery(stateWithoutNext.id, query.text, PrestoStateToResults(stateWithNextUri))
+        there was one(builder).startSubQuery(stateWithNextUri.id, query.text)
 
         there was one(builder).addSubQuery(stateWithNextUri.id, PrestoStateToResults(stateWithoutNext))
 
-        there was one(builder).endSubQuery(stateWithoutNext.id)
+        there was one(builder).endSubQuery(stateWithNextUri.id)
       }
     }
 
     "notify builder on success of client.init / multiple client.advances" in new ctx {
       // mock
       client.init(query) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
+      client.advance(anyString, any()) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
 
       // call
-      executor.runTask(query, builder).runToFuture(scheduler)
-
+      executor.execute(query, builder).runToFuture(scheduler)
 
       // verify
       eventually {
-        there was one(builder).startSubQuery(stateWithoutNext.id, query.text, PrestoStateToResults(stateWithNextUri))
+        there was one(builder).startSubQuery(stateWithNextUri.id, query.text)
 
         there was one(builder).addSubQuery(stateWithNextUri.id, PrestoStateToResults(stateWithoutNext))
 
-        there was one(builder).endSubQuery(stateWithoutNext.id)
+        there was one(builder).endSubQuery(stateWithNextUri.id)
       }
     }
 
     "cancel execution if query.isCanceled == true" in new ctx {
       // mock
       client.init(any()) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
+      client.advance(anyString, any()) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
 
       // call
-      executor.runTask(query.copy(isCancelled = true), builder).runToFuture(scheduler)
-
+      executor.execute(query, builder).runToFuture(scheduler)
 
       // verify
       eventually {
-        there was one(builder).startSubQuery(stateWithoutNext.id, query.text, PrestoStateToResults(stateWithNextUri))
+        there was one(builder).startSubQuery(stateWithNextUri.id, query.text)
 
-        there was no(builder).addSubQuery(stateWithNextUri.id, PrestoStateToResults(stateWithoutNext))
+        there was one(builder).addSubQuery(stateWithNextUri.id, PrestoStateToResults(stateWithoutNext))
 
-        there was one(builder).endSubQuery(stateWithoutNext.id)
+        there was one(builder).endSubQuery(anyString, any[Map[String, String]]())
       }
     }
 
     "close presto client if query.isCanceled == true" in new ctx {
       // mock
       client.init(any()) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithNextUri)
+      client.advance(anyString, any()) returns Task.now(stateWithNextUri)
 
       // call
-      executor.runTask(query.copy(isCancelled = true), builder).runToFuture(scheduler)
-
+      executor.execute(query.copy(canceled = Atomic(true)), builder).runToFuture(scheduler)
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri)
+        there was one(client).close(eqTo(stateWithNextUri), any())
       }
     }
 
@@ -169,15 +166,15 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
       // mock
       val exception = new RuntimeException("boom!")
       client.init(any()) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.raiseError(exception)
+      client.advance(anyString, any()) returns Task.raiseError(exception)
 
       // call
-      executor.runTask(query, builder).runToFuture(scheduler)
+      executor.execute(query, builder).runToFuture(scheduler)
 
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri)
+        there was one(client).close(eqTo(stateWithNextUri), any())
       }
     }
 
@@ -185,15 +182,15 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
       // mock
       val exception = new RuntimeException("boom!")
       client.init(any()) returns Task.now(stateWithNextUri)
-      builder.startSubQuery(any(), any(), any()) throws exception
+      builder.startSubQuery(any(), any()) throws exception
 
       // call
-      executor.runTask(query, builder).runToFuture(scheduler)
+      executor.execute(query, builder).runToFuture(scheduler)
 
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri)
+        there was one(client).close(eqTo(stateWithNextUri), any())
       }
     }
 
@@ -201,16 +198,16 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
       // mock
       val exception = new RuntimeException("boom!")
       client.init(any()) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
+      client.advance(anyString, any()) returns Task.now(stateWithNextUri) thenReturns Task.now(stateWithoutNext)
       builder.addSubQuery(any(), any()) throws exception
 
       // call
-      executor.runTask(query, builder).runToFuture(scheduler)
+      executor.execute(query, builder).runToFuture(scheduler)
 
 
       // verify
       eventually {
-        there was one(client).close(stateWithNextUri)
+        there was one(client).close(eqTo(stateWithNextUri), any())
       }
     }
 
@@ -232,54 +229,54 @@ class QueryExecutorTest extends SpecWithJUnit with MustMatchers with Mockito wit
     "update active query with catalog/schema if query info has setCatalog / setSchema commands" in new ctx {
       // mock
       client.init(query) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithoutNext)
-      client.info(any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
-      client.close(any()) returns Task.unit
+      client.advance(anyString, any()) returns Task.now(stateWithoutNext)
+      client.info(any(), any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
+      client.close(any(), any()) returns Task.unit
 
       // call
-      executor.runTask(query, builder).runToFuture(scheduler)
+      executor.execute(query, builder).runToFuture(scheduler)
 
       eventually {
-        query.catalog must beSome("some-catalog")
-        query.schema must beSome("some-schema")
+        query.session.get must havePair("X-Presto-Catalog", "some-catalog")
+        query.session.get must havePair("X-Presto-Schema", "some-schema")
       }
     }
 
     "update active query with session params if query info has setSessionProperties" in new ctx {
       // mock
       client.init(query) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithoutNext)
-      client.info(any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
-      client.close(any()) returns Task.unit
+      client.advance(anyString, any()) returns Task.now(stateWithoutNext)
+      client.info(any(), any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
+      client.close(any(), any()) returns Task.unit
 
       // call
-      executor.runTask(query, builder).runToFuture(scheduler)
+      executor.execute(query, builder).runToFuture(scheduler)
 
       eventually {
-        query.session must havePair("some.session.key", "true")
+        query.session.get must havePair("some.session.key", "true")
       }
     }
 
     "unset session properties of active if query info has resetSessionProperties" in new ctx {
       // mock
-      val queryWithSession = query.copy(session = Map("first.session.key" -> "false", "second.session.key" -> "true"))
+      val queryWithSession = query.copy(session = MutableSession("first.session.key" -> "false", "second.session.key" -> "true"))
       client.init(queryWithSession) returns Task.now(stateWithNextUri)
-      client.advance(anyString) returns Task.now(stateWithoutNext)
-      client.info(any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
-      client.close(any()) returns Task.unit
+      client.advance(anyString, any()) returns Task.now(stateWithoutNext)
+      client.info(any(), any()) returns Task.now(prestoQueryInfoWithCatalogAndSetSession)
+      client.close(any(), any()) returns Task.unit
 
       // call
-      executor.runTask(queryWithSession, builder).runToFuture(scheduler)
+      executor.execute(queryWithSession, builder).runToFuture(scheduler)
 
       eventually {
         // existed before execution
-        queryWithSession.session must havePair("second.session.key", "true")
+        queryWithSession.session.get must havePair("second.session.key", "true")
 
         // was added during execution
-        queryWithSession.session must havePair("some.session.key", "true")
+        queryWithSession.session.get must havePair("some.session.key", "true")
 
         // was removed during execution
-        queryWithSession.session must not haveKey "first.session.key"
+        queryWithSession.session.get must not haveKey "first.session.key"
       }
     }
   }

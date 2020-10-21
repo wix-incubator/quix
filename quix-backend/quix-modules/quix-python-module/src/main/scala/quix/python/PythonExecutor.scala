@@ -9,9 +9,10 @@ import monix.eval.Task
 import monix.execution.atomic.AtomicInt
 import monix.reactive.{Observable, OverflowStrategy}
 import py4j.GatewayServer
-import quix.api.execute._
+import quix.api.v1.execute._
+import quix.api.v2.execute.{Builder, Executor, SubQuery}
 
-class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryExecutor[String, Batch] with LazyLogging {
+class PythonExecutor(config: PythonConfig = PythonConfig()) extends Executor with LazyLogging {
 
   var port = AtomicInt(25333)
 
@@ -22,12 +23,12 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
     } yield ()
   }
 
-  override def runTask(query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
+  def execute(query: SubQuery, builder: Builder): Task[Unit] = {
     makeProcess(query)
       .bracket(process => run(process, query, builder))(_.close)
   }
 
-  def makeProcess(query: ActiveQuery[String]): Task[PythonRunningProcess] = {
+  def makeProcess(query: SubQuery): Task[PythonRunningProcess] = {
     val process = PythonRunningProcess(query.id)
 
     for {
@@ -36,8 +37,9 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
     } yield process
   }
 
-  def prepareFiles(process: PythonRunningProcess, query: ActiveQuery[String]): Task[Path] = {
-    val dir = Paths.get(config.userScriptsDir, query.user.email)
+  def prepareFiles(process: PythonRunningProcess, query: SubQuery): Task[Path] = {
+    val user = query.user.email
+    val dir = Paths.get(config.userScriptsDir, user)
     val bin = Paths.get(dir.toString, "bin")
     val script = generateUserScript(dir, query).getBytes("UTF-8")
 
@@ -57,12 +59,12 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
     } yield file
   }
 
-  private def generateUserScript(dir: Path, query: ActiveQuery[String]) = {
+  private def generateUserScript(dir: Path, query: SubQuery) = {
     val envSetup =
       s"""
          |from packages import Packages
          |packages = Packages('$dir', '${config.indexUrl}', '${config.extraIndexUrl}')
-         |packages.install(${config.packages.map(lib => ''' + lib + ''').mkString(", ")})
+         |packages.install(${config.packages.map(lib => '\'' + lib + '\'').mkString(", ")})
          |
          |""".stripMargin
 
@@ -85,7 +87,7 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
     envSetup + quixSetup + config.additionalCode + query.text
   }
 
-  def prepareGateway(process: PythonRunningProcess, query: ActiveQuery[String]): Task[GatewayServer] = {
+  def prepareGateway(process: PythonRunningProcess, query: SubQuery): Task[GatewayServer] = {
     for {
       bridge <- Task(new PythonBridge(query.id))
       _ <- Task(process.bridge = Some(bridge))
@@ -95,7 +97,7 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
     } yield gatewayServer
   }
 
-  def run(process: PythonRunningProcess, query: ActiveQuery[String], builder: Builder[String, Batch]): Task[Unit] = {
+  def run(process: PythonRunningProcess, query: SubQuery, builder: Builder): Task[Unit] = {
 
     val pythonProcessMessages: Observable[PythonMessage] = Observable.create(OverflowStrategy.Unbounded) { sub =>
       val task = for {
@@ -124,19 +126,13 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
         case ProcessEndSuccess(_) =>
           false
 
-        case _ if query.isCancelled => false
+        case _ if query.canceled.get => false
 
         case _ => true
       }
       .mapEval {
-        case ProcessStartSuccess(_) =>
-          builder.start(query)
-
         case ProcessStartFailure(exception) =>
           builder.error(query.id, exception)
-
-        case ProcessEndSuccess(_) =>
-          builder.end(query)
 
         case ProcessStdout(jobId, line) =>
           builder.log(jobId, line, "INFO")
@@ -144,14 +140,16 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends AsyncQueryEx
         case ProcessStderr(jobId, line) =>
           builder.log(jobId, line, "ERROR")
 
-        case TabFields(tabId, fields) =>
-          builder.startSubQuery(tabId, tabId, Batch(Nil, columns = Option(fields.map(BatchColumn))))
+        case TabFields(tabId, fields) => {
+          builder.startSubQuery(tabId, tabId)
+          builder.addSubQuery(tabId, Batch(columns = Option(fields.map(BatchColumn))))
+        }
 
         case TabRow(tabId, row) =>
           builder.addSubQuery(tabId, Batch(Seq(row)))
 
         case TabEnd(tabId) =>
-          builder.endSubQuery(tabId)
+          builder.endSubQuery(tabId, Map.empty)
         case event =>
           Task(logger.info(s"method=run event=unknown-event query-id=${query.id} user=${query.user.email} event=$event"))
       }.lastL

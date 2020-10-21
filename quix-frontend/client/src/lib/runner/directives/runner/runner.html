@@ -49,7 +49,7 @@
       </button>
     </span>
 
-    <div class="bi-r-i bi-s-h--x15 bi-muted bi-fade-in" ng-if="vm.runner.enabled || vm.result.enabled">
+    <div class="bi-align bi-s-h--x15 bi-muted bi-fade-in" ng-if="vm.runner.enabled || vm.result.enabled">
       <div class="bi-c bi-fade-in" ng-if="vm.result.current.elapsedTime">
         <span class="bi-text--sm">Elapsed time</span>
         <div class="bi-r-i bi-align bi-s-h--x05">
@@ -60,7 +60,7 @@
 
       <div class="bi-c bi-fade-in" ng-if="vm.result.current.finished">
         <span class="bi-text--sm">Start time</span>
-        <div class="bi-r-i bi-align bi-s-h--x05">
+        <div class="bi-align bi-s-h--x05">
           <i class="bi-icon--xs">access_time</i>
           <b class="bi-text--sm">{{vm.result.current.startTime | biDate:'HH:mm'}}</b>
         </div>
