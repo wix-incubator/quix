@@ -3,6 +3,8 @@ package quix.core.history.dao
 import monix.eval.Task
 import quix.core.history.{Execution, ExecutionStatus}
 
+import scala.collection.mutable.ListBuffer
+
 trait HistoryReadDao {
   def executions(filter: Filter = Filter.None,
                  sort: Sort = Sort.Default,
@@ -12,8 +14,30 @@ trait HistoryReadDao {
 sealed trait Filter
 
 object Filter {
+
   case object None extends Filter
+
   case class Status(status: ExecutionStatus) extends Filter
+
+  case class User(email: String) extends Filter
+
+  case class Query(query: String) extends Filter
+
+  case class CompoundFilter(filters: List[Filter]) extends Filter
+
+  def apply(userEmail: String, query: String): Filter = {
+    var filters = ListBuffer.empty[Filter]
+
+    if (userEmail.nonEmpty) filters += User(userEmail)
+    if (query.nonEmpty) filters += Query(query)
+
+    filters.toList match {
+      case Nil => None
+      case List(single) => single
+      case many => CompoundFilter(many)
+    }
+  }
+
 }
 
 case class Sort(by: SortField, order: SortOrder)
@@ -25,19 +49,26 @@ object Sort {
 sealed trait SortField
 
 object SortField {
+
   case object StartTime extends SortField
+
 }
 
 sealed trait SortOrder
 
 object SortOrder {
+
   case object Ascending extends SortOrder
+
   case object Descending extends SortOrder
+
 }
 
 trait Page {
   def offset: Int
+
   def limit: Int
+
   def endOffset: Int = offset + limit
 }
 

@@ -17,7 +17,7 @@ class MySqlHistoryReadDao(connection: Connection) extends HistoryReadDao {
       s"""
         SELECT id, query_type, statements, user_id, user_email, created_at, status
         FROM executions_history
-        ${where(filter)}
+        WHERE ${where(filter)}
         ${orderBy(sort)}
         LIMIT ?, ?
       """
@@ -33,8 +33,11 @@ class MySqlHistoryReadDao(connection: Connection) extends HistoryReadDao {
   }
 
   private def where(filter: Filter): String = filter match {
-    case Filter.Status(status) => s"WHERE status = '${status.toString.toUpperCase}'"
-    case Filter.None => ""
+    case Filter.Status(status) => s"status = '${status.toString.toUpperCase}'"
+    case Filter.User(userEmail) => s"user_email = '$userEmail'"
+    case Filter.Query(query) => s"statements like '%$query%'"
+    case Filter.CompoundFilter(filters) => filters.map(where).mkString(" and ")
+    case Filter.None => "1 = 1"
   }
 
   private def orderBy(sort: Sort): String =

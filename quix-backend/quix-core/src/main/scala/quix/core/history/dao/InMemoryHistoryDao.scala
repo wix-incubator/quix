@@ -58,6 +58,15 @@ object InMemoryHistoryDao {
 
     case Filter.Status(status) =>
       execution.status == status
+
+    case Filter.User(email) =>
+      execution.user.email == email
+
+    case Filter.Query(text) =>
+      execution.statements.exists(_.contains(text))
+
+    case Filter.CompoundFilter(filters) =>
+      filters.forall(filter => predicate(filter)(execution))
   }
 
   def comparator(sort: Sort)(e1: Execution, e2: Execution): Boolean = sort match {
