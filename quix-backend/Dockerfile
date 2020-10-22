@@ -1,6 +1,6 @@
 FROM maven:slim as maven
 
-ARG SBT_VERSION=1.3.8
+ARG SBT_VERSION=1.4.1
 
 # Install sbt
 RUN \
@@ -9,11 +9,11 @@ RUN \
   rm sbt-$SBT_VERSION.deb && \
   apt-get update && \
   apt-get install sbt && \
-  sbt sbtVersion
+  sbt sbtVersion -Dsbt.rootdir=true;
 
 COPY build.sbt .
 COPY version.sbt .
-RUN sbt update
+RUN sbt update -Dsbt.rootdir=true;
 COPY /quix-webapps/quix-web-spring/pom.xml ./quix-webapps/quix-web-spring/pom.xml
 RUN mvn -B -f /quix-webapps/quix-web-spring/pom.xml dependency:resolve --fail-never
 
@@ -27,7 +27,7 @@ COPY /quix-modules/quix-python-module/src ./quix-modules/quix-python-module/src
 COPY /quix-modules/quix-dummy-module/src ./quix-modules/quix-dummy-module/src
 COPY /quix-webapps/quix-web-spring/src ./quix-webapps/quix-web-spring/src
 
-RUN sbt +publishM2
+RUN sbt +publishM2 -Dsbt.rootdir=true;
 RUN mvn -f /quix-webapps/quix-web-spring/pom.xml install -DskipTests
 
 FROM ubuntu:19.10
