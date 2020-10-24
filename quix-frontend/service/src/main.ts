@@ -25,8 +25,8 @@ async function bootstrap() {
     if (!env.AutoMigrateDb && env.DbType === 'mysql') {
       const conf = createMysqlConf([DbMetadata], env);
       const conn = await retry(() => createConnection(conf))
-        .forNtimes(5)
-        .andWaitXmilliseconds(2000);
+        .forNTimes(5)
+        .andWaitXMilliseconds(2000);
 
       await createInitialSchemaIfNeeded(conn, env.DbName, logger);
       await checkSchemaVersion(conn, logger);

@@ -48,9 +48,13 @@ export class DbFileTreeNode {
   @Column({nullable: true})
   parentId?: string;
 
-  @OneToOne(type => DbNotebook, notebook => notebook.fileNode, {
-    onDelete: 'CASCADE',
-  })
+  @OneToOne(
+    type => DbNotebook,
+    notebook => notebook.fileNode,
+    {
+      onDelete: 'CASCADE',
+    },
+  )
   @JoinColumn()
   notebook?: DbNotebook;
 

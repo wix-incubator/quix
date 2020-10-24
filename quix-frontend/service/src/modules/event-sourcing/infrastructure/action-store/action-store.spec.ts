@@ -37,7 +37,7 @@ describe('action store', () => {
     module.close();
   });
 
-  it('should store and retreive the action correctly', async () => {
+  it('should store and retrieve the action correctly', async () => {
     const id = uuid.v4();
     const base = {
       id,

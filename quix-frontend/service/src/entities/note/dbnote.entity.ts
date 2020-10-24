@@ -4,9 +4,6 @@ import {
   Index,
   PrimaryColumn,
   ManyToOne,
-  AfterLoad,
-  BeforeUpdate,
-  BeforeInsert,
   UpdateDateColumn,
   CreateDateColumn,
 } from 'typeorm';
@@ -42,7 +39,11 @@ export class DbNote {
   @CreateDateColumn(dbConf.dateCreated)
   dateCreated!: number;
 
-  @ManyToOne(type => DbNotebook, n => n.notes, {onDelete: 'CASCADE'})
+  @ManyToOne(
+    type => DbNotebook,
+    n => n.notes,
+    {onDelete: 'CASCADE'},
+  )
   notebook?: DbNotebook;
 
   @Column()

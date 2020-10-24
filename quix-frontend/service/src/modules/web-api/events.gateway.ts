@@ -29,9 +29,9 @@ export class EventsGateway {
       const user: IGoogleUser = auth(token);
 
       return this.eventsService.getEventStream(sessionId, user.id).pipe(
-        map((data: IAction) => ({
+        map((action: IAction) => ({
           event: 'action',
-          data: this.sanitizeAction(data),
+          data: this.sanitizeAction(action),
         })),
       );
     } catch (e) {
@@ -42,7 +42,7 @@ export class EventsGateway {
 
   sanitizeAction(action: IAction): AnyAction {
     const result = cloneDeep(action);
-    delete result.user;
+    delete (result as any).user;
     delete result.userId;
     delete result.sessionId;
     return result;

@@ -8,7 +8,7 @@ import {Dictionary} from 'global-types';
 import {Context} from './context';
 
 describe('event bus', () => {
-  describe('basic functinality', () => {
+  describe('basic functionality', () => {
     it('should call handler on emit', async () => {
       const spy = jest.fn();
       const bus = EventBusBuilder().build();
@@ -18,7 +18,7 @@ describe('event bus', () => {
     });
   });
 
-  const exptectedMiddlewareArgs = (action: any) => [
+  const expectedMiddlewareArgs = (action: any) => [
     {type: 'foo.create', id: '1'},
     expect.objectContaining({hooks: {call: expect.any(Function)}}),
     expect.any(Function),
@@ -34,7 +34,7 @@ describe('event bus', () => {
 
       expect(spy.mock.calls).toHaveLength(1);
       expect(spy.mock.calls[0]).toMatchObject(
-        exptectedMiddlewareArgs({type: 'foo.create', id: '1', user: 'foo'}),
+        expectedMiddlewareArgs({type: 'foo.create', id: '1', user: 'foo'}),
       );
     });
 
@@ -75,7 +75,7 @@ describe('event bus', () => {
 
       expect(middleware2.mock.calls).toHaveLength(1);
       expect(middleware2.mock.calls[0]).toMatchObject(
-        exptectedMiddlewareArgs({type: 'foo.create', id: '1'}),
+        expectedMiddlewareArgs({type: 'foo.create', id: '1'}),
       );
     });
 
@@ -93,7 +93,7 @@ describe('event bus', () => {
 
       expect(middleware2.mock.calls).toHaveLength(1);
       expect(middleware2.mock.calls[0]).toMatchObject(
-        exptectedMiddlewareArgs({
+        expectedMiddlewareArgs({
           type: 'foo.create',
           id: '1',
           foo: 'bar',
@@ -129,7 +129,7 @@ describe('event bus', () => {
 
       expect(middleware2.mock.calls).toHaveLength(1);
       expect(middleware2.mock.calls[0]).toMatchObject(
-        exptectedMiddlewareArgs({type: 'foo.create', id: '1', foo: 'bar'}),
+        expectedMiddlewareArgs({type: 'foo.create', id: '1', foo: 'bar'}),
       );
     });
   });
@@ -170,7 +170,7 @@ describe('event bus', () => {
       };
 
       busBuilder = EventBusBuilder()
-        .addPlugin('someEntitiy', plugin)
+        .addPlugin('someEntity', plugin)
         .addMiddleware(validationMiddleware);
     });
 

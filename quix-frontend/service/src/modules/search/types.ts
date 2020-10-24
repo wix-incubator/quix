@@ -9,7 +9,7 @@ export enum SearchTypes {
   noteName = 'name',
   content = 'content',
 }
-export type SpeciaSearchTypes =
+export type SpecialSearchTypes =
   | SearchTypes.noteName
   | SearchTypes.type
   | SearchTypes.user;

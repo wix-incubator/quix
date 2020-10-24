@@ -1,7 +1,7 @@
 export function retry<R>(what: () => Promise<R>) {
   return {
-    forNtimes: (n: number) => ({
-      andWaitXmilliseconds: async (milliseconds: number) => {
+    forNTimes: (n: number) => ({
+      andWaitXMilliseconds: async (milliseconds: number) => {
         let counter = 0;
         let error: Error | null = null;
         let result: R = {} as any;
