@@ -16,7 +16,7 @@ describe('search query parser', () => {
       expect(parse(input)).toEqual(expected);
     });
 
-    it('handle weird charchters', () => {
+    it('handle weird characters', () => {
       const input = 'select $START_TIME from foo';
       const expected: SearchQuery = {
         content: [
@@ -69,7 +69,7 @@ describe('search query parser', () => {
       expect(parse(input)).toEqual(expected);
     });
 
-    it('handle user operator wihtout any string', () => {
+    it('handle user operator without any string', () => {
       const input = 'user:foo@wix.com';
       const expected: SearchQuery = {
         content: [],
@@ -78,7 +78,7 @@ describe('search query parser', () => {
       expect(parse(input)).toEqual(expected);
     });
 
-    it('do not handle user operator in the middle of a sentance', () => {
+    it('do not handle user operator in the middle of a sentence', () => {
       const input = 'select bar user:foo@wix.com from foo';
       const expected: SearchQuery = {
         content: [
@@ -92,7 +92,7 @@ describe('search query parser', () => {
       expect(parse(input)).toEqual(expected);
     });
 
-    it('do not handle user operator in the middle of a sentance', () => {
+    it('do not handle user operator in the middle of a sentence', () => {
       const input = 'select bar from foo user:foo@wix.com';
       const expected: SearchQuery = {
         content: [
@@ -150,7 +150,7 @@ describe('search query parser', () => {
       expect(parse(input2)).toEqual(expected);
     });
 
-    it('multuple operators', () => {
+    it('multiple operators', () => {
       const input =
         'type:python name:"a new notebook" select 1 from foo user:foo@wix.com';
       const expected: SearchQuery = {

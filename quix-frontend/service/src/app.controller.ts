@@ -54,7 +54,7 @@ export class AppController implements OnApplicationShutdown {
   }
 
   @Get('/health/is_alive')
-  async healthcheck(@Res() response: Response) {
+  async healthCheck(@Res() response: Response) {
     await this.conn
       .query(`SELECT 'health-check' FROM dual LIMIT 1`)
       .then(() => response.sendStatus(200).end())

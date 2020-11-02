@@ -323,10 +323,10 @@ describe('event sourcing', () => {
           const reorderAction = NoteActions.reorderNote(noteIdMove, to);
           await driver.emitAsUser(eventBus, [reorderAction]);
 
-          const reorderdNotes = reorderPos(notes, from, to);
+          const reorderedNotes = reorderPos(notes, from, to);
           const notebook = await driver.getNotebookWithNotes(notebookId);
 
-          const doesRankMatchInsertOrder = reorderdNotes.every(
+          const doesRankMatchInsertOrder = reorderedNotes.every(
             (note, index) =>
               notebook.notes!.find(n => n.id === note.id)!.rank === index,
           );

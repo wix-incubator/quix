@@ -113,18 +113,17 @@ export const getEnv = (
   globalEnv: Record<string, string | undefined> = process.env,
 ): EnvSettings => {
   loadEnv();
+
   const staticSettings: StaticSettings = defaults(
-    Object.entries(envSettingsMap).reduce(
-      (settings, [key, envVar]) => {
-        settings[key] = transforms[key as keyof StaticSettings](
-          globalEnv[envVar],
-        );
-        return settings;
-      },
-      {} as any,
-    ),
+    Object.entries(envSettingsMap).reduce((settings, [key, envVar]) => {
+      settings[key] = transforms[key as keyof StaticSettings](
+        globalEnv[envVar],
+      );
+      return settings;
+    }, {} as any),
     isJestTest() ? testingDefaults : envSettingsDefaults,
   );
+
   const computedSettings = getComputedSettings(
     staticSettings.Modules,
     globalEnv,

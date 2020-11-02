@@ -109,12 +109,12 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
    * Get a list of all children
    * @returns {Promise<DbFileTreeNode[]>}
    */
-  async getDeepChildren(root: DbFileTreeNode, enityManager?: EntityManager) {
+  async getDeepChildren(root: DbFileTreeNode, entityManager?: EntityManager) {
     const baseMpath = root.mpath;
     assert(baseMpath && baseMpath.length > 0, 'mpath is empty/undefined');
 
-    const qb = enityManager
-      ? enityManager.createQueryBuilder(DbFileTreeNode, 'node')
+    const qb = entityManager
+      ? entityManager.createQueryBuilder(DbFileTreeNode, 'node')
       : this.createQueryBuilder('node');
 
     return qb
@@ -125,7 +125,7 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
   async moveTree(root: DbFileTreeNode, newParentNode: DbFileTreeNode) {
     if (root.id === newParentNode.id) {
       throw new Error(
-        `Illegal request: can't move folder to itslef, or to it's parent`,
+        `Illegal request: can't move folder to itself, or to it's parent`,
       );
     }
     if (root.parentId === newParentNode.id) {
@@ -159,7 +159,7 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
     assert(baseMpath && baseMpath.length > 0, 'mpath is empty/undefined');
     const children = await this.getDeepChildren(root);
 
-    const [foldersToDeltete, notebooksToDelete] = children.reduce(
+    const [foldersToDelete, notebooksToDelete] = children.reduce(
       ([foldersIds, notebookIds], node) => {
         (node.type === FileType.folder ? foldersIds : notebookIds).push(node);
         return [foldersIds, notebookIds];
@@ -185,12 +185,12 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
           })
           .execute();
       }
-      if (foldersToDeltete.length) {
+      if (foldersToDelete.length) {
         await em
           .createQueryBuilder()
           .delete()
           .from(DbFolder)
-          .whereInIds(foldersToDeltete)
+          .whereInIds(foldersToDelete)
           .execute();
       }
     });
