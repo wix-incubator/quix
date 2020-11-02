@@ -1,5 +1,6 @@
-import * as React from 'react';
+import React from 'react';
 import { IHistory } from '@wix/quix-shared';
+import _ from 'lodash';
 import { SortableTable } from '../../lib/ui/components/SortableTable';
 import { historyTableFields } from './history-table-fields';
 import {extractTextAroundMatch} from '../../services/search'
@@ -10,10 +11,13 @@ export interface HistoryProps {
   error: { message: string };
   onHistoryClicked(history: IHistory): void;
   loadMore(): void;
+  isLoading: boolean;
 }
 
+export const CHUNK_SIZE = 100;
+
 export function History(props: HistoryProps) {
-  const { history, error, onHistoryClicked } = props;
+  const { history, error, onHistoryClicked, loadMore, isLoading } = props;
 
   const displayErrorState = () => (
     <div className='bi-empty-state--error' data-hook='history-error'>
@@ -42,7 +46,13 @@ export function History(props: HistoryProps) {
   />
   }
 
-  let filter = '';
+  const getChunk = () => {
+    if (!isLoading) {
+      loadMore();
+    }
+  }
+
+  const filter = '';
   const displayLoadedState = () => (
     <div className='bi-section-content bi-c-h'>
       <div
@@ -61,10 +71,8 @@ export function History(props: HistoryProps) {
                   : table.cell.value.toString()
             }))}
             onRowClicked={onHistoryClicked}
-            getFilter={() => filter}
-            setFilter={newFilter => {
-              filter = newFilter;
-            }}
+            getChunk={getChunk}
+            isChunking={isLoading}
           />
         </div>
       </div>

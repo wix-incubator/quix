@@ -1,59 +1,35 @@
-import * as React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   useTable,
   useSortBy,
   useGlobalFilter,
   usePagination
 } from 'react-table';
-import ReactPaginate from 'react-paginate';
 import '../directives/search/search.scss';
-
-function GlobalFilter({ preGlobalFilteredRows, getFilter, setGlobalFilter }) {
-  return (
-    <span className="bi-search--rnd ng-pristine ng-untouched ng-valid ng-isolate-scope ng-not-empty">
-      <input
-        className="bi-input bi-grow ng-pristine ng-untouched ng-valid ng-empty ng-valid-minlength"
-        ng-class="{
-          'bs-has-context-icon': !!options.contextIcon,
-          'bs-has-text': !!model.text
-        }"
-        ng-model="model.text"
-        ng-keypress="events.onKeypress($event)"
-        placeholder="Filter results..."
-        value={getFilter() || ""}
-        onChange={e => {
-          setGlobalFilter(e.target.value || undefined); // Set undefined to remove the filter entirely
-        }}
-      ></input>
-
-      <span className="bs-close"></span>
-    </span>
-  );
-}
 
 export const SortableTable = ({
   columns,
   data,
   onRowClicked,
-  setFilter,
-  getFilter
+  getChunk,
+  isChunking,
 }) => {
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     prepareRow,
-    preGlobalFilteredRows,
-    setGlobalFilter,
+    // preGlobalFilteredRows,
+    // setGlobalFilter,
     page,
-    pageCount,
-    gotoPage
+    // pageCount,
+    // gotoPage
   } = useTable(
     {
       columns,
       data,
       initialState: {
-        pageSize: 20
+        pageSize: 10000
       }
     },
     useGlobalFilter,
@@ -61,43 +37,48 @@ export const SortableTable = ({
     usePagination
   );
 
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    setRows([...rows, ...page.slice(rows.length).map((row, index) => {
+      prepareRow(row);
+      return (
+        <tr
+          key={index}
+          {...row.getRowProps()}
+          onClick={() => onRowClicked(row.original)}
+          data-hook="table-row"
+        >
+          {row.cells.map(cell => {
+            return (
+              <td
+                {...cell.getCellProps()}
+                className={"bi-table-cell-" + cell.column.id}
+              >
+                {cell.render("Cell")}
+              </td>
+            );
+          })}
+        </tr>
+      );
+    })]);
+  },[page.length]);
+
+  const scroll = (UIElement) => {
+    const element = UIElement.target;
+    if (element.scrollHeight - element.scrollTop <= element.clientHeight + 1000) {
+      getChunk();
+    }
+  }
+
   return (
     <>
-      <div>
-        <GlobalFilter
-          preGlobalFilteredRows={preGlobalFilteredRows}
-          getFilter={getFilter}
-          setGlobalFilter={gf => {
-            setFilter(gf);
-            setGlobalFilter(gf);
-          }}
-        />
-
-        <div style={{ float: "right" }} className={"bi-button-group"}>
-          <ReactPaginate
-            pageCount={pageCount}
-            pageRangeDisplayed={3}
-            marginPagesDisplayed={1}
-            previousLabel={<i className="bi-icon--sm">keyboard_arrow_left</i>}
-            nextLabel={<i className="bi-icon--sm">keyboard_arrow_right</i>}
-            containerClassName={"bi-button-group"}
-            breakLinkClassName={"bi-button"}
-            nextLinkClassName={"bi-button"}
-            previousLinkClassName={"bi-button"}
-            activeLinkClassName={"bi-button--primary"}
-            pageLinkClassName={"bi-button"}
-            onPageChange={pageData => {
-              gotoPage(pageData.selected);
-            }}
-          />
-        </div>
-      </div>
       <div
         className={
           "bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header"
         }
       >
-        <div className={"bi-fade-in"}>
+        <div onScroll={scroll} className={"bi-fade-in"}>
           <table {...getTableProps()} className={"bi-table"}>
             <thead className="bi-tbl-header">
               {headerGroups.map(headerGroup => (
@@ -134,30 +115,12 @@ export const SortableTable = ({
               ))}
             </thead>
             <tbody {...getTableBodyProps()}>
-              {page.map((row, index) => {
-                prepareRow(row);
-                return (
-                  <tr
-                    key={index}
-                    {...row.getRowProps()}
-                    onClick={() => onRowClicked(row.original)}
-                    data-hook="table-row"
-                  >
-                    {row.cells.map(cell => {
-                      return (
-                        <td
-                          {...cell.getCellProps()}
-                          className={"bi-table-cell-" + cell.column.id}
-                        >
-                          {cell.render("Cell")}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
+              {rows}
             </tbody>
           </table>
+          {isChunking ? <div className='bi-empty-state'>
+            <div className='bi-empty-state-content'>Loading...</div>
+          </div>: null}
         </div>
       </div>
     </>
