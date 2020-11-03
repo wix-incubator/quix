@@ -12,12 +12,13 @@ export interface HistoryProps {
   onHistoryClicked(history: IHistory): void;
   loadMore(): void;
   isLoading: boolean;
+  resultsLeft: boolean;
 }
 
 export const CHUNK_SIZE = 100;
 
 export function History(props: HistoryProps) {
-  const { history, error, onHistoryClicked, loadMore, isLoading } = props;
+  const { history, error, onHistoryClicked, loadMore, isLoading, resultsLeft } = props;
 
   const displayErrorState = () => (
     <div className='bi-empty-state--error' data-hook='history-error'>
@@ -47,7 +48,7 @@ export function History(props: HistoryProps) {
   }
 
   const getChunk = () => {
-    if (!isLoading) {
+    if (!isLoading && resultsLeft) {
       loadMore();
     }
   }

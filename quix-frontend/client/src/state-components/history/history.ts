@@ -17,6 +17,7 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
       console.log('empty');
     },
     isLoading: () => {},
+    resultsLeft: ()  => {},
   },
   controller: async (scope: HistoryProps, params, { syncUrl, setTitle }) => {
     scope.isLoading = true;
@@ -29,9 +30,14 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
       ({ history, error }) => {
         scope.history = [...scope.history ? scope.history : [], ...history];
         scope.isLoading = false;
-        scope.loadMore = () => {
+        scope.resultsLeft = scope.resultsLeft === false ? false : true;
+        scope.loadMore = async () => {
           scope.isLoading = true;
-          return cache.history.fetch({ offset: scope.history.length, limit: CHUNK_SIZE });
+          const response = await cache.history.fetch({ offset: scope.history.length, limit: CHUNK_SIZE });
+          if (response.length !== CHUNK_SIZE) {
+            scope.resultsLeft = false;
+          }
+          return response;
         };
         scope.error = error;
       },
