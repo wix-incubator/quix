@@ -1,24 +1,27 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { IHistory } from '@wix/quix-shared';
 import _ from 'lodash';
 import { SortableTable } from '../../lib/ui/components/SortableTable';
 import { historyTableFields } from './history-table-fields';
-import {extractTextAroundMatch} from '../../services/search'
-import Highlighter from 'react-highlight-words'
+import {extractTextAroundMatch} from '../../services/search';
+import Highlighter from 'react-highlight-words';
+import makePagination from '../../lib/ui/components/hoc/makePagination';
 
 export interface HistoryProps {
   history: IHistory[];
   error: { message: string };
   onHistoryClicked(history: IHistory): void;
-  loadMore(): void;
-  isLoading: boolean;
-  resultsLeft: boolean;
+  loadMore(offset: number, limit: number): void;
 }
 
 export const CHUNK_SIZE = 100;
 
+const Table = makePagination(SortableTable);
+
 export function History(props: HistoryProps) {
-  const { history, error, onHistoryClicked, loadMore, isLoading, resultsLeft } = props;
+  const { history, error, onHistoryClicked, loadMore } = props;
+
+  const [tableSize, setTableSize] = useState(0);
 
   const displayErrorState = () => (
     <div className='bi-empty-state--error' data-hook='history-error'>
@@ -47,12 +50,6 @@ export function History(props: HistoryProps) {
   />
   }
 
-  const getChunk = () => {
-    if (!isLoading && resultsLeft) {
-      loadMore();
-    }
-  }
-
   const filter = '';
   const displayLoadedState = () => (
     <div className='bi-section-content bi-c-h'>
@@ -61,19 +58,20 @@ export function History(props: HistoryProps) {
         data-hook='history-content'
       >
         <div className='bi-panel-content bi-c-h'>
-          <SortableTable
-            data={history}
-            columns={historyTableFields.map(field => ({
-              Header: field.title,
-              accessor: field.name,
-              Cell: table =>
-                field.filter
-                  ? field.filter(undefined, table.row.original, 0, highlight(filter))
-                  : table.cell.value.toString()
-            }))}
-            onRowClicked={onHistoryClicked}
-            getChunk={getChunk}
-            isChunking={isLoading}
+          <Table
+          loadMore={loadMore}
+          onRowClicked={onHistoryClicked}
+          columns={historyTableFields.map(field => ({
+            Header: field.title,
+            accessor: field.name,
+            Cell: table =>
+              field.filter
+                ? field.filter(undefined, table.row.original, 0, highlight(filter))
+                : table.cell.value.toString()
+          }))}
+          data={history}
+          paginationSize={CHUNK_SIZE}
+          tableSize={(size) => setTableSize(size)}
           />
         </div>
       </div>
@@ -86,7 +84,7 @@ export function History(props: HistoryProps) {
         <div>
           <div className='bi-section-title'>
             History
-            {history && <span className='bi-fade-in'> ({history.length})</span>}
+            {history && <span className='bi-fade-in'> ({tableSize})</span>}
           </div>
         </div>
       </div>

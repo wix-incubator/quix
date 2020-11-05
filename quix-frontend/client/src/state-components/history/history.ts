@@ -13,15 +13,10 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
     history: () => {},
     error: () => {},
     onHistoryClicked: () => {},
-    loadMore: () => {
-      console.log('empty');
-    },
-    isLoading: () => {},
-    resultsLeft: ()  => {},
+    loadMore: () => {},
   },
   controller: async (scope: HistoryProps, params, { syncUrl, setTitle }) => {
-    scope.isLoading = true;
-    await cache.history.fetch({ offset: 0, limit: CHUNK_SIZE });
+    await cache.history.fetch({ offset: 0, limit: CHUNK_SIZE + 1 });
     syncUrl();
     setTitle();
 
@@ -29,15 +24,8 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
       'history',
       ({ history, error }) => {
         scope.history = [...scope.history ? scope.history : [], ...history];
-        scope.isLoading = false;
-        scope.resultsLeft = scope.resultsLeft === false ? false : true;
-        scope.loadMore = async () => {
-          scope.isLoading = true;
-          const response = await cache.history.fetch({ offset: scope.history.length, limit: CHUNK_SIZE });
-          if (response.length !== CHUNK_SIZE) {
-            scope.resultsLeft = false;
-          }
-          return response;
+        scope.loadMore = (offset, limit) => {
+          return cache.history.fetch({ offset, limit });
         };
         scope.error = error;
       },

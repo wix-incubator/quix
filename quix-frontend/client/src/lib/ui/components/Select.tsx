@@ -3,6 +3,7 @@ import useAutocomplete from '@material-ui/lab/useAutocomplete';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
 import { Input, List, ListItem } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import gray from '@material-ui/core/colors/grey';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -29,7 +30,7 @@ const useStyles = makeStyles(() =>
       maxHeight: 200,
       border: '1px solid rgba(0,0,0,.25)',
       '& li[data-focus="true"]': {
-        backgroundColor: '#FAFAFA',
+        backgroundColor: gray[50],
         cursor: 'pointer',
       },
       '& li:active': {
