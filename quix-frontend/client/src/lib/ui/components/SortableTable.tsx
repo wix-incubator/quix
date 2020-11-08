@@ -5,6 +5,7 @@ import {
   useGlobalFilter,
   usePagination
 } from 'react-table';
+import Input from './Select';
 import '../directives/search/search.scss';
 
 export const SortableTable = ({
@@ -13,17 +14,14 @@ export const SortableTable = ({
   onRowClicked,
   getChunk,
   isChunking,
+  filter,
 }) => {
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     prepareRow,
-    // preGlobalFilteredRows,
-    // setGlobalFilter,
     page,
-    // pageCount,
-    // gotoPage
   } = useTable(
     {
       columns,
@@ -62,7 +60,7 @@ export const SortableTable = ({
         </tr>
       );
     })]);
-  },[page.length]);
+  }, [page.length]);
 
   const scroll = (UIElement) => {
     const element = UIElement.target;
@@ -73,6 +71,14 @@ export const SortableTable = ({
 
   return (
     <>
+      <Input
+        inputDefaultValue={'1'}
+        options={['1','2','3']}
+        title='email'
+        unique='email'
+        onChange={(option) => {
+          console.log(option)}}
+      />
       <div
         className={
           "bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header"

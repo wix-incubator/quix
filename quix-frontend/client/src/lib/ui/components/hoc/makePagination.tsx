@@ -4,7 +4,6 @@ import { Subtract } from 'utility-types';
 interface InjectedPaginationProps {
   data: any[];
   columns: any[];
-  onRowClicked(rows: any): void;
   getChunk(): void;
   isChunking: boolean;
 }
@@ -12,10 +11,10 @@ interface InjectedPaginationProps {
 interface MakePaginationProps {
   data: any[];
   columns: any[];
-  onRowClicked(rows: any): void;
   loadMore(offset: number, limit: number): void;
   paginationSize: number;
   tableSize?(size: number): void;
+  defaultFilter?: string;
 }
 
 const makePagination = <P extends InjectedPaginationProps>(
@@ -28,7 +27,7 @@ const makePagination = <P extends InjectedPaginationProps>(
       const [isChunking, setIsChunking] = useState(false);
       const [requestCount, setRequestCount] = useState(0);
       const [fixedData, setFixedData] = useState([]);
-      const { data, columns, onRowClicked, loadMore, paginationSize, tableSize } = props;
+      const { data, columns, loadMore, paginationSize, tableSize, ...rest } = props;
 
 
       useEffect(() => {
@@ -58,8 +57,8 @@ const makePagination = <P extends InjectedPaginationProps>(
         columns,
         data: fixedData,
         isChunking,
-        onRowClicked,
         getChunk,
+        ...rest,
       };
       return <Component {...componentProps as P} />
     }

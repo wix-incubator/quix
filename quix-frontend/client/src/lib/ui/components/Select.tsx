@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import useAutocomplete from '@material-ui/lab/useAutocomplete';
 import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { Input, List, ListItem } from '@material-ui/core';
+import { CircularProgress, Input, List, ListItem } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import gray from '@material-ui/core/colors/grey';
 
@@ -13,13 +13,14 @@ const useStyles = makeStyles(() =>
     label: {
       display: 'block',
     },
-    input: {
-      cursor: 'pointer',
+    loading: {
+      display: 'flex',
+      justifyContent: 'space-between',
     },
     listbox: {
       width: 200,
       lineHeight: 'initial !important',
-      fontSie: '13px',
+      fontSize: '13px',
       margin: 0,
       padding: 0,
       zIndex: 1,
@@ -40,51 +41,116 @@ const useStyles = makeStyles(() =>
   }),
 );
 
-export default function Select({ inputDescription, options, title, unique, setOption }) {
+export default function Select({
+  options,
+  title,
+  unique,
+  onChange,
+  inputDefaultValue,
+  placeHolder =  'Enter your input'
+}) {
+
+  // TODO: Make select work with number plain-data
+  const isPlainData = options.length > 0 ? typeof options[0] === 'string' : true;
   const classes = useStyles();
-  const [selectedOption, setSelectedOption] = useState({});
+  const [selectedOption, setSelectedOption] = useState(isPlainData ? '' : {});
+  const [value, setValue] = useState(inputDefaultValue || '');
+  const [open, setOpen] = useState(false);
+  const [selectOptions, setSelectOptions] = useState([]);
+
+  const loading = open && selectOptions.length === 0;
+  let active = false;
+
+  const isFirstRun = useRef(true);
+  useEffect(() => {
+    if (isFirstRun.current) {
+      isFirstRun.current = false;
+      return;
+    }
+
+    if (!active) {
+      active = true;
+      Promise.resolve(options)
+      .then(response => {
+        if (active) {
+          setSelectOptions(response);
+          inputDefaultValue !== '' ? setValue(inputDefaultValue) : null;
+          active = false;
+        }
+      });
+    }
+    return () => {
+      active = false;
+    }
+  }, [loading]);
+
   const {
     getRootProps,
-    getInputLabelProps,
+    // getInputLabelProps,
     getInputProps,
     getListboxProps,
     getOptionProps,
     groupedOptions,
   } = useAutocomplete({
-    options,
-    getOptionLabel: (option) => option[title],
+    options: selectOptions,
+    value,
+    onClose: () => setOpen(false),
+    onOpen: () => setOpen(true),
+    onChange: (event, newValue) => setValue(newValue),
+    getOptionLabel: (option) => isPlainData ? option : option[title],
     getOptionSelected: (option, value) => {
-      if (option[unique] === value[unique]) {
-        if (selectedOption[unique] !== option[unique]){
+      const optionUnique = isPlainData ? option : option[unique];
+      const valueUnique = isPlainData ? value : value[unique];
+      const selectedOptionUnique = isPlainData ? selectedOption : selectedOption[unique];
+      const inputDefaultValueUnique = isPlainData ? inputDefaultValue : inputDefaultValue[unique];
+      
+      if (optionUnique === valueUnique) {
+        if (selectedOptionUnique !== optionUnique) {
+          if (inputDefaultValueUnique !== optionUnique) {
+            onChange(option);
+          }
           setSelectedOption(option);
-          setOption(option);
         }
         return true;
       }
       return false;
     },
   });
-
+  
   return (
     <div>
       <div {...getRootProps()} className={classes.inputArea}>
-        {inputDescription ? 
-        <label className={'bi-form-label'} {...getInputLabelProps()}>
-          {inputDescription}
-        </label>
-        : null
-        }
-        <Input className={`${classes.input} bi-input`} {...getInputProps()} disableUnderline endAdornment={<ExpandMoreIcon fontSize='small'/>} />
+        <Input
+          className={`bi-input`}
+          {...getInputProps()}
+          disableUnderline
+          endAdornment={<ExpandMoreIcon fontSize='small' />}
+          placeholder={placeHolder}
+        />
       </div>
-      {groupedOptions.length > 0 ? (
-        <List className={`${classes.listbox} bi-dropdown-menu`} {...getListboxProps()}>
-          {groupedOptions.map((option, index) => (
-              <ListItem {...getOptionProps({ option, index })}>
-                {option[title]}
-              </ListItem>
-            ))}
-        </List>
-      ) : null}
+        {
+          loading ? 
+          <List className={`${classes.listbox} bi-dropdown-menu`} {...getListboxProps()}>
+            <ListItem className={classes.loading}>
+              <span>
+                Loading...
+              </span>
+              <span>
+                <CircularProgress color="inherit" size={20} />
+              </span>
+            </ListItem>
+          </List>
+          : 
+          groupedOptions.length > 0 ? (
+            <List className={`${classes.listbox} bi-dropdown-menu`} {...getListboxProps()}>
+              {groupedOptions.map((option, index) => (
+                <ListItem {...getOptionProps({ option, index })} >
+                  {isPlainData ? option : option[title]}
+                </ListItem>
+              ))}
+              </List>
+          ) : null
+        }
     </div>
   );
 }

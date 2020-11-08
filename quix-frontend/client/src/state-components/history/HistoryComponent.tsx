@@ -6,10 +6,12 @@ import { historyTableFields } from './history-table-fields';
 import {extractTextAroundMatch} from '../../services/search';
 import Highlighter from 'react-highlight-words';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
+import { User } from '../../lib/app/services/user';
 
 export interface HistoryProps {
   history: IHistory[];
   error: { message: string };
+  filter: {user: User, query: string};
   onHistoryClicked(history: IHistory): void;
   loadMore(offset: number, limit: number): void;
 }
@@ -19,7 +21,7 @@ export const CHUNK_SIZE = 100;
 const Table = makePagination(SortableTable);
 
 export function History(props: HistoryProps) {
-  const { history, error, onHistoryClicked, loadMore } = props;
+  const { history, error, onHistoryClicked, loadMore, filter } = props;
 
   const [tableSize, setTableSize] = useState(0);
 
@@ -50,7 +52,6 @@ export function History(props: HistoryProps) {
   />
   }
 
-  const filter = '';
   const displayLoadedState = () => (
     <div className='bi-section-content bi-c-h'>
       <div
@@ -66,12 +67,13 @@ export function History(props: HistoryProps) {
             accessor: field.name,
             Cell: table =>
               field.filter
-                ? field.filter(undefined, table.row.original, 0, highlight(filter))
+                ? field.filter(undefined, table.row.original, 0, highlight(''))
                 : table.cell.value.toString()
           }))}
           data={history}
           paginationSize={CHUNK_SIZE}
           tableSize={(size) => setTableSize(size)}
+          filter={filter}
           />
         </div>
       </div>

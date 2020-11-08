@@ -10,20 +10,22 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
   template: History,
   url: {},
   scope: {
+    filter: () => {},
     history: () => {},
     error: () => {},
     onHistoryClicked: () => {},
     loadMore: () => {},
   },
   controller: async (scope: HistoryProps, params, { syncUrl, setTitle }) => {
-    await cache.history.fetch({ offset: 0, limit: CHUNK_SIZE + 1 });
+    await cache.history.fetch({ offset: 0, limit: CHUNK_SIZE + 1 }); // TODO: move to makePagination
     syncUrl();
     setTitle();
 
     store.subscribe(
       'history',
       ({ history, error }) => {
-        scope.history = [...scope.history ? scope.history : [], ...history];
+        scope.filter = {user: app.getUser(), query: app.getUser().getEmail()};
+        scope.history = [...scope.history ? scope.history : [], ...history]; // TODO: move to makePagination
         scope.loadMore = (offset, limit) => {
           return cache.history.fetch({ offset, limit });
         };
