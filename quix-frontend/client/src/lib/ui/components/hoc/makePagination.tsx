@@ -25,25 +25,29 @@ const makePagination = <P extends InjectedPaginationProps>(
     Subtract<P, InjectedPaginationProps> & MakePaginationProps>
     = (props: MakePaginationProps) => {
 
-      const [isChunking, setIsChunking ] = useState(false);
+      const [isChunking, setIsChunking] = useState(false);
       const [requestCount, setRequestCount] = useState(0);
+      const [fixedData, setFixedData] = useState([]);
       const { data, columns, onRowClicked, loadMore, paginationSize, tableSize } = props;
 
 
-      // TODO: fix it
-      const size: number = 
-      Math.floor(data.length % paginationSize) * (data.length > paginationSize ? paginationSize : 1) +
-      Math.floor(requestCount / paginationSize) * paginationSize;
+      useEffect(() => {
+        setIsChunking(false);
+        setRequestCount(requestCount + 1);
+        if (fixedData.length === data.length - 1) {
+          setFixedData(data);
+        }else {
+          setFixedData(data.slice(0, data.length - 1));
+        }
+      }, [data]);
 
       useEffect(() => {
-        setRequestCount(requestCount + 1);
-        setIsChunking(false);
-        if (tableSize) { tableSize(size) }
-      }, [data]);
+        if (tableSize) { tableSize(fixedData.length) }
+      }, [fixedData.length]);
 
 
       const getChunk = () => {
-        const resultsLeft = data.length % paginationSize === requestCount % paginationSize;
+        const resultsLeft = data.length % paginationSize === 1 && data.length !== fixedData.length;
         if (!isChunking && resultsLeft) {
           setIsChunking(true);
           loadMore(paginationSize * requestCount, paginationSize);
@@ -52,7 +56,7 @@ const makePagination = <P extends InjectedPaginationProps>(
 
       const componentProps = {
         columns,
-        data: data.slice(0, size),
+        data: fixedData,
         isChunking,
         onRowClicked,
         getChunk,
