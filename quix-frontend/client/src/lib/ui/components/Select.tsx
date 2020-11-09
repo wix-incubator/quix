@@ -41,22 +41,25 @@ const useStyles = makeStyles(() =>
   }),
 );
 
+const checkIsPlainData = (data) => ['string', 'number', 'undefined'].includes(typeof data);
+
+const getOptionValue = (option, title) => checkIsPlainData(option) ? String(option) : option[title];
+
 export default function Select({
   options,
-  title,
-  unique,
+  title = '',
+  unique = '',
   onChange,
   inputDefaultValue,
   placeHolder =  'Enter your input'
 }) {
 
-  // TODO: Make select work with number plain-data
-  const isPlainData = options.length > 0 ? typeof options[0] === 'string' : true;
   const classes = useStyles();
-  const [selectedOption, setSelectedOption] = useState(isPlainData ? '' : {});
   const [value, setValue] = useState(inputDefaultValue || '');
   const [open, setOpen] = useState(false);
   const [selectOptions, setSelectOptions] = useState([]);
+
+  const [selectedOption, setSelectedOption] = useState('');
 
   const loading = open && selectOptions.length === 0;
   let active = false;
@@ -68,13 +71,18 @@ export default function Select({
       return;
     }
 
-    if (!active) {
+    if (!active && selectOptions.length === 0) {
       active = true;
-      Promise.resolve(options)
+      let data;
+      if (typeof options === 'function') {
+        data = options();
+      } else {
+        data = options
+      }
+      Promise.resolve(data)
       .then(response => {
         if (active) {
           setSelectOptions(response);
-          inputDefaultValue !== '' ? setValue(inputDefaultValue) : null;
           active = false;
         }
       });
@@ -86,7 +94,6 @@ export default function Select({
 
   const {
     getRootProps,
-    // getInputLabelProps,
     getInputProps,
     getListboxProps,
     getOptionProps,
@@ -97,10 +104,11 @@ export default function Select({
     onClose: () => setOpen(false),
     onOpen: () => setOpen(true),
     onChange: (event, newValue) => setValue(newValue),
-    getOptionLabel: (option) => isPlainData ? option : option[title],
-    getOptionSelected: (option, value) => {
+    getOptionLabel: (option) => getOptionValue(option, title),
+    getOptionSelected: (option, newValue) => {
+      const isPlainData = getOptionValue(option, title);
       const optionUnique = isPlainData ? option : option[unique];
-      const valueUnique = isPlainData ? value : value[unique];
+      const valueUnique = isPlainData ? newValue : newValue[unique];
       const selectedOptionUnique = isPlainData ? selectedOption : selectedOption[unique];
       const inputDefaultValueUnique = isPlainData ? inputDefaultValue : inputDefaultValue[unique];
       
@@ -145,7 +153,7 @@ export default function Select({
             <List className={`${classes.listbox} bi-dropdown-menu`} {...getListboxProps()}>
               {groupedOptions.map((option, index) => (
                 <ListItem {...getOptionProps({ option, index })} >
-                  {isPlainData ? option : option[title]}
+                  {checkIsPlainData(option) ? option : option[title]}
                 </ListItem>
               ))}
               </List>

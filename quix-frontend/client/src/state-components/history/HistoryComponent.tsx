@@ -11,9 +11,10 @@ import { User } from '../../lib/app/services/user';
 export interface HistoryProps {
   history: IHistory[];
   error: { message: string };
-  filter: {user: User, query: string};
+  user: User;
   onHistoryClicked(history: IHistory): void;
   loadMore(offset: number, limit: number): void;
+  getUsers(): User[];
 }
 
 export const CHUNK_SIZE = 100;
@@ -21,7 +22,7 @@ export const CHUNK_SIZE = 100;
 const Table = makePagination(SortableTable);
 
 export function History(props: HistoryProps) {
-  const { history, error, onHistoryClicked, loadMore, filter } = props;
+  const { history, error, onHistoryClicked, loadMore, user, getUsers } = props;
 
   const [tableSize, setTableSize] = useState(0);
 
@@ -73,7 +74,8 @@ export function History(props: HistoryProps) {
           data={history}
           paginationSize={CHUNK_SIZE}
           tableSize={(size) => setTableSize(size)}
-          filter={filter}
+          filter={user}
+          getFilterData={getUsers}
           />
         </div>
       </div>

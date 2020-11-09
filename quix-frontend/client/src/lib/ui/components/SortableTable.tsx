@@ -14,6 +14,7 @@ export const SortableTable = ({
   onRowClicked,
   getChunk,
   isChunking,
+  getFilterData,
   filter,
 }) => {
   const {
@@ -72,10 +73,10 @@ export const SortableTable = ({
   return (
     <>
       <Input
-        inputDefaultValue={'1'}
-        options={['1','2','3']}
-        title='email'
-        unique='email'
+        inputDefaultValue={filter}
+        options={getFilterData}
+        title={'email'}
+        unique={'id'}
         onChange={(option) => {
           console.log(option)}}
       />

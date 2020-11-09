@@ -11,10 +11,12 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
   url: {},
   scope: {
     filter: () => {},
+    user: () => {},
     history: () => {},
     error: () => {},
     onHistoryClicked: () => {},
     loadMore: () => {},
+    getUsers: () => {},
   },
   controller: async (scope: HistoryProps, params, { syncUrl, setTitle }) => {
     await cache.history.fetch({ offset: 0, limit: CHUNK_SIZE + 1 }); // TODO: move to makePagination
@@ -24,11 +26,14 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
     store.subscribe(
       'history',
       ({ history, error }) => {
-        scope.filter = {user: app.getUser(), query: app.getUser().getEmail()};
+        scope.user = app.getUser();
         scope.history = [...scope.history ? scope.history : [], ...history]; // TODO: move to makePagination
         scope.loadMore = (offset, limit) => {
           return cache.history.fetch({ offset, limit });
         };
+        scope.getUsers = () => {
+          return cache.users.fetch();
+        }
         scope.error = error;
       },
       scope
