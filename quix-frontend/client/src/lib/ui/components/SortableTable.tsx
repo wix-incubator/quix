@@ -37,11 +37,13 @@ export const SortableTable = ({
   );
 
   const [rows, setRows] = useState([]);
-  const [userUniqueFilter, setUserUniqueFilter] = useState(filter.id);
+  const [userUniqueFilter, setUserUniqueFilter] = useState(filter.email);
+
+  const allUsers = 'All users';
 
   useEffect(() => {
     setRows([]);
-    userUniqueFilter === '' ? getChunk() : getChunk(userUniqueFilter);
+    userUniqueFilter === allUsers ? getChunk() : getChunk(userUniqueFilter);
   }, [userUniqueFilter]);
 
   useEffect(() => {
@@ -72,15 +74,15 @@ export const SortableTable = ({
   const scroll = (UIElement) => {
     const element = UIElement.target;
     if (element.scrollHeight - element.scrollTop <= element.clientHeight + 1000) {
-      userUniqueFilter === '' ? getChunk() : getChunk(userUniqueFilter);
+      userUniqueFilter === allUsers ? getChunk() : getChunk(userUniqueFilter);
     }
   }
 
   const getOptions = async () => {
     const response = await getFilterData();
     return [{
-        id: '',
-        email: 'All users'
+        email: allUsers,
+        id: allUsers
       },
       ...response
     ];
@@ -93,7 +95,7 @@ export const SortableTable = ({
         options={getOptions}
         title={'email'}
         unique={'id'}
-        onOptionChange={(option) => setUserUniqueFilter(option.id)}
+        onOptionChange={(option) => setUserUniqueFilter(option.email)}
       />
       <div
         className={
