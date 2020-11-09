@@ -41,7 +41,7 @@ export const SortableTable = ({
 
   useEffect(() => {
     setRows([]);
-    getChunk(userUniqueFilter);
+    userUniqueFilter === '' ? getChunk() : getChunk(userUniqueFilter);
   }, [userUniqueFilter]);
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export const SortableTable = ({
   const scroll = (UIElement) => {
     const element = UIElement.target;
     if (element.scrollHeight - element.scrollTop <= element.clientHeight + 1000) {
-      getChunk(userUniqueFilter);
+      userUniqueFilter === '' ? getChunk() : getChunk(userUniqueFilter);
     }
   }
 

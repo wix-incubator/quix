@@ -19,17 +19,9 @@ const useStyles = makeStyles(() =>
     },
     listbox: {
       width: 200,
-      lineHeight: 'initial !important',
-      fontSize: '13px',
-      margin: 0,
-      padding: 0,
       zIndex: 1,
       position: 'absolute',
-      listStyle: 'none',
       backgroundColor: 'white',
-      overflow: 'auto',
-      maxHeight: 200,
-      border: '1px solid rgba(0,0,0,.25)',
       '& li[data-focus="true"]': {
         backgroundColor: gray[50],
         cursor: 'pointer',
@@ -60,6 +52,7 @@ export default function Select({
   const [selectOptions, setSelectOptions] = useState([]);
 
   const [selectedOption, setSelectedOption] = useState('');
+  const inputElement = useRef(null);
 
   const loading = open && selectOptions.length === 0;
   let active = false;
@@ -137,7 +130,13 @@ export default function Select({
           className={`bi-input`}
           {...getInputProps()}
           disableUnderline
-          endAdornment={<ExpandMoreIcon fontSize='small' />}
+          inputRef={inputElement}
+          endAdornment={
+          <ExpandMoreIcon
+            style={{cursor: 'pointer'}}
+            fontSize='small'
+            onClick={() => inputElement.current.focus()} />
+          }
           placeholder={placeHolder}
         />
       </div>
