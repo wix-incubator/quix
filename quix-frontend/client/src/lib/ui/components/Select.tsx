@@ -17,6 +17,9 @@ const useStyles = makeStyles(() =>
       display: 'flex',
       justifyContent: 'space-between',
     },
+    error: {
+      fontWeight: 'bold'
+    },
     listbox: {
       width: 200,
       zIndex: 1,
@@ -50,11 +53,12 @@ export default function Select({
   const [value, setValue] = useState(inputDefaultValue || '');
   const [open, setOpen] = useState(false);
   const [selectOptions, setSelectOptions] = useState([]);
+  const [isError, setIsError] = useState(false);
 
   const [selectedOption, setSelectedOption] = useState('');
   const inputElement = useRef(null);
 
-  const loading = open && selectOptions.length === 0;
+  const loading = open && selectOptions.length === 0 && !isError;
   let active = false;
 
   const isFirstRun = useRef(true);
@@ -64,7 +68,7 @@ export default function Select({
       return;
     }
 
-    if (!active && selectOptions.length === 0) {
+    if (!active && selectOptions.length === 0 && !isError) {
       active = true;
       let data;
       if (typeof options === 'function') {
@@ -76,6 +80,12 @@ export default function Select({
       .then(response => {
         if (active) {
           setSelectOptions(response);
+          active = false;
+        }
+      })
+      .catch(err => {
+        if (active) {
+          setIsError(true);
           active = false;
         }
       });
@@ -104,7 +114,7 @@ export default function Select({
       const valueUnique = isPlainData ? newValue : newValue[unique];
       const selectedOptionUnique = isPlainData ? selectedOption : selectedOption[unique];
       
-      if (optionUnique === valueUnique) {
+      if (optionUnique === valueUnique && !isError) {
         if (selectedOptionUnique !== optionUnique) {
           setSelectedOption(option);
         }
@@ -140,9 +150,11 @@ export default function Select({
           placeholder={placeHolder}
         />
       </div>
-        {
-          loading ? 
-          <List className={`${classes.listbox} bi-dropdown-menu`} {...getListboxProps()}>
+      {
+        open ?
+        <List className={`${classes.listbox} bi-dropdown-menu`} {...getListboxProps()}>
+          {
+            loading && 
             <ListItem className={classes.loading}>
               <span>
                 Loading...
@@ -151,18 +163,26 @@ export default function Select({
                 <CircularProgress color="inherit" size={20} />
               </span>
             </ListItem>
-          </List>
-          : 
-          groupedOptions.length > 0 ? (
-            <List className={`${classes.listbox} bi-dropdown-menu`} {...getListboxProps()}>
-              {groupedOptions.map((option, index) => (
-                <ListItem {...getOptionProps({ option, index })} >
-                  {checkIsPlainData(option) ? option : option[title]}
-                </ListItem>
-              ))}
-              </List>
-          ) : null
-        }
+          }
+          {
+            isError && 
+            <ListItem className={classes.error}>
+              <span>
+                ERROR OCCURED
+              </span>
+            </ListItem>
+          }
+          {
+            groupedOptions.length > 0 && 
+            groupedOptions.map((option, index) => (
+              <ListItem {...getOptionProps({ option, index })} >
+                {checkIsPlainData(option) ? option : option[title]}
+              </ListItem>
+            ))
+          }
+        </List>
+        : null
+      }
     </div>
   );
 }
