@@ -9,11 +9,10 @@ import makePagination from '../../lib/ui/components/hoc/makePagination';
 import { User } from '../../lib/app/services/user';
 
 export interface HistoryProps {
-  history: IHistory[];
   error: { message: string };
   user: User;
   onHistoryClicked(history: IHistory): void;
-  loadMore(offset: number, limit: number): void;
+  loadMore(offset: number, limit: number, user: string): Promise<IHistory[]>;
   getUsers(): User[];
 }
 
@@ -22,7 +21,7 @@ export const CHUNK_SIZE = 100;
 const Table = makePagination(SortableTable);
 
 export function History(props: HistoryProps) {
-  const { history, error, onHistoryClicked, loadMore, user, getUsers } = props;
+  const { error, onHistoryClicked, loadMore, user, getUsers } = props;
 
   const [tableSize, setTableSize] = useState(0);
 
@@ -71,7 +70,6 @@ export function History(props: HistoryProps) {
                 ? field.filter(undefined, table.row.original, 0, highlight(''))
                 : table.cell.value.toString()
           }))}
-          data={history}
           paginationSize={CHUNK_SIZE}
           tableSize={(size) => setTableSize(size)}
           filter={user}
@@ -88,7 +86,7 @@ export function History(props: HistoryProps) {
         <div>
           <div className='bi-section-title'>
             History
-            {history && <span className='bi-fade-in'> ({tableSize})</span>}
+            {tableSize ? <span className='bi-fade-in'> ({tableSize})</span> : ''}
           </div>
         </div>
       </div>

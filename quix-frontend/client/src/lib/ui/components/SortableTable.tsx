@@ -37,6 +37,12 @@ export const SortableTable = ({
   );
 
   const [rows, setRows] = useState([]);
+  const [userEmailFilter, setUserEmailFilter] = useState(filter.email);
+
+  useEffect(() => {
+    setRows([]);
+    getChunk(userEmailFilter);
+  }, [userEmailFilter]);
 
   useEffect(() => {
     setRows([...rows, ...page.slice(rows.length).map((row, index) => {
@@ -66,7 +72,7 @@ export const SortableTable = ({
   const scroll = (UIElement) => {
     const element = UIElement.target;
     if (element.scrollHeight - element.scrollTop <= element.clientHeight + 1000) {
-      getChunk();
+      getChunk(userEmailFilter);
     }
   }
 
@@ -76,9 +82,8 @@ export const SortableTable = ({
         inputDefaultValue={filter}
         options={getFilterData}
         title={'email'}
-        unique={'id'}
-        onChange={(option) => {
-          console.log(option)}}
+        unique={'email'}
+        onOptionChange={(option) => setUserEmailFilter(option.email)}
       />
       <div
         className={

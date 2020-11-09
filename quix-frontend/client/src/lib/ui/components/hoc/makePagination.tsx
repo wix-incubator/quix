@@ -9,9 +9,8 @@ interface InjectedPaginationProps {
 }
 
 interface MakePaginationProps {
-  data: any[];
   columns: any[];
-  loadMore(offset: number, limit: number): void;
+  loadMore(offset: number, limit: number, filter: any): Promise<any[]>;
   paginationSize: number;
   tableSize?(size: number): void;
   defaultFilter?: string;
@@ -25,37 +24,48 @@ const makePagination = <P extends InjectedPaginationProps>(
     = (props: MakePaginationProps) => {
 
       const [isChunking, setIsChunking] = useState(false);
-      const [requestCount, setRequestCount] = useState(0);
-      const [fixedData, setFixedData] = useState([]);
-      const { data, columns, loadMore, paginationSize, tableSize, ...rest } = props;
+      const [data, setData] = useState([]);
+      const [resultsLeft, setResultsLeft] = useState(true);
+      const [filter, setFilter] = useState('');
+
+      const { columns, loadMore, paginationSize, tableSize, ...rest } = props;
 
 
       useEffect(() => {
-        setIsChunking(false);
-        setRequestCount(requestCount + 1);
-        if (fixedData.length === data.length - 1) {
-          setFixedData(data);
-        }else {
-          setFixedData(data.slice(0, data.length - 1));
-        }
-      }, [data]);
+        if (tableSize) { tableSize(data.length) }
+      }, [data.length]);
 
-      useEffect(() => {
-        if (tableSize) { tableSize(fixedData.length) }
-      }, [fixedData.length]);
-
-
-      const getChunk = () => {
-        const resultsLeft = data.length % paginationSize === 1 && data.length !== fixedData.length;
+      const getChunk = (currentFilter?: any) => {
         if (!isChunking && resultsLeft) {
           setIsChunking(true);
-          loadMore(paginationSize * requestCount, paginationSize);
+
+          let dataLength, currentData;
+          if (filter !== currentFilter) {
+            setData([]);
+            setFilter(currentFilter);
+            dataLength = 0;
+            currentData = [];
+          } else {
+            dataLength = data.length;
+            currentData = data;
+          }
+          
+          loadMore(dataLength, paginationSize + 1, currentFilter)
+          .then(response => {
+            if (response.length === paginationSize + 1){
+              setData([...currentData, ...response.slice(0, paginationSize)]);
+            } else {
+              setResultsLeft(false);
+              setData([...currentData, ...response]);
+            }
+            setIsChunking(false);
+          })
         }
       }
 
       const componentProps = {
         columns,
-        data: fixedData,
+        data,
         isChunking,
         getChunk,
         ...rest,

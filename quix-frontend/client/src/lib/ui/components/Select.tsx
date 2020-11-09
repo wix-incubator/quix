@@ -49,7 +49,7 @@ export default function Select({
   options,
   title = '',
   unique = '',
-  onChange,
+  onOptionChange,
   inputDefaultValue,
   placeHolder =  'Enter your input'
 }) {
@@ -106,17 +106,13 @@ export default function Select({
     onChange: (event, newValue) => setValue(newValue),
     getOptionLabel: (option) => getOptionValue(option, title),
     getOptionSelected: (option, newValue) => {
-      const isPlainData = getOptionValue(option, title);
+      const isPlainData = checkIsPlainData(option);
       const optionUnique = isPlainData ? option : option[unique];
       const valueUnique = isPlainData ? newValue : newValue[unique];
       const selectedOptionUnique = isPlainData ? selectedOption : selectedOption[unique];
-      const inputDefaultValueUnique = isPlainData ? inputDefaultValue : inputDefaultValue[unique];
       
       if (optionUnique === valueUnique) {
         if (selectedOptionUnique !== optionUnique) {
-          if (inputDefaultValueUnique !== optionUnique) {
-            onChange(option);
-          }
           setSelectedOption(option);
         }
         return true;
@@ -124,6 +120,15 @@ export default function Select({
       return false;
     },
   });
+
+  useEffect(() => {
+    const isPlainData = checkIsPlainData(selectedOption);
+    const optionUnique = isPlainData ? selectedOption : selectedOption[unique];
+    const inputDefaultValueUnique = isPlainData ? inputDefaultValue : inputDefaultValue[unique];
+    if (optionUnique !== inputDefaultValueUnique){
+      onOptionChange(selectedOption);
+    }
+  },[selectedOption]);
   
   return (
     <div>
