@@ -128,7 +128,7 @@ export default function Select({
     const isPlainData = checkIsPlainData(selectedOption);
     const optionUnique = isPlainData ? selectedOption : selectedOption[unique];
     const inputDefaultValueUnique = isPlainData ? inputDefaultValue : inputDefaultValue[unique];
-    if (optionUnique !== inputDefaultValueUnique){
+    if (optionUnique && optionUnique !== inputDefaultValueUnique) {
       onOptionChange(selectedOption);
     }
   },[selectedOption]);
