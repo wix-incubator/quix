@@ -41,6 +41,7 @@ export class User {
   private avatar: string;
   private loggedIn;
   private role: string;
+  private id: string;
   private readonly permission = new Permission();
 
   fetch(apiBasePath?: string) {
@@ -48,12 +49,13 @@ export class User {
       .then(data => this.set(data.payload || data));
   }
 
-  set({email, name, avatar, role}: Record<string, string>) {
+  set({email, name, avatar, role, id}: Record<string, string>) {
     this.email = email;
     this.name = name;
     this.avatar = avatar;
     this.role = role || 'user';
     this.loggedIn = null;
+    this.id = id;
 
     return this;
   }
@@ -72,6 +74,10 @@ export class User {
 
   getRole() {
     return this.role;
+  }
+
+  getId() {
+    return this.id;
   }
 
   getPermission() {
