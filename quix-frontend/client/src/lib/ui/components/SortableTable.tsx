@@ -5,7 +5,6 @@ import {
   useGlobalFilter,
   usePagination
 } from 'react-table';
-import Input from './Select';
 import '../directives/search/search.scss';
 
 export const SortableTable = ({
@@ -14,8 +13,6 @@ export const SortableTable = ({
   onRowClicked,
   getChunk,
   isChunking,
-  getFilterData,
-  filter,
 }) => {
   const {
     getTableProps,
@@ -37,15 +34,10 @@ export const SortableTable = ({
   );
 
   const [rows, setRows] = useState([]);
-  const [userUniqueFilter, setUserUniqueFilter] = useState(filter.id);
 
   useEffect(() => {
-    setRows([]);
-    userUniqueFilter ? getChunk(userUniqueFilter) : getChunk();
-  }, [userUniqueFilter]);
-
-  useEffect(() => {
-    setRows([...rows, ...page.slice(rows.length).map((row, index) => {
+    const currentRows = page.length < rows.length ? [] : rows;
+    setRows([...currentRows, ...page.slice(rows.length).map((row, index) => {
       prepareRow(row);
       return (
         <tr
@@ -72,22 +64,13 @@ export const SortableTable = ({
   const scroll = (UIElement) => {
     const element = UIElement.target;
     if (element.scrollHeight - element.scrollTop <= element.clientHeight + 1000) {
-      userUniqueFilter ? getChunk(userUniqueFilter) : getChunk();
+      getChunk();
     }
   }
 
 
-  //add filter by query on history-component
   return (
     <>
-      <Input
-        defaultValue={filter}
-        options={getFilterData}
-        title={'email'}
-        unique={'id'}
-        primaryValue={'All users'}
-        onOptionChange={(option) => setUserUniqueFilter(option.id)}
-      />
       <div
         className={
           "bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header"

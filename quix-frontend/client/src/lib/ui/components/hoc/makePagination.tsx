@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Subtract } from 'utility-types';
+import _ from 'lodash';
 
 interface InjectedPaginationProps {
   data: any[];
@@ -10,10 +11,11 @@ interface InjectedPaginationProps {
 
 interface MakePaginationProps {
   columns: any[];
-  loadMore(offset: number, limit: number, filter: any): Promise<any[]>;
+  loadMore({offset, limit, rest}: {offset: number; limit: number; rest: object}): Promise<any[]>;
   paginationSize: number;
   tableSize?(size: number): void;
-  defaultFilter?: string;
+  filter?: any;
+  getChunk?(): void;
 }
 
 const makePagination = <P extends InjectedPaginationProps>(
@@ -23,12 +25,21 @@ const makePagination = <P extends InjectedPaginationProps>(
     Subtract<P, InjectedPaginationProps> & MakePaginationProps>
     = (props: MakePaginationProps) => {
 
-      const [isChunking, setIsChunking] = useState(false);
-      const [data, setData] = useState([]);
-      const [resultsLeft, setResultsLeft] = useState(true);
-      const [filter, setFilter] = useState('');
+      const [isChunking, setIsChunking] = useState<boolean>(false);
+      const [data, setData] = useState<any[]>([]);
+      const [resultsLeft, setResultsLeft] = useState<boolean>(true);
+      const [prevFilter, setPrevFilter] = useState({});
+ 
+      const { columns, filter, loadMore, paginationSize, tableSize, ...rest } = props;
 
-      const { columns, loadMore, paginationSize, tableSize, ...rest } = props;
+      useEffect(() => {
+        console.log(filter);
+        const isFilterChanged = !_.isEqual(prevFilter, filter);
+        if (isFilterChanged) {
+          getChunk(true);
+          setPrevFilter(filter);
+        }
+      }, [filter]);
 
       useEffect(() => {
         if (tableSize) {
@@ -36,15 +47,13 @@ const makePagination = <P extends InjectedPaginationProps>(
         }
       }, [data.length]);
 
-      const getChunk = (currentFilter?: any) => {
-        const isFilterChanged = filter !== currentFilter;
+      const getChunk = (isFilterChanged?: boolean) => {
         if (!isChunking && (resultsLeft || isFilterChanged)) {
           setIsChunking(true);
 
           let dataLength, currentData;
           if (isFilterChanged) {
             setData([]);
-            setFilter(currentFilter);
             dataLength = 0;
             currentData = [];
           } else {
@@ -52,7 +61,7 @@ const makePagination = <P extends InjectedPaginationProps>(
             currentData = data;
           }
           
-          loadMore(dataLength, paginationSize + 1, currentFilter)
+          loadMore({offset: dataLength, limit: paginationSize + 1, rest: filter})
             .then(response => {
               if (response.length === paginationSize + 1) {
                 setData([...currentData, ...response.slice(0, paginationSize)]);

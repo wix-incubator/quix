@@ -6,13 +6,14 @@ import { historyTableFields } from './history-table-fields';
 import {extractTextAroundMatch} from '../../services/search';
 import Highlighter from 'react-highlight-words';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
+import Select from '../../lib/ui/components/Select';
 import { User } from '../../lib/app/services/user';
 
 export interface HistoryProps {
   error: { message: string };
   user: User;
   onHistoryClicked(history: IHistory): void;
-  loadMore(offset: number, limit: number, user: string): Promise<IHistory[]>;
+  loadMore({offset, limit, rest}: {offset: number; limit: number; rest: object}): Promise<IHistory[]>;
   getUsers(): User[];
 }
 
@@ -23,7 +24,10 @@ const Table = makePagination(SortableTable);
 export function History(props: HistoryProps) {
   const { error, onHistoryClicked, loadMore, user, getUsers } = props;
 
-  const [tableSize, setTableSize] = useState(0);
+  const [tableSize, setTableSize] = useState<number>(0);
+
+  const [userUniqueFilter, setUserUniqueFilter] = useState<string>(user.getId());
+  const [queryFilter/*, setQueryFilter*/] = useState<string>('');
 
   const displayErrorState = () => (
     <div className='bi-empty-state--error' data-hook='history-error'>
@@ -72,14 +76,14 @@ export function History(props: HistoryProps) {
           }))}
           paginationSize={CHUNK_SIZE}
           tableSize={(size) => setTableSize(size)}
-          filter={user}
-          getFilterData={getUsers}
+          filter={{user: userUniqueFilter, query: queryFilter}}
           />
         </div>
       </div>
     </div>
   );
 
+  //add filter by query on history-component
   return (
     <div className='bi-section bi-c-h bi-grow'>
       <div className='bi-section-header'>
@@ -90,6 +94,24 @@ export function History(props: HistoryProps) {
           </div>
         </div>
       </div>
+      <div className='bi-theme--lighter' style={{paddingLeft: '15px'}}>
+        <Select
+          defaultValue={user}
+          options={getUsers}
+          title={'email'}
+          unique={'id'}
+          primaryValue={'All users'}
+          onOptionChange={(option) => setUserUniqueFilter(option.id)}
+          />
+        </div>
+        {/* <Input
+          defaultValue={user}
+          options={getUsers}
+          title={'email'}
+          unique={'id'}
+          primaryValue={'All users'}
+          onOptionChange={(option) => setUserUniqueFilter(option.id)}
+        /> */}
       {!history ? (
         <div className='bi-section-content--center'>
           {error ? (

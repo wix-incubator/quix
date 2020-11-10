@@ -48,8 +48,8 @@ interface SelectOptions {
   title?: string,
   unique?: string,
   onOptionChange?: Function,
-  defaultValue?: string | number,
-  primaryValue?: string | number,
+  defaultValue?: any,
+  primaryValue?: any,
   placeHolder?: string,
 }
 

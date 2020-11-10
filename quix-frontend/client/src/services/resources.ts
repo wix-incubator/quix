@@ -36,7 +36,7 @@ const many = <T>(
 ): Promise<T[]> => resource('query', endpoint, params);
 
 export const users = () => many<IUser>(api`users`);
-export const history = (options) => many<IHistory>(api`history`, { offset: options.offset, limit: options.limit, user: options.user });
+export const history = (options) => many<IHistory>(api`history`, { offset: options.offset, limit: options.limit, user: options.user, query: options.query });
 export const files = () => many<IFile>(api`files`);
 export const folder = (id: string) => one<IFolder>(api`files/:id`, { id });
 export const notebook = (id: string) =>
