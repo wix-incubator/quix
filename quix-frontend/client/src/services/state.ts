@@ -27,6 +27,10 @@ export class StateManager<E> {
     return this.current.index as any > this.states[state] as any;
   }
 
+  get() {
+    return this.current;
+  }
+
   set(state: keyof E, condition: boolean | Function = true, value: Record<string, any> | Function = null) {
     if (this.after(state) || (typeof condition === 'function' ? !condition(this.val) : !condition)) {
       return new NullStateManager();

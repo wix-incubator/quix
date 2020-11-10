@@ -30,17 +30,19 @@ const makePagination = <P extends InjectedPaginationProps>(
 
       const { columns, loadMore, paginationSize, tableSize, ...rest } = props;
 
-
       useEffect(() => {
-        if (tableSize) { tableSize(data.length) }
+        if (tableSize) {
+          tableSize(data.length);
+        }
       }, [data.length]);
 
       const getChunk = (currentFilter?: any) => {
-        if (!isChunking && resultsLeft) {
+        const isFilterChanged = filter !== currentFilter;
+        if (!isChunking && (resultsLeft || isFilterChanged)) {
           setIsChunking(true);
 
           let dataLength, currentData;
-          if (filter !== currentFilter) {
+          if (isFilterChanged) {
             setData([]);
             setFilter(currentFilter);
             dataLength = 0;
@@ -51,15 +53,15 @@ const makePagination = <P extends InjectedPaginationProps>(
           }
           
           loadMore(dataLength, paginationSize + 1, currentFilter)
-          .then(response => {
-            if (response.length === paginationSize + 1){
-              setData([...currentData, ...response.slice(0, paginationSize)]);
-            } else {
-              setResultsLeft(false);
-              setData([...currentData, ...response]);
-            }
-            setIsChunking(false);
-          })
+            .then(response => {
+              if (response.length === paginationSize + 1) {
+                setData([...currentData, ...response.slice(0, paginationSize)]);
+              } else {
+                setResultsLeft(false);
+                setData([...currentData, ...response]);
+              }
+              setIsChunking(false);
+            });
         }
       }
 

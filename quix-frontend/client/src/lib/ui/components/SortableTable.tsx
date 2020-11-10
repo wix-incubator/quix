@@ -37,13 +37,11 @@ export const SortableTable = ({
   );
 
   const [rows, setRows] = useState([]);
-  const [userUniqueFilter, setUserUniqueFilter] = useState(filter.email);
-
-  const allUsers = 'All users';
+  const [userUniqueFilter, setUserUniqueFilter] = useState(filter.id);
 
   useEffect(() => {
     setRows([]);
-    userUniqueFilter === allUsers ? getChunk() : getChunk(userUniqueFilter);
+    userUniqueFilter ? getChunk(userUniqueFilter) : getChunk();
   }, [userUniqueFilter]);
 
   useEffect(() => {
@@ -74,28 +72,21 @@ export const SortableTable = ({
   const scroll = (UIElement) => {
     const element = UIElement.target;
     if (element.scrollHeight - element.scrollTop <= element.clientHeight + 1000) {
-      userUniqueFilter === allUsers ? getChunk() : getChunk(userUniqueFilter);
+      userUniqueFilter ? getChunk(userUniqueFilter) : getChunk();
     }
   }
 
-  const getOptions = async () => {
-    const response = await getFilterData();
-    return [{
-        email: allUsers,
-        id: allUsers
-      },
-      ...response
-    ];
-  }
 
+  //add filter by query on history-component
   return (
     <>
       <Input
-        inputDefaultValue={filter}
-        options={getOptions}
+        defaultValue={filter}
+        options={getFilterData}
         title={'email'}
         unique={'id'}
-        onOptionChange={(option) => setUserUniqueFilter(option.email)}
+        primaryValue={'All users'}
+        onOptionChange={(option) => setUserUniqueFilter(option.id)}
       />
       <div
         className={
