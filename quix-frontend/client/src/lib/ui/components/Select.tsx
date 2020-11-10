@@ -17,8 +17,11 @@ const useStyles = makeStyles(() =>
       display: 'flex',
       justifyContent: 'space-between',
     },
-    error: {
+    bold: {
       fontWeight: 'bold'
+    },
+    primaryOption: {
+      fontWeight: 'lighter'
     },
     listbox: {
       width: 200,
@@ -40,17 +43,28 @@ const checkIsPlainData = (data) => ['string', 'number', 'undefined'].includes(ty
 
 const getOptionValue = (option, title) => checkIsPlainData(option) ? String(option) : option[title];
 
-export default function Select({
+interface SelectOptions {
+  options: string | number | Promise<any[]> | Function,
+  title?: string,
+  unique?: string,
+  onOptionChange?: Function,
+  defaultValue?: string | number,
+  primaryValue?: string | number,
+  placeHolder?: string,
+}
+
+const Select = ({
   options,
-  title = '',
-  unique = '',
+  title,
+  unique,
   onOptionChange,
-  inputDefaultValue,
-  placeHolder =  'Enter your input'
-}) {
+  defaultValue,
+  primaryValue,
+  placeHolder = 'Enter your input'
+}: SelectOptions) => {
 
   const classes = useStyles();
-  const [value, setValue] = useState(inputDefaultValue || '');
+  const [value, setValue] = useState(defaultValue || '');
   const [open, setOpen] = useState(false);
   const [selectOptions, setSelectOptions] = useState([]);
   const [isError, setIsError] = useState(false);
@@ -60,6 +74,8 @@ export default function Select({
 
   const loading = open && selectOptions.length === 0 && !isError;
   let active = false;
+
+  const primaryUniqueValue = getOptionValue(primaryValue, title);
 
   const isFirstRun = useRef(true);
   useEffect(() => {
@@ -79,7 +95,7 @@ export default function Select({
       Promise.resolve(data)
       .then(response => {
         if (active) {
-          setSelectOptions(response);
+          primaryValue ? setSelectOptions([primaryValue, ...response]) : setSelectOptions(response);
           active = false;
         }
       })
@@ -109,10 +125,9 @@ export default function Select({
     onChange: (event, newValue) => setValue(newValue),
     getOptionLabel: (option) => getOptionValue(option, title),
     getOptionSelected: (option, newValue) => {
-      const isPlainData = checkIsPlainData(option);
-      const optionUnique = isPlainData ? option : option[unique];
-      const valueUnique = isPlainData ? newValue : newValue[unique];
-      const selectedOptionUnique = isPlainData ? selectedOption : selectedOption[unique];
+      const optionUnique = getOptionValue(option, unique);
+      const valueUnique = getOptionValue(newValue, unique);
+      const selectedOptionUnique = getOptionValue(selectedOption, unique);
       
       if (optionUnique === valueUnique && !isError) {
         if (selectedOptionUnique !== optionUnique) {
@@ -125,10 +140,9 @@ export default function Select({
   });
 
   useEffect(() => {
-    const isPlainData = checkIsPlainData(selectedOption);
-    const optionUnique = isPlainData ? selectedOption : selectedOption[unique];
-    const inputDefaultValueUnique = isPlainData ? inputDefaultValue : inputDefaultValue[unique];
-    if (optionUnique && optionUnique !== inputDefaultValueUnique) {
+    const optionUnique = getOptionValue(selectedOption, unique);
+    const inputDefaultValueUnique = getOptionValue(defaultValue, unique);
+    if (optionUnique !== '' && optionUnique !== inputDefaultValueUnique) {
       onOptionChange(selectedOption);
     }
   },[selectedOption]);
@@ -159,14 +173,14 @@ export default function Select({
               <span>
                 Loading...
               </span>
-              <span>
+              <span> {/* TODO: change spinner to bi-react-app's spinner with same style */ }
                 <CircularProgress color="inherit" size={20} />
               </span>
             </ListItem>
           }
           {
             isError && 
-            <ListItem className={classes.error}>
+            <ListItem className={classes.bold}>
               <span>
                 ERROR OCCURED
               </span>
@@ -174,11 +188,27 @@ export default function Select({
           }
           {
             groupedOptions.length > 0 && 
-            groupedOptions.map((option, index) => (
-              <ListItem {...getOptionProps({ option, index })} >
+            groupedOptions.map((option, index) => {
+              const currentOptionValue = getOptionValue(option, title);
+              const selectedOptionValue = getOptionValue(selectedOption, title);
+              if (currentOptionValue === primaryUniqueValue
+                && selectedOptionValue === primaryUniqueValue
+              ) {
+                return;
+              }
+
+              let currentClassName
+              if (primaryValue && (index === 0)) {
+                currentClassName = classes.primaryOption;
+              }
+              else if (currentOptionValue === selectedOptionValue) {
+                currentClassName = classes.bold;
+              }
+              return (
+              <ListItem {...getOptionProps({ option, index })} className={currentClassName} >
                 {checkIsPlainData(option) ? option : option[title]}
               </ListItem>
-            ))
+            )})
           }
         </List>
         : null
@@ -186,3 +216,5 @@ export default function Select({
     </div>
   );
 }
+
+export default Select;
