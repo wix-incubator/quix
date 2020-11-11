@@ -75,13 +75,12 @@ const Select = ({
   const classes = useStyles();
   const [value, setValue] = useState(defaultValue || '');
   const [open, setOpen] = useState(false);
-  const [selectOptions, setSelectOptions] = useState([]);
-  const [isError, setIsError] = useState(false);
-  const [, createSelectViewState] = useViewState(States, null);
   const [selectedOption, setSelectedOption] = useState('');
   const inputElement = useRef(null);
-
-  const loading = open && selectOptions.length === 0 && !isError;
+  const [viewState, setViewState] = useViewState(States, {
+    options: []
+  });
+  const loading = open && viewState.options.length === 0 && setViewState.get() !== 'Error';
 
   const primaryUniqueValue = getOptionValue(primaryValue, title);
 
@@ -91,13 +90,13 @@ const Select = ({
       isFirstRun.current = false;
       return;
     }
-    if (createSelectViewState.get() !== 'Initial' && selectOptions.length === 0 && !isError) {
-      createSelectViewState.set('Initial');
+    if (setViewState.get() !== 'Initial' && viewState.options.length === 0 && setViewState.get() !== 'Error') {
+      setViewState.set('Initial');
     }
   }, [loading]);
 
   useEffect(() => {
-    switch (createSelectViewState.get()) {
+    switch (setViewState.get()) {
       case 'Initial': 
         let data;
         if (typeof options === 'function') {
@@ -107,21 +106,21 @@ const Select = ({
         }
         Promise.resolve(data)
         .then(response => {
-          if (createSelectViewState.get() === 'Initial') {
-            primaryValue ? setSelectOptions([primaryValue, ...response]) : setSelectOptions(response);
-            response.length > 0 ? createSelectViewState.set('Content') : createSelectViewState.set('Result');
+          if (setViewState.get() === 'Initial') {
+            const fullData = primaryValue ? [primaryValue, ...response] : response;
+            const viewStateType = response.length > 0 ? 'Content' : 'Result';
+            setViewState.set(viewStateType, { options: fullData });
           }
         })
         .catch(err => {
-          if (createSelectViewState.get() === 'Initial') {
-            setIsError(true);
-            createSelectViewState.set('Error');
+          if (setViewState.get() === 'Initial') {
+            setViewState.set('Error');
           }
         });
         break;
       default:
     }
-  }, [createSelectViewState.get()]);
+  }, [setViewState.get()]);
 
   const {
     getRootProps,
@@ -130,7 +129,7 @@ const Select = ({
     getOptionProps,
     groupedOptions,
   } = useAutocomplete({
-    options: selectOptions,
+    options: viewState.options,
     value,
     onClose: () => setOpen(false),
     onOpen: () => setOpen(true),
@@ -141,7 +140,7 @@ const Select = ({
       const valueUnique = getOptionValue(newValue, unique);
       const selectedOptionUnique = getOptionValue(selectedOption, unique);
       
-      if (optionUnique === valueUnique && !isError) {
+      if (optionUnique === valueUnique && setViewState.get() !== 'Error') {
         if (selectedOptionUnique !== optionUnique) {
           setSelectedOption(option);
         }
@@ -226,7 +225,7 @@ const Select = ({
             </ListItem>
           )})
 
-        }[createSelectViewState.get()]}
+        }[setViewState.get()]}
         </List> : null
       }
     </div>
