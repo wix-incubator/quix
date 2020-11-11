@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { IHistory } from '@wix/quix-shared';
 import _ from 'lodash';
 import { SortableTable } from '../../lib/ui/components/SortableTable';
@@ -8,6 +8,8 @@ import Highlighter from 'react-highlight-words';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
 import Select from '../../lib/ui/components/Select';
 import { User } from '../../lib/app/services/user';
+import { useViewState } from '../../services/hooks';
+import noResultsImg from '../../../src/assets/no_data.svg';
 
 export interface HistoryProps {
   error: { message: string };
@@ -21,18 +23,32 @@ export const CHUNK_SIZE = 100;
 
 const Table = makePagination(SortableTable);
 
+const States = [
+  'Content',
+  'Result',
+  'Error',
+];
+
 export function History(props: HistoryProps) {
   const { error, onHistoryClicked, loadMore, user, getUsers } = props;
 
-  const [tableSize, setTableSize] = useState<number>(0);
+  const [stateData, viewState] = useViewState(States, {
+    size: 0,
+    userFilter: user.getId(),
+    queryFilter: '',
+    error: '',
+  });
 
-  const [userUniqueFilter, setUserUniqueFilter] = useState<string>(user.getId());
-  const [queryFilter/*, setQueryFilter*/] = useState<string>('');
+  useEffect(() => {
+    if (error) {
+      viewState.set('Error', { error: error.message });
+    }
+  }, [error]);
 
   const displayErrorState = () => (
     <div className='bi-empty-state--error' data-hook='history-error'>
       <div className='bi-empty-state-header'>error_outline</div>
-      <div className='bi-empty-state-content'>{error.message}</div>
+      <div className='bi-empty-state-content'>{stateData.error}</div>
     </div>
   );
 
@@ -75,8 +91,8 @@ export function History(props: HistoryProps) {
                 : table.cell.value.toString()
           }))}
           paginationSize={CHUNK_SIZE}
-          tableSize={(size) => setTableSize(size)}
-          filter={{user: userUniqueFilter, query: queryFilter}}
+          tableSize={(size) => viewState.set(size > 0 ? 'Content' : 'Result', { size })}
+          filter={{user: stateData.userFilter, query: stateData.queryFilter}}
           />
         </div>
       </div>
@@ -90,7 +106,7 @@ export function History(props: HistoryProps) {
         <div>
           <div className='bi-section-title'>
             History
-            {tableSize ? <span className='bi-fade-in'> ({tableSize})</span> : ''}
+            {stateData.size ? <span className='bi-fade-in'> ({stateData.size})</span> : ''}
           </div>
         </div>
       </div>
@@ -101,7 +117,7 @@ export function History(props: HistoryProps) {
           title={'email'}
           unique={'id'}
           primaryValue={'All users'}
-          onOptionChange={(option) => setUserUniqueFilter(option.id)}
+          onOptionChange={(option) => viewState.set('Content', { userFilter: option.id })}
           />
         </div>
         {/* <Input
@@ -112,19 +128,19 @@ export function History(props: HistoryProps) {
           primaryValue={'All users'}
           onOptionChange={(option) => setUserUniqueFilter(option.id)}
         /> */}
-      {!history ? (
-        <div className='bi-section-content--center'>
-          {error ? (
-            displayErrorState()
-          ) : (
-            <div className='bi-empty-state--loading bi-fade-in'>
-              <div className='bi-empty-state-content'>Loading history...</div>
-            </div>
-          )}
-        </div>
-      ) : (
-        displayLoadedState()
-      )}
+        {
+          {
+            'Content': displayLoadedState(),
+            'Error': displayErrorState(),
+            'Result': 
+            <div className="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.is('Result')">
+              <div className="bi-empty-state bi-fade-in">
+                <img className="bi-empty-state-image" src={noResultsImg}></img>
+                <div className="bi-empty-state-header">No results</div>
+              </div>
+            </div>,
+          }[viewState.get()]
+        }
     </div>
   );
 }

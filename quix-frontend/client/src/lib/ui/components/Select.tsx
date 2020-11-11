@@ -45,12 +45,13 @@ const checkIsPlainData = (data) => ['string', 'number', 'undefined'].includes(ty
 const getOptionValue = (option, title) => checkIsPlainData(option) ? String(option) : option[title];
 
 const States = [
-  'None',
+  'FirstLoad',
   'Initial',
+  'Open',
   'Error',
   'Result',
   'Content',
-]
+];
 
 interface SelectOptions {
   options: string | number | Promise<any[]> | Function,
@@ -80,24 +81,22 @@ const Select = ({
   const [stateData, viewState] = useViewState(States, {
     options: []
   });
-  const loading = open && stateData.options.length === 0 && viewState.get() !== 'Error';
 
   const primaryUniqueValue = getOptionValue(primaryValue, title);
 
-  const isFirstRun = useRef(true);
   useEffect(() => {
-    if (isFirstRun.current) {
-      isFirstRun.current = false;
-      return;
+    if (open && viewState.get() !== 'Open' && stateData.options.length === 0 && viewState.get() !== 'Error') {
+      viewState.set('Open');
     }
-    if (viewState.get() !== 'Initial' && stateData.options.length === 0 && viewState.get() !== 'Error') {
-      viewState.set('Initial');
-    }
-  }, [loading]);
+  },[open]);
 
   useEffect(() => {
     switch (viewState.get()) {
-      case 'Initial': 
+      case 'FirstLoad':
+        viewState.set('Initial');
+        break;
+
+      case 'Open': 
         let data;
         if (typeof options === 'function') {
           data = options();
@@ -106,18 +105,19 @@ const Select = ({
         }
         Promise.resolve(data)
         .then(response => {
-          if (viewState.get() === 'Initial') {
+          if (viewState.get() === 'Open') {
             const fullData = primaryValue ? [primaryValue, ...response] : response;
             const viewStateType = response.length > 0 ? 'Content' : 'Result';
             viewState.set(viewStateType, { options: fullData });
           }
         })
         .catch(err => {
-          if (viewState.get() === 'Initial') {
+          if (viewState.get() === 'Open') {
             viewState.set('Error');
           }
         });
         break;
+
       default:
     }
   }, [viewState.get()]);
@@ -178,7 +178,7 @@ const Select = ({
       { open ?
         <List className={`${classes.listbox} bi-dropdown-menu`} {...getListboxProps()}>
           {{
-          'Initial': 
+          'Open': 
             <ListItem className={classes.loading}>
               <span>
                 Loading...

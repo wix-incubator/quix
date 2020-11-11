@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Subtract } from 'utility-types';
 import _ from 'lodash';
 
@@ -25,15 +25,14 @@ const makePagination = <P extends InjectedPaginationProps>(
     Subtract<P, InjectedPaginationProps> & MakePaginationProps>
     = (props: MakePaginationProps) => {
 
-      const [isChunking, setIsChunking] = useState<boolean>(false);
-      const [data, setData] = useState<any[]>([]);
-      const [resultsLeft, setResultsLeft] = useState<boolean>(true);
+      const [isChunking, setIsChunking] = useState(false);
+      const [data, setData] = useState([]);
+      const [resultsLeft, setResultsLeft] = useState(true);
       const [prevFilter, setPrevFilter] = useState({});
  
       const { columns, filter, loadMore, paginationSize, tableSize, ...rest } = props;
 
       useEffect(() => {
-        console.log(filter);
         const isFilterChanged = !_.isEqual(prevFilter, filter);
         if (isFilterChanged) {
           getChunk(true);
@@ -41,7 +40,13 @@ const makePagination = <P extends InjectedPaginationProps>(
         }
       }, [filter]);
 
+      
+      const isFirstRun = useRef(true);
       useEffect(() => {
+        if (isFirstRun.current) {
+          isFirstRun.current = false;
+          return;
+        }
         if (tableSize) {
           tableSize(data.length);
         }
@@ -53,6 +58,7 @@ const makePagination = <P extends InjectedPaginationProps>(
 
           let dataLength, currentData;
           if (isFilterChanged) {
+            isFirstRun.current = true;
             setData([]);
             dataLength = 0;
             currentData = [];

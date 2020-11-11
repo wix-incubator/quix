@@ -14,7 +14,8 @@
     "jsx": "react"
   },
   "include": [
-    "./test/**/*.ts"
+    "./test/**/*.ts",
+    "./src/custom.d.ts"
   ],
   "files": [
     "src/app.ts",
