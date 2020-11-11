@@ -28,7 +28,7 @@ export class StateManager<E> {
   }
 
   get() {
-    return this.current;
+    return this.states[this.current.index];
   }
 
   set(state: keyof E, condition: boolean | Function = true, value: Record<string, any> | Function = null) {
