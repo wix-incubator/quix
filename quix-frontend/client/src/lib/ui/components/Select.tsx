@@ -77,10 +77,10 @@ const Select = ({
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const inputElement = useRef(null);
-  const [viewState, setViewState] = useViewState(States, {
+  const [stateData, viewState] = useViewState(States, {
     options: []
   });
-  const loading = open && viewState.options.length === 0 && setViewState.get() !== 'Error';
+  const loading = open && stateData.options.length === 0 && viewState.get() !== 'Error';
 
   const primaryUniqueValue = getOptionValue(primaryValue, title);
 
@@ -90,13 +90,13 @@ const Select = ({
       isFirstRun.current = false;
       return;
     }
-    if (setViewState.get() !== 'Initial' && viewState.options.length === 0 && setViewState.get() !== 'Error') {
-      setViewState.set('Initial');
+    if (viewState.get() !== 'Initial' && stateData.options.length === 0 && viewState.get() !== 'Error') {
+      viewState.set('Initial');
     }
   }, [loading]);
 
   useEffect(() => {
-    switch (setViewState.get()) {
+    switch (viewState.get()) {
       case 'Initial': 
         let data;
         if (typeof options === 'function') {
@@ -106,21 +106,21 @@ const Select = ({
         }
         Promise.resolve(data)
         .then(response => {
-          if (setViewState.get() === 'Initial') {
+          if (viewState.get() === 'Initial') {
             const fullData = primaryValue ? [primaryValue, ...response] : response;
             const viewStateType = response.length > 0 ? 'Content' : 'Result';
-            setViewState.set(viewStateType, { options: fullData });
+            viewState.set(viewStateType, { options: fullData });
           }
         })
         .catch(err => {
-          if (setViewState.get() === 'Initial') {
-            setViewState.set('Error');
+          if (viewState.get() === 'Initial') {
+            viewState.set('Error');
           }
         });
         break;
       default:
     }
-  }, [setViewState.get()]);
+  }, [viewState.get()]);
 
   const {
     getRootProps,
@@ -129,7 +129,7 @@ const Select = ({
     getOptionProps,
     groupedOptions,
   } = useAutocomplete({
-    options: viewState.options,
+    options: stateData.options,
     value,
     onClose: () => setOpen(false),
     onOpen: () => setOpen(true),
@@ -140,7 +140,7 @@ const Select = ({
       const valueUnique = getOptionValue(newValue, unique);
       const selectedOptionUnique = getOptionValue(selectedOption, unique);
       
-      if (optionUnique === valueUnique && setViewState.get() !== 'Error') {
+      if (optionUnique === valueUnique && viewState.get() !== 'Error') {
         if (selectedOptionUnique !== optionUnique) {
           setSelectedOption(option);
         }
@@ -225,7 +225,7 @@ const Select = ({
             </ListItem>
           )})
 
-        }[setViewState.get()]}
+        }[viewState.get()]}
         </List> : null
       }
     </div>
