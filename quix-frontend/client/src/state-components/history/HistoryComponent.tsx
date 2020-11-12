@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IHistory } from '@wix/quix-shared';
 import _ from 'lodash';
 import { SortableTable } from '../../lib/ui/components/SortableTable';
@@ -10,6 +10,8 @@ import Select from '../../lib/ui/components/Select';
 import { User } from '../../lib/app/services/user';
 import { useViewState } from '../../services/hooks';
 import noResultsImg from '../../../src/assets/no_data.svg';
+import { debounceAsync } from '../../utils';
+import Input from '@material-ui/core/Input';
 
 export interface HistoryProps {
   error: { message: string };
@@ -23,7 +25,12 @@ export const CHUNK_SIZE = 100;
 
 const Table = makePagination(SortableTable);
 
+const search = debounceAsync((loadMore, { offset, limit, ...rest }) => {
+  return loadMore({ offset, limit, ...rest });
+});
+
 const States = [
+  'Initial',
   'Content',
   'Result',
   'Error',
@@ -31,6 +38,8 @@ const States = [
 
 export function History(props: HistoryProps) {
   const { error, onHistoryClicked, loadMore, user, getUsers } = props;
+
+  const [initialData, setInitialData] = useState([]);
 
   const [stateData, viewState] = useViewState(States, {
     size: 0,
@@ -44,6 +53,17 @@ export function History(props: HistoryProps) {
       viewState.set('Error', { error: error.message });
     }
   }, [error]);
+
+  const getChunk = (offset: number, limit: number) => {
+    return search(loadMore, { offset, limit, user: stateData.userFilter, query: stateData.queryFilter });
+  }
+
+  useEffect(() => {
+    getChunk(0, CHUNK_SIZE + 1)(res => {
+      setInitialData(res);
+      viewState.set('Content');
+    });
+  }, [stateData.queryFilter, stateData.userFilter])
 
   const displayErrorState = () => (
     <div className='bi-empty-state--error' data-hook='history-error'>
@@ -80,26 +100,25 @@ export function History(props: HistoryProps) {
       >
         <div className='bi-panel-content bi-c-h'>
           <Table
-          loadMore={loadMore}
-          onRowClicked={onHistoryClicked}
-          columns={historyTableFields.map(field => ({
-            Header: field.title,
-            accessor: field.name,
-            Cell: table =>
-              field.filter
-                ? field.filter(undefined, table.row.original, 0, highlight(''))
-                : table.cell.value.toString()
-          }))}
-          paginationSize={CHUNK_SIZE}
-          tableSize={(size) => viewState.set(size > 0 ? 'Content' : 'Result', { size })}
-          filter={{user: stateData.userFilter, query: stateData.queryFilter}}
+            initialData={initialData}
+            loadMore={getChunk}
+            onRowClicked={onHistoryClicked}
+            columns={historyTableFields.map(field => ({
+              Header: field.title,
+              accessor: field.name,
+              Cell: table =>
+                field.filter
+                  ? field.filter(undefined, table.row.original, 0, highlight(''))
+                  : table.cell.value.toString()
+            }))}
+            paginationSize={CHUNK_SIZE}
+            tableSize={(size) => viewState.set(size > 0 ? 'Content' : 'Result', { size })}
           />
         </div>
       </div>
     </div>
   );
 
-  //add filter by query on history-component
   return (
     <div className='bi-section bi-c-h bi-grow'>
       <div className='bi-section-header'>
@@ -110,35 +129,38 @@ export function History(props: HistoryProps) {
           </div>
         </div>
       </div>
-      <div className='bi-theme--lighter' style={{paddingLeft: '15px'}}>
+      <div className='bi-theme--lighter bi-align bi-space-h--x15' style={{paddingLeft: '15px'}}>
         <Select
           defaultValue={user}
           options={getUsers}
           title={'email'}
           unique={'id'}
           primaryValue={'All users'}
-          onOptionChange={(option) => viewState.set('Content', { userFilter: option.id })}
-          />
-        </div>
-        {/* <Input
-          defaultValue={user}
-          options={getUsers}
-          title={'email'}
-          unique={'id'}
-          primaryValue={'All users'}
-          onOptionChange={(option) => setUserUniqueFilter(option.id)}
-        /> */}
+          onOptionChange={(option) => viewState.set('Initial', { userFilter: option.id })}
+        />
+        <Input
+          disableUnderline
+          className={'bi-input'}
+          onChange={(e) => viewState.set('Initial', { queryFilter: e.target.value })}
+        />
+      </div>
         {
           {
+            'Initial':
+              <div className="bi-c-h bi-align bi-center bi-grow">
+                <div className="bi-empty-state--loading bi-fade-in">
+                  <div className="bi-empty-state-content">Searching...</div>
+                </div>
+              </div>,
             'Content': displayLoadedState(),
             'Error': displayErrorState(),
             'Result': 
-            <div className="bi-c-h bi-align bi-center bi-grow" ng-if="vm.state.is('Result')">
-              <div className="bi-empty-state bi-fade-in">
-                <img className="bi-empty-state-image" src={noResultsImg}></img>
-                <div className="bi-empty-state-header">No results</div>
-              </div>
-            </div>,
+              <div className="bi-c-h bi-align bi-center bi-grow">
+                <div className="bi-empty-state bi-fade-in">
+                  <img className="bi-empty-state-image" src={noResultsImg}></img>
+                  <div className="bi-empty-state-header">No results</div>
+                </div>
+              </div>,
           }[viewState.get()]
         }
     </div>

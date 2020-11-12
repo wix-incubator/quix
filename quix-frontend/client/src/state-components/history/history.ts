@@ -25,7 +25,7 @@ export default (app: App, store: Store): IReactStateComponentConfig => ({
       'history',
       ({ error }) => {
         scope.user = app.getUser();
-        scope.loadMore = ({offset, limit, rest}: {offset: number; limit: number; rest: object}) => {
+        scope.loadMore = ({offset, limit, ...rest}: {offset: number; limit: number; rest: object}) => {
           return cache.history.fetch({ offset, limit, ...rest });
         };
         scope.getUsers = () => {

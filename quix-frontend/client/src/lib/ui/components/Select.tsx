@@ -183,7 +183,7 @@ const Select = ({
               <span>
                 Loading...
               </span>
-              <span> {/* TODO: change spinner to bi-react-app's spinner with same style */ }
+              <span>
                 <CircularProgress color="inherit" size={20} />
               </span>
             </ListItem>,
