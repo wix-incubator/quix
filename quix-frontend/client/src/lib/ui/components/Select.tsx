@@ -64,6 +64,8 @@ interface SelectOptions {
   defaultValue?: any,
   primaryValue?: any,
   placeHolder?: string,
+  inputDataHook?: string,
+  ulDataHook?: string,
 }
 
 const Select = ({
@@ -73,7 +75,9 @@ const Select = ({
   onOptionChange,
   defaultValue,
   primaryValue,
-  placeHolder = 'Enter your input'
+  placeHolder = 'Enter your input',
+  inputDataHook,
+  ulDataHook,
 }: SelectOptions) => {
 
   const classes = useStyles();
@@ -176,10 +180,11 @@ const Select = ({
             onClick={() => inputElement.current.focus()} />
           }
           placeholder={placeHolder}
+          data-hook={inputDataHook}
         />
       </div>
       { open ?
-        <List className={`${classes.list} bi-dropdown-menu`} {...getListboxProps()}>
+        <List data-hook={ulDataHook} className={`${classes.list} bi-dropdown-menu`} {...getListboxProps()}>
           {{
           'Open': 
             <ListItem className={classes.loading}>

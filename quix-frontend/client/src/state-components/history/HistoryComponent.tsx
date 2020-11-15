@@ -145,12 +145,15 @@ export function History(props: HistoryProps) {
           primaryValue={'All users'}
           onOptionChange={(option) => viewState.set('Initial', { userFilter: option.id || '' })}
           placeHolder='Filter user'
+          inputDataHook='history-filter-user-select'
+          ulDataHook='history-filter-user-select-options'
         />
         <Input
           disableUnderline
           className={'bi-input'}
           onChange={(e) => viewState.set('Initial', { queryFilter: e.target.value })}
           placeholder='Filter query'
+          data-hook='history-filter-query-input'
         />
       </div>
         {

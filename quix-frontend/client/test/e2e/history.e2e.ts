@@ -7,7 +7,7 @@ describe('History ::', () => {
   let driver: Driver, testkit: HistoryTestkit;
 
   const gotoHistoryWithError = async () => {
-    await driver.mock.http('/api/history', [404, {message: 'Failed to fetch history'}]);
+    await driver.mock.http('/api/history', [404, { message: 'Failed to fetch history' }]);
     await driver.goto(`/history`);
   }
 
@@ -17,7 +17,7 @@ describe('History ::', () => {
 
     return mock;
   }
-
+  
   beforeEach(async () => {
     driver = new Driver();
     await driver.init();
@@ -36,5 +36,26 @@ describe('History ::', () => {
 
     expect(await testkit.hasContent()).to.be.true;
     expect(await testkit.numOfHistory()).to.equal(1);
+  });
+
+  it('should display user options', async () => {
+    await gotoHistory();
+
+    await testkit.ClickOnUserFilter();
+    expect(await testkit.hasOptionsUserFilter()).to.be.true;
+  });
+
+  it('should filter by user', async () => {
+    await gotoHistory();
+    await testkit.setAllUserFilter();
+
+    expect(await testkit.getUserFilter()).to.equal('All users');
+  });
+
+  it('should filter by query', async () => {
+    await gotoHistory();
+    await testkit.setQueryFilter();
+
+    expect(await testkit.getQueryFilter()).to.equal('example');
   });
 });
