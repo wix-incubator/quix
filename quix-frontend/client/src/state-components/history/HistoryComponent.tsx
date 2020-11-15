@@ -17,7 +17,7 @@ export interface HistoryProps {
   error: { message: string };
   user: User;
   onHistoryClicked(history: IHistory): void;
-  loadMore({offset, limit, rest}: {offset: number; limit: number; rest: object}): Promise<IHistory[]>;
+  loadMore({ offset, limit, filters }: { offset: number; limit: number; filters: object }): Promise<IHistory[]>;
   getUsers(): User[];
 }
 
@@ -25,8 +25,8 @@ export const CHUNK_SIZE = 100;
 
 const Table = makePagination(SortableTable);
 
-const search = debounceAsync((loadMore, { offset, limit, ...rest }) => {
-  return loadMore({ offset, limit, ...rest });
+const search = debounceAsync((loadMore, { offset, limit, filters }) => {
+  return loadMore({ offset, limit, filters });
 });
 
 const States = [
@@ -55,7 +55,14 @@ export function History(props: HistoryProps) {
   }, [error]);
 
   const getChunk = (offset: number, limit: number) => {
-    return search(loadMore, { offset, limit, user: stateData.userFilter, query: stateData.queryFilter });
+    return search(loadMore, {
+      offset,
+      limit,
+      filters: {
+        user: stateData.userFilter,
+        query: stateData.queryFilter
+      }
+    });
   }
 
   useEffect(() => {
