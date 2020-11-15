@@ -136,7 +136,7 @@ export function History(props: HistoryProps) {
           title={'email'}
           unique={'id'}
           primaryValue={'All users'}
-          onOptionChange={(option) => viewState.set('Initial', { userFilter: option.id })}
+          onOptionChange={(option) => viewState.set('Initial', { userFilter: option.id || '' })}
         />
         <Input
           disableUnderline

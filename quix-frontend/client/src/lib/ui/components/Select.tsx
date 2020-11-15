@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { CircularProgress, Input, List, ListItem, createStyles, makeStyles } from '@material-ui/core';
 import useAutocomplete from '@material-ui/lab/useAutocomplete';
-import { makeStyles, createStyles } from '@material-ui/core/styles';
-import { CircularProgress, Input, List, ListItem } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import gray from '@material-ui/core/colors/grey';
+import { grey } from '@material-ui/core/colors';
 import { useViewState } from '../../../services/hooks';
 
 const useStyles = makeStyles(() =>
@@ -22,22 +21,26 @@ const useStyles = makeStyles(() =>
       fontWeight: 'bold'
     },
     primaryOption: {
-      fontWeight: 'lighter'
+      color: grey[600]
     },
-    listbox: {
-      width: 200,
-      zIndex: 1,
-      position: 'absolute',
+    list: {
+      position: 'fixed',
+      width: 'auto',
+      minWidth: 200,
+      zIndex: 200,
+      willChange: 'top, left',
       backgroundColor: 'white',
+      paddingTop: '5px',
+      paddingBottom: '5px',
       '& li[data-focus="true"]': {
-        backgroundColor: gray[50],
+        backgroundColor: grey[50],
         cursor: 'pointer',
       },
-      '& li:active': {
-        color: 'white',
-      },
+      '&:hover $child': {
+        color: 'red'
+      }
     },
-  }),
+  })
 );
 
 const checkIsPlainData = (data) => ['string', 'number', 'undefined'].includes(typeof data);
@@ -176,7 +179,7 @@ const Select = ({
         />
       </div>
       { open ?
-        <List className={`${classes.listbox} bi-dropdown-menu`} {...getListboxProps()}>
+        <List className={`${classes.list} bi-dropdown-menu`} {...getListboxProps()}>
           {{
           'Open': 
             <ListItem className={classes.loading}>
