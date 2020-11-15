@@ -40,7 +40,7 @@ const mocks = {
     })
   ],
   "/api/history": () => {
-    return [...Array(100).keys()].map(key =>
+    return [...Array(101).keys()].map(key =>
       createMockHistory({
         id: "" + key,
         email: "valery" + key + "@wix.com",
