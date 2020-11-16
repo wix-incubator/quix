@@ -1,3 +1,4 @@
+import './HistoryComponent.scss';
 import React, { useEffect, useState } from 'react';
 import { IHistory } from '@wix/quix-shared';
 import _ from 'lodash';
@@ -9,9 +10,9 @@ import makePagination from '../../lib/ui/components/hoc/makePagination';
 import Select from '../../lib/ui/components/Select';
 import { User } from '../../lib/app/services/user';
 import { useViewState } from '../../services/hooks';
-import noResultsImg from '../../../src/assets/no_data.svg';
 import { debounceAsync } from '../../utils';
 import Input from '@material-ui/core/Input';
+import noResultsImg from '../../../src/assets/no_data.svg';
 
 export interface HistoryProps {
   error: { message: string };
@@ -45,12 +46,12 @@ export function History(props: HistoryProps) {
     size: 0,
     userFilter: user.getId(),
     queryFilter: '',
-    error: '',
+    errorMessage: '',
   });
 
   useEffect(() => {
     if (error) {
-      viewState.set('Error', { error: error.message });
+      viewState.set('Error', { errorMessage: error.message });
     }
   }, [error]);
 
@@ -66,31 +67,48 @@ export function History(props: HistoryProps) {
   }
 
   useEffect(() => {
-    getChunk(0, CHUNK_SIZE + 1)(res => {
-      setInitialData(res);
-      viewState.set('Content');
-    });
+    if (viewState.get() !== 'Error') {
+      getChunk(0, CHUNK_SIZE + 1)(res => {
+        setInitialData(res);
+        viewState.set('Content');
+      });
+    }
   }, [stateData.queryFilter, stateData.userFilter])
 
   const displayErrorState = () => (
-    <div className='bi-empty-state--error' data-hook='history-error'>
-      <div className='bi-empty-state-header'>error_outline</div>
-      <div className='bi-empty-state-content'>{stateData.error}</div>
+    <div className="bi-c-h bi-align bi-center bi-grow">
+      <div className="bi-empty-state bi-fade-in">
+        <div className="bi-empty-state-icon bi-danger">
+          <i className="bi-icon bi-danger">error_outline</i>
+        </div>
+        <div className="bi-empty-state-header">{stateData.errorMessage}</div>
+      </div>
     </div>
   );
 
-  const getAndTrimFirstLine = (text: string = '', maxLength: number = 20): string => {
+  const getAndTrimDisplayLine = (text: string = '', maxLength: number = 200): string => {
     const lines = text.split('\n');
-    const firstLine = lines[0];
-    const needsElipsis = lines.length > 1 || firstLine.length > maxLength;
-
-    return firstLine.substring(0, maxLength) + (needsElipsis ? '...' : '');
+    let displayLine = '';
+    for (const line of lines) {
+      const formattedLine = line.replace(/\s+/g,' ');
+      if (displayLine.length + formattedLine.length <= maxLength) {
+        displayLine += ' ' + formattedLine;
+      } else {
+        const slicedLine = formattedLine.slice(0, maxLength - displayLine.length);
+        const lastSpace = slicedLine.lastIndexOf(' ');
+        if (lastSpace !== -1) {
+          displayLine += ' ' + slicedLine.slice(0, lastSpace);
+        }
+        return displayLine + '...';
+      }
+    }
+    return displayLine;
   }
 
   const highlight = (needle?: string) => (haystack: string) => { 
     const needlePresent = !!needle;
     const wrapLinesCount = needlePresent ? 1 : 0;
-    const text = needlePresent ? haystack : getAndTrimFirstLine(haystack, 30);
+    const text = needlePresent ? haystack : getAndTrimDisplayLine(haystack);
 
     return <Highlighter
       searchWords={[needle]}
@@ -127,34 +145,42 @@ export function History(props: HistoryProps) {
   );
 
   return (
-    <div className='bi-section bi-c-h bi-grow'>
+    <div className='history-component bi-section bi-c-h bi-grow'>
       <div className='bi-section-header'>
-        <div>
+        <div className='bi-align bi-s-h--x3'>
           <div className='bi-section-title'>
             History
             {stateData.size ? <span className='bi-fade-in'> ({stateData.size})</span> : ''}
           </div>
+          <div className={`hc-filters bi-theme--lighter bi-align bi-space-h--x15`}>
+            <Select
+              defaultValue={user}
+              options={getUsers}
+              title={'email'}
+              unique={'id'}
+              primaryValue={'All users'}
+              onOptionChange={(option) => {
+                if (viewState.get() !== 'Error') {
+                  viewState.set('Initial', { userFilter: option.id || '' });
+                }
+              }}
+              placeHolder='Filter user'
+              inputDataHook='history-filter-user-select'
+              ulDataHook='history-filter-user-select-options'
+            />
+            <Input
+              disableUnderline
+              className={'bi-input'}
+              onChange={(e) => {
+                if (viewState.get() !== 'Error') {
+                  viewState.set('Initial', { queryFilter: e.target.value });
+                }
+              }}
+              placeholder='Filter query'
+              data-hook='history-filter-query-input'
+            />
+          </div>
         </div>
-      </div>
-      <div className='bi-theme--lighter bi-align bi-space-h--x15' style={{paddingLeft: '15px'}}>
-        <Select
-          defaultValue={user}
-          options={getUsers}
-          title={'email'}
-          unique={'id'}
-          primaryValue={'All users'}
-          onOptionChange={(option) => viewState.set('Initial', { userFilter: option.id || '' })}
-          placeHolder='Filter user'
-          inputDataHook='history-filter-user-select'
-          ulDataHook='history-filter-user-select-options'
-        />
-        <Input
-          disableUnderline
-          className={'bi-input'}
-          onChange={(e) => viewState.set('Initial', { queryFilter: e.target.value })}
-          placeholder='Filter query'
-          data-hook='history-filter-query-input'
-        />
       </div>
         {
           {

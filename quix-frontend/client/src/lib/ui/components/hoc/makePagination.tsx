@@ -28,8 +28,8 @@ const makePagination = <P extends InjectedPaginationProps>(
       const { initialData, columns, loadMore, paginationSize, tableSize, ...restComponentProps } = props;
 
       const [isChunking, setIsChunking] = useState(false);
-      const [resultsLeft, setResultsLeft] = useState(initialData.length === paginationSize + 1 ? true : false);
-      const [data, setData] = useState(resultsLeft ? initialData.slice(0, paginationSize) : initialData);
+      const [resultsLeft, setResultsLeft] = useState(initialData && initialData.length === paginationSize + 1);
+      const [data, setData] = useState(resultsLeft ? initialData.slice(0, paginationSize) : (initialData || []));
  
       useEffect(() => {
         if (tableSize) {

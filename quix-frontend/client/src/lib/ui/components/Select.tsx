@@ -221,7 +221,7 @@ const Select = ({
             }
 
             let currentClassName
-            if (primaryValue && (index === 0)) {
+            if (primaryValue && (index === 0) && primaryUniqueValue === currentOptionValue) {
               currentClassName = classes.primaryOption;
             }
             else if (currentOptionValue === selectedOptionValue) {
