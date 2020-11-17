@@ -114,22 +114,34 @@ class Index extends React.Component {
     );
 
     const MoreFeatures = () => (
-      <Block layout="threeColumn">
-        {[
-          {
-            content: 'Quix features smart charts which help <br> you quickly visualize your data',
-            title: 'One-click visualizations',
-          },
-          {
-            content: 'Search queries across all users',
-            title: 'Search',
-          },
-          {
-            content: 'Easily share your folders, notebooks and notes',
-            title: 'Shareability',
-          },
-        ]}
-      </Block>
+      <React.Fragment>
+        <Block layout="threeColumn">
+          {[
+            {
+              content: 'Quix features smart charts which help <br> you quickly visualize your data',
+              title: 'One-click visualizations',
+            },
+            {
+              content: 'Search queries across all users',
+              title: 'Search',
+            },
+            {
+              content: 'Easily share your folders, notebooks and notes',
+              title: 'Shareability',
+            },
+          ]}
+        </Block>
+        <Block layout="threeColumn" background="light">
+          {[
+            {
+              content: 'View the history of queries executed by you <br> or other users',
+              title: 'History',
+            },
+            {},
+            {},
+          ]}
+        </Block>
+      </React.Fragment>
     );
 
     const Showcase = () => {
