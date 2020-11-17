@@ -3,7 +3,6 @@ package quix.core.history.dao
 import java.time.{Clock, Instant, ZoneOffset}
 
 import cats.effect.Resource
-import cats.syntax.apply._
 import monix.eval.Task
 import monix.execution.Scheduler.Implicits.global
 import org.specs2.mutable.SpecificationWithJUnit
@@ -106,6 +105,87 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
         finished <- dao.executions(filter = Filter.Status(ExecutionStatus.Finished))
         failed <- dao.executions(filter = Filter.Status(ExecutionStatus.Failed))
       } yield (running, finished, failed)
+    }
+
+    result.runSyncUnsafe() must beLike {
+      case (running, finished, failed) =>
+        (running must contain(exactly(executionWithId(query1.id)))) and
+          (finished must contain(exactly(executionWithId(query2.id)))) and
+          (failed must contain(exactly(executionWithId(query3.id))))
+    }
+  }
+
+  "support filtering by user email" in {
+    def makeSubQueries(userEmail: String) =
+      List(ImmutableSubQuery("select 1", User(email = userEmail)))
+
+    val query1 = query.copy(id = "query-1", subQueries = makeSubQueries("foo@quix.com"))
+    val query2 = query.copy(id = "query-2", subQueries = makeSubQueries("boo@quix.com"))
+    val query3 = query.copy(id = "query-3", subQueries = makeSubQueries("bar@quix.com"))
+
+    val result = createDao().use { dao =>
+      for {
+        _ <- dao.executionStarted(query1, queryType)
+        _ <- dao.executionStarted(query2, queryType)
+        _ <- dao.executionStarted(query3, queryType)
+        foo <- dao.executions(filter = Filter.User("foo@quix.com"))
+        boo <- dao.executions(filter = Filter.User("boo@quix.com"))
+        bar <- dao.executions(filter = Filter.User("bar@quix.com"))
+      } yield (foo, boo, bar)
+    }
+
+    result.runSyncUnsafe() must beLike {
+      case (running, finished, failed) =>
+        (running must contain(exactly(executionWithId(query1.id)))) and
+          (finished must contain(exactly(executionWithId(query2.id)))) and
+          (failed must contain(exactly(executionWithId(query3.id))))
+    }
+  }
+
+  "support filtering by query text" in {
+    def makeSubQueries(userEmail: String) =
+      List(ImmutableSubQuery(s"select $userEmail as email", User(email = userEmail)))
+
+    val query1 = query.copy(id = "query-1", subQueries = makeSubQueries("foo@quix.com"))
+    val query2 = query.copy(id = "query-2", subQueries = makeSubQueries("boo@quix.com"))
+    val query3 = query.copy(id = "query-3", subQueries = makeSubQueries("bar@quix.com"))
+
+    val result = createDao().use { dao =>
+      for {
+        _ <- dao.executionStarted(query1, queryType)
+        _ <- dao.executionStarted(query2, queryType)
+        _ <- dao.executionStarted(query3, queryType)
+        foo <- dao.executions(filter = Filter.Query("foo@quix.com"))
+        boo <- dao.executions(filter = Filter.Query("boo@quix.com"))
+        bar <- dao.executions(filter = Filter.Query("bar@quix.com"))
+      } yield (foo, boo, bar)
+    }
+
+    result.runSyncUnsafe() must beLike {
+      case (running, finished, failed) =>
+        (running must contain(exactly(executionWithId(query1.id)))) and
+          (finished must contain(exactly(executionWithId(query2.id)))) and
+          (failed must contain(exactly(executionWithId(query3.id))))
+    }
+  }
+
+  "support filtering by query and user email" in {
+    def makeSubQueries(sql : String, userEmail: String) =
+      List(ImmutableSubQuery(sql, User(email = userEmail)))
+
+    val query1 = query.copy(id = "query-1", subQueries = makeSubQueries("select 1", "foo@quix.com"))
+    val query2 = query.copy(id = "query-2", subQueries = makeSubQueries("select 2", "foo@quix.com"))
+    val query3 = query.copy(id = "query-3", subQueries = makeSubQueries("select 3", "foo@quix.com"))
+
+    val result = createDao().use { dao =>
+      for {
+        _ <- dao.executionStarted(query1, queryType)
+        _ <- dao.executionStarted(query2, queryType)
+        _ <- dao.executionStarted(query3, queryType)
+        first <- dao.executions(filter = Filter.CompoundFilter(List(Filter.Query("select 1"), Filter.User("foo@quix.com"))))
+        second <- dao.executions(filter = Filter.CompoundFilter(List(Filter.Query("select 2"), Filter.User("foo@quix.com"))))
+        third <- dao.executions(filter = Filter.CompoundFilter(List(Filter.Query("select 3"), Filter.User("foo@quix.com"))))
+      } yield (first, second, third)
     }
 
     result.runSyncUnsafe() must beLike {

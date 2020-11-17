@@ -4,7 +4,7 @@ import monix.execution.Scheduler.Implicits.global
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation._
 import quix.core.history.Execution
-import quix.core.history.dao.{HistoryReadDao, Page}
+import quix.core.history.dao.{Filter, HistoryReadDao, Page}
 
 @Controller
 @RequestMapping(Array("/api/history"))
@@ -14,9 +14,12 @@ class HistoryController(historyReadDao: HistoryReadDao) {
   @RequestMapping(value = Array("/executions"), method = Array(RequestMethod.GET))
   @ResponseBody
   def executions(@RequestParam(defaultValue = "0") offset: String,
-                 @RequestParam(defaultValue = "20") limit: String): List[ExecutionDto] =
+                 @RequestParam(defaultValue = "20") limit: String,
+                 @RequestParam(defaultValue = "") user : String,
+                 @RequestParam(defaultValue = "") query : String
+                ): List[ExecutionDto] =
     historyReadDao
-      .executions(page = Page(offset.toInt, limit.toInt))
+      .executions(page = Page(offset.toInt, limit.toInt), filter = Filter(user, query))
       .runSyncUnsafe()
       .map(ExecutionDto(_))
 

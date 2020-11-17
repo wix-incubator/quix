@@ -21,5 +21,18 @@ export class ProxyDbApiBackend implements NestModule {
         }),
       )
       .forRoutes('/api/db');
+    consumer
+      .apply(
+        httpProxy({
+          target: `http://${
+            this.configService.getEnvSettings().QuixBackendInternalUrl
+          }`,
+          changeOrigin: true,
+          pathRewrite: {
+            '^/api/history': '/api/history/executions',
+          },
+        }),
+      )
+      .forRoutes('/api/history');
   }
 }

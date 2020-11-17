@@ -23,7 +23,7 @@ To access Quix, navigate to:
 
 ## Configuration
 Most of the configuration you'll need is done through environment variables. docker-compose can load environment-variables easily through a `.env` file.
-You can rename our [env-example](https://github.com/wix/quix/blob/master/env-example) file to `.env`, and modify it's values as needed. 
+You should rename our [env-example](https://github.com/wix/quix/blob/master/env-example) file to `.env`, and modify it's values as needed. 
 
 #### Presto
 By default, Quix works with demo Presto instance that runs inside Docker Compose.  

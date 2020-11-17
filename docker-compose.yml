@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   backend:
     build: ./quix-backend/
@@ -52,7 +52,7 @@ services:
     ports:
       - "8181:8080"
   postgres:
-    image : "aa8y/postgres-dataset:dellstore"
+    image: "aa8y/postgres-dataset:dellstore"
     ports:
       - "5432:5432"
 
