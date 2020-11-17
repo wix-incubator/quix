@@ -17,7 +17,7 @@ describe('History ::', () => {
 
     return mock;
   }
-  
+
   beforeEach(async () => {
     driver = new Driver();
     await driver.init();
@@ -28,34 +28,49 @@ describe('History ::', () => {
   it('should display error state when failed to fetch history', async () => {
     await gotoHistoryWithError();
 
-    expect(await testkit.hasErrorState()).to.be.true;
+    expect(await testkit.states.hasErrorState()).to.be.true;
   });
 
   it('should display content', async () => {
     await gotoHistory();
 
-    expect(await testkit.hasContent()).to.be.true;
-    expect(await testkit.numOfHistory()).to.equal(1);
+    expect(await testkit.states.hasContentState()).to.be.true;
+    expect(await testkit.table.rowNumbers()).to.equal(1);
   });
 
   it('should display user options', async () => {
     await gotoHistory();
-
-    await testkit.ClickOnUserFilter();
-    expect(await testkit.hasOptionsUserFilter()).to.be.true;
+    expect(await testkit.states.hasLoadingState()).to.be.true;
+    
+    await testkit.userFilter.clickOnDropdown();
+    expect(await testkit.userFilter.hasOptions()).to.be.true;
   });
 
   it('should filter by user', async () => {
     await gotoHistory();
-    await testkit.setAllUserFilter();
+    expect(await testkit.states.hasContentState()).to.be.true;
+    expect(await testkit.table.rowNumbers()).to.equal(1);
+    
+    driver.mock.reset();
+    await testkit.userFilter.clickOnDropdown();
+    await testkit.userFilter.clickOnOption();
 
-    expect(await testkit.getUserFilter()).to.equal('All users');
+    expect(await testkit.states.hasLoadingState()).to.be.true;
+    expect(await testkit.states.hasContentState()).to.be.true;
+    expect(await testkit.table.rowNumbers()).to.equal(100);
   });
 
   it('should filter by query', async () => {
     await gotoHistory();
-    await testkit.setQueryFilter();
+    expect(await testkit.states.hasContentState()).to.be.true;
+    expect(await testkit.table.rowNumbers()).to.equal(1);
 
-    expect(await testkit.getQueryFilter()).to.equal('example');
+    driver.mock.reset();
+    await testkit.queryFilter.click();
+
+    await testkit.queryFilter.set('example');
+    expect(await testkit.states.hasLoadingState()).to.be.true;
+    expect(await testkit.states.hasContentState()).to.be.true;
+    expect(await testkit.table.rowNumbers()).to.equal(100);
   });
 });

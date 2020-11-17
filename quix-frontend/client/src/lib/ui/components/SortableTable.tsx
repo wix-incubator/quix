@@ -44,7 +44,7 @@ export const SortableTable = ({
           key={index}
           {...row.getRowProps()}
           onClick={() => onRowClicked(row.original)}
-          data-hook="table-row"
+          data-hook="history-table-row"
         >
           {row.cells.map(cell => {
             return (

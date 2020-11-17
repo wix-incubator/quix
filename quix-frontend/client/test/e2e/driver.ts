@@ -217,10 +217,19 @@ export class Log {
   }
 }
 
+export class Keyboard {
+  constructor (private readonly page: Page) {}
+
+  type(hook: string, value: string) {
+    return this.page.type(`[data-hook="${hook}"]`, value, { delay: 10 });
+  }
+}
+
 export class Testkit {
   public query: Query;
   public click: Click;
   public evaluate: Evaluate;
+  public keyboard: Keyboard;
 
   constructor(pageOrElement: Page | ElementHandle) {
     if (!pageOrElement) {
@@ -230,5 +239,6 @@ export class Testkit {
     this.query = new Query(pageOrElement as Page);
     this.click = new Click(pageOrElement as Page);
     this.evaluate = new Evaluate(pageOrElement as Page);
+    this.keyboard = new Keyboard(pageOrElement as Page);
   }
 }

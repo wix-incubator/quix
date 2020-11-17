@@ -1,47 +1,71 @@
 import { Testkit } from '../../../test/e2e/driver';
 
 const enum Hooks {
+  Initial = 'history-initial',
   Error = 'history-error',
   Content = 'history-content',
+  Result = 'history-result',
+  TableRow = 'history-table-row',
   UserFilter = 'history-filter-user-select',
-  UserFilterOptions = 'history-filter-user-select-options',
+  UserFilterOption = 'history-filter-user-select-option',
   QueryFilter = 'history-filter-query-input',
 }
 
 export class HistoryTestkit extends Testkit {
-  async hasErrorState() {
-    return (await this.query.hook(Hooks.Error)) !== null;
-  }
 
-  async hasContent() {
-    return (await this.query.hook(Hooks.Content)) !== null;
-  }
+  states = {
+    hasErrorState: async () => {
+      return (await this.query.hook(Hooks.Error)) !== null;
+    },
+    
+    hasLoadingState: async () => {
+      return (await this.query.hook(Hooks.Initial)) !== null;
+    },
 
-  async numOfHistory() {
-    return (await this.query.hooks('table-row')).length;
-  }
-
-  async ClickOnUserFilter() {
-    (await this.query.hook(Hooks.UserFilter)).click();
-  }
+    hasResultState: async () => {
+      return (await this.query.hook(Hooks.Result)) !== null;
+    },
   
-  async hasOptionsUserFilter() {
-    return (await this.query.hook(Hooks.UserFilterOptions)) !== null;
+    hasContentState: async () => {
+      return (await this.query.hook(Hooks.Content)) !== null;
+    }
   }
 
-  async setAllUserFilter() {
-    await this.evaluate.hook(Hooks.UserFilter, (e: HTMLInputElement) => e.value = 'All users');
+  table = {
+    rowNumbers: async () => {
+      return (await this.query.hooks(Hooks.TableRow)).length;
+    },
   }
 
-  getUserFilter() {
-    return this.evaluate.hook(Hooks.UserFilter, (e: HTMLInputElement) => e.value);
+  userFilter = {
+    clickOnDropdown: async () => {
+      await this.click.hook(Hooks.UserFilter);
+    },
+
+    clickOnOption: async () => {
+      await this.click.hook(Hooks.UserFilterOption);
+    },
+
+    hasOptions: async () => {
+      return (await this.query.hooks(Hooks.UserFilterOption)).length > 0;
+    },
+
+    value: () => {
+      return this.evaluate.hook(Hooks.UserFilter, (e: HTMLInputElement) => e.value);
+    },
   }
 
-  async setQueryFilter() {
-    await this.evaluate.hook(Hooks.QueryFilter, (e: HTMLInputElement) => e.value = 'example');
-  }
+  queryFilter = {
+    click: () => {
+      return this.click.hook(Hooks.QueryFilter);
+    },
 
-  getQueryFilter() {
-    return this.evaluate.hook(Hooks.QueryFilter, (e: HTMLInputElement) => e.value);
+    set: (value: string) => {
+      return this.keyboard.type(Hooks.QueryFilter, value);
+    },
+
+    get: () => {
+      return this.evaluate.hook(Hooks.QueryFilter, (e: HTMLInputElement) => e.value);
+    },
   }
 }

@@ -81,7 +81,7 @@ export function History(props: HistoryProps) {
         <div className="bi-empty-state-icon bi-danger">
           <i className="bi-icon bi-danger">error_outline</i>
         </div>
-        <div className="bi-empty-state-header">{stateData.errorMessage}</div>
+        <div className="bi-empty-state-header" data-hook='history-error'>{stateData.errorMessage}</div>
       </div>
     </div>
   );
@@ -166,7 +166,7 @@ export function History(props: HistoryProps) {
               }}
               placeHolder='Filter user'
               inputDataHook='history-filter-user-select'
-              ulDataHook='history-filter-user-select-options'
+              liDataHook='history-filter-user-select-option'
             />
             <Input
               disableUnderline
@@ -187,7 +187,7 @@ export function History(props: HistoryProps) {
             'Initial':
               <div className="bi-c-h bi-align bi-center bi-grow">
                 <div className="bi-empty-state--loading bi-fade-in">
-                  <div className="bi-empty-state-content">Searching...</div>
+                  <div className="bi-empty-state-content" data-hook='history-initial'>Searching...</div>
                 </div>
               </div>,
             'Content': displayLoadedState(),
@@ -196,7 +196,7 @@ export function History(props: HistoryProps) {
               <div className="bi-c-h bi-align bi-center bi-grow">
                 <div className="bi-empty-state bi-fade-in">
                   <img className="bi-empty-state-image" src={noResultsImg}></img>
-                  <div className="bi-empty-state-header">No results</div>
+                  <div className="bi-empty-state-header" data-hook='history-result'>No results</div>
                 </div>
               </div>,
           }[viewState.get()]

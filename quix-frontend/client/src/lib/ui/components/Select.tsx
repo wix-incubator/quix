@@ -3,6 +3,7 @@ import { CircularProgress, Input, List, ListItem, createStyles, makeStyles } fro
 import useAutocomplete from '@material-ui/lab/useAutocomplete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { grey } from '@material-ui/core/colors';
+import _ from 'lodash';
 import { useViewState } from '../../../services/hooks';
 
 const useStyles = makeStyles(() =>
@@ -65,7 +66,7 @@ interface SelectOptions {
   primaryValue?: any,
   placeHolder?: string,
   inputDataHook?: string,
-  ulDataHook?: string,
+  liDataHook?: string,
 }
 
 const Select = ({
@@ -77,7 +78,7 @@ const Select = ({
   primaryValue,
   placeHolder = 'Enter your input',
   inputDataHook,
-  ulDataHook,
+  liDataHook,
 }: SelectOptions) => {
 
   const classes = useStyles();
@@ -140,20 +141,16 @@ const Select = ({
     value,
     onClose: () => setOpen(false),
     onOpen: () => setOpen(true),
-    onChange: (event, newValue) => setValue(newValue),
     getOptionLabel: (option) => getOptionValue(option, title),
-    getOptionSelected: (option, newValue) => {
-      const optionUnique = getOptionValue(option, unique);
-      const valueUnique = getOptionValue(newValue, unique);
+    onChange: (event, newValue) => {
+      const newValueIndex = stateData.options.findIndex(option => _.isEqual(option, newValue));
       const selectedOptionUnique = getOptionValue(selectedOption, unique);
-      
-      if (optionUnique === valueUnique && viewState.get() !== 'Error') {
-        if (selectedOptionUnique !== optionUnique) {
-          setSelectedOption(option);
-        }
-        return true;
+      const optionUnique = getOptionValue(stateData.options[newValueIndex], unique);
+
+      if (newValueIndex !== -1 && selectedOptionUnique !== optionUnique) {
+        setSelectedOption(stateData.options[newValueIndex]);
       }
-      return false;
+      setValue(newValue);
     },
   });
 
@@ -184,7 +181,7 @@ const Select = ({
         />
       </div>
       { open ?
-        <List data-hook={ulDataHook} className={`${classes.list} bi-dropdown-menu`} {...getListboxProps()}>
+        <List className={`${classes.list} bi-dropdown-menu`} {...getListboxProps()}>
           {{
           'Open': 
             <ListItem className={classes.loading}>
@@ -211,27 +208,28 @@ const Select = ({
             </ListItem>,
 
           'Content': 
-          groupedOptions.map((option, index) => {
-            const currentOptionValue = getOptionValue(option, title);
-            const selectedOptionValue = getOptionValue(selectedOption, title);
-            if (currentOptionValue === primaryUniqueValue
-              && selectedOptionValue === primaryUniqueValue
-            ) {
-              return;
-            }
+            groupedOptions.map((option, index) => {
+              const currentOptionValue = getOptionValue(option, title);
+              const selectedOptionValue = getOptionValue(selectedOption, title);
+              if (currentOptionValue === primaryUniqueValue
+                && selectedOptionValue === primaryUniqueValue
+              ) {
+                return;
+              }
 
-            let currentClassName
-            if (primaryValue && (index === 0) && primaryUniqueValue === currentOptionValue) {
-              currentClassName = classes.primaryOption;
-            }
-            else if (currentOptionValue === selectedOptionValue) {
-              currentClassName = classes.bold;
-            }
-            return (
-            <ListItem {...getOptionProps({ option, index })} className={currentClassName} >
-              {checkIsPlainData(option) ? option : option[title]}
-            </ListItem>
-          )})
+              let currentClassName
+              if (primaryValue && (index === 0) && primaryUniqueValue === currentOptionValue) {
+                currentClassName = classes.primaryOption;
+              }
+              else if (currentOptionValue === selectedOptionValue) {
+                currentClassName = classes.bold;
+              }
+
+              return (
+                <ListItem {...getOptionProps({ option, index })} className={currentClassName} data-hook={liDataHook}>
+                  {checkIsPlainData(option) ? option : option[title]}
+                </ListItem>
+            )})
 
         }[viewState.get()]}
         </List> : null
