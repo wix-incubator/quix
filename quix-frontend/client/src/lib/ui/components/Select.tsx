@@ -156,8 +156,7 @@ const Select = ({
 
   useEffect(() => {
     const optionUnique = getOptionValue(selectedOption, unique);
-    const inputDefaultValueUnique = getOptionValue(defaultValue, unique);
-    if (optionUnique !== '' && optionUnique !== inputDefaultValueUnique) {
+    if (optionUnique !== '') {
       onOptionChange(selectedOption);
     }
   },[selectedOption]);

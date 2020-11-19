@@ -44,7 +44,7 @@ export function History(props: HistoryProps) {
 
   const [stateData, viewState] = useViewState(States, {
     size: 0,
-    userFilter: user.getId(),
+    userFilter: user.getEmail(),
     queryFilter: '',
     errorMessage: '',
   });
@@ -69,8 +69,12 @@ export function History(props: HistoryProps) {
   useEffect(() => {
     if (viewState.get() !== 'Error') {
       getChunk(0, CHUNK_SIZE + 1)(res => {
-        setInitialData(res);
-        viewState.set('Content');
+        if (res.length) {
+          setInitialData(res);
+          viewState.set('Content');
+        } else {
+          viewState.set('Result');
+        }
       });
     }
   }, [stateData.queryFilter, stateData.userFilter])
@@ -157,7 +161,7 @@ export function History(props: HistoryProps) {
               defaultValue={user}
               options={getUsers}
               title={'email'}
-              unique={'id'}
+              unique={'email'}
               primaryValue={'All users'}
               onOptionChange={(option) => {
                 if (viewState.get() !== 'Error') {

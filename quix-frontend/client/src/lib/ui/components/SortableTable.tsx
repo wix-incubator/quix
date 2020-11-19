@@ -86,22 +86,7 @@ export const SortableTable = ({
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                     >
                       <div className="bi-table-th-content bi-text--ui">
-                        <span className="bi-align bi-pointer ng-scope">
-                          <span
-                            className={
-                              "bi-tbl-sort-icon bi-icon--sm ng-binding " +
-                              (column.id === "email" ? "bi-primary" : "")
-                            }
-                            style={{
-                              margin: "0 0 0 -8px"
-                            }}
-                          >
-                            {column.isSorted
-                              ? column.isSortedDesc
-                                ? "arrow_drop_down"
-                                : "arrow_drop_up"
-                              : "unfold_more"}
-                          </span>
+                        <span className="bi-align ng-scope">
                           <span className="bi-text--600 ng-binding">
                             {column.render("Header")}
                           </span>
