@@ -90,35 +90,21 @@ export function History(props: HistoryProps) {
     </div>
   );
 
-  const getAndTrimDisplayLine = (text: string = '', maxLength: number = 200): string => {
-    const lines = text.split('\n');
-    let displayLine = '';
-    for (const line of lines) {
-      const formattedLine = line.replace(/\s+/g,' ');
-      if (displayLine.length + formattedLine.length <= maxLength) {
-        displayLine += ' ' + formattedLine;
-      } else {
-        const slicedLine = formattedLine.slice(0, maxLength - displayLine.length);
-        const lastSpace = slicedLine.lastIndexOf(' ');
-        if (lastSpace !== -1) {
-          displayLine += ' ' + slicedLine.slice(0, lastSpace);
-        }
-        return displayLine + '...';
-      }
-    }
-    return displayLine;
-  }
-
-  const highlight = (needle?: string) => (haystack: string) => { 
-    const needlePresent = !!needle;
-    const wrapLinesCount = needlePresent ? 1 : 0;
-    const text = needlePresent ? haystack : getAndTrimDisplayLine(haystack);
-
-    return <Highlighter
-      searchWords={[needle]}
+  const highlight = (title: string) => (haystack: string) => {
+    const text = haystack.replace(/\s+/g,' ');
+    
+    if (title === 'query') {
+      const currentFilter = stateData.queryFilter;
+      const needlePresent = !!currentFilter;
+      const wrapLinesCount = needlePresent ? 1 : 0;
+      
+      return <Highlighter
+      searchWords={[currentFilter]}
       autoEscape={true}
-      textToHighlight={extractTextAroundMatch(text, needle || '', wrapLinesCount)}
-  />
+      textToHighlight={extractTextAroundMatch(text, currentFilter || '', wrapLinesCount)}
+      />
+    }
+    return text;
   }
 
   const displayLoadedState = () => (
@@ -135,10 +121,7 @@ export function History(props: HistoryProps) {
             columns={historyTableFields.map(field => ({
               Header: field.title,
               accessor: field.name,
-              Cell: table =>
-                field.filter
-                  ? field.filter(undefined, table.row.original, 0, highlight(''))
-                  : table.cell.value.toString()
+              Cell: table => field.filter(undefined, table.row.original, 0, highlight(field.name))
             }))}
             paginationSize={CHUNK_SIZE}
             tableSize={(size) => viewState.set(size > 0 ? 'Content' : 'Result', { size })}

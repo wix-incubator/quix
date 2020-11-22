@@ -27,7 +27,7 @@ export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
       const hasQuery = history.query.length > 0;
       const fullQuery = hasQuery ? history.query.join(';\n') + ';' : '';
 
-      return <pre title={fullQuery}>{highlight(fullQuery)}</pre>;
+      return highlight(fullQuery);
     }
   },
   {
