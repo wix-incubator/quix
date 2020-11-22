@@ -6,6 +6,7 @@ import {
   usePagination
 } from 'react-table';
 import '../directives/search/search.scss';
+import './SortableTable.scss';
 
 export const SortableTable = ({
   columns,
@@ -50,7 +51,7 @@ export const SortableTable = ({
             return (
               <td
                 {...cell.getCellProps()}
-                className={"bi-table-cell-" + cell.column.id}
+                className={"bi-table-cells bi-muted bi-text--sm bi-table-cell-" + cell.column.id}
               >
                 {cell.render("Cell")}
               </td>
@@ -67,7 +68,6 @@ export const SortableTable = ({
       getChunk();
     }
   }
-
 
   return (
     <>
