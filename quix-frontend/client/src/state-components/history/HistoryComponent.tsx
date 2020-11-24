@@ -11,8 +11,8 @@ import Select from '../../lib/ui/components/Select';
 import { User } from '../../lib/app/services/user';
 import { useViewState } from '../../services/hooks';
 import { debounceAsync } from '../../utils';
-import Input from '@material-ui/core/Input';
 import noResultsImg from '../../../src/assets/no_data.svg';
+import Input from '../../lib/ui/components/Input';
 
 export interface HistoryProps {
   error: { message: string };
@@ -156,8 +156,8 @@ export function History(props: HistoryProps) {
               liDataHook='history-filter-user-select-option'
             />
             <Input
+              fullWidth={true}
               disableUnderline
-              className={'bi-input'}
               onChange={(e) => {
                 if (viewState.get() !== 'Error') {
                   viewState.set('Initial', { queryFilter: e.target.value });
