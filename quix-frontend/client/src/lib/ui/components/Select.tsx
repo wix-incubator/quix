@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CircularProgress, Input, List, ListItem, createStyles, makeStyles } from '@material-ui/core';
+import { CircularProgress, List, ListItem, createStyles, makeStyles } from '@material-ui/core';
 import useAutocomplete from '@material-ui/lab/useAutocomplete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { grey } from '@material-ui/core/colors';
 import _ from 'lodash';
 import { useViewState } from '../../../services/hooks';
+import Input from './Input';
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -14,9 +15,8 @@ const useStyles = makeStyles(() =>
     label: {
       display: 'block',
     },
-    loading: {
-      display: 'flex',
-      justifyContent: 'space-between',
+    center: {
+      justifyContent: 'center',
     },
     bold: {
       fontWeight: 'bold'
@@ -163,17 +163,18 @@ const Select = ({
 
   return (
     <div>
-      <div {...getRootProps()} className={classes.inputArea}>
+      <div {...getRootProps()} className={classes.inputArea} onClick={() => inputElement.current.focus()}>
         <Input
-          className={`bi-input`}
           {...getInputProps()}
+          fullWidth={true}
           disableUnderline
           inputRef={inputElement}
+          inputProps={{ style: { cursor: 'pointer'}}}
+          style={{cursor: 'pointer'}}
           endAdornment={
-          <ExpandMoreIcon
-            style={{cursor: 'pointer'}}
-            fontSize='small'
-            onClick={() => inputElement.current.focus()} />
+              <ExpandMoreIcon
+              fontSize='small'
+              />
           }
           placeholder={placeHolder}
           data-hook={inputDataHook}
@@ -183,10 +184,7 @@ const Select = ({
         <List className={`${classes.list} bi-dropdown-menu`} {...getListboxProps()}>
           {{
           'Open': 
-            <ListItem className={classes.loading}>
-              <span>
-                Loading...
-              </span>
+            <ListItem disableGutters classes={{root: classes.center}} className={'bi-center'}>
               <span>
                 <CircularProgress color="inherit" size={20} />
               </span>
@@ -202,7 +200,7 @@ const Select = ({
           'Result': 
             <ListItem>
               <span>
-                No results found
+                No matches
               </span>
             </ListItem>,
 

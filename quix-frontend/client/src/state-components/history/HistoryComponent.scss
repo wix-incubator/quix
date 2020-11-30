@@ -1,5 +1,12 @@
+@import '../../lib/ui/assets/css/def/state.def';
+@import '../../lib/ui/assets/css/text.scss';
+
 .history-component {
   .hc-filters {
     background-color: transparent;
+  }
+
+  .bi-table-cell-query {
+    max-width: 300px;
   }
 }
