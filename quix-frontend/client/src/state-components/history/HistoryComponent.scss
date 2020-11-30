@@ -9,9 +9,4 @@
   .bi-table-cell-query {
     max-width: 300px;
   }
-
-  td {
-    @include muted('light');
-    @extend .bi-text--sm;
-  }
 }
