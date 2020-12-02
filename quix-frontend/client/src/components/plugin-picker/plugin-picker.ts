@@ -32,7 +32,7 @@ export default (app: App, store: Store) => () => ({
               return {type: scope.model};
             },
             $import({type}) {
-              scope.model = this.plugins.includes(type) ? type : null;
+              scope.model = scope.model || (this.plugins.includes(type) ? type : null);
             }
           })
           .withState('pluginPicker', 'pluginPicker', {});
