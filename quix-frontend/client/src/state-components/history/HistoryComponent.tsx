@@ -151,7 +151,6 @@ export function History(props: HistoryProps) {
                   viewState.set('Initial', { userFilter: option.id || '' });
                 }
               }}
-              placeHolder='Filter user'
               inputDataHook='history-filter-user-select'
               liDataHook='history-filter-user-select-option'
             />

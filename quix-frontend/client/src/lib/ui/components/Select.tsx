@@ -91,6 +91,7 @@ const Select = ({
   });
 
   const primaryUniqueValue = getOptionValue(primaryValue, title);
+  placeHolder = getOptionValue(primaryValue, title) || placeHolder;
 
   useEffect(() => {
     if (open && viewState.get() !== 'Open' && stateData.options.length === 0 && viewState.get() !== 'Error') {
@@ -137,20 +138,29 @@ const Select = ({
     getOptionProps,
     groupedOptions,
   } = useAutocomplete({
-    options: stateData.options,
+    options: [...stateData.options, ''],
     value,
     onClose: () => setOpen(false),
     onOpen: () => setOpen(true),
     getOptionLabel: (option) => getOptionValue(option, title),
+    filterOptions: (options) => options.filter(option => 
+      !(option === '' || value === '' && getOptionValue(option, title) === primaryUniqueValue)
+    ),
     onChange: (event, newValue) => {
       const newValueIndex = stateData.options.findIndex(option => _.isEqual(option, newValue));
       const selectedOptionUnique = getOptionValue(selectedOption, unique);
       const optionUnique = getOptionValue(stateData.options[newValueIndex], unique);
-
-      if (newValueIndex !== -1 && selectedOptionUnique !== optionUnique) {
-        setSelectedOption(stateData.options[newValueIndex]);
+      if (selectedOptionUnique !== optionUnique) {
+        if (newValueIndex === -1 || optionUnique === primaryUniqueValue) {
+          setSelectedOption(primaryValue);
+          setValue('');
+        } else {
+          setSelectedOption(stateData.options[newValueIndex]);
+          setValue(newValue);
+        }
+      } else {
+        setValue(newValue);
       }
-      setValue(newValue);
     },
   });
 
