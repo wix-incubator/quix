@@ -143,8 +143,8 @@ const Select = ({
     onClose: () => setOpen(false),
     onOpen: () => setOpen(true),
     getOptionLabel: (option) => getOptionValue(option, title),
-    filterOptions: (options) => options.filter(option => 
-      !(option === '' || value === '' && getOptionValue(option, title) === primaryUniqueValue)
+    filterOptions: (currentOptions) => currentOptions.filter(currentOption => 
+      !(currentOption === '' || value === '' && getOptionValue(currentOption, title) === primaryUniqueValue)
     ),
     onChange: (event, newValue) => {
       const newValueIndex = stateData.options.findIndex(option => _.isEqual(option, newValue));
