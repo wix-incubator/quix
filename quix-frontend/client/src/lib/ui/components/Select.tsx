@@ -82,6 +82,7 @@ const Select = ({
 }: SelectOptions) => {
 
   const classes = useStyles();
+  const [backspaceHandler, setBackspaceHandler] = useState(false);
   const [value, setValue] = useState(defaultValue || '');
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
@@ -167,6 +168,7 @@ const Select = ({
   useEffect(() => {
     const optionUnique = getOptionValue(selectedOption, unique);
     if (optionUnique !== '') {
+      setBackspaceHandler(false);
       onOptionChange(selectedOption);
     }
   },[selectedOption]);
@@ -177,6 +179,12 @@ const Select = ({
         <Input
           {...getInputProps()}
           fullWidth={true}
+          onKeyUp={(e) => {
+            if (['Backspace', 'Delete'].includes(e.key) && backspaceHandler === false) {
+              inputElement.current.select();
+              setBackspaceHandler(true);
+            }
+          }}
           disableUnderline
           inputRef={inputElement}
           inputProps={{ style: { cursor: 'pointer'}}}
