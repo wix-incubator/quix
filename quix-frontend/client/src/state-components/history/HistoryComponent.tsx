@@ -141,11 +141,11 @@ export function History(props: HistoryProps) {
           </div>
           <div className={`hc-filters bi-theme--lighter bi-align bi-space-h--x15`}>
             <Select
-              defaultValue={user}
+              defaultLabel={user}
               options={getUsers}
               title={'email'}
               unique={'email'}
-              primaryValue={'All users'}
+              primaryLabel={'All users'}
               onOptionChange={(option) => {
                 if (viewState.get() !== 'Error') {
                   viewState.set('Initial', { userFilter: option.id || '' });

@@ -46,7 +46,17 @@ const useStyles = makeStyles(() =>
 
 const checkIsPlainData = (data) => ['string', 'number', 'undefined'].includes(typeof data);
 
-const getOptionValue = (option, title) => checkIsPlainData(option) ? String(option) : option[title];
+const getOptionLabelValue = (option, title) => checkIsPlainData(option) ? String(option) : option[title];
+
+const filterEmptyLabelValue = (options) => options.filter(option => option !== '');
+
+const NoMatchesState = () => (
+  <ListItem>
+    <span>
+      No matches
+    </span>
+  </ListItem>
+)
 
 const States = [
   'FirstLoad',
@@ -62,8 +72,8 @@ interface SelectOptions {
   title?: string,
   unique?: string,
   onOptionChange?: Function,
-  defaultValue?: any,
-  primaryValue?: any,
+  defaultLabel?: any,
+  primaryLabel?: any,
   placeHolder?: string,
   inputDataHook?: string,
   liDataHook?: string,
@@ -74,8 +84,8 @@ const Select = ({
   title,
   unique,
   onOptionChange,
-  defaultValue,
-  primaryValue,
+  defaultLabel,
+  primaryLabel,
   placeHolder = 'Enter your input',
   inputDataHook,
   liDataHook,
@@ -83,7 +93,8 @@ const Select = ({
 
   const classes = useStyles();
   const [backspaceHandler, setBackspaceHandler] = useState(false);
-  const [value, setValue] = useState(defaultValue || '');
+  const [isFiltering, setIsFiltering] = useState(false);
+  const [value, setValue] = useState(defaultLabel || '');
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState('');
   const inputElement = useRef(null);
@@ -91,8 +102,8 @@ const Select = ({
     options: []
   });
 
-  const primaryUniqueValue = getOptionValue(primaryValue, title);
-  placeHolder = getOptionValue(primaryValue, title) || placeHolder;
+  const primaryOptionLabel = getOptionLabelValue(primaryLabel, title);
+  placeHolder = getOptionLabelValue(primaryLabel, title) || placeHolder;
 
   useEffect(() => {
     if (open && viewState.get() !== 'Open' && stateData.options.length === 0 && viewState.get() !== 'Error') {
@@ -116,7 +127,7 @@ const Select = ({
         Promise.resolve(data)
         .then(response => {
           if (viewState.get() === 'Open') {
-            const fullData = primaryValue ? [primaryValue, ...response] : response;
+            const fullData = primaryLabel ? [primaryLabel, ...response] : response;
             const viewStateType = response.length > 0 ? 'Content' : 'Result';
             viewState.set(viewStateType, { options: fullData });
           }
@@ -139,24 +150,50 @@ const Select = ({
     getOptionProps,
     groupedOptions,
   } = useAutocomplete({
-    options: [...stateData.options, ''],
+    options: stateData.options.length ? [...stateData.options, ''] : [],
     value,
     onClose: () => setOpen(false),
     onOpen: () => setOpen(true),
-    getOptionLabel: (option) => getOptionValue(option, title),
-    filterOptions: (currentOptions) => currentOptions.filter(currentOption => 
-      !(currentOption === '' || value === '' && getOptionValue(currentOption, title) === primaryUniqueValue)
-    ),
+    getOptionLabel: (option) => getOptionLabelValue(option, title),
+    filterOptions: (currentOptions, state) => {
+      if (state.inputValue !== '' && !isFiltering) {
+        setIsFiltering(true);
+      }
+      const chosenOptionLabel = getOptionLabelValue(value, unique);
+
+      if (state.inputValue === '' && currentOptions.length) {
+        // In case we are on empty value, or exactly with value of one option
+        return value === '' ? 
+        filterEmptyLabelValue(currentOptions).filter(currentOption => 
+          primaryOptionLabel !== getOptionLabelValue(currentOption, title)
+        ) //In case we on empty value
+        : isFiltering ?
+        filterEmptyLabelValue(currentOptions).filter(currentOption => 
+          _.isEqual(currentOption, value)
+        ) // we are filtering with option value
+        : filterEmptyLabelValue(currentOptions) // first click on input, so we need all results
+      }
+
+      return currentOptions.filter(currentOption => {
+        const currentOptionLabel = getOptionLabelValue(currentOption, title);
+        if (currentOptionLabel === '' || currentOptionLabel === primaryOptionLabel && chosenOptionLabel === '') {
+          return false;
+        } else if (currentOptionLabel.toLowerCase().includes(state.inputValue)) {
+          return true;
+        }
+        return false;
+      });
+    },
     onChange: (event, newValue) => {
-      const newValueIndex = stateData.options.findIndex(option => _.isEqual(option, newValue));
-      const selectedOptionUnique = getOptionValue(selectedOption, unique);
-      const optionUnique = getOptionValue(stateData.options[newValueIndex], unique);
-      if (selectedOptionUnique !== optionUnique) {
-        if (newValueIndex === -1 || optionUnique === primaryUniqueValue) {
-          setSelectedOption(primaryValue);
+      const newLabelIndex = stateData.options.findIndex(option => _.isEqual(option, newValue));
+      const selectedOptionUnique = getOptionLabelValue(selectedOption, unique);
+      const optionLabel = getOptionLabelValue(stateData.options[newLabelIndex], unique);
+      if (selectedOptionUnique !== optionLabel) {
+        if (newLabelIndex === -1 || optionLabel === primaryOptionLabel) {
+          setSelectedOption(primaryLabel);
           setValue('');
         } else {
-          setSelectedOption(stateData.options[newValueIndex]);
+          setSelectedOption(stateData.options[newLabelIndex]);
           setValue(newValue);
         }
       } else {
@@ -166,13 +203,15 @@ const Select = ({
   });
 
   useEffect(() => {
-    const optionUnique = getOptionValue(selectedOption, unique);
-    if (optionUnique !== '') {
+    const optionLabel = getOptionLabelValue(selectedOption, unique);
+    if (optionLabel !== '') {
       setBackspaceHandler(false);
       onOptionChange(selectedOption);
+      setIsFiltering(false);
     }
   },[selectedOption]);
 
+  const inputProps = getInputProps() as {onBlur: Function};
   return (
     <div>
       <div {...getRootProps()} className={classes.inputArea} onClick={() => inputElement.current.focus()}>
@@ -184,6 +223,11 @@ const Select = ({
               inputElement.current.select();
               setBackspaceHandler(true);
             }
+          }}
+          onBlur={(e) => {
+            inputProps.onBlur(e);
+            setBackspaceHandler(false);
+            setIsFiltering(false);
           }}
           disableUnderline
           inputRef={inputElement}
@@ -215,28 +259,19 @@ const Select = ({
               </span>
             </ListItem>,
           
-          'Result': 
-            <ListItem>
-              <span>
-                No matches
-              </span>
-            </ListItem>,
+          'Result': NoMatchesState(),
 
           'Content': 
+          groupedOptions.length ?
             groupedOptions.map((option, index) => {
-              const currentOptionValue = getOptionValue(option, title);
-              const selectedOptionValue = getOptionValue(selectedOption, title);
-              if (currentOptionValue === primaryUniqueValue
-                && selectedOptionValue === primaryUniqueValue
-              ) {
-                return;
-              }
+              const currentOptionLabel = getOptionLabelValue(option, title);
+              const selectedOptionLabel = getOptionLabelValue(selectedOption, title);
 
               let currentClassName
-              if (primaryValue && (index === 0) && primaryUniqueValue === currentOptionValue) {
+              if (primaryLabel && (index === 0) && primaryOptionLabel === currentOptionLabel) {
                 currentClassName = classes.primaryOption;
               }
-              else if (currentOptionValue === selectedOptionValue) {
+              else if (currentOptionLabel === selectedOptionLabel) {
                 currentClassName = classes.bold;
               }
 
@@ -245,7 +280,7 @@ const Select = ({
                   {checkIsPlainData(option) ? option : option[title]}
                 </ListItem>
             )})
-
+            : NoMatchesState()
         }[viewState.get()]}
         </List> : null
       }
