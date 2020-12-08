@@ -51,7 +51,7 @@ const getOptionLabelValue = (option, title) => checkIsPlainData(option) ? String
 const filterEmptyLabelValue = (options) => options.filter(option => option !== '');
 
 const NoMatchesState = () => (
-  <ListItem>
+  <ListItem className={'bi-text--sm bi-muted'}>
     <span>
       No matches
     </span>
@@ -67,29 +67,40 @@ const States = [
   'Content',
 ];
 
-interface SelectOptions {
-  options: string | number | Promise<any[]> | Function,
-  title?: string,
-  unique?: string,
-  onOptionChange?: Function,
+interface PlainTypes {
+  options: number[] | string[] | Promise<string[] | number[]>,
+  title?: undefined,
+}
+
+interface ObjectTypes {
+  options(): Object;
+  title: string,
+}
+
+interface ISelect { 
   defaultLabel?: any,
   primaryLabel?: any,
   placeHolder?: string,
   inputDataHook?: string,
   liDataHook?: string,
+  onOptionChange?(options: any): void;
+  highlight?(term: any, filter: any): JSX.Element;
 }
+
+interface a extends ISelect, ObjectTypes {}
+interface b extends ISelect, PlainTypes {}
 
 const Select = ({
   options,
   title,
-  unique,
-  onOptionChange,
   defaultLabel,
   primaryLabel,
   placeHolder = 'Enter your input',
   inputDataHook,
   liDataHook,
-}: SelectOptions) => {
+  onOptionChange,
+  highlight,
+}: a | b) => {
 
   const classes = useStyles();
   const [backspaceHandler, setBackspaceHandler] = useState(false);
@@ -103,7 +114,7 @@ const Select = ({
   });
 
   const primaryOptionLabel = getOptionLabelValue(primaryLabel, title);
-  placeHolder = getOptionLabelValue(primaryLabel, title) || placeHolder;
+  placeHolder = primaryLabel && getOptionLabelValue(primaryLabel, title) || placeHolder;
 
   useEffect(() => {
     if (open && viewState.get() !== 'Open' && stateData.options.length === 0 && viewState.get() !== 'Error') {
@@ -159,7 +170,7 @@ const Select = ({
       if (state.inputValue !== '' && !isFiltering) {
         setIsFiltering(true);
       }
-      const chosenOptionLabel = getOptionLabelValue(value, unique);
+      const chosenOptionLabel = getOptionLabelValue(value, title);
 
       if (state.inputValue === '' && currentOptions.length) {
         // In case we are on empty value, or exactly with value of one option
@@ -178,7 +189,7 @@ const Select = ({
         const currentOptionLabel = getOptionLabelValue(currentOption, title);
         if (currentOptionLabel === '' || currentOptionLabel === primaryOptionLabel && chosenOptionLabel === '') {
           return false;
-        } else if (currentOptionLabel.toLowerCase().includes(state.inputValue)) {
+        }  if (currentOptionLabel.toLowerCase().includes(state.inputValue.toLowerCase())) {
           return true;
         }
         return false;
@@ -186,9 +197,9 @@ const Select = ({
     },
     onChange: (event, newValue) => {
       const newLabelIndex = stateData.options.findIndex(option => _.isEqual(option, newValue));
-      const selectedOptionUnique = getOptionLabelValue(selectedOption, unique);
-      const optionLabel = getOptionLabelValue(stateData.options[newLabelIndex], unique);
-      if (selectedOptionUnique !== optionLabel) {
+      const selectedOptionLabel = getOptionLabelValue(selectedOption, title);
+      const optionLabel = getOptionLabelValue(stateData.options[newLabelIndex], title);
+      if (selectedOptionLabel !== optionLabel) {
         if (newLabelIndex === -1 || optionLabel === primaryOptionLabel) {
           setSelectedOption(primaryLabel);
           setValue('');
@@ -203,15 +214,15 @@ const Select = ({
   });
 
   useEffect(() => {
-    const optionLabel = getOptionLabelValue(selectedOption, unique);
+    const optionLabel = getOptionLabelValue(selectedOption, title);
     if (optionLabel !== '') {
       setBackspaceHandler(false);
-      onOptionChange(selectedOption);
+      onOptionChange && onOptionChange(selectedOption);
       setIsFiltering(false);
     }
   },[selectedOption]);
 
-  const inputProps = getInputProps() as {onBlur: Function};
+  const inputProps = getInputProps() as {onBlur: Function; value: string};
   return (
     <div>
       <div {...getRootProps()} className={classes.inputArea} onClick={() => inputElement.current.focus()}>
@@ -277,7 +288,7 @@ const Select = ({
 
               return (
                 <ListItem {...getOptionProps({ option, index })} className={currentClassName} data-hook={liDataHook}>
-                  {checkIsPlainData(option) ? option : option[title]}
+                  {isFiltering && highlight ? highlight(currentOptionLabel, inputProps.value) : currentOptionLabel}
                 </ListItem>
             )})
             : NoMatchesState()

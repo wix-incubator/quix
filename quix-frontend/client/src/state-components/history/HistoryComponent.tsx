@@ -90,19 +90,26 @@ export function History(props: HistoryProps) {
     </div>
   );
 
-  const highlight = (title: string) => (haystack: string) => {
-    const text = haystack.replace(/\s+/g,' ');
+  const highlight = (term: string, filter: string) => {
+    const text = term.replace(/\s+/g,' ');
+    const currentFilter = filter;
+    const needlePresent = !!currentFilter;
+    const wrapLinesCount = needlePresent ? 1 : 0;
+      
+    return (
+      <Highlighter
+        searchWords={[currentFilter]}
+        autoEscape={true}
+        textToHighlight={extractTextAroundMatch(text, currentFilter || '', wrapLinesCount)}
+      />
+    )
+  }
+
+  const highlightQuery = (title: string) => (term: string) => {
+    const text = term.replace(/\s+/g,' ');
     
     if (title === 'query') {
-      const currentFilter = stateData.queryFilter;
-      const needlePresent = !!currentFilter;
-      const wrapLinesCount = needlePresent ? 1 : 0;
-      
-      return <Highlighter
-      searchWords={[currentFilter]}
-      autoEscape={true}
-      textToHighlight={extractTextAroundMatch(text, currentFilter || '', wrapLinesCount)}
-      />
+      return (highlight(term, stateData.queryFilter));
     }
     return text;
   }
@@ -121,7 +128,7 @@ export function History(props: HistoryProps) {
             columns={historyTableFields.map(field => ({
               Header: field.title,
               accessor: field.name,
-              Cell: table => field.filter(undefined, table.row.original, 0, highlight(field.name))
+              Cell: table => field.filter(undefined, table.row.original, 0, highlightQuery(field.name))
             }))}
             paginationSize={CHUNK_SIZE}
             tableSize={(size) => viewState.set(size > 0 ? 'Content' : 'Result', { size })}
@@ -141,10 +148,10 @@ export function History(props: HistoryProps) {
           </div>
           <div className={`hc-filters bi-theme--lighter bi-align bi-space-h--x15`}>
             <Select
+              highlight={highlight}
               defaultLabel={user}
               options={getUsers}
               title={'email'}
-              unique={'email'}
               primaryLabel={'All users'}
               onOptionChange={(option) => {
                 if (viewState.get() !== 'Error') {
