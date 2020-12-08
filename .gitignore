@@ -85,3 +85,11 @@ crashlytics-build.properties
 node_modules
 
 .env
+
+
+## Terraform
+*.tfstate
+*.tfstate.backup
+.terraform
+vpc.plan
+terraform.tfvars
