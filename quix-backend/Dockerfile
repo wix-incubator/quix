@@ -30,7 +30,7 @@ COPY /quix-webapps/quix-web-spring/src ./quix-webapps/quix-web-spring/src
 RUN sbt +publishM2 -Dsbt.rootdir=true;
 RUN mvn -f /quix-webapps/quix-web-spring/pom.xml install -DskipTests
 
-FROM ubuntu:19.10
+FROM ubuntu:20.04
 
 # Setup python and java and base system
 ENV PYTHONUNBUFFERED=1
