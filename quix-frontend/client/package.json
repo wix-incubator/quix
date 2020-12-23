@@ -48,7 +48,7 @@
     "husky": "~0.14.0",
     "puppeteer": "^1.20.0",
     "tiny-worker": "^2.3.0",
-    "typescript": "~3.4.4",
+    "typescript": "^3.9.7",
     "utility-types": "^3.10.0",
     "velocity": "~0.7.0",
     "yoshi": "^3.23.0"

@@ -1,4 +1,4 @@
-FROM node:10-buster as build
+FROM node:14-buster as build
 
 COPY ./ ./
 WORKDIR /client
@@ -13,7 +13,7 @@ RUN npm prune --prodcution
 WORKDIR /service
 RUN npm prune --production
 
-FROM node:10-buster-slim
+FROM node:14-buster-slim
 COPY --from=build /shared /shared
 COPY --from=build /service /service
 WORKDIR /service

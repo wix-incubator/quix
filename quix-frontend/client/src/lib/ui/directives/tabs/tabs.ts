@@ -1,5 +1,5 @@
 import {initNgScope, inject} from '../../../core';
-import {IScope} from 'angular';
+import {IScope as ngScope} from 'angular';
 
 import template from './tabs.html';
 import './tabs.scss';
@@ -10,7 +10,7 @@ export interface IBiTab {
   icon: string;
 }
 
-export interface IScope extends ng.IScope {
+export interface IScope extends ngScope {
   tabs: IBiTab[];
 }
 

@@ -17,8 +17,8 @@ function XHRWorker(url, maxAge?): Promise<Worker> {
       const worker = new Worker(URL.createObjectURL(new Blob([oReq.responseText])));
       resolve(worker);
     });
-    oReq.addEventListener('error', (e: any) => {
-      reject(e.message);
+    oReq.addEventListener('error', e => {
+      reject(new Error(oReq.responseText || 'Unknown error, failed fetching web worker'));
     });
     oReq.open('get', url, true);
     if (maxAge) {
@@ -32,16 +32,16 @@ export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
 export class TypedWorkerManager<
   RQ extends RQRSConstraint,
   RS extends RQRSConstraint,
-  RQtoRS extends RqtoRSConstraint<RQ, RS>> {
-
+  RQtoRS extends RqtoRSConstraint<RQ, RS>
+> {
   private requestId = 1;
-  private readonly requestIdtoPromise = new Map<number, (value: WorkerResponseData<RQ, RS>) => void>();
+  private readonly requestIdToPromise = new Map<number, (value: WorkerResponseData<RQ, RS>) => void>();
 
   constructor(private readonly worker: WorkerClient<RQ, RS>) {
     this.worker.onmessage = e => {
       const response = e.data;
-      const resolve = this.requestIdtoPromise.get(response.id);
-      this.requestIdtoPromise.delete(response.id);
+      const resolve = this.requestIdToPromise.get(response.id);
+      this.requestIdToPromise.delete(response.id);
 
       if (!resolve) {
         throw new Error(`WorkerMngr:: Can't find promise, something horrible happend. id: ${response.id}`);
@@ -50,10 +50,12 @@ export class TypedWorkerManager<
     };
   }
 
-  protected sendMsg<T extends RequestMsgTypes<RQ>>(msg: Omit<WorkerRequestT<RQ, RS, T>, 'id'>): Promise<WorkerResponseDataT<RQ, RS, T, RQtoRS>> {
+  protected sendMsg<T extends RequestMsgTypes<RQ>>(
+    msg: Omit<WorkerRequestT<RQ, RS, T>, 'id'>,
+  ): Promise<WorkerResponseDataT<RQ, RS, T, RQtoRS>> {
     const sentMsg: WorkerRequestT<RQ, RS, T> = {...msg, id: this.requestId++};
     return new Promise(resolve => {
-      this.requestIdtoPromise.set(sentMsg.id, resolve);
+      this.requestIdToPromise.set(sentMsg.id, resolve);
       this.worker.postMessage(sentMsg);
     });
   }
@@ -62,10 +64,9 @@ export class TypedWorkerManager<
     RQ extends RQRSConstraint,
     RS extends RQRSConstraint,
     RQtoRS extends RqtoRSConstraint<RQ, RS>,
-    T extends TypedWorkerManager<RQ, RS, RQtoRS>>(this: new(w: WorkerClient<RQ, RS>) => T, url: string, maxAge = null) {
-
+    T extends TypedWorkerManager<RQ, RS, RQtoRS>
+  >(this: new (w: WorkerClient<RQ, RS>) => T, url: string, maxAge = null) {
     const worker = await XHRWorker(url, maxAge);
-
     // tslint:disable-next-line: no-static-this
     return new this(worker);
   }
