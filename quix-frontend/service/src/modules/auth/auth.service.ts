@@ -1,5 +1,5 @@
 import {Injectable, HttpException, HttpStatus} from '@nestjs/common';
-import {ConfigService} from 'config';
+import {ConfigService} from '../../config';
 import {JwtService} from '@nestjs/jwt';
 import {IGoogleUser} from './types';
 import {OAuth2Client} from 'google-auth-library';

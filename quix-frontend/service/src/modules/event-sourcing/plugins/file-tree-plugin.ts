@@ -2,13 +2,20 @@ import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DbFolder, DbFileTreeNode} from '../../../entities';
 import {Repository} from 'typeorm';
-import {FileActions, FileActionTypes, IFile} from 'shared/entities/file';
-import {NotebookActions, NotebookActionTypes} from 'shared/entities/notebook';
+import {
+  FileActions,
+  FileActionTypes,
+  IFile,
+} from '@wix/quix-shared/entities/file';
+import {
+  NotebookActions,
+  NotebookActionTypes,
+} from '@wix/quix-shared/entities/notebook';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {QuixHookNames} from '../types';
 import {last} from 'lodash';
-import {FileType} from 'shared/entities/file';
-import {FileTreeRepository} from 'entities/filenode/filenode.repository';
+import {FileType} from '@wix/quix-shared/entities/file';
+import {FileTreeRepository} from '../../../entities/filenode/filenode.repository';
 import {IAction} from '../infrastructure/types';
 import {
   extractEventNames,

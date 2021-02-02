@@ -13,45 +13,11 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "strict": true,
+    "importHelpers": true,
     "typeRoots": [
       "./node_modules/@types",
       "./src/types/3rd-party"
-    ],
-    "paths": {
-      "shared/*": [
-        "../shared/*"
-      ],
-      "shared": [
-        "../shared"
-      ],
-      "entities/*": [
-        "./src/entities/*"
-      ],
-      "entities": [
-        "./src/entities"
-      ],
-      "modules/*": [
-        "./src/modules/*"
-      ],
-      "config/*": [
-        "./src/config/*"
-      ],
-      "config": [
-        "./src/config"
-      ],
-      "common/*": [
-        "./src/common/*"
-      ],
-      "errors": [
-        "./src/errors"
-      ],
-      "global-types": [
-        "./src/types"
-      ],
-      "utils/*": [
-        "./src/utils/*"
-      ]
-    }
+    ]
   },
   "references": [
     {

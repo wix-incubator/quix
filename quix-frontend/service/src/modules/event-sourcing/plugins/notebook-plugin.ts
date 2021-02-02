@@ -1,18 +1,18 @@
 import {Injectable} from '@nestjs/common';
 import {InjectEntityManager} from '@nestjs/typeorm';
-import {DbFavorites, DbFileTreeNode, DbNotebook} from 'entities';
-import {FileTreeRepository} from 'entities/filenode/filenode.repository';
+import {DbFavorites, DbFileTreeNode, DbNotebook} from '../../../entities';
+import {FileTreeRepository} from '../../../entities/filenode/filenode.repository';
 import {
   convertDbNotebook,
   covertNotebookToDb,
-} from 'entities/notebook/dbnotebook.entity';
+} from '../../../entities/notebook/dbnotebook.entity';
 import {last} from 'lodash';
-import {FileType} from 'shared/entities/file';
+import {FileType} from '@wix/quix-shared/entities/file';
 import {
   NotebookActions,
   NotebookActionTypes,
   notebookReducer,
-} from 'shared/entities/notebook';
+} from '@wix/quix-shared/entities/notebook';
 import {EntityManager} from 'typeorm';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {IAction} from '../infrastructure/types';

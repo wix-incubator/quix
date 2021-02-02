@@ -3,7 +3,7 @@ import {getRepositoryToken, TypeOrmModule} from '@nestjs/typeorm';
 import 'reflect-metadata';
 import {Repository} from 'typeorm';
 import * as uuid from 'uuid';
-import {ConfigService, ConfigModule} from 'config';
+import {ConfigService, ConfigModule} from '../../../../config';
 import {DbActionStore} from './action-store';
 import {DbAction} from './entities/db-action.entity';
 import {IActionStore} from './types';

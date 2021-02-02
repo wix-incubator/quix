@@ -1,9 +1,9 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {IFile, FileType} from 'shared';
-import {DbNotebook, DbFavorites, DbUser} from 'entities';
-import {extractOwnerDetails} from 'entities/utils';
+import {IFile, FileType} from '@wix/quix-shared';
+import {DbNotebook, DbFavorites, DbUser} from '../../../entities';
+import {extractOwnerDetails} from '../../../entities/utils';
 
 type GetFavoritesQueryReturnValue = DbFavorites & {
   notebook: DbNotebook;

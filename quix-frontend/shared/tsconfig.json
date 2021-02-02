@@ -5,13 +5,15 @@
     "moduleResolution": "node",
     "target": "es5",
     "noUnusedLocals": true,
-    "lib": ["es2016"],
+    "lib": [
+      "es2016"
+    ],
+    "importHelpers": true,
     "esModuleInterop": true,
     "downlevelIteration": true,
     "composite": true,
     "declaration": true,
     "declarationMap": true,
-    "outDir": "./dist",
     "strict": true
   }
 }

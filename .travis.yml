@@ -4,31 +4,31 @@ jobs:
       name: "Shared"
       language: node_js
       node_js:
-        - 10
+        - 14
       cache: npm
       env: PROJECT=shared
       install:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
-        - cd ./quix-frontend/shared
+        - cd ./quix-frontend
         - npm install
       script:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
+        - cd ./shared
         - npm test
     - stage: test
       name: "Client"
       language: node_js
       env: PROJECT=client
       node_js:
-        - 10
+        - 14
       cache: npm
       install:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
-        - cd ./quix-frontend/shared
-        - npm install
-        - cd ../client
+        - cd ./quix-frontend
         - npm install
       script:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
+        - cd ./client
         - npm test
       # deploy:
       #   provider: npm
@@ -41,7 +41,7 @@ jobs:
       language: node_js
       env: PROJECT=service
       node_js:
-        - 10
+        - 14
       cache: npm
       services:
         - mysql
@@ -49,12 +49,12 @@ jobs:
         - mysql -e 'CREATE DATABASE IF NOT EXISTS quixtest;'
       install:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
-        - cd ./quix-frontend/shared
-        - npm install
-        - cd ../service
+        - cd ./quix-frontend
         - npm install
       script:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
+        - cd ./service
+        - npm run build:ts
         - npm run test:mysql
         - npm run test:e2e
     - &scala-builds

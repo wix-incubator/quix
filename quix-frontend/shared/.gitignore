@@ -12,3 +12,8 @@ package-lock.json
 .idea
 *.iml
 .yo-rc.json
+*.js
+*.js.map
+*.d.ts
+*.d.ts.map
+tsconfig.tsbuildinfo

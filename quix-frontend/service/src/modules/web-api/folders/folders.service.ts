@@ -1,10 +1,10 @@
 import {Injectable} from '@nestjs/common';
 import {InjectEntityManager} from '@nestjs/typeorm';
-import {DbFileTreeNode, FileTreeRepository, DbUser} from 'entities';
+import {DbFileTreeNode, FileTreeRepository, DbUser} from '../../../entities';
 import {fromNullable, getOrElse, map} from 'fp-ts/lib/Option';
 import {pipe} from 'fp-ts/lib/pipeable';
-import {IFile, IFilePathItem} from 'shared/entities/file';
-import {IFolder} from 'shared/entities/folder';
+import {IFile, IFilePathItem} from '@wix/quix-shared/entities/file';
+import {IFolder} from '@wix/quix-shared/entities/folder';
 import {EntityManager} from 'typeorm';
 import {
   convertListDbNodeToIFileList,

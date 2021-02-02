@@ -3,13 +3,13 @@ import {getRepositoryToken, TypeOrmModule} from '@nestjs/typeorm';
 import 'reflect-metadata';
 import {Repository} from 'typeorm';
 import uuid from 'uuid/v4';
-import {ConfigService, ConfigModule} from 'config';
-import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from 'entities';
+import {ConfigService, ConfigModule} from '../../config';
+import {DbFileTreeNode, DbFolder, DbNote, DbNotebook} from '../../entities';
 import {SearchModule} from './search.module';
 import {SearchService} from './search';
 import {Chance} from 'chance';
 import {range} from 'lodash';
-import {INote} from 'shared';
+import {INote} from '@wix/quix-shared';
 
 const chance = new Chance();
 

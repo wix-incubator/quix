@@ -6,7 +6,7 @@ import {
   CreateDateColumn,
 } from 'typeorm';
 import {dbConf} from '../../config/db-conf';
-import {IUser} from 'shared';
+import {IUser} from '@wix/quix-shared';
 
 @Entity({name: 'users'})
 export class DbUser {

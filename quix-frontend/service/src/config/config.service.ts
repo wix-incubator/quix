@@ -2,7 +2,7 @@ import {Inject, Injectable} from '@nestjs/common';
 import {ConnectionOptions} from 'typeorm';
 import * as dbConnection from './db-connection';
 import {EnvSettings, loadEnv, getEnv} from './env';
-import {ClientConfigHelper, ModuleComponentType} from 'shared';
+import {ClientConfigHelper} from '@wix/quix-shared';
 
 export type DbTypes = 'mysql' | 'sqlite';
 

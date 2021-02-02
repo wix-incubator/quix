@@ -9,13 +9,12 @@ import {IGoogleUser} from '../src/modules/auth/types';
 import {E2EDriver} from './driver';
 import {E2EMockDataBuilder} from './builder';
 import cookieParser = require('cookie-parser');
-import {sanitizeUserEmail} from 'common/user-sanitizer';
+import {sanitizeUserEmail} from '../src/common/user-sanitizer';
 import {getConnectionToken} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
 import WebSocket from 'ws';
 import './custom-matchers';
 import {WsAdapter} from '@nestjs/platform-ws';
-import uuid from 'uuid';
 
 let envSettingsOverride: Partial<EnvSettings> = {};
 

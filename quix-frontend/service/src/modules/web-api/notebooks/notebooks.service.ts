@@ -1,11 +1,11 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
-import {INotebook} from 'shared';
-import {DbNotebook, DbFavorites, DbUser} from 'entities';
+import {INotebook} from '@wix/quix-shared';
+import {DbNotebook, DbFavorites, DbUser} from '../../../entities';
 import {FoldersService} from '../folders/folders.service';
-import {EntityType} from 'common/entity-type.enum';
-import {convertDbNotebook} from 'entities/notebook/dbnotebook.entity';
+import {EntityType} from '../../../common/entity-type.enum';
+import {convertDbNotebook} from '../../../entities/notebook/dbnotebook.entity';
 
 @Injectable()
 export class NotebookService {

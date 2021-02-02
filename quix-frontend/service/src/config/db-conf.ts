@@ -1,9 +1,9 @@
 import {ColumnOptions} from 'typeorm';
 import {getEnv} from './env/env';
-import {FileType} from 'shared/entities/file';
-import {ContentSearch, searchTextType} from 'modules/search/types';
+import {FileType} from '@wix/quix-shared/entities/file';
+import {ContentSearch, searchTextType} from '../modules/search/types';
 import {escape} from 'mysql';
-import {EntityType} from 'common/entity-type.enum';
+import {EntityType} from '../common/entity-type.enum';
 
 /* A compatibility layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
 interface DbColumnConf {

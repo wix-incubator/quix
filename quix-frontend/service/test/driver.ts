@@ -1,9 +1,9 @@
 /* tslint:disable:variable-name */
 import {INestApplication} from '@nestjs/common';
 import request from 'supertest';
-import {IGoogleUser} from 'modules/auth';
-import {testingDefaults} from 'config/env/static-settings';
-import {INotebook, INote, IFolder, IFile, IUser} from 'shared';
+import {IGoogleUser} from '../src/modules/auth';
+import {testingDefaults} from '../src/config/env/static-settings';
+import {INotebook, INote, IFolder, IFile, IUser} from '@wix/quix-shared';
 import WebSocket from 'ws';
 import uuid from 'uuid';
 
@@ -45,10 +45,12 @@ class HttpHelper {
   }
 
   search = async (term: string, offset = 0, total = 5) =>
-    (await this.baseGet(['search', encodeURIComponent(term)].join('/')).query({
-      offset,
-      total,
-    })).body;
+    (
+      await this.baseGet(['search', encodeURIComponent(term)].join('/')).query({
+        offset,
+        total,
+      })
+    ).body;
 
   get: GetFunctionTypeHelper = async (...url: string[]) =>
     (await this.baseGet(url.join('/')).expect(200)).body;

@@ -1,7 +1,7 @@
 import {IGoogleUser} from './types';
 import {getEnv} from '../../config/env';
 import {verify} from 'jsonwebtoken';
-import {isJestTest} from 'config/utils';
+import {isJestTest} from '../../config/utils';
 
 const defaultUser: IGoogleUser = {
   email: 'user@quix.com',

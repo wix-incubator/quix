@@ -7,9 +7,9 @@ import {
   EntityManager,
 } from 'typeorm';
 import {DbFileTreeNode} from './filenode.entity';
-import {dbConf} from 'config/db-conf';
+import {dbConf} from '../../config/db-conf';
 import assert from 'assert';
-import {FileType} from 'shared';
+import {FileType} from '@wix/quix-shared';
 import {DbNotebook} from '../notebook/dbnotebook.entity';
 import {DbFolder} from '../folder/folder.entity';
 import {DbFavorites} from '../favorites/favorites.entity';

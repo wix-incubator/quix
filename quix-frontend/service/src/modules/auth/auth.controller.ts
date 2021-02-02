@@ -1,6 +1,6 @@
 import {Controller, Get, Logger, Query, Res, UseGuards} from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
-import {ConfigService, EnvSettings} from 'config';
+import {ConfigService, EnvSettings} from '../../config';
 import {Response} from 'express';
 import {AuthService} from './auth.service';
 import {IGoogleUser} from './types';

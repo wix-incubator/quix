@@ -1,7 +1,7 @@
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {DbUser, userToDbUser} from 'entities/user/user.entity';
-import {UserActions, UserActionTypes} from 'shared/entities/user';
+import {DbUser, userToDbUser} from '../../../entities/user/user.entity';
+import {UserActions, UserActionTypes} from '@wix/quix-shared/entities/user';
 import {Repository} from 'typeorm';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {IAction} from '../infrastructure/types';

@@ -1,6 +1,6 @@
 import {Module} from '@nestjs/common';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {ConfigModule} from 'config';
+import {ConfigModule} from '../../config';
 import {
   DbFileTreeNode,
   DbFolder,
@@ -10,7 +10,7 @@ import {
   NoteRepository,
   DbUser,
   DbFavorites,
-} from 'entities';
+} from '../../entities';
 import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action.entity';
 import {FoldersController} from './folders/folders.controller';
 import {FoldersService} from './folders/folders.service';
@@ -20,7 +20,7 @@ import {AuthModule} from '../auth/auth.module';
 import {EventSourcingModule} from '../event-sourcing/event-sourcing.module';
 import {EventsController} from './events.controller';
 import {SearchController} from './search.controller';
-import {SearchModule} from 'modules/search/search.module';
+import {SearchModule} from '../../modules/search/search.module';
 import {UserListController} from './user-list.controller';
 import {FavoritesService} from './favorites/favorites.service';
 import {FavoritesController} from './favorites/favorites.controller';

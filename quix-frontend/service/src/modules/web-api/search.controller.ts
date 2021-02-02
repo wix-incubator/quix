@@ -8,8 +8,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
-import {SearchService} from 'modules/search/search';
-import {DemoModeInterceptor} from 'common/demo-mode-interceptor';
+import {SearchService} from '../../modules/search/search';
+import {DemoModeInterceptor} from '../../common/demo-mode-interceptor';
 
 @Controller('/api/search')
 @UseInterceptors(DemoModeInterceptor)

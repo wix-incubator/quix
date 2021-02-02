@@ -1,4 +1,3 @@
-import {IUser} from 'shared';
 import {DbUser, dbUserToUser} from './user/user.entity';
 import {
   fromNullable,
@@ -10,7 +9,7 @@ import {
   map,
 } from 'fp-ts/lib/Option';
 import {pipe} from 'fp-ts/lib/pipeable';
-import {createEmptyIUser} from 'shared';
+import {createEmptyIUser, IUser} from '@wix/quix-shared';
 
 interface IMaybeHasOwnerDetails {
   owner: string;
