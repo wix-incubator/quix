@@ -3,6 +3,7 @@ jobs:
     - stage: test
       name: "Shared"
       language: node_js
+      dist: bionic
       node_js:
         - 14
       cache: npm
@@ -18,6 +19,7 @@ jobs:
     - stage: test
       name: "Client"
       language: node_js
+      dist: bionic
       env: PROJECT=client
       node_js:
         - 14
@@ -37,7 +39,7 @@ jobs:
       #   skip_cleanup: true
     - stage: test
       dist: bionic
-      name: "Frontend"
+      name: "Frontend service"
       language: node_js
       env: PROJECT=service
       node_js:
