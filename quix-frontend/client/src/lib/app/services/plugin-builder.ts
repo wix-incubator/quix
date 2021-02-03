@@ -7,6 +7,8 @@ import {ServerFrameworkType} from '../../store/services/store-logger';
 import * as React from 'react';
 
 export type IComponentFactory<Config = any> = (app: App<Config>, store: Store) => IDirectiveFactory;
+export type IReactComponentFactory<Config = any> = (app: App<Config>, store: Store) => Function;
+export type IStateComponentFactory<Config = any> = (app: App<Config>, store: Store) => IStateComponentConfig;
 
 export type IStateFactory<Config = any> = (app: App<Config>, store: Store) => object;
 
@@ -17,13 +19,16 @@ export interface IPluginComponent<Config = any> {
   factory: IComponentFactory<Config>;
 }
 
+export interface IPluginReactComponent<Config = any> {
+  name: string;
+  factory: IReactComponentFactory<Config>;
+}
+
 export interface IPluginBranches<Config = any> {
   branches: {[key: string]: IBranchFactory};
   logUrl: string;
   server?: ServerFrameworkType;
 }
-
-export type IStateComponentFactory<Config = any> = (app: App<Config>, store: Store) => IStateComponentConfig;
 
 export type IUrlParamListener = Function | {from: Function; to: Function};
 
@@ -62,6 +67,7 @@ export type IStateComponentConfig = IAngularStateComponentConfig | IReactStateCo
 export class PluginBuilder<Config> {
   private readonly pluginStates = [];
   private readonly pluginComponents: IPluginComponent[] = [];
+  private readonly pluginReactComponents: IReactComponentFactory[] = [];
   private readonly pluginStateComponents: IStateComponentFactory[] = [];
   private pluginBranches: IPluginBranches = {logUrl: '', server: null, branches: {}};
 
@@ -94,6 +100,31 @@ export class PluginBuilder<Config> {
   }
 
   /**
+   * Registers a react component
+   *
+   * @param name      component name
+   * @param factory   component factory
+   */
+  reactComponent(name: string, factory: IReactComponentFactory): PluginBuilder<Config> {
+    this.pluginReactComponents.push({name, factory} as any);
+    return this;
+  }
+
+  /**
+   * Registers react components
+   *
+   * @param components      components
+   */
+  reactComponents(components?: {[name: string]: IReactComponentFactory}) {
+    if (components) {
+      forEach(components, (factory, name) => this.reactComponent(name, factory));
+      return this;
+    }
+    return this.pluginReactComponents;
+
+  }
+
+  /**
    * Registers an angular directive
    *
    * @param name      component name
@@ -119,7 +150,7 @@ export class PluginBuilder<Config> {
   }
 
    /**
-   * Registers a state component
+   * Registers a react state component
    *
    * @param factory   component factory
    */
@@ -129,10 +160,9 @@ export class PluginBuilder<Config> {
   }
 
    /**
-   * Registers a state component
+   * Registers a react state components
    *
-   * @param name      component name
-   * @param factory   component factory
+   * @param stateComponents      components
    */
   stateComponents(stateComponents?: {[name: string]: IStateComponentFactory}) {
     if (stateComponents) {

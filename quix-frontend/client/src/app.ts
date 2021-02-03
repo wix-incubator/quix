@@ -3,6 +3,7 @@ import create from './lib/app';
 import {hooks} from './hooks';
 import * as components from './components';
 import * as stateComponents from './state-components';
+import * as reactComponents from './react-components';
 import {branches, initCache} from './store';
 import {config as runnerConfig} from './lib/runner';
 import {config as resourcesConfig} from './services/resources';
@@ -40,6 +41,7 @@ const appBuilder = create<ClientConfigHelper>(
   .plugin('app', plugin => {
     plugin.components(components);
     plugin.stateComponents(stateComponents);
+    plugin.reactComponents(reactComponents);
     plugin.store(branches, `${apiBasePath}/api/events`, 'Node');
 
     plugin.menuItem({
