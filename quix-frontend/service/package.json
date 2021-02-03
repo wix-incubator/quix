@@ -1,6 +1,6 @@
 {
   "name": "quix-node-backend",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "",
   "author": "",
   "license": "MIT",
@@ -34,6 +34,7 @@
     "@nestjs/websockets": "^7.0.0",
     "@types/node-fetch": "^2.5.0",
     "@types/ws": "^6.0.4",
+    "@wix/quix-shared": "^1.0.6",
     "axios": "^0.21.0",
     "cookie-parser": "^1.4.4",
     "dotenv": "^7.0.0",
@@ -49,14 +50,13 @@
     "rimraf": "^2.6.2",
     "rxjs": "^6.3.3",
     "tapable": "^1.1.1",
+    "ts-node": "^7.0.1",
     "tsconfig-paths": "^3.8.0",
     "typeorm": "^0.2.15",
+    "typescript": "^4.0.0",
     "uuid": "^3.3.2",
     "velocity": "^0.7.2",
-    "ws": "^7.2.1",
-    "ts-node": "^7.0.1",
-    "typescript": "^4.0.0",
-    "@wix/quix-shared": "^1.0.0"
+    "ws": "^7.2.1"
   },
   "devDependencies": {
     "@nestjs/testing": "^7.0.0",
@@ -99,7 +99,10 @@
     "transform": {
       "^.+\\.ts$": "ts-jest"
     },
-    "transformIgnorePatterns": ["/node_modules/", "/quix-frontend\\shared/"],
+    "transformIgnorePatterns": [
+      "/node_modules/",
+      "/quix-frontend\\shared/"
+    ],
     "globals": {
       "ts-jest": {
         "tsconfig": {

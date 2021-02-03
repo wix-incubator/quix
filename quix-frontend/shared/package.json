@@ -1,6 +1,6 @@
 {
   "name": "@wix/quix-shared",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "license": "MIT",
   "description": "Presto-based notebook manager",
   "author": {
@@ -27,9 +27,9 @@
   "types": "dist/index.d.ts",
   "devDependencies": {
     "@types/jest": "^24.0.11",
+    "@types/lodash": "^4.14.123",
     "jest": "^26.0.0",
     "ts-jest": "^26.0.0",
-    "@types/lodash": "^4.14.123",
     "typescript": "^4.0.0"
   },
   "dependencies": {
