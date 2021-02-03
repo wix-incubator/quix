@@ -3,7 +3,7 @@ import {Request} from 'express';
 import {IGoogleUser} from './types';
 import {PassportStrategy} from '@nestjs/passport';
 import {Injectable, Logger} from '@nestjs/common';
-import {ConfigService} from 'config';
+import {ConfigService} from '../../config';
 import {fakeAuth} from './common-auth';
 
 class PassportFakeStrategy extends BaseStrategy {

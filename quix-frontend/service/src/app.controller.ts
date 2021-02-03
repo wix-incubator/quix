@@ -10,7 +10,7 @@ import {ConfigService, EnvSettings} from './config';
 import {InjectConnection} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
 import {Response} from 'express';
-import {ClientConfigHelper} from 'shared';
+import {ClientConfigHelper} from '@wix/quix-shared';
 
 @Controller()
 export class AppController implements OnApplicationShutdown {

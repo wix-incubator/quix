@@ -1,5 +1,5 @@
 import {envSettingsDefaults} from './static-settings';
-import {ComponentConfiguration} from 'shared';
+import {ComponentConfiguration} from '@wix/quix-shared';
 
 export type StaticSettings = typeof envSettingsDefaults;
 export interface ComputedSettings {

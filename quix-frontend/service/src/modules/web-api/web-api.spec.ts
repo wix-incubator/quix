@@ -8,8 +8,8 @@ import {
 } from '@nestjs/typeorm';
 import {Connection, Repository} from 'typeorm';
 import uuid from 'uuid/v4';
-import {FileType} from 'shared';
-import {ConfigService, ConfigModule} from 'config';
+import {FileType} from '@wix/quix-shared';
+import {ConfigService, ConfigModule} from '../../config';
 import {range} from 'lodash';
 
 import {
@@ -21,13 +21,13 @@ import {
   FileTreeRepository,
   DbUser,
   DbFavorites,
-} from 'entities';
+} from '../../entities';
 import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action.entity';
 import {FoldersService} from './folders/folders.service';
 import {NotebookService} from './notebooks/notebooks.service';
 import {FavoritesService} from './favorites/favorites.service';
 import {WebApiModule} from './web-api.module';
-import {EntityType} from 'common/entity-type.enum';
+import {EntityType} from '../../common/entity-type.enum';
 
 jest.setTimeout(60000);
 

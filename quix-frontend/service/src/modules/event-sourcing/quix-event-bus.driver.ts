@@ -7,7 +7,7 @@ import {
   getRepositoryToken,
   TypeOrmModule,
 } from '@nestjs/typeorm';
-import {ConfigModule, ConfigService} from 'config';
+import {ConfigModule, ConfigService} from '../../config';
 import {
   DbFileTreeNode,
   DbFolder,
@@ -16,13 +16,13 @@ import {
   FileTreeRepository,
   DbFavorites,
   DbUser,
-} from 'entities';
+} from '../../entities';
 import {MockDataBuilder} from '../../../test/builder';
 import {Connection, Repository} from 'typeorm';
 import {EventSourcingModule} from './event-sourcing.module';
 import {DbAction} from './infrastructure/action-store/entities/db-action.entity';
 import {QuixEventBus} from './quix-event-bus';
-import {EntityType} from 'common/entity-type.enum';
+import {EntityType} from '../../common/entity-type.enum';
 
 export class QuixEventBusDriver {
   public mockBuilder: MockDataBuilder;

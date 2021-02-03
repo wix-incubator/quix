@@ -1,7 +1,7 @@
 import cluster from 'cluster';
 import {QUIX_SCHEMA, CURRENT_QUIX_SCHEMA_VERSION} from '../consts';
 import {Connection} from 'typeorm';
-import {DbMetadata} from 'entities/version-metadata.entity';
+import {DbMetadata} from '../entities/version-metadata.entity';
 import {Logger} from '@nestjs/common';
 
 export async function checkSchemaVersion(conn: Connection, logger: Logger) {

@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events';
-import {defer} from 'utils/deferred-promise';
+import {defer} from '../../../../utils/deferred-promise';
 import {
   EventBusMiddlewareDescriptor,
   PluginDescriptor,

@@ -75,13 +75,13 @@ const getTextFromSearchQuery = (s: string) => {
     result.push(
       match[1]
         ? {
-          type: searchTextType.WORD,
-          text: match[1].replace(fullTextSearchSpecialChars, ' ').trim(),
-        }
+            type: searchTextType.WORD,
+            text: match[1].replace(fullTextSearchSpecialChars, ' ').trim(),
+          }
         : {
-          type: searchTextType.PHRASE,
-          text: match[2].replace(fullTextSearchSpecialChars, ' ').trim(),
-        },
+            type: searchTextType.PHRASE,
+            text: match[2].replace(fullTextSearchSpecialChars, ' ').trim(),
+          },
     );
   }
   return result;

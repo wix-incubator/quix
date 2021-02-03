@@ -7,12 +7,12 @@ import {
 import {Observable, EMPTY} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {Server} from 'ws';
-import {IGoogleUser} from 'modules/auth';
-import {EventsService} from 'modules/event-sourcing/events.service';
-import {IAction} from 'modules/event-sourcing/infrastructure/types';
-import {AnyAction} from 'shared/entities/common/common-types';
+import {IGoogleUser} from '../../modules/auth';
+import {EventsService} from '../../modules/event-sourcing/events.service';
+import {IAction} from '../../modules/event-sourcing/infrastructure/types';
+import {AnyAction} from '@wix/quix-shared/entities/common/common-types';
 import {cloneDeep} from 'lodash';
-import {auth} from 'modules/auth/common-auth';
+import {auth} from '../../modules/auth/common-auth';
 
 @WebSocketGateway({path: '/subscription'})
 export class EventsGateway {

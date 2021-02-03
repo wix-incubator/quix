@@ -9,7 +9,7 @@ module.exports =  {
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
-    "^.+\\.(t|j)s$": "ts-jest"
+    "^.+\\.ts$": "ts-jest"
   },
-  moduleNameMapper: pkgJson.jest.moduleNameMapper
+  "transformIgnorePatterns": ["/node_modules/", "/quix-frontend\\shared/"],
 }

@@ -9,7 +9,7 @@ import {
   NoteRepository,
   DbFavorites,
   DbUser,
-} from 'entities';
+} from '../../entities';
 import {QuixEventBus} from './quix-event-bus';
 import {DbActionStore} from './infrastructure/action-store';
 import {DbAction} from './infrastructure/action-store/entities/db-action.entity';
@@ -18,7 +18,7 @@ import {NotebookPlugin} from './plugins/notebook-plugin';
 import {FileTreePlugin} from './plugins/file-tree-plugin';
 import {FavoritesPlugin} from './plugins/favorites-plugin';
 import {UserPlugin} from './plugins/user-plugin';
-import {NotebookRepository} from 'entities/notebook/notebook.repository';
+import {NotebookRepository} from '../../entities/notebook/notebook.repository';
 import {EventsService} from './events.service';
 import {EventsPlugin} from './plugins/events-plugin';
 

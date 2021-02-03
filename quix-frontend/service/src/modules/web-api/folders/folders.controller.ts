@@ -9,9 +9,9 @@ import {
 } from '@nestjs/common';
 import {FoldersService} from './folders.service';
 import {QuixEventBus} from '../../event-sourcing/quix-event-bus';
-import {IGoogleUser, User} from 'modules/auth';
+import {IGoogleUser, User} from '../../../modules/auth';
 import {AuthGuard} from '@nestjs/passport';
-import {DemoModeInterceptor} from 'common/demo-mode-interceptor';
+import {DemoModeInterceptor} from '../../../common/demo-mode-interceptor';
 
 @Controller('/api')
 @UseGuards(AuthGuard())

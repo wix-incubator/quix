@@ -1,17 +1,17 @@
 import {Module, Provider, DynamicModule} from '@nestjs/common';
-import {ConfigModule} from 'config/config.module';
+import {ConfigModule} from '../../config/config.module';
 import {AuthService, GoogleAuthService, FakeAuthService} from './auth.service';
 import {JwtModule} from '@nestjs/jwt';
-import {ConfigService} from 'config';
+import {ConfigService} from '../../config';
 import {PassportModule} from '@nestjs/passport';
 import {JwtStrategy} from './jwt-strategy';
 import {MockStrategy} from './mock-strategy';
 import {AuthController} from './auth.controller';
-import {getEnv} from 'config/env/env';
+import {getEnv} from '../../config/env/env';
 import {UsersService} from './users.service';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {DbUser} from 'entities';
-import {EventSourcingModule} from 'modules/event-sourcing/event-sourcing.module';
+import {DbUser} from '../../entities';
+import {EventSourcingModule} from '../../modules/event-sourcing/event-sourcing.module';
 
 const googleAuthServiceProvider = {
   provide: AuthService,

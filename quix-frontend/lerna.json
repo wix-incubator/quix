@@ -1,0 +1,10 @@
+{
+  "packages": [
+    "client",
+    "shared",
+    "service"
+  ],
+  "version": "independent",
+  "npmClient": "npm",
+  "useWorkspaces": false
+}

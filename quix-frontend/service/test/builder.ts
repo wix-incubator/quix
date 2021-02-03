@@ -1,4 +1,8 @@
-import {IFilePathItem, FileActions, FileType} from 'shared/entities/file';
+import {
+  IFilePathItem,
+  FileActions,
+  FileType,
+} from '@wix/quix-shared/entities/file';
 import * as uuid from 'uuid';
 import {
   INote,
@@ -8,7 +12,7 @@ import {
   NotebookActions,
   INotebook,
   createEmptyIUser,
-} from 'shared';
+} from '@wix/quix-shared';
 
 class BaseMockDataBuilder<S extends string | never> {
   constructor(protected defaultUser: S) {}

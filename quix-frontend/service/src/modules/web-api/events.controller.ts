@@ -9,14 +9,14 @@ import {
   Param,
   Query,
 } from '@nestjs/common';
-import {AnyAction} from 'shared/entities/common/common-types';
+import {AnyAction} from '@wix/quix-shared/entities/common/common-types';
 import {BaseActionValidation} from '../event-sourcing/base-action-validation';
 import {QuixEventBus} from '../event-sourcing/quix-event-bus';
-import {User, IGoogleUser} from 'modules/auth';
+import {User, IGoogleUser} from '../../modules/auth';
 import {AuthGuard} from '@nestjs/passport';
-import {IAction} from 'modules/event-sourcing/infrastructure/types';
+import {IAction} from '../../modules/event-sourcing/infrastructure/types';
 import {takeRightWhile} from 'lodash';
-import {EventsService} from 'modules/event-sourcing/events.service';
+import {EventsService} from '../../modules/event-sourcing/events.service';
 
 @Controller('/api/events')
 export class EventsController {

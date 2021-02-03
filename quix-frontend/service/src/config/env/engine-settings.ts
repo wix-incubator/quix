@@ -1,4 +1,4 @@
-import {ModuleEngineType, ComponentConfiguration} from 'shared';
+import {ModuleEngineType, ComponentConfiguration} from '@wix/quix-shared';
 
 export const engineToClientComponents = (engine: string) => {
   return moduleToComponentsMap[engine as ModuleEngineType] || {};
