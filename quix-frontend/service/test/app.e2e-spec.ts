@@ -38,6 +38,7 @@ const user2profile: IGoogleUser = {
 };
 
 describe('Application (e2e)', () => {
+  jest.setTimeout(60000);
   let app: INestApplication;
   let driver: E2EDriver;
   let builder: E2EMockDataBuilder;
@@ -178,7 +179,7 @@ describe('Application (e2e)', () => {
       },
     });
 
-    fit('user list should not contain private information', async () => {
+    it('user list should not contain private information', async () => {
       await driver.doLogin('user1');
 
       let users = await driver.as('user1').get('users');
@@ -186,18 +187,21 @@ describe('Application (e2e)', () => {
 
       await driver.doLogin('user2');
       users = await driver.as('user1').get('users');
-      expect(users).toMatchArrayAnyOrder([
-        {
-          id: expect.stringContaining('**'),
-          name: 'Quix User',
-          rootFolder: expect.any(String),
-        },
-        {
-          id: user1profile.email,
-          name: user1profile.name,
-          rootFolder: expect.any(String),
-        },
-      ], 'name');
+      expect(users).toMatchArrayAnyOrder(
+        [
+          {
+            id: expect.stringContaining('**'),
+            name: 'Quix User',
+            rootFolder: expect.any(String),
+          },
+          {
+            id: user1profile.email,
+            name: user1profile.name,
+            rootFolder: expect.any(String),
+          },
+        ],
+        'name',
+      );
       expectObject(users).toNotLeakUserData(user2profile);
     });
 
