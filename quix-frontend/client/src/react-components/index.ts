@@ -1,1 +1,1 @@
-export {default as quixDbExplorer} from './db-explorer/DbExplorerComponent';
+export {default as quixFileExplorer} from './file-explorer/FileExplorerComponent';

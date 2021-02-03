@@ -1,21 +1,21 @@
 import { Store } from '../../lib/store';
 import { App } from '../../lib/app';
 import { IReactStateComponentConfig } from '../../lib/app/services/plugin-builder';
-import { DbExplorer, DbExplorerProps } from './DbExplorerComponent';
+import { FileExplorer, FileExplorerProps } from './FileExplorerComponent';
 
 export default (app: App, store: Store): IReactStateComponentConfig => ({
-  name: 'DB Explorer',
-  template: DbExplorer,
+  name: 'File Explorer',
+  template: FileExplorer,
   url: {},
   scope: {
     error: () => {},
   },
-  controller: async (scope: DbExplorerProps, params, { syncUrl, setTitle }) => {
+  controller: async (scope: FileExplorerProps, params, { syncUrl, setTitle }) => {
     syncUrl();
     setTitle();
 
     store.subscribe(
-      'dbExplorer',
+      'fileExplorer',
       ({ error }) => {
 
       },
