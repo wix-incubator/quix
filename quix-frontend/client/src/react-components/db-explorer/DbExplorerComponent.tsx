@@ -1,7 +1,7 @@
 import './DbExplorerComponent.scss';
 import React from 'react';
-import {App} from '../../lib/app';
-import {Store} from '../../lib/store';
+// import {App} from '../../lib/app';
+// import {Store} from '../../lib/store';
 
 export interface DbExplorerProps {
   error: { message: string };
@@ -18,7 +18,7 @@ export interface DbExplorerProps {
 //   'Error',
 // ];
 
-const reactComponent = (props: DbExplorerProps) => {
+export default (props: DbExplorerProps) => {
   // const { error } = props;
 
   return (
@@ -28,6 +28,6 @@ const reactComponent = (props: DbExplorerProps) => {
   );
 };
 
-export default (app: App, store: Store) => () => {
-  return reactComponent({} as DbExplorerProps);
-}
+// export default (app: App, store: Store) => () => {
+//   return reactComponent({} as DbExplorerProps);
+// }

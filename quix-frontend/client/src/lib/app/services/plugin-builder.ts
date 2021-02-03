@@ -7,7 +7,7 @@ import {ServerFrameworkType} from '../../store/services/store-logger';
 import * as React from 'react';
 
 export type IComponentFactory<Config = any> = (app: App<Config>, store: Store) => IDirectiveFactory;
-export type IReactComponentFactory<Config = any> = (app: App<Config>, store: Store) => Function;
+export type IReactComponentFactory<Config = any> = (app: App<Config>, store: Store) => IPluginReactComponent;
 export type IStateComponentFactory<Config = any> = (app: App<Config>, store: Store) => IStateComponentConfig;
 
 export type IStateFactory<Config = any> = (app: App<Config>, store: Store) => object;
@@ -21,7 +21,7 @@ export interface IPluginComponent<Config = any> {
 
 export interface IPluginReactComponent<Config = any> {
   name: string;
-  factory: IReactComponentFactory<Config>;
+  factory: React.ComponentType<any>;
 }
 
 export interface IPluginBranches<Config = any> {
@@ -67,7 +67,7 @@ export type IStateComponentConfig = IAngularStateComponentConfig | IReactStateCo
 export class PluginBuilder<Config> {
   private readonly pluginStates = [];
   private readonly pluginComponents: IPluginComponent[] = [];
-  private readonly pluginReactComponents: IReactComponentFactory[] = [];
+  private readonly pluginReactComponents: IPluginReactComponent[] = [];
   private readonly pluginStateComponents: IStateComponentFactory[] = [];
   private pluginBranches: IPluginBranches = {logUrl: '', server: null, branches: {}};
 
@@ -105,8 +105,8 @@ export class PluginBuilder<Config> {
    * @param name      component name
    * @param factory   component factory
    */
-  reactComponent(name: string, factory: IReactComponentFactory): PluginBuilder<Config> {
-    this.pluginReactComponents.push({name, factory} as any);
+  reactComponent(name: string, factory: React.ComponentType<any>): PluginBuilder<Config> {
+    this.pluginReactComponents.push({name, factory});
     return this;
   }
 
@@ -115,7 +115,7 @@ export class PluginBuilder<Config> {
    *
    * @param components      components
    */
-  reactComponents(components?: {[name: string]: IReactComponentFactory}) {
+  reactComponents(components?: {[name: string]: React.ComponentType<any>}) {
     if (components) {
       forEach(components, (factory, name) => this.reactComponent(name, factory));
       return this;

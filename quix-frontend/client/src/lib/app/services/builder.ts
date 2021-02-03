@@ -14,7 +14,7 @@ import {
   IReactStateComponentConfig,
   IAngularStateComponentConfig,
   IStateComponentConfig,
-  IReactComponentFactory
+  IPluginReactComponent
 } from './plugin-builder';
 import {initScopeListeners} from '../utils/scope-utils';
 import {User} from './user';
@@ -274,9 +274,9 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
       (plugin.states() as IStateFactory<Config>[]).forEach(factory => this.state(factory(app, store)));
       (plugin.components() as IPluginComponent<Config>[]).forEach(({name: componentName, factory}) => this.component(componentName, factory(app, store)));
       (plugin.stateComponents() as IStateComponentFactory[]).forEach(factory => this.stateComponent(factory(app, store), app, store));
-      (plugin.reactComponents() as IReactComponentFactory[]).forEach(
-        ({name: componentName, factory}: any) =>
-          this.reactComponent(componentName, react2angular(factory(app, store))
+      (plugin.reactComponents() as IPluginReactComponent[]).forEach(
+        ({name: componentName, factory}) =>
+          this.reactComponent(componentName, react2angular(factory)
         )
       );
 
