@@ -7,7 +7,7 @@ import {ServerFrameworkType} from '../../store/services/store-logger';
 import * as React from 'react';
 
 export type IComponentFactory<Config = any> = (app: App<Config>, store: Store) => IDirectiveFactory;
-export type IReactComponentFactory<Config = any> = (app: App<Config>, store: Store) => IPluginReactComponent;
+export type IReactComponentFactory<Config = any> = (app: App<Config>, store: Store) => IReactComponentConfig;
 export type IStateComponentFactory<Config = any> = (app: App<Config>, store: Store) => IStateComponentConfig;
 
 export type IStateFactory<Config = any> = (app: App<Config>, store: Store) => object;
@@ -21,7 +21,7 @@ export interface IPluginComponent<Config = any> {
 
 export interface IPluginReactComponent<Config = any> {
   name: string;
-  factory: React.ComponentType<any>;
+  factory: IReactComponentFactory<Config>;
 }
 
 export interface IPluginBranches<Config = any> {
@@ -61,6 +61,13 @@ export interface IReactStateComponentConfig extends IStateComponentConfigBase{
   template: React.ComponentType<any>;
 }
 export type IStateComponentConfig = IAngularStateComponentConfig | IReactStateComponentConfig;
+
+export interface IReactComponentConfig{
+  name: string;
+  scope: IScopeListeners;
+  template: React.ComponentType<any>;
+}
+
 /**
  * A subset of Builder which is exposed to plugin factories
  */
@@ -105,7 +112,7 @@ export class PluginBuilder<Config> {
    * @param name      component name
    * @param factory   component factory
    */
-  reactComponent(name: string, factory: React.ComponentType<any>): PluginBuilder<Config> {
+  reactComponent(name: string, factory: IReactComponentFactory): PluginBuilder<Config> {
     this.pluginReactComponents.push({name, factory});
     return this;
   }
@@ -115,7 +122,7 @@ export class PluginBuilder<Config> {
    *
    * @param components      components
    */
-  reactComponents(components?: {[name: string]: React.ComponentType<any>}) {
+  reactComponents(components?: {[name: string]: IReactComponentFactory}) {
     if (components) {
       forEach(components, (factory, name) => this.reactComponent(name, factory));
       return this;

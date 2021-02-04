@@ -276,8 +276,13 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
       (plugin.stateComponents() as IStateComponentFactory[]).forEach(factory => this.stateComponent(factory(app, store), app, store));
       (plugin.reactComponents() as IPluginReactComponent[]).forEach(
         ({name: componentName, factory}) =>
-          this.reactComponent(componentName, react2angular(factory)
-        )
+          this.reactComponent(
+            camelCase(componentName),
+            react2angular(
+              factory(app, store).template,
+              Object.keys(factory(app, store).scope)
+            )
+          )
       );
 
       this.fire(`ready|${plugin.getId()}`, app, store);

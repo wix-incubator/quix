@@ -9,6 +9,10 @@ import StorageIcon from '@material-ui/icons/Storage';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import {TreeView, TreeItem} from '@material-ui/lab';
 
+import {Store} from '../../lib/store';
+import {App} from '../../lib/app';
+import { IReactComponentConfig } from '../../lib/app/services/plugin-builder';
+
 const useStyles = makeStyles({
   root: {
   },
@@ -16,7 +20,7 @@ const useStyles = makeStyles({
 });
 
 export interface FileExplorerProps {
-  error: { message: string };
+  error?: { message: string };
 }
 
 interface RenderTree {
@@ -52,49 +56,56 @@ const data: RenderTree = {
 };
 
 
-export default (props: FileExplorerProps) => {
-  const classes = useStyles();
+export default (app: App, store: Store): IReactComponentConfig => ({
+  name: 'fileExplorer',
+  scope: {
+    fooBar: () => {},
+  },
+  template: (props: any) => {
+    console.log(props);
+    const classes = useStyles();
 
-  const renderTree = (nodes: RenderTree) => {
-    let LabelIcon;
-    switch(nodes.type) {
-      case 'catalog':
-        LabelIcon = BookIcon;
-        break;
-      case 'schema':
-        LabelIcon = StorageIcon;
-        break;
-      default:
-        LabelIcon = ViewModuleIcon;
-        break;
-    }
-    return (
-    <TreeItem
-      key={nodes.id}
-      nodeId={nodes.id}
-      label={
-        <div className="bi-r-h bi-grow bi-text">
-          <LabelIcon classes={{root:classes.root}}/>
-          <span>
-            {nodes.name}
-          </span>
-            {nodes.type === 'table' ? <MoreVertIcon /> : null}
-        </div>
+    const renderTree = (nodes: RenderTree) => {
+      let LabelIcon;
+      switch(nodes.type) {
+        case 'catalog':
+          LabelIcon = BookIcon;
+          break;
+        case 'schema':
+          LabelIcon = StorageIcon;
+          break;
+        default:
+          LabelIcon = ViewModuleIcon;
+          break;
       }
-      
-      endIcon={<MoreVertIcon />}
-    >
-      {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
-    </TreeItem>
-    )};
+      return (
+      <TreeItem
+        key={nodes.id}
+        nodeId={nodes.id}
+        label={
+          <div className="bi-r-h bi-grow bi-text">
+            <LabelIcon classes={{root:classes.root}}/>
+            <span>
+              {nodes.name}
+            </span>
+              {nodes.type === 'table' ? <MoreVertIcon /> : null}
+          </div>
+        }
+        
+        endIcon={<MoreVertIcon />}
+      >
+        {Array.isArray(nodes.children) ? nodes.children.map((node) => renderTree(node)) : null}
+      </TreeItem>
+      )};
 
-  return (
-    <TreeView
-      defaultCollapseIcon={<ExpandMoreIcon />}
-      defaultExpanded={[]}
-      defaultExpandIcon={<ChevronRightIcon />}
-    >
-      {renderTree(data)}
-    </TreeView>
-  );
-};
+    return (
+      <TreeView
+        defaultCollapseIcon={<ExpandMoreIcon />}
+        defaultExpanded={[]}
+        defaultExpandIcon={<ChevronRightIcon />}
+      >
+        {renderTree(data)}
+      </TreeView>
+    );
+  }
+});
