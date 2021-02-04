@@ -1,6 +1,6 @@
 {
-  "name": "quix-node-backend",
-  "version": "1.0.0",
+  "name": "@wix/quix-service",
+  "version": "1.0.1",
   "description": "",
   "author": "",
   "license": "MIT",
@@ -34,7 +34,7 @@
     "@nestjs/websockets": "^7.0.0",
     "@types/node-fetch": "^2.5.0",
     "@types/ws": "^6.0.4",
-    "@wix/quix-shared": "^1.0.6",
+    "@wix/quix-shared": "^1.0.7",
     "axios": "^0.21.0",
     "cookie-parser": "^1.4.4",
     "dotenv": "^7.0.0",

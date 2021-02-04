@@ -1,6 +1,6 @@
 {
   "name": "@wix/quix-shared",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "license": "MIT",
   "description": "Presto-based notebook manager",
   "author": {
@@ -14,7 +14,8 @@
     }
   ],
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc -b ."
   },
   "publishConfig": {
     "access": "public",
