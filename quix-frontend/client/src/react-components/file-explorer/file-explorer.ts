@@ -1,25 +1,12 @@
 import { Store } from '../../lib/store';
 import { App } from '../../lib/app';
-import { IReactStateComponentConfig } from '../../lib/app/services/plugin-builder';
-import { FileExplorer, FileExplorerProps } from './FileExplorerComponent';
+import { IReactComponentConfig } from '../../lib/app/services/plugin-builder';
+import FileExplorer from './FileExplorerComponent';
 
-export default (app: App, store: Store): IReactStateComponentConfig => ({
+export default (app: App, store: Store): IReactComponentConfig => ({
   name: 'File Explorer',
   template: FileExplorer,
-  url: {},
   scope: {
-    error: () => {},
+    fooBar: () => {},
   },
-  controller: async (scope: FileExplorerProps, params, { syncUrl, setTitle }) => {
-    syncUrl();
-    setTitle();
-
-    store.subscribe(
-      'fileExplorer',
-      ({ error }) => {
-
-      },
-      scope
-    );
-  }
 });
