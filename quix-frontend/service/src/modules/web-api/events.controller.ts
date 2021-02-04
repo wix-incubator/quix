@@ -1,22 +1,19 @@
 import {
   Body,
   Controller,
-  Post,
-  Get,
-  UsePipes,
-  UseGuards,
   HttpCode,
-  Param,
+  Post,
   Query,
+  UseGuards,
+  UsePipes,
 } from '@nestjs/common';
+import {AuthGuard} from '@nestjs/passport';
 import {AnyAction} from '@wix/quix-shared/entities/common/common-types';
+import {IGoogleUser, User} from '../../modules/auth';
+import {EventsService} from '../../modules/event-sourcing/events.service';
+import {IAction} from '../../modules/event-sourcing/infrastructure/types';
 import {BaseActionValidation} from '../event-sourcing/base-action-validation';
 import {QuixEventBus} from '../event-sourcing/quix-event-bus';
-import {User, IGoogleUser} from '../../modules/auth';
-import {AuthGuard} from '@nestjs/passport';
-import {IAction} from '../../modules/event-sourcing/infrastructure/types';
-import {takeRightWhile} from 'lodash';
-import {EventsService} from '../../modules/event-sourcing/events.service';
 
 @Controller('/api/events')
 export class EventsController {

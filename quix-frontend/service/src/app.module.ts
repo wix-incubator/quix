@@ -35,7 +35,6 @@ import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
         ]),
       inject: [ConfigService],
     }),
-    AuthModule.create(),
     ConfigModule,
     EventSourcingModule,
     WebApiModule,

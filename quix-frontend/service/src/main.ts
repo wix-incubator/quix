@@ -1,7 +1,6 @@
 import {NestFactory} from '@nestjs/core';
 import {AppModule} from './app.module';
 import {NestExpressApplication} from '@nestjs/platform-express';
-import path from 'path';
 import velocityEngine from './template-engine/velocity';
 import cookieParser from 'cookie-parser';
 import {createConnection} from 'typeorm';
@@ -17,11 +16,13 @@ import {
 import {retry} from './utils/retry-promise';
 import {WsAdapter} from '@nestjs/platform-ws';
 
-async function bootstrap() {
+export const buildApp = async (opts: {runMigration?: boolean} = {}) => {
+  const {runMigration} = {...opts, runMigration: true};
+
   const logger = new Logger();
   const env = getEnv();
 
-  if (isMasterProcess()) {
+  if (runMigration && isMasterProcess()) {
     if (!env.AutoMigrateDb && env.DbType === 'mysql') {
       const conf = createMysqlConf([DbMetadata], env);
       const conn = await retry(() => createConnection(conf))
@@ -44,6 +45,13 @@ async function bootstrap() {
   app.engine('.vm', velocityEngine());
   app.use(cookieParser());
   app.useWebSocketAdapter(new WsAdapter(app));
+  return app;
+};
+
+async function bootstrap() {
+  const app = await buildApp();
+  const env = getEnv();
   await app.listen(env.HttpPort);
 }
+
 bootstrap();
