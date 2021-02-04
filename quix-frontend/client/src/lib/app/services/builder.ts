@@ -279,8 +279,8 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
           this.reactComponent(
             camelCase(componentName),
             react2angular(
-              factory(app, store).template,
-              Object.keys(factory(app, store).scope)
+              factory().template,
+              Object.keys(factory().scope)
             )
           )
       );

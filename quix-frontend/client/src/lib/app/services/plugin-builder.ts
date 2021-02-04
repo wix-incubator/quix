@@ -7,7 +7,7 @@ import {ServerFrameworkType} from '../../store/services/store-logger';
 import * as React from 'react';
 
 export type IComponentFactory<Config = any> = (app: App<Config>, store: Store) => IDirectiveFactory;
-export type IReactComponentFactory<Config = any> = (app: App<Config>, store: Store) => IReactComponentConfig;
+export type IReactComponentFactory = () => IReactComponentConfig;
 export type IStateComponentFactory<Config = any> = (app: App<Config>, store: Store) => IStateComponentConfig;
 
 export type IStateFactory<Config = any> = (app: App<Config>, store: Store) => object;
@@ -19,9 +19,9 @@ export interface IPluginComponent<Config = any> {
   factory: IComponentFactory<Config>;
 }
 
-export interface IPluginReactComponent<Config = any> {
+export interface IPluginReactComponent {
   name: string;
-  factory: IReactComponentFactory<Config>;
+  factory: IReactComponentFactory;
 }
 
 export interface IPluginBranches<Config = any> {
