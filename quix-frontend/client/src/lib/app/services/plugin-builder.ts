@@ -64,7 +64,7 @@ export type IStateComponentConfig = IAngularStateComponentConfig | IReactStateCo
 
 export interface IReactComponentConfig{
   name: string;
-  scope: IScopeListeners;
+  scope: string[];
   template: React.ComponentType<any>;
 }
 

@@ -16,7 +16,7 @@ const useStyles = makeStyles({
 });
 
 export interface FileExplorerProps {
-  fooBar: string;
+  tree: string;
 }
 
 interface RenderTree {

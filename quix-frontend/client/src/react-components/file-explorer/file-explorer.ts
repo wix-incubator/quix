@@ -4,7 +4,5 @@ import FileExplorer from './FileExplorerComponent';
 export default (): IReactComponentConfig => ({
   name: 'File Explorer',
   template: FileExplorer,
-  scope: {
-    fooBar: () => {},
-  },
+  scope: ['tree'],
 });

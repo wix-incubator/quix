@@ -50,6 +50,10 @@
   </div>
 
   <div class="bi-c-h bi-grow bi-scroll" ng-show="vm.state.after('SearchResult')">
+    <quix-file-explorer
+      tree="vm.state.value().db"
+    ></quix-file-explorer>
+
     <bi-file-explorer-static
       ng-show="vm.state.is('Visible')"
       ng-model="vm.state.value().db"
@@ -114,11 +118,5 @@
         </ul>
       </menu>
     </bi-file-explorer-static>
-    
-    <quix-file-explorer
-      foo-bar="3"
-      baz="'baz'"
-    ></quix-file-explorer>
-
   </div>
 </div>
