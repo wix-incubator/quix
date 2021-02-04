@@ -1,6 +1,6 @@
 {
   "name": "@wix/quix-service",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "",
   "author": "",
   "license": "MIT",
@@ -87,6 +87,10 @@
     "tslint": "^6.0.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1"
+  },
+   "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "files": [
   	"dist"
