@@ -51,7 +51,10 @@
 
   <div class="bi-c-h bi-grow bi-scroll" ng-show="vm.state.after('SearchResult')">
     <quix-file-explorer
-      tree="vm.state.value().db"
+      tree="vm.state.value().dbOriginal"
+      lazy-fetch="events.onLazyFolderFetch"
+      transform-node="events.transformNode"
+      get-lazy-children="events.onLazyFolderFetchNew"
     ></quix-file-explorer>
 
     <bi-file-explorer-static

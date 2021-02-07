@@ -9,6 +9,7 @@ import {IScope} from './db-sidebar-types';
 import {cache} from '../../store';
 import {convert} from '../../services/db';
 import * as Resources from '../../services/resources';
+import {RenderTree} from '../../react-components/file-explorer/FileExplorerComponent';
 import {openTempQuery, StateManager} from '../../services';
 import {pluginManager} from '../../plugins';
 import {debounceAsync} from '../../utils';
@@ -72,6 +73,35 @@ export default (app: App, store: Store) => () => ({
             return Resources.dbColumns(scope.vm.type, catalog, schema, table)
               .then(({children: columns}) => convert(columns, {hideRoot: false}, [...path]));
           },
+          onLazyFolderFetchNew(node: RenderTree): RenderTree[] {
+            console.log(node);
+            return [];
+          },
+          transformNode(node: RenderTree): RenderTree {
+            const newNode = node;
+
+            const chooseIcon = (type) => {
+              switch(type) {
+                case 'catalog':
+                  return 'book';
+                case 'schema':
+                  return 'storage';
+                default:
+                  return 'view_module';
+              }
+            }
+
+            newNode.icon = chooseIcon(node.type);
+            newNode.children = newNode.children.map(child => {
+              return {
+                ...child,
+                icon: chooseIcon(child.type),
+                lazy: child.type === 'table'
+              }
+            });
+            newNode.icon = 'view_module';
+            return newNode;
+          },
           onSelectTableRows(table: IFile) {
             const query = pluginManager.module('db').plugin(scope.vm.type)
               .getSampleQuery(table);
@@ -114,17 +144,18 @@ export default (app: App, store: Store) => () => ({
         };
       }
 
-      store.subscribe('db.db', (db: any) => {
+      store.subscribe('db.db', (dbOriginal: any) => {
         const isInitial = scope.vm.state.is('Initial');
         
-        if (db) {
-          scope.vm.hideRoot = db.length === 1 && db[0] && db[0].name === DB.RootName;
-          db = db && convert(db, {hideRoot: scope.vm.hideRoot});
+        let newDb = [];
+        if (dbOriginal) {
+          scope.vm.hideRoot = dbOriginal.length === 1 && dbOriginal[0] && dbOriginal[0].name === DB.RootName;
+          newDb = dbOriginal && convert(dbOriginal, {hideRoot: scope.vm.hideRoot});
         }
 
         scope.vm.state
-          .force('Result', !!db, {db, dbOriginal: db})
-          .set('Content', () => !!db.length)
+          .force('Result', !!dbOriginal, {db: newDb, dbOriginal: dbOriginal})
+          .set('Content', () => !!newDb.length)
           .set('Visible', !isInitial)
       }, scope);
 
