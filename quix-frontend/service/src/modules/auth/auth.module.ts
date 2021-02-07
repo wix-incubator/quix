@@ -1,76 +1,96 @@
-import {Module, Provider, DynamicModule} from '@nestjs/common';
-import {ConfigModule} from '../../config/config.module';
-import {AuthService, GoogleAuthService, FakeAuthService} from './auth.service';
+import {DynamicModule, Global, Module} from '@nestjs/common';
 import {JwtModule} from '@nestjs/jwt';
-import {ConfigService} from '../../config';
 import {PassportModule} from '@nestjs/passport';
-import {JwtStrategy} from './jwt-strategy';
-import {MockStrategy} from './mock-strategy';
-import {AuthController} from './auth.controller';
-import {getEnv} from '../../config/env/env';
-import {UsersService} from './users.service';
 import {TypeOrmModule} from '@nestjs/typeorm';
+import {ConfigModule} from '../../config/config.module';
 import {DbUser} from '../../entities';
 import {EventSourcingModule} from '../../modules/event-sourcing/event-sourcing.module';
+import {AuthController} from './auth.controller';
+import {LoginService} from './login.service';
+import {JwtStrategy, MockStrategy} from './passport-strategies';
+import {AuthAsyncOptions, AuthOptions, AuthTypes} from './types';
+import {UsersService} from './users.service';
 
-const googleAuthServiceProvider = {
-  provide: AuthService,
-  useClass: GoogleAuthService,
-};
+/** read about nest.js dynamic modules to understand this */
 
-const fakeAuthServiceProvider = {
-  provide: AuthService,
-  useClass: FakeAuthService,
-};
+@Module({})
+export class AuthModuleConfiguration {
+  static createAsync(authAsyncOptions: AuthAsyncOptions): DynamicModule {
+    return {
+      global: true, // feels like workaround, couldn't get injection to work otherwise
+      module: AuthModuleConfiguration,
+      imports: authAsyncOptions.imports,
+      providers: [
+        {
+          provide: AuthOptions,
+          inject: authAsyncOptions.injects,
+          useFactory: authAsyncOptions.useFactory,
+        },
+      ],
+      exports: [AuthOptions],
+    };
+  }
+  static create(authOption: AuthOptions): DynamicModule {
+    return {
+      global: true,
+      module: AuthModuleConfiguration,
+      providers: [
+        {
+          provide: AuthOptions,
+          useValue: authOption,
+        },
+      ],
+      exports: [AuthOptions],
+    };
+  }
+}
 
-// TODO: Try to build the dynamic module using configService instead of env.
 @Module({
   imports: [
     ConfigModule,
     TypeOrmModule.forFeature([DbUser]),
     EventSourcingModule,
+    AuthModuleConfiguration,
+
+    PassportModule.registerAsync({
+      inject: [AuthOptions],
+      imports: [AuthModuleConfiguration],
+      useFactory: (authOptions: AuthOptions) => {
+        switch (authOptions.type) {
+          case AuthTypes.GOOGLE:
+            return {defaultStrategy: 'jwt'};
+          case AuthTypes.CUSTOM:
+            return {defaultStrategy: 'custom'};
+          case AuthTypes.FAKE:
+          default:
+            return {defaultStrategy: 'fake'};
+        }
+      },
+    }),
+    JwtModule.registerAsync({
+      imports: [AuthModuleConfiguration],
+      inject: [AuthOptions],
+      useFactory: (authOptions: AuthOptions) => {
+        switch (authOptions.type) {
+          case AuthTypes.GOOGLE:
+            return {
+              secret: authOptions.cookieEncKey,
+              signOptions: {
+                algorithm: 'HS256',
+                expiresIn: authOptions.cookieTTL,
+              },
+            };
+          case AuthTypes.CUSTOM:
+            return authOptions.jwtServiceOptions || {secret: '12345'};
+          case AuthTypes.FAKE:
+          default:
+            return {secret: '12345'};
+        }
+      },
+    }),
   ],
   controllers: [AuthController],
-  providers: [UsersService],
-  exports: [PassportModule, UsersService],
+  providers: [LoginService, UsersService, MockStrategy, JwtStrategy],
+  exports: [UsersService, PassportModule],
 })
-export class AuthModule {
-  static create(): DynamicModule {
-    const env = getEnv();
-    if (env.AuthType === 'google') {
-      return {
-        module: AuthModule,
-        imports: [
-          JwtModule.registerAsync({
-            imports: [ConfigModule],
-            useFactory: (configService: ConfigService) => ({
-              secretOrPrivateKey: configService.getEnvSettings().AuthEncKey,
-              signOptions: {algorithm: 'HS256', expiresIn: '30d'},
-            }),
-
-            inject: [ConfigService],
-          }),
-          PassportModule.registerAsync({
-            useFactory: () => ({
-              defaultStrategy: 'jwt',
-            }),
-          }),
-        ],
-        providers: [googleAuthServiceProvider, JwtStrategy],
-      };
-    } else if (env.AuthType === 'fake') {
-      return {
-        module: AuthModule,
-        imports: [
-          PassportModule.registerAsync({
-            useFactory: () => ({
-              defaultStrategy: 'fake',
-            }),
-          }),
-        ],
-        providers: [fakeAuthServiceProvider, MockStrategy],
-      };
-    }
-    throw new Error('AuthModule:: Unknown auth type');
-  }
-}
+export class AuthModule {}

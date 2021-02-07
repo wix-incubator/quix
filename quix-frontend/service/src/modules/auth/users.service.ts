@@ -4,7 +4,7 @@ import {Repository} from 'typeorm';
 import {DbUser} from '../../entities';
 import {InjectRepository} from '@nestjs/typeorm';
 import {dbUserToUser} from '../../entities/user/user.entity';
-import {IGoogleUser} from './types';
+import {IExternalUser} from './types';
 import {FileActions, createFolder} from '@wix/quix-shared/entities/file';
 import uuid from 'uuid/v4';
 import {UserActions, createUser} from '@wix/quix-shared/entities/user';
@@ -18,7 +18,7 @@ export class UsersService {
     private quixEventBus: QuixEventBus,
   ) {}
 
-  async doUserLogin(userFromLogin: IGoogleUser) {
+  async doUserLogin(userFromLogin: IExternalUser) {
     const user = await this.userRepo.count({id: userFromLogin.email});
     if (!user) {
       await this.doFirstTimeLogin(userFromLogin);
@@ -27,7 +27,7 @@ export class UsersService {
     }
   }
 
-  private async doFirstTimeLogin(userFromLogin: IGoogleUser) {
+  private async doFirstTimeLogin(userFromLogin: IExternalUser) {
     const rootFolderId = await this.createRootFolder(userFromLogin.email);
     const {avatar, email: id, email, name} = userFromLogin;
     const user = createUser({
@@ -45,7 +45,7 @@ export class UsersService {
     });
   }
 
-  private async doLogin(userFromLogin: IGoogleUser) {
+  private async doLogin(userFromLogin: IExternalUser) {
     const {avatar, name, email: id, email} = userFromLogin;
     return this.quixEventBus.emit({
       ...UserActions.updateUser(id, avatar || '', name || '', email),

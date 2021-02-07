@@ -28,6 +28,8 @@ import {NotebookService} from './notebooks/notebooks.service';
 import {FavoritesService} from './favorites/favorites.service';
 import {WebApiModule} from './web-api.module';
 import {EntityType} from '../../common/entity-type.enum';
+import {AuthModuleConfiguration} from '../auth/auth.module';
+import {AuthTypes} from '../auth/types';
 
 jest.setTimeout(60000);
 
@@ -131,6 +133,10 @@ describe('web-api module', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
+        AuthModuleConfiguration.create({
+          type: AuthTypes.FAKE,
+          cookieName: 'foo',
+        }), // consider restructuring web-api module so it won't import auth. feels wrong needing to importing authModule here
         WebApiModule,
         ConfigModule,
         TypeOrmModule.forRootAsync({

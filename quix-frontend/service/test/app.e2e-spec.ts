@@ -5,7 +5,7 @@ import {AppModule} from './../src/app.module';
 import {INestApplication, Logger} from '@nestjs/common';
 import {ConfigService, EnvSettings} from '../src/config';
 import nock from 'nock';
-import {IGoogleUser} from '../src/modules/auth/types';
+import {IExternalUser} from '../src/modules/auth/types';
 import {E2EDriver} from './driver';
 import {E2EMockDataBuilder} from './builder';
 import cookieParser = require('cookie-parser');
@@ -25,12 +25,12 @@ class E2EConfigService extends ConfigService {
   }
 }
 
-const user1profile: IGoogleUser = {
+const user1profile: IExternalUser = {
   email: 'testing@quix.com',
   id: '111111111',
   name: 'Testing User',
 };
-const user2profile: IGoogleUser = {
+const user2profile: IExternalUser = {
   email: 'secondUser@quix.com',
   id: '222222222',
   name: 'second User',
@@ -163,7 +163,7 @@ describe('Application (e2e)', () => {
     });
 
     const expectObject = (json: object) => ({
-      toNotLeakUserData(user: IGoogleUser) {
+      toNotLeakUserData(user: IExternalUser) {
         expect(JSON.stringify(json)).toEqual(
           expect.not.stringContaining(user2profile.email),
         );
