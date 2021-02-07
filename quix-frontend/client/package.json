@@ -27,6 +27,7 @@
     "precommit": "yoshi lint",
     "pretest": "npm run build",
     "test": "yoshi test",
+    "test:ci": "yoshi test",
     "build": "tsc -b && yoshi build",
     "posttest": "yoshi lint",
     "release": "yoshi release"

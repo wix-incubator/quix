@@ -6,10 +6,11 @@
   },
   "scripts": {
     "version": "lerna --version",
-    "test": "lerna run test --parallel false --concurrency 1",
+    "test": "lerna run test:ci --parallel false --concurrency 1",
     "bootstrap": "lerna bootstrap --concurrency 2  --force-local",
     "postinstall": "npm run bootstrap",
     "build": "lerna run build --parallel false --concurrency 1",
+    "build:ci": "(cd service; npm run build)",
     "clean": "lerna clean --yes"
   },
   "workspaces": {

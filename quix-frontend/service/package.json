@@ -14,6 +14,7 @@
     "start:prod": "node index.js",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "test": "jest",
+    "test:ci": "npm run test && npm run test:mysql && npm run test:e2e",
     "test:mysql": "DB_TYPE=mysql jest --runInBand",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

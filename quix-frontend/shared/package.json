@@ -15,6 +15,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test:ci": "jest",
     "build": "tsc -b ."
   },
   "publishConfig": {
