@@ -71,7 +71,7 @@
     "change-case": "^3.1.0",
     "classnames": "^2.2.6",
     "dialog-polyfill": "^0.4.10",
-    "highlight.js": "^9.17.1",
+    "highlight.js": "^10.4.1",
     "jquery": "^3.3.1",
     "jquery-datetimepicker": "^2.5.18",
     "jquery-ui": "^1.12.1",
