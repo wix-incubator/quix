@@ -19,11 +19,11 @@ jobs:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - npm run build:ci
         - npm run test
-      # deploy:
-      #   provider: npm
-      #   email: $NPM_EMAIL
-      #   api_key: $NPM_API_KEY
-      #   skip_cleanup: true
+      deploy:
+        provider: script
+        script: lerna publish from-package -y
+        on:
+          branch: master
     - &scala-builds
       stage: test
       name: "Scala 2.12"
