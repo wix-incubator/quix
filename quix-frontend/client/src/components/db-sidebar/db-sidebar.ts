@@ -73,9 +73,14 @@ export default (app: App, store: Store) => () => ({
             return Resources.dbColumns(scope.vm.type, catalog, schema, table)
               .then(({children: columns}) => convert(columns, {hideRoot: false}, [...path]));
           },
-          onLazyFolderFetchNew(node: RenderTree): RenderTree[] {
-            console.log(node);
-            return [];
+          async onLazyFolderFetchNew(n: RenderTree, path: string[]): Promise<RenderTree[]> {
+            const response: any = await Resources.dbColumns(
+              scope.vm.type,
+              path[0], // catalog
+              path[1], // schema
+              path[2], // table
+            );
+            return response.children;
           },
           transformNode(node: RenderTree): RenderTree {
             const newNode = node;
@@ -96,7 +101,8 @@ export default (app: App, store: Store) => () => ({
               return {
                 ...child,
                 icon: chooseIcon(child.type),
-                lazy: child.type === 'table'
+                lazy: child.type === 'table',
+                more: child.type === 'table'
               }
             });
             newNode.icon = 'view_module';
@@ -105,6 +111,20 @@ export default (app: App, store: Store) => () => ({
           onSelectTableRows(table: IFile) {
             const query = pluginManager.module('db').plugin(scope.vm.type)
               .getSampleQuery(table);
+
+            openTempQuery(scope, scope.vm.type, query, true);
+          },
+          onSelectTableRowsNew(n: RenderTree, path: string[]) {
+            const query = pluginManager.module('db').plugin(scope.vm.type)
+              .getSampleQuery(
+                {
+                  path: path.slice(0, path.length - 1).map(el => {
+                    return {
+                      name: el
+                    }
+                  }),
+                  name: n.name,
+                } as any);
 
             openTempQuery(scope, scope.vm.type, query, true);
           },
