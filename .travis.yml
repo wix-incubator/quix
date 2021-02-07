@@ -21,7 +21,8 @@ jobs:
         - npm run test
       deploy:
         provider: script
-        script: lerna publish from-package -y
+        script: lerna publish from-package -y --loglevel=debug
+        edge: true
         on:
           branch: master
     - &scala-builds
