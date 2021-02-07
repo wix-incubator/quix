@@ -1,15 +1,15 @@
-import {IGoogleUser} from './types';
+import {IExternalUser} from './types';
 import {getEnv} from '../../config/env';
 import {verify} from 'jsonwebtoken';
 import {isJestTest} from '../../config/utils';
 
-const defaultUser: IGoogleUser = {
+const defaultUser: IExternalUser = {
   email: 'user@quix.com',
   id: '1',
   name: 'Default User',
 };
 
-export const fakeAuth = (token: string): IGoogleUser => {
+export const fakeAuth = (token: string): IExternalUser => {
   try {
     const user = JSON.parse(Buffer.from(token, 'base64').toString());
 
@@ -24,10 +24,10 @@ export const fakeAuth = (token: string): IGoogleUser => {
   }
 };
 
-const jwtAuth = (token: string): IGoogleUser => {
+const jwtAuth = (token: string): IExternalUser => {
   const key = getEnv().AuthEncKey;
   const user = verify(token, key);
-  return user as IGoogleUser;
+  return user as IExternalUser;
 };
 
 export const auth = getEnv().AuthType === 'fake' ? fakeAuth : jwtAuth;

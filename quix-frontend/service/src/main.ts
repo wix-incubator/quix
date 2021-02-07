@@ -16,13 +16,11 @@ import {
 import {retry} from './utils/retry-promise';
 import {WsAdapter} from '@nestjs/platform-ws';
 
-export const buildApp = async (opts: {runMigration?: boolean} = {}) => {
-  const {runMigration} = {...opts, runMigration: true};
-
+async function bootstrap() {
   const logger = new Logger();
   const env = getEnv();
 
-  if (runMigration && isMasterProcess()) {
+  if (isMasterProcess()) {
     if (!env.AutoMigrateDb && env.DbType === 'mysql') {
       const conf = createMysqlConf([DbMetadata], env);
       const conn = await retry(() => createConnection(conf))
@@ -45,12 +43,7 @@ export const buildApp = async (opts: {runMigration?: boolean} = {}) => {
   app.engine('.vm', velocityEngine());
   app.use(cookieParser());
   app.useWebSocketAdapter(new WsAdapter(app));
-  return app;
-};
 
-async function bootstrap() {
-  const app = await buildApp();
-  const env = getEnv();
   await app.listen(env.HttpPort);
 }
 
