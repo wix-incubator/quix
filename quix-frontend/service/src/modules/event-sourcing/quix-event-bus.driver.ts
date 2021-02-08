@@ -46,9 +46,9 @@ export class QuixEventBusDriver {
   static async create(defaultUser: string) {
     const module = await Test.createTestingModule({
       imports: [
-        ConfigModule,
+        ConfigModule.create(),
         TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+          imports: [],
           useFactory: async (cs: ConfigService) =>
             cs.getDbConnection([
               DbFileTreeNode,

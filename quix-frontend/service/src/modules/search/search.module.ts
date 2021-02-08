@@ -6,7 +6,6 @@ import {SearchService} from './search';
 @Module({
   imports: [
     TypeOrmModule.forFeature([DbFileTreeNode, DbFolder, DbNote, DbNotebook]),
-    ConfigModule,
   ],
   providers: [SearchService],
   controllers: [],

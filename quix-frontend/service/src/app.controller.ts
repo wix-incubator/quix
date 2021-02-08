@@ -33,7 +33,7 @@ export class AppController implements OnApplicationShutdown {
   }
 
   private fetchClientConfig() {
-    this.configService.getClientConfig().then(c => (this.clientConfig = c));
+    this.clientConfig = this.configService.getClientConfig();
   }
 
   @Get()

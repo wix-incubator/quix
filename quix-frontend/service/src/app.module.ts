@@ -22,7 +22,7 @@ import {AuthTypes} from './modules/auth/types';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [],
       useFactory: async (cs: ConfigService) =>
         cs.getDbConnection([
           DbFileTreeNode,
@@ -36,14 +36,14 @@ import {AuthTypes} from './modules/auth/types';
         ]),
       inject: [ConfigService],
     }),
-    ConfigModule,
+    ConfigModule.create(),
     EventSourcingModule,
     WebApiModule,
     ProxyDbApiBackend,
     SearchModule,
     AuthModuleConfiguration.createAsync({
       injects: [ConfigService],
-      imports: [ConfigModule],
+      imports: [],
       useFactory: (configService: ConfigService) => {
         const env = configService.getEnvSettings();
         if (env.AuthType === 'fake') {
