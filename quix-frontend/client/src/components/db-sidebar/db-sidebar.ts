@@ -80,7 +80,7 @@ export default (app: App, store: Store) => () => ({
               path[1], // schema
               path[2], // table
             );
-            return response.children;
+            return response.children.map(child => {return {...child, textIcon: child.dataType}});
           },
           transformNode(node: RenderTree): RenderTree {
             const newNode = node;
