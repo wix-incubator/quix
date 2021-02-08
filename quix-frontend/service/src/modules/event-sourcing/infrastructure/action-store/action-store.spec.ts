@@ -15,8 +15,9 @@ describe('action store', () => {
   beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
+        ConfigModule.create(),
         TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+          imports: [],
           useFactory: async (configService: ConfigService) =>
             configService.getDbConnection([DbAction]),
           inject: [ConfigService],

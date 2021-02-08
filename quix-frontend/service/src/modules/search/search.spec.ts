@@ -25,8 +25,9 @@ describe('Search', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
+        ConfigModule.create(),
         TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+          imports: [],
           useFactory: async (configService: ConfigService) =>
             configService.getDbConnection([
               DbFileTreeNode,

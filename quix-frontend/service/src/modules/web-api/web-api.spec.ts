@@ -138,9 +138,9 @@ describe('web-api module', () => {
           cookieName: 'foo',
         }), // consider restructuring web-api module so it won't import auth. feels wrong needing to importing authModule here
         WebApiModule,
-        ConfigModule,
+        ConfigModule.create(),
         TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+          imports: [],
           useFactory: async (cs: ConfigService) =>
             cs.getDbConnection([
               DbFileTreeNode,

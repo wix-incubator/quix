@@ -28,7 +28,6 @@ import {EventsGateway} from './events.gateway';
 
 @Module({
   imports: [
-    ConfigModule,
     TypeOrmModule.forFeature([
       DbFileTreeNode,
       DbFolder,
@@ -40,7 +39,6 @@ import {EventsGateway} from './events.gateway';
       DbUser,
       DbFavorites,
     ]),
-    ConfigModule,
     AuthModule,
     EventSourcingModule,
     SearchModule,

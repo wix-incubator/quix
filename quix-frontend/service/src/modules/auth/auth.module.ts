@@ -47,7 +47,6 @@ export class AuthModuleConfiguration {
 
 @Module({
   imports: [
-    ConfigModule,
     TypeOrmModule.forFeature([DbUser]),
     EventSourcingModule,
     AuthModuleConfiguration,

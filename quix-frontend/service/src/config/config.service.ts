@@ -1,4 +1,4 @@
-import {Inject, Injectable} from '@nestjs/common';
+import {Inject, Injectable, Optional} from '@nestjs/common';
 import {ConnectionOptions} from 'typeorm';
 import * as dbConnection from './db-connection';
 import {EnvSettings, loadEnv, getEnv} from './env';
@@ -11,8 +11,11 @@ loadEnv();
 export abstract class ConfigService {
   private env: EnvSettings;
 
-  constructor(@Inject('GLOBAL_ENV') globalEnv: any) {
-    this.env = getEnv(globalEnv);
+  constructor(
+    @Inject('GLOBAL_ENV') globalEnv: any,
+    @Inject('CONFIG_OVERRIDES') overrides: Partial<EnvSettings>,
+  ) {
+    this.env = {...getEnv(globalEnv), ...overrides};
     /* tslint:disable-next-line */
     console.log(`****** Current Environment:: DbType:${this.env.DbType}/AuthType:${this.env.AuthType} ******`);
   }
@@ -36,7 +39,7 @@ export abstract class ConfigService {
     }
   }
 
-  async getClientConfig() {
+  getClientConfig() {
     const env = this.getEnvSettings();
     const clientConfig = new ClientConfigHelper();
     const staticsBaseUrl = env.remoteStaticsPath

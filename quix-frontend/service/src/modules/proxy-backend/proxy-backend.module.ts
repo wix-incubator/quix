@@ -3,7 +3,7 @@ import httpProxy from 'http-proxy-middleware';
 import {ConfigService, ConfigModule} from '../../config';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [],
   controllers: [],
   providers: [],
 })

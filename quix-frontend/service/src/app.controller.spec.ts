@@ -17,7 +17,7 @@ describe('AppController', () => {
     const testingModule = Test.createTestingModule({
       controllers: [AppController],
       providers: [fakeConnection],
-      imports: [ConfigModule],
+      imports: [ConfigModule.create()],
     });
     if (mocked) {
       testingModule.overrideProvider(mocked.provide).useValue(mocked.useValue);
