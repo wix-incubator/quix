@@ -7,7 +7,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import {TreeView, TreeItem} from '@material-ui/lab';
 import MaterialIcon from 'material-icons-react';
 import { cloneDeep } from 'lodash';
-import { MenuItem, Menu } from '@material-ui/core';
+import Dropdown from '../../lib/ui/components/Dropdown';
 
 
 const useStyles = makeStyles({
@@ -104,7 +104,7 @@ const fileExplorer = (props: FileExplorerProps) => {
     setInnerTree(duplicateTree);
   };
 
-  const renderTree = (node: RenderTree, treeIndex: number, path: string[]) => {
+  const renderTree = (node: RenderTree, path: string[]) => {
     if (!node.name) {
       return <div>Loading...</div>
     }
@@ -115,42 +115,35 @@ const fileExplorer = (props: FileExplorerProps) => {
       key={path.join(',')}
       nodeId={path.join(',')}
       label={
-        <>
-        <div className={"bi-r-h bi-grow bi-align bi-text " + classes.hover} onClick={() => handleExpanded(path.join(','))}>
-          {node.textIcon ?
-            <div className="bi-text--sm ng-binding ng-scope">{node.textIcon}</div>
-            : <MaterialIcon className={"bi-icon--xs"} icon={node.icon || 'hourglass_empty'}/>
-          }
-          <span className="bi-text--ellipsis">
-            {node.name}
-          </span>
-        </div>
+        <div className="bi-align">
+          <div className={"bi-align bi-s-h bi-grow bi-text " + classes.hover} onClick={() => handleExpanded(path.join(','))}>
+            {node.textIcon ?
+              <div className="bi-text--sm ng-binding ng-scope">{node.textIcon}</div>
+              : <MaterialIcon className={"bi-icon--xs"} icon={node.icon || 'hourglass_empty'}/>
+            }
+            <span className="bi-text--ellipsis">
+              {node.name}
+            </span>
+          </div>
           {node.more ?
           <>
-            <div >
-            <MaterialIcon icon='more_vert' onClick={handleClick}/>
+            <div>
+              <MaterialIcon icon='more_vert' onClick={handleClick} />
             </div>
-              <Menu
-                anchorEl={anchorEl}
-                keepMounted
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={() => {
-                    props.onClickMore(node, path);
-                    handleClose();
-                  }
-                }>
-                  Select rows (limit 1000)
-                </MenuItem>
-            </Menu>
+            <Dropdown
+              open={Boolean(anchorEl)}
+              handleClick={handleClose}
+              referenceElement={anchorEl}
+            >
+              <div onClick={() => props.onClickMore(node, path)}>Select rows (limit 1000)</div>
+            </Dropdown>
           </>
             : null
           }
-        </>
+        </div>
       }
     >
-      {Array.isArray(node.children) ? node.children.map((node, index) => renderTree(node, treeIndex, [...path, node.name || '' + index])) : null}
+      {Array.isArray(node.children) ? node.children.map((node, index) => renderTree(node, [...path, node.name || '' + index])) : null}
     </TreeItem>
   )};
 
@@ -172,7 +165,7 @@ const fileExplorer = (props: FileExplorerProps) => {
             disableSelection={true}
             expanded={expanded}
           >
-            {renderTree(sub, index, [sub.name])}
+            {renderTree(sub, [sub.name])}
           </TreeView>
         )
       })}
