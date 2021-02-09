@@ -1,7 +1,7 @@
 import {takeWhile} from 'lodash';
 import {utils} from '../../lib/core';
 import {Store} from '../../lib/store';
-import {toast} from '../../lib/ui';
+import {dialog, toast} from '../../lib/ui';
 import {App} from '../../lib/app';
 import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem, FileType} from '@wix/quix-shared';
 import {IScope} from './notebook-types';
@@ -112,16 +112,14 @@ export const onNoteClone = (scope: IScope, store: Store, app: App) => (note: INo
 export const onNoteShare = (scope: IScope, store: Store, app: App) => (note: INote, params: string) => {
   const {notebook} = scope.vm.state.value();
 
-  const url = [app.getNavigator().getUrl(null, {id: notebook.id, note: note.id}), params]
-    .filter(x => !!x)
-    .join('');
-
-  utils.copyToClipboard(url);
-
-  toast.showToast({
-    text: 'Copied note url to clipboard',
-    type: 'success'
-  }, 3000);
+  dialog({
+    title: 'Share note',
+    html: '<quix-note-share note="::note" notebook="::notebook", params="::params"></div>',
+  }, scope, {
+    note,
+    notebook,
+    params,
+  });
 }
 
 export const onNoteDelete = (scope: IScope, store: Store, app: App) => (note: INote) => {
@@ -151,7 +149,6 @@ export const onNoteReorder = (scope: IScope, store: Store, app: App) => (e: any,
 export const onMarkToggle = (scope: IScope, store: Store, app: App) => (note: INote) => {
   store.dispatch(toggleMark(note));
 };
-
 
 export const onMarkedNotesDelete = (scope: IScope, store: Store, app: App) => (notes: INote[]) => {
   store.dispatchAndLog(notes.map(note => NoteActions.deleteNote(note.id)))

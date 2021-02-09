@@ -1,5 +1,5 @@
 import {isArray} from 'lodash';
-import {confirm as confirmDialog} from '../lib/ui';
+import {confirm} from '../lib/ui';
 import {utils} from '../lib/core';
 
 export const confirmAction = (
@@ -8,7 +8,7 @@ export const confirmAction = (
     context: any,
     customText = ''
   ) => {
-  return confirmDialog({
+  return confirm({
     title: `${action} ${type}`,
     actionType: action === 'delete' ? 'destroy' : 'neutral',
     icon: action === 'delete' ? 'report' : null,
@@ -36,7 +36,7 @@ export const prompt = ({
   content: string;
   onConfirm?(scope: any): any;
 }, scope?, locals?) => {
-  return confirmDialog({
+  return confirm({
     title,
     subTitle,
     actionType: 'neutral',
