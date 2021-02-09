@@ -44,6 +44,7 @@ export class EventsGateway implements OnGatewayDisconnect {
     const {token, sessionId} = data;
 
     try {
+      // alternative to sending the user token explicitly - use OnGatewayConnect, and parse cookies
       const user = this.loginService.verify(token);
 
       if (!user) {
