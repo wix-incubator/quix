@@ -52,6 +52,7 @@ const Dropdown: React.FunctionComponent<IDropdownProps> = ({
                           <MenuItem
                             classes={{root: classes.root}}
                             key={index}
+                            onClick={(child as any)?.props?.onClick}
                           >
                             {child}
                           </MenuItem>

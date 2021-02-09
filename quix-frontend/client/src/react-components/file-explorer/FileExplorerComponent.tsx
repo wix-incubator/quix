@@ -9,9 +9,12 @@ import MaterialIcon from 'material-icons-react';
 import { cloneDeep } from 'lodash';
 import Dropdown from '../../lib/ui/components/Dropdown';
 
-
 const useStyles = makeStyles({
-  hover: {
+  root: {
+    fontFamily: 'Open Sans',
+  },
+  text: {
+    height: '35px',
     '&:hover': {
       color: "white",
     },
@@ -60,31 +63,28 @@ const fileExplorer = (props: FileExplorerProps) => {
     setAnchorEl(null);
   };
 
-
   useEffect(() => {
     setInitial(false);
     const updatedTree = innerTree.map(root => props.transformNode(cloneDeep(root)));
     setInnerTree(updatedTree);
   }, []);
 
-  const handleExpanded = (nodeId: string) => {
-    const depth = nodeId.split(',').length;
+  const handleExpanded = (nodeId: string, sub: RenderTree, subIndex: number) => {
     if (!expanded.includes(nodeId)) {
       setExpanded([...expanded, nodeId]);
+      transformNode(nodeId.split(','), sub, subIndex);
     } else {
       const newArr = [];
-      expanded.forEach(element => element.split(',').length >= depth ? null : newArr.push(element));
+      expanded.forEach(element => element.includes(nodeId) ? null : newArr.push(element));
       setExpanded(newArr);
     }
   }
 
-  const transformNode = async (path: string[], treeIndex: number) => {
-    const duplicateTree = cloneDeep(innerTree);
-    const currentTree = duplicateTree[treeIndex];
+  const transformNode = async (path: string[], sub: RenderTree, subIndex: number) => {
+    const currentTree = cloneDeep(sub);
     let iteratorNode = currentTree;
     for (let i = 1; i < path.length; i++) {
-      const pathAsArray = path[i].split(',');
-      iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.name === pathAsArray[pathAsArray.length - 1]);
+      iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.name === path[i]);
     }
 
     if (_.isEqual(iteratorNode?.children, [{}])) {
@@ -92,7 +92,7 @@ const fileExplorer = (props: FileExplorerProps) => {
       path.forEach(part => fixedPath.push(part.split(',')[part.split(',').length - 1]));
       iteratorNode.children = await props.getLazyChildren(iteratorNode, fixedPath);
     }
-    else if (iteratorNode) {
+    else if (iteratorNode?.children) {
       props.transformNode(iteratorNode);
       iteratorNode.children.forEach(
         child => 
@@ -101,22 +101,29 @@ const fileExplorer = (props: FileExplorerProps) => {
       );
     }
 
+    const duplicateTree = cloneDeep(innerTree);
+    duplicateTree[subIndex] = currentTree;
     setInnerTree(duplicateTree);
   };
 
-  const renderTree = (node: RenderTree, path: string[]) => {
+  const renderTree = (node: RenderTree, path: string[], sub: RenderTree, subIndex: number) => {
+    const uniquePath = path.join(',');
     if (!node.name) {
-      return <div>Loading...</div>
+      return (<div key={uniquePath}>Loading...</div>);
     }
 
     return (
     <TreeItem
       classes={{group: classes.group}}
-      key={path.join(',')}
-      nodeId={path.join(',')}
+      onIconClick={() => handleExpanded(uniquePath, sub, subIndex)}
+      key={uniquePath}
+      nodeId={uniquePath}
       label={
-        <div className="bi-align">
-          <div className={"bi-align bi-s-h bi-grow bi-text " + classes.hover} onClick={() => handleExpanded(path.join(','))}>
+        <div className={"bi-align bi-hover " + classes.root}>
+          <div
+            className={"bi-align bi-s-h bi-text--ellipsis bi-grow bi-text " + classes.text}
+            onClick={() => handleExpanded(uniquePath, sub, subIndex)}
+          >
             {node.textIcon ?
               <div className="bi-text--sm ng-binding ng-scope">{node.textIcon}</div>
               : <MaterialIcon className={"bi-icon--xs"} icon={node.icon || 'hourglass_empty'}/>
@@ -126,29 +133,33 @@ const fileExplorer = (props: FileExplorerProps) => {
             </span>
           </div>
           {node.more ?
-          <>
-            <div>
-              <MaterialIcon icon='more_vert' onClick={handleClick} />
-            </div>
-            <Dropdown
-              open={Boolean(anchorEl)}
-              handleClick={handleClose}
-              referenceElement={anchorEl}
-            >
-              <div onClick={() => props.onClickMore(node, path)}>Select rows (limit 1000)</div>
-            </Dropdown>
-          </>
+            <>
+              <div>
+                <MaterialIcon className={'bi-action bi-icon'} icon='more_vert' onClick={handleClick} />
+              </div>
+              <Dropdown
+                open={Boolean(anchorEl)}
+                handleClick={handleClose}
+                referenceElement={anchorEl}
+              >
+                <div
+                  onClick={() => props.onClickMore(node, path)}
+                >
+                  Select rows (limit 1000)
+                </div>
+              </Dropdown>
+            </>
             : null
           }
         </div>
       }
     >
-      {Array.isArray(node.children) ? node.children.map((node, index) => renderTree(node, [...path, node.name || '' + index])) : null}
+      {Array.isArray(node.children) ? node.children.map((node, index) => renderTree(node, [...path, node.name || '' + index], sub, subIndex)) : null}
     </TreeItem>
   )};
 
   if (initial) {
-    return <>loading</>;
+    return (<div>loading</div>);
   }
 
   return (
@@ -159,13 +170,12 @@ const fileExplorer = (props: FileExplorerProps) => {
             className="bi-muted"
             key={index}
             defaultCollapseIcon={<ExpandMoreIcon />}
-            onNodeToggle={(p, nodeIds: string[]) => transformNode(_.sortBy(nodeIds, nodeId => nodeId.split(',').length), index)}
             defaultExpanded={[]}
             defaultExpandIcon={<ChevronRightIcon />}
             disableSelection={true}
             expanded={expanded}
           >
-            {renderTree(sub, [sub.name])}
+            {renderTree(sub, [sub.name], sub, index)}
           </TreeView>
         )
       })}

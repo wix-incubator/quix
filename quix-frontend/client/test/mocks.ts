@@ -167,6 +167,16 @@ ORDER BY 1
                   name: "table_with_a_very_looooooooooooooooong_name",
                   type: "table",
                   children: []
+                },
+                {
+                  name: "t1",
+                  type: "table",
+                  children: []
+                },
+                {
+                  name: "t2",
+                  type: "table",
+                  children: []
                 }
               ]
             }
@@ -176,6 +186,15 @@ ORDER BY 1
           name: "catalog2",
           type: "catalog",
           children: []
+        },
+        {
+          name: "catalog3",
+          type: "catalog",
+          children: [{
+            name: "schema",
+            type: "schema",
+            children: []
+          }]
         }
       ];
     }

@@ -74,12 +74,22 @@ export default (app: App, store: Store) => () => ({
               .then(({children: columns}) => convert(columns, {hideRoot: false}, [...path]));
           },
           async onLazyFolderFetchNew(n: RenderTree, path: string[]): Promise<RenderTree[]> {
-            const response: any = await Resources.dbColumns(
-              scope.vm.type,
-              path[0], // catalog
-              path[1], // schema
-              path[2], // table
-            );
+            let response: any;
+            if (scope.vm.hideRoot) {
+              response = await Resources.dbColumns(
+                scope.vm.type,
+                DB.RootName, // catalog
+                path[0], // schema
+                path[1], // table
+                );
+            } else {
+              response = await Resources.dbColumns(
+                scope.vm.type,
+                path[0], // catalog
+                path[1], // schema
+                path[2], // table
+                );
+            }
             return response.children.map(child => {return {...child, textIcon: child.dataType}});
           },
           transformNode(node: RenderTree): RenderTree {
@@ -105,7 +115,6 @@ export default (app: App, store: Store) => () => ({
                 more: child.type === 'table'
               }
             });
-            newNode.icon = 'view_module';
             return newNode;
           },
           onSelectTableRows(table: IFile) {
@@ -171,6 +180,7 @@ export default (app: App, store: Store) => () => ({
         if (dbOriginal) {
           scope.vm.hideRoot = dbOriginal.length === 1 && dbOriginal[0] && dbOriginal[0].name === DB.RootName;
           newDb = dbOriginal && convert(dbOriginal, {hideRoot: scope.vm.hideRoot});
+          dbOriginal = scope.vm.hideRoot ? dbOriginal[0].children : dbOriginal;
         }
 
         scope.vm.state
