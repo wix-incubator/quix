@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import {Request} from 'express';
 import {LoginService} from './login.service';
-import {AuthOptions, AuthTypes} from './types';
+import {AuthOptions, AuthTypes, IExternalUser} from './types';
 export const User = createParamDecorator((data, ctx: ExecutionContext) => {
   return ctx.switchToHttp().getRequest().user;
 });
@@ -38,5 +38,10 @@ export class AuthGuard implements CanActivate {
       request.user = user;
       return !!user;
     });
+  }
+}
+declare module 'express' {
+  interface Request {
+    user?: IExternalUser;
   }
 }
