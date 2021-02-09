@@ -2,7 +2,7 @@ import {Controller, Get, UseGuards, UseInterceptors} from '@nestjs/common';
 import {IUser} from '@wix/quix-shared';
 import {User} from '../../../modules/auth';
 import {FavoritesService} from './favorites.service';
-import {AuthGuard} from '@nestjs/passport';
+import {AuthGuard} from '../../auth';
 import {DemoModeInterceptor} from '../../../common/demo-mode-interceptor';
 
 @Controller('/api/favorites')
@@ -11,7 +11,7 @@ export class FavoritesController {
   constructor(private favoritesListService: FavoritesService) {}
 
   @Get()
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard)
   async getUserFavorites(@User() user: IUser) {
     return this.favoritesListService.getFavoritesForUser(user.email);
   }

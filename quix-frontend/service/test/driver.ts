@@ -1,7 +1,7 @@
 /* tslint:disable:variable-name */
 import {INestApplication} from '@nestjs/common';
 import request from 'supertest';
-import {IGoogleUser} from '../src/modules/auth';
+import {IExternalUser} from '../src/modules/auth';
 import {testingDefaults} from '../src/config/env/static-settings';
 import {INotebook, INote, IFolder, IFile, IUser} from '@wix/quix-shared';
 import WebSocket from 'ws';
@@ -18,7 +18,7 @@ interface GetFunctionTypeHelper {
   (...url: string[]): Promise<any>;
 }
 
-const createUserCookie = (user: IGoogleUser) =>
+const createUserCookie = (user: IExternalUser) =>
   Buffer.from(JSON.stringify(user)).toString('base64');
 
 const wsMessageLog: WeakMap<WebSocket, string[]> = new WeakMap();
@@ -26,7 +26,7 @@ const wsMessageLog: WeakMap<WebSocket, string[]> = new WeakMap();
 class HttpHelper {
   constructor(
     protected _supertest: request.SuperTest<request.Test>,
-    protected user?: IGoogleUser,
+    protected user?: IExternalUser,
   ) {}
 
   public getToken() {
@@ -106,13 +106,13 @@ class HttpHelper {
 }
 
 export class E2EDriver extends HttpHelper {
-  private users: Map<string, IGoogleUser> = new Map();
+  private users: Map<string, IExternalUser> = new Map();
 
   constructor(private app: INestApplication) {
     super(request(app.getHttpServer()));
   }
 
-  addUser(nickname: string, up: IGoogleUser) {
+  addUser(nickname: string, up: IExternalUser) {
     this.users.set(nickname, up);
     return this;
   }

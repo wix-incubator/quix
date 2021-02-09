@@ -7,9 +7,9 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common';
-import {AuthGuard} from '@nestjs/passport';
+import {AuthGuard} from '../auth';
 import {AnyAction} from '@wix/quix-shared/entities/common/common-types';
-import {IGoogleUser, User} from '../../modules/auth';
+import {IExternalUser, User} from '../../modules/auth';
 import {EventsService} from '../../modules/event-sourcing/events.service';
 import {IAction} from '../../modules/event-sourcing/infrastructure/types';
 import {BaseActionValidation} from '../event-sourcing/base-action-validation';
@@ -23,12 +23,12 @@ export class EventsController {
   ) {}
 
   @Post()
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard)
   @UsePipes(BaseActionValidation)
   @HttpCode(200)
   async pushEvents(
     @Body() userAction: AnyAction | AnyAction[],
-    @User() user: IGoogleUser,
+    @User() user: IExternalUser,
     @Query('sessionId') sessionId: string,
   ) {
     if (Array.isArray(userAction)) {

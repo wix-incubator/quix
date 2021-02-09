@@ -11,90 +11,117 @@ import {
   IExternalUser,
 } from './types';
 import {OAuth2Client} from 'google-auth-library';
+import {fakeAuth} from './common-auth';
 
-@Injectable()
-export class LoginService {
-  login: (
+export abstract class LoginService {
+  abstract login(
+    clientPayload: string,
+    req: Request,
+    res: Response,
+  ): Promise<IExternalUser | undefined>;
+
+  abstract verify(token: string): IExternalUser | undefined;
+}
+
+export class FakeLoginService extends LoginService {
+  constructor(
+    @Inject(AuthOptions) private readonly authOptions: FakeAuthOptions,
+  ) {
+    super();
+  }
+
+  verify(token: string) {
+    return fakeAuth(token);
+  }
+
+  login(
     authCode: string,
     req: Request,
     res: Response,
-  ) => Promise<IExternalUser | undefined>;
-  constructor(
-    @Inject(AuthOptions) authOptions: AuthOptions,
-    jwtService: JwtService,
-  ) {
-    switch (authOptions.type) {
-      case AuthTypes.CUSTOM:
-        this.login = customLogin(authOptions);
-        break;
-      case AuthTypes.GOOGLE:
-        this.login = googleLogin(authOptions, jwtService);
-        break;
-      case AuthTypes.FAKE:
-        this.login = fakeLogin(authOptions);
-    }
+  ): Promise<IExternalUser | undefined> {
+    const up: IExternalUser = JSON.parse(authCode);
+
+    res.cookie(
+      this.authOptions.cookieName,
+      Buffer.from(JSON.stringify(up)).toString('base64'),
+      {
+        maxAge: 24 * 60 * 1000,
+      },
+    );
+    return Promise.resolve(up);
   }
 }
 
-const fakeLogin = (authOptions: FakeAuthOptions) => (
-  authCode: string,
-  req: Request,
-  res: Response,
-) => {
-  const up: IExternalUser = JSON.parse(authCode);
-
-  res.cookie(
-    authOptions.cookieName,
-    Buffer.from(JSON.stringify(up)).toString('base64'),
-    {
-      maxAge: 24 * 60 * 1000,
-    },
-  );
-  return Promise.resolve(up);
-};
-
-const customLogin = (authOptions: CustomAuthOptions) => (
-  authCode: string,
-  req: Request,
-  res: Response,
-) => {
-  return authOptions.auth.login(authCode, req, res);
-};
-
-const googleLogin = (
-  authOptions: GoogleAuthOptions,
-  jwtService: JwtService,
-) => async (authCode: string, req: Request, res: Response) => {
-  const clientId = authOptions.googleClientId;
-  const clientSecret = authOptions.googleAuthSecret;
-
-  const authClient = new OAuth2Client({
-    clientId,
-    clientSecret,
-    redirectUri: 'postmessage',
-  });
-  const r = await authClient.getToken(authCode);
-  authClient.setCredentials(r.tokens);
-
-  const verify = await authClient.verifyIdToken({
-    idToken: r.tokens.id_token || '',
-    audience: clientId,
-  });
-
-  const payload = (verify && verify.getPayload()) || null;
-
-  if (payload && payload.email && payload.sub) {
-    const up: IExternalUser = {
-      avatar: payload.picture,
-      name: payload.name,
-      email: payload.email,
-      id: payload.sub,
-    };
-    const jwtToken = await jwtService.signAsync(up);
-
-    res.cookie(authOptions.cookieName, jwtToken, {
-      maxAge: authOptions.cookieTTL,
-    });
-    return up;
+export class CustomLoginService extends LoginService {
+  constructor(
+    @Inject(AuthOptions) private readonly authOptions: CustomAuthOptions,
+  ) {
+    super();
   }
-};
+
+  verify(token: string) {
+    return this.authOptions.auth.verify(token);
+  }
+
+  login(
+    authCode: string,
+    req: Request,
+    res: Response,
+  ): Promise<IExternalUser | undefined> {
+    return this.authOptions.auth.login(authCode, req, res);
+  }
+}
+
+export class GoogleLoginService extends LoginService {
+  constructor(
+    @Inject(AuthOptions) private readonly authOptions: GoogleAuthOptions,
+    private jwtService: JwtService,
+  ) {
+    super();
+  }
+
+  verify(token: string) {
+    return this.jwtService.verify(token);
+  }
+
+  async login(
+    authCode: string,
+    req: Request,
+    res: Response,
+  ): Promise<IExternalUser | undefined> {
+    {
+      const clientId = this.authOptions.googleClientId;
+      const clientSecret = this.authOptions.googleAuthSecret;
+
+      const authClient = new OAuth2Client({
+        clientId,
+        clientSecret,
+        redirectUri: 'postmessage',
+      });
+      const r = await authClient.getToken(authCode);
+      authClient.setCredentials(r.tokens);
+
+      const verify = await authClient.verifyIdToken({
+        idToken: r.tokens.id_token || '',
+        audience: clientId,
+      });
+
+      const payload = (verify && verify.getPayload()) || null;
+
+      if (payload && payload.email && payload.sub) {
+        const up: IExternalUser = {
+          avatar: payload.picture,
+          name: payload.name,
+          email: payload.email,
+          id: payload.sub,
+        };
+        const jwtToken = await this.jwtService.signAsync(up);
+
+        res.cookie(this.authOptions.cookieName, jwtToken, {
+          maxAge: this.authOptions.cookieTTL,
+        });
+        return up;
+      }
+    }
+  }
+}

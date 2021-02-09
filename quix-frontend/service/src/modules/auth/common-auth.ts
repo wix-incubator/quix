@@ -1,6 +1,4 @@
 import {IExternalUser} from './types';
-import {getEnv} from '../../config/env';
-import {verify} from 'jsonwebtoken';
 import {isJestTest} from '../../config/utils';
 
 const defaultUser: IExternalUser = {
@@ -23,11 +21,3 @@ export const fakeAuth = (token: string): IExternalUser => {
     return defaultUser;
   }
 };
-
-const jwtAuth = (token: string): IExternalUser => {
-  const key = getEnv().AuthEncKey;
-  const user = verify(token, key);
-  return user as IExternalUser;
-};
-
-export const auth = getEnv().AuthType === 'fake' ? fakeAuth : jwtAuth;

@@ -1,13 +1,15 @@
-import {DynamicModule, Global, Module} from '@nestjs/common';
-import {JwtModule} from '@nestjs/jwt';
-import {PassportModule} from '@nestjs/passport';
+import {DynamicModule, Module} from '@nestjs/common';
+import {JwtModule, JwtService} from '@nestjs/jwt';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {ConfigModule} from '../../config/config.module';
 import {DbUser} from '../../entities';
 import {EventSourcingModule} from '../../modules/event-sourcing/event-sourcing.module';
 import {AuthController} from './auth.controller';
-import {LoginService} from './login.service';
-import {JwtStrategy, MockStrategy} from './passport-strategies';
+import {
+  CustomLoginService,
+  FakeLoginService,
+  GoogleLoginService,
+  LoginService,
+} from './login.service';
 import {AuthAsyncOptions, AuthOptions, AuthTypes} from './types';
 import {UsersService} from './users.service';
 
@@ -50,22 +52,6 @@ export class AuthModuleConfiguration {
     TypeOrmModule.forFeature([DbUser]),
     EventSourcingModule,
     AuthModuleConfiguration,
-
-    PassportModule.registerAsync({
-      inject: [AuthOptions],
-      imports: [AuthModuleConfiguration],
-      useFactory: (authOptions: AuthOptions) => {
-        switch (authOptions.type) {
-          case AuthTypes.GOOGLE:
-            return {defaultStrategy: 'jwt'};
-          case AuthTypes.CUSTOM:
-            return {defaultStrategy: 'custom'};
-          case AuthTypes.FAKE:
-          default:
-            return {defaultStrategy: 'fake'};
-        }
-      },
-    }),
     JwtModule.registerAsync({
       imports: [AuthModuleConfiguration],
       inject: [AuthOptions],
@@ -89,7 +75,30 @@ export class AuthModuleConfiguration {
     }),
   ],
   controllers: [AuthController],
-  providers: [LoginService, UsersService, MockStrategy, JwtStrategy],
-  exports: [UsersService, PassportModule],
+  providers: [UsersService],
+  exports: [UsersService],
 })
-export class AuthModule {}
+export class AuthModule {
+  static create(): DynamicModule {
+    return {
+      module: AuthModule,
+      providers: [
+        {
+          provide: LoginService,
+          inject: [AuthOptions, JwtService],
+          useFactory: (authOptions: AuthOptions, jwtService: JwtService) => {
+            switch (authOptions.type) {
+              case AuthTypes.CUSTOM:
+                return new CustomLoginService(authOptions);
+              case AuthTypes.GOOGLE:
+                return new GoogleLoginService(authOptions, jwtService);
+              case AuthTypes.FAKE:
+                return new FakeLoginService(authOptions);
+            }
+          },
+        },
+      ],
+      exports: [LoginService],
+    };
+  }
+}

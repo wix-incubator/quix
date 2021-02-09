@@ -7,7 +7,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import {AuthGuard} from '@nestjs/passport';
+import {AuthGuard} from './user-decorator';
 import {ConfigService, EnvSettings} from '../../config';
 import {Response, Request} from 'express';
 import {LoginService} from './login.service';
@@ -18,17 +18,13 @@ import {UsersService} from './users.service';
 @Controller('/api/')
 export class AuthController {
   private readonly logger = new Logger(AuthController.name);
-  private readonly envSettings: EnvSettings;
   constructor(
     private readonly authService: LoginService,
-    private readonly configService: ConfigService,
     private readonly userService: UsersService,
-  ) {
-    this.envSettings = this.configService.getEnvSettings();
-  }
+  ) {}
 
   @Get('user')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard)
   async getUser(@User() user: IExternalUser) {
     await this.userService.doUserLogin(user);
     return user;

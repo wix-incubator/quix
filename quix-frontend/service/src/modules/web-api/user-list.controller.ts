@@ -1,11 +1,11 @@
 import {Controller, Get, Param, UseGuards} from '@nestjs/common';
-import {AuthGuard} from '@nestjs/passport';
-import {UsersService, User, IGoogleUser} from '../../modules/auth';
+import {AuthGuard} from '../auth';
+import {UsersService, User, IExternalUser} from '../../modules/auth';
 import {ConfigService, EnvSettings} from '../../config';
 import {sanitizeUserName, sanitizeUserEmail} from '../../common/user-sanitizer';
 
 @Controller('/api/users')
-@UseGuards(AuthGuard())
+@UseGuards(AuthGuard)
 export class UserListController {
   private env: EnvSettings;
   constructor(
@@ -16,7 +16,7 @@ export class UserListController {
   }
 
   @Get()
-  async getUsers(@User() user: IGoogleUser) {
+  async getUsers(@User() user: IExternalUser) {
     if (this.env.DemoMode) {
       return (await this.usersService.getListOfUsers()).map(u => {
         return u.id === user.email
