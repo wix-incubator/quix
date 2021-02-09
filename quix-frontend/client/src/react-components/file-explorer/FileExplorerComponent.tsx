@@ -18,8 +18,9 @@ const useStyles = makeStyles({
       color: "white",
     },
   },
-  group: {
-    marginLeft: '12px',
+  label: {
+    overflow: 'auto',
+    paddingRight: '5px',
   },
   iconSm: {
     height: '14px',
@@ -113,12 +114,12 @@ const fileExplorer = (props: FileExplorerProps) => {
 
     return (
     <TreeItem
-      classes={{group: classes.group}}
+      classes={{label: classes.label, content: "bi-hover"}}
       onIconClick={() => handleExpanded(uniquePath, sub, subIndex)}
       key={uniquePath}
       nodeId={uniquePath}
       label={
-        <div className={"bi-align bi-hover " + classes.root}>
+        <div className={"bi-align " + classes.root}>
           <div
             className={"bi-align bi-s-h bi-text--ellipsis bi-grow bi-text " + classes.text}
             onClick={() => handleExpanded(uniquePath, sub, subIndex)}
@@ -138,7 +139,7 @@ const fileExplorer = (props: FileExplorerProps) => {
               </div>
               <Dropdown
                 open={Boolean(anchorEl)}
-                handleClick={handleClose}
+                handleClose={handleClose}
                 referenceElement={anchorEl}
               >
                 <div
@@ -153,7 +154,21 @@ const fileExplorer = (props: FileExplorerProps) => {
         </div>
       }
     >
-      {Array.isArray(node.children) ? node.children.map((childNode, index) => renderTree(childNode, [...path, childNode.name || '' + index], sub, subIndex)) : null}
+      {
+        Array.isArray(node.children) ?
+        _.orderBy(node.children, [child => child.name?.toLowerCase()], ['asc']).map(
+            (childNode, index) => 
+              renderTree(
+                childNode,
+                [
+                  ...path,
+                  childNode.name || '' + index
+                ],
+                sub,
+                subIndex
+              )
+            )
+          : null}
     </TreeItem>
   )};
 

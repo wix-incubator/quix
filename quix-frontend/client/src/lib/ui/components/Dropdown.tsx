@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import Popper from "@material-ui/core/Popper";
 import { Grow, Paper, ClickAwayListener, MenuList, MenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -14,13 +14,13 @@ const useStyles = makeStyles({
 
 interface IDropdownProps {
   open: boolean,
-  handleClick: Function,
+  handleClose: Function,
   referenceElement: HTMLElement,
 }
 
 const Dropdown: React.FunctionComponent<IDropdownProps> = ({
   open,
-  handleClick,
+  handleClose,
   referenceElement,
   children,
 }) => {
@@ -29,6 +29,20 @@ const Dropdown: React.FunctionComponent<IDropdownProps> = ({
   }
 
   const classes = useStyles();
+
+  const escFunction = (e) => {
+    if (e.keyCode === 27) {
+      handleClose();
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener("keydown", escFunction, false);
+
+    return () => {
+      document.removeEventListener("keydown", escFunction, false);
+    };
+  }, []);
 
   if (!Array.isArray(children)) {
     children = [children];
@@ -46,7 +60,7 @@ const Dropdown: React.FunctionComponent<IDropdownProps> = ({
                   }}
                 >
                   <Paper>
-                    <ClickAwayListener onClickAway={() => handleClick()}>
+                    <ClickAwayListener onClickAway={() => handleClose()}>
                       <MenuList>
                         {(children as React.ReactNode[]).map((child, index) => (
                           <MenuItem
