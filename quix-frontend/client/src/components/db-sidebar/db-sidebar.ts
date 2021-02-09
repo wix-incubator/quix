@@ -184,7 +184,7 @@ export default (app: App, store: Store) => () => ({
         }
 
         scope.vm.state
-          .force('Result', !!dbOriginal, {db: newDb, dbOriginal: dbOriginal})
+          .force('Result', !!dbOriginal, {db: newDb, dbOriginal})
           .set('Content', () => !!newDb.length)
           .set('Visible', !isInitial)
       }, scope);

@@ -6,7 +6,6 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import {TreeView, TreeItem} from '@material-ui/lab';
 import MaterialIcon from 'material-icons-react';
-import { cloneDeep } from 'lodash';
 import Dropdown from '../../lib/ui/components/Dropdown';
 
 const useStyles = makeStyles({
@@ -29,9 +28,9 @@ const useStyles = makeStyles({
 
 export interface FileExplorerProps {
   tree: RenderTree[];
-  transformNode: (node: RenderTree) => RenderTree;
-  getLazyChildren?: (node: RenderTree, path: string[]) => Promise<RenderTree[]>;
-  onClickMore?: (node: RenderTree, path: string[]) => void;
+  transformNode(node: RenderTree): RenderTree;
+  getLazyChildren?(node: RenderTree, path: string[]): Promise<RenderTree[]>;
+  onClickMore?(node: RenderTree, path: string[]): void;
 }
 
 export interface RenderTree {
@@ -65,7 +64,7 @@ const fileExplorer = (props: FileExplorerProps) => {
 
   useEffect(() => {
     setInitial(false);
-    const updatedTree = innerTree.map(root => props.transformNode(cloneDeep(root)));
+    const updatedTree = innerTree.map(root => props.transformNode(_.cloneDeep(root)));
     setInnerTree(updatedTree);
   }, []);
 
@@ -81,7 +80,7 @@ const fileExplorer = (props: FileExplorerProps) => {
   }
 
   const transformNode = async (path: string[], sub: RenderTree, subIndex: number) => {
-    const currentTree = cloneDeep(sub);
+    const currentTree = _.cloneDeep(sub);
     let iteratorNode = currentTree;
     for (let i = 1; i < path.length; i++) {
       iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.name === path[i]);
@@ -101,7 +100,7 @@ const fileExplorer = (props: FileExplorerProps) => {
       );
     }
 
-    const duplicateTree = cloneDeep(innerTree);
+    const duplicateTree = _.cloneDeep(innerTree);
     duplicateTree[subIndex] = currentTree;
     setInnerTree(duplicateTree);
   };
@@ -154,7 +153,7 @@ const fileExplorer = (props: FileExplorerProps) => {
         </div>
       }
     >
-      {Array.isArray(node.children) ? node.children.map((node, index) => renderTree(node, [...path, node.name || '' + index], sub, subIndex)) : null}
+      {Array.isArray(node.children) ? node.children.map((childNode, index) => renderTree(childNode, [...path, childNode.name || '' + index], sub, subIndex)) : null}
     </TreeItem>
   )};
 
