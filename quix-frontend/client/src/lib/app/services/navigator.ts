@@ -107,7 +107,6 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
   }
 
   getUrl(state?: string, params?: Object): string {
-    console.log(inject('$state').current.name)
     state = state || inject('$state').current.name;
 
     return `${document.location.protocol}//${document.location.host}${document.location.pathname}${inject('$state').href(state, params, {relative: true, inherit: false})}`;
