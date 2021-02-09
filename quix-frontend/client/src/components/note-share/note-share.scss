@@ -8,6 +8,9 @@ quix-note-share {
     .bi-panel-content {
       font-family: Monaco, 'Courier New';
       font-size: 12px;
+      border-top: 1px solid darken($light-bg, 3);
+      border-left: 1px solid darken($light-bg, 3);
+      box-shadow: inset 1px 1px 5px darken($light-bg, 5);
     }
   }
 }

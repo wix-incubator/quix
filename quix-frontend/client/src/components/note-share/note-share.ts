@@ -19,9 +19,11 @@ export default (app: App, store: Store) => () => ({
         .filter(x => !!x)
         .join('');
 
-      scope.embedUrl = [app.getNavigator().getUrl('auth.base.embed.notebook', {id: scope.notebook.id, note: scope.note.id}), scope.params]
+      const embedUrl = [app.getNavigator().getUrl('auth.base.embed.notebook', {id: scope.notebook.id, note: scope.note.id}), scope.params]
         .filter(x => !!x)
         .join('');
+
+      scope.embedHtml = `<iframe src="${embedUrl}" frameborder="0"></iframe>`;  
     }
   }
 });

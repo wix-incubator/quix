@@ -25,7 +25,7 @@ export default function directive() {
 
               document.execCommand('Copy');
 
-              showToast({text: 'Copied to clipboard', hideDelay: 3000});
+              showToast({text: 'Copied to clipboard', hideDelay: 3000, type: 'success'});
             }
           });
       }
