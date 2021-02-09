@@ -115,6 +115,7 @@ export const onNoteShare = (scope: IScope, store: Store, app: App) => (note: INo
   dialog({
     title: 'Share note',
     html: '<quix-note-share note="::note" notebook="::notebook", params="::params"></div>',
+    icon: 'share',
   }, scope, {
     note,
     notebook,
