@@ -1,6 +1,5 @@
 import {ModuleMetadata, Type} from '@nestjs/common';
 import {Response, Request} from 'express';
-import {PassportStrategy} from '@nestjs/passport';
 import {JwtModuleOptions} from '@nestjs/jwt';
 
 /**
@@ -21,7 +20,8 @@ export interface CustomAuth {
     req: Request,
     res: Response,
   ): Promise<IExternalUser | undefined>;
-  authenticate(req: Request): IExternalUser | Promise<IExternalUser>;
+  verify(token: string): IExternalUser | undefined; //currently websockets code prevent us from using promise here
+  getTokenFromRequest(request: Request): string;
 }
 
 export enum AuthTypes {

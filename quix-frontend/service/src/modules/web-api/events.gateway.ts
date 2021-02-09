@@ -1,32 +1,59 @@
 import {
+  OnGatewayDisconnect,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
   WsResponse,
 } from '@nestjs/websockets';
-import {Observable, EMPTY} from 'rxjs';
+import {Observable, EMPTY, from} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {Server} from 'ws';
-import {IGoogleUser} from '../../modules/auth';
+import WebSocket, {Server} from 'ws';
 import {EventsService} from '../../modules/event-sourcing/events.service';
 import {IAction} from '../../modules/event-sourcing/infrastructure/types';
 import {AnyAction} from '@wix/quix-shared/entities/common/common-types';
 import {cloneDeep} from 'lodash';
-import {auth} from '../../modules/auth/common-auth';
+import {LoginService} from '../auth/login.service';
+
+interface ExtendedWebSocket extends WebSocket {
+  userId?: string;
+  sessionId?: string;
+}
 
 @WebSocketGateway({path: '/subscription'})
-export class EventsGateway {
+export class EventsGateway implements OnGatewayDisconnect {
   @WebSocketServer()
   server!: Server;
 
-  constructor(private eventsService: EventsService) {}
+  constructor(
+    private eventsService: EventsService,
+    private loginService: LoginService,
+  ) {}
+
+  handleDisconnect(client: ExtendedWebSocket) {
+    const {userId, sessionId} = client;
+    if (userId && sessionId) {
+      this.eventsService.closeEventStream(sessionId, userId);
+    }
+  }
 
   @SubscribeMessage('subscribe')
-  onSubscribe(client: any, data: any): Observable<WsResponse<any>> {
+  onSubscribe(
+    client: ExtendedWebSocket,
+    data: any,
+  ): Observable<WsResponse<any>> {
     const {token, sessionId} = data;
 
     try {
-      const user: IGoogleUser = auth(token);
+      const user = this.loginService.verify(token);
+
+      if (!user) {
+        return from([{event: 'error', data: 'invalid user'}]);
+      }
+
+      /* mutating ws client feels weird, but apparently that's the way to go */
+      /* https://github.com/websockets/ws/issues/859 */
+      client.userId = user.id;
+      client.sessionId = sessionId;
 
       return this.eventsService.getEventStream(sessionId, user.id).pipe(
         map((action: IAction) => ({

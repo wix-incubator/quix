@@ -10,7 +10,7 @@ import {
 import {IUser} from '@wix/quix-shared';
 import {User} from '../../../modules/auth';
 import {NotebookService} from './notebooks.service';
-import {AuthGuard} from '@nestjs/passport';
+import {AuthGuard} from '../../auth';
 import {DemoModeInterceptor} from '../../../common/demo-mode-interceptor';
 
 @Controller('/api/notebook')
@@ -19,7 +19,7 @@ export class NotebookController {
   constructor(private notebookService: NotebookService) {}
 
   @Get(':id')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard)
   async getNotebook(@User() user: IUser, @Param('id') id: string) {
     const notebook = await this.notebookService.getNotebook(user.email, id);
 

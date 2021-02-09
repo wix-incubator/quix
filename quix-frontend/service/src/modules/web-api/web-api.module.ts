@@ -39,7 +39,7 @@ import {EventsGateway} from './events.gateway';
       DbUser,
       DbFavorites,
     ]),
-    AuthModule,
+    AuthModule.create(),
     EventSourcingModule,
     SearchModule,
   ],
