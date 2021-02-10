@@ -21,9 +21,7 @@ interface MakePaginationProps {
 const makePagination = <P extends InjectedPaginationProps>(
     Component: React.ComponentType<P>,
   ) =>  {
-    const MakePagination: React.FC<
-    Subtract<P, InjectedPaginationProps> & MakePaginationProps>
-    = (props: MakePaginationProps) => {
+    const MakePagination = (props: Subtract<P, InjectedPaginationProps> & MakePaginationProps) => {
 
       const { initialData, columns, loadMore, paginationSize, tableSize, ...restComponentProps } = props;
 
@@ -60,7 +58,7 @@ const makePagination = <P extends InjectedPaginationProps>(
         getChunk,
         ...restComponentProps,
       };
-      return <Component {...componentProps as P} />
+      return <Component {...componentProps as any} />
     }
     return MakePagination;
     }
