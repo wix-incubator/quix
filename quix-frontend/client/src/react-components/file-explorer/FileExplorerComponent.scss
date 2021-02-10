@@ -1,9 +1,12 @@
 @import '../../lib/ui/assets/css/def/state.def';
+@import '../../lib/ui/assets/css/def/colors.def';
 @import '../../lib/ui/assets/css/text.scss';
 
 quix-file-explorer {
-  .bi-empty-state--loading:before {
-    width: 14px;
-    height: 14px;
+  .bi-spinner--xs {
+    &:after {
+      border-color: $dark-muted-color;
+      border-right-color: transparent;
+    }
   }
 }
