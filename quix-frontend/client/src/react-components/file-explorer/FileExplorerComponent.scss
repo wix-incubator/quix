@@ -1,6 +1,9 @@
 @import '../../lib/ui/assets/css/def/state.def';
 @import '../../lib/ui/assets/css/text.scss';
 
-.db-explorer-component {
-  
+quix-file-explorer {
+  .bi-empty-state--loading:before {
+    width: 14px;
+    height: 14px;
+  }
 }

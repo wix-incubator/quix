@@ -15,7 +15,7 @@ const useStyles = makeStyles({
   text: {
     height: '35px',
     '&:hover': {
-      color: "white",
+      color: 'white',
     },
   },
   label: {
@@ -50,6 +50,7 @@ const fileExplorer = (props: FileExplorerProps) => {
   const classes = useStyles();
 
   const [innerTree, setInnerTree] = useState<RenderTree[]>(props.tree);
+  const [subTree, setSubTree] = useState<{sub: RenderTree; index: number}>();
   const [initial, setInitial] = useState(true);
   const [expanded, setExpanded] = useState([]);
 
@@ -80,6 +81,15 @@ const fileExplorer = (props: FileExplorerProps) => {
     }
   }
 
+  useEffect(() => {
+    if (!subTree) {
+      return;
+    }
+    const duplicatedTree = _.cloneDeep(innerTree);
+    duplicatedTree[subTree.index] = _.mergeWith({}, duplicatedTree[subTree.index], subTree.sub);
+    setInnerTree(duplicatedTree)
+  }, [subTree]);
+
   const transformNode = async (path: string[], sub: RenderTree, subIndex: number) => {
     const currentTree = _.cloneDeep(sub);
     let iteratorNode = currentTree;
@@ -101,32 +111,42 @@ const fileExplorer = (props: FileExplorerProps) => {
       );
     }
 
-    const duplicateTree = _.cloneDeep(innerTree);
-    duplicateTree[subIndex] = currentTree;
-    setInnerTree(duplicateTree);
+    setSubTree({sub: currentTree, index: subIndex});
   };
 
   const renderTree = (node: RenderTree, path: string[], sub: RenderTree, subIndex: number) => {
     const uniquePath = path.join(',');
     if (!node.name) {
-      return (<div key={uniquePath}>Loading...</div>);
+      return;
     }
+
+    const isLoading = 
+      node.children && node.children[0] ?
+          !node?.children[0].name && expanded.includes(uniquePath)
+          : false;
 
     return (
     <TreeItem
-      classes={{label: classes.label, content: "bi-hover"}}
+      classes={{label: classes.label, content: 'bi-hover'}}
       onIconClick={() => handleExpanded(uniquePath, sub, subIndex)}
+      icon={isLoading ?
+        <div className="bi-c-h bi-align bi-center bi-grow">
+          <div className="bi-empty-state--loading bi-fade-in">
+          </div>
+        </div>
+      : null
+      }
       key={uniquePath}
       nodeId={uniquePath}
       label={
-        <div className={"bi-align " + classes.root}>
+        <div className={'bi-align ' + classes.root}>
           <div
-            className={"bi-align bi-s-h bi-text--ellipsis bi-grow bi-text " + classes.text}
+            className={'bi-align bi-s-h bi-text--ellipsis bi-grow bi-text ' + classes.text}
             onClick={() => handleExpanded(uniquePath, sub, subIndex)}
           >
             {node.textIcon ?
               <div className="bi-text--sm ng-binding ng-scope">{node.textIcon}</div>
-              : <MaterialIcon className={"bi-icon--xs"} icon={node.icon || 'hourglass_empty'}/>
+              : <MaterialIcon className="bi-icon--xs" icon={node.icon || 'hourglass_empty'}/>
             }
             <span className="bi-text--ellipsis">
               {node.name}
@@ -173,7 +193,7 @@ const fileExplorer = (props: FileExplorerProps) => {
   )};
 
   if (initial) {
-    return (<div>loading</div>);
+    return (<div>Loading...</div>);
   }
 
   return (
