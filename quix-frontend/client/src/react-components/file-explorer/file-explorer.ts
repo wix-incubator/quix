@@ -4,5 +4,5 @@ import FileExplorer from './FileExplorerComponent';
 export default (): IReactComponentConfig => ({
   name: 'File Explorer',
   template: FileExplorer,
-  scope: ['tree', 'lazyFetch', 'transformNode', 'getLazyChildren', 'onClickMore'],
+  scope: ['tree', 'transformNode', 'fetchChildren', 'onClickMore'],
 });

@@ -9,7 +9,7 @@ import {IScope} from './db-sidebar-types';
 import {cache} from '../../store';
 import {convert} from '../../services/db';
 import * as Resources from '../../services/resources';
-import {RenderTree} from '../../react-components/file-explorer/FileExplorerComponent';
+import {Tree} from '../../react-components/file-explorer/FileExplorerComponent';
 import {openTempQuery, StateManager} from '../../services';
 import {pluginManager} from '../../plugins';
 import {debounceAsync} from '../../utils';
@@ -73,7 +73,7 @@ export default (app: App, store: Store) => () => ({
             return Resources.dbColumns(scope.vm.type, catalog, schema, table)
               .then(({children: columns}) => convert(columns, {hideRoot: false}, [...path]));
           },
-          async onLazyFolderFetchNew(n: RenderTree, path: string[]): Promise<RenderTree[]> {
+          async onLazyFolderFetchNew(n: Tree, path: string[]): Promise<Tree[]> {
             let response: any;
             if (scope.vm.hideRoot) {
               response = await Resources.dbColumns(
@@ -92,7 +92,7 @@ export default (app: App, store: Store) => () => ({
             }
             return response.children.map(child => {return {...child, textIcon: child.dataType}});
           },
-          transformNode(node: RenderTree): RenderTree {
+          transformNode(node: Tree): Tree {
             const newNode = node;
 
             const chooseIcon = (type) => {
@@ -123,7 +123,7 @@ export default (app: App, store: Store) => () => ({
 
             openTempQuery(scope, scope.vm.type, query, true);
           },
-          onSelectTableRowsNew(n: RenderTree, path: string[]) {
+          onSelectTableRowsNew(n: Tree, path: string[]) {
             const query = pluginManager.module('db').plugin(scope.vm.type)
               .getSampleQuery(
                 {
