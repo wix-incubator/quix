@@ -6,7 +6,8 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import {TreeView, TreeItem} from '@material-ui/lab';
 import MaterialIcon from 'material-icons-react';
-import Dropdown from '../../lib/ui/components/Dropdown';
+import Dropdown from '../../lib/ui/components/dropdown/Dropdown';
+import SelectItem from '../../lib/ui/components/dropdown/MenuItem';
 
 const useStyles = makeStyles({
   mainView: {
@@ -177,11 +178,10 @@ const fileExplorer = (props: FileExplorerProps) => {
                 handleClose={handleClose}
                 referenceElement={anchorEl}
               >
-                <div
+                <SelectItem
+                  text="Select rows (limit 1000)"
                   onClick={() => props.onClickMore(node, path)}
-                >
-                  Select rows (limit 1000)
-                </div>
+                />
               </Dropdown>
             </>
             : null
