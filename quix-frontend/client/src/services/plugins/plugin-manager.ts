@@ -1,6 +1,7 @@
 import {App} from '../../lib/app';
 import {TModuleComponentType, ModuleEngineType} from '@wix/quix-shared';
 import {Plugin, TPluginMap, resolvePluginType} from './plugin-types';
+import { Store } from '../../lib/store';
 
 export class PluginManager<H> {
   private readonly pool: Plugin[] = [];
@@ -28,9 +29,9 @@ export class PluginManager<H> {
 
   module<T extends TModuleComponentType>(type: T) {
     return {
-      plugin: (id: string, engine?: ModuleEngineType, app?: App) => {
+      plugin: (id: string, engine?: ModuleEngineType, app?: App, store?: Store) => {
         if (engine) {
-          const plugin = this.pluginFactory[type](app, id, engine, this.hooks);
+          const plugin = this.pluginFactory[type](app, store, id, engine, this.hooks);
 
           if (plugin) {
             this.pool.push(plugin);

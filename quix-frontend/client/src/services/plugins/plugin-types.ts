@@ -56,11 +56,10 @@ export class NotePlugin extends Plugin {
     return [];
   }
 
-  renderNote(scope: any) {
+  renderRunner() {
     return `
       <bi-sql-runner
-        class="bi-c-h bi-grow"
-        ng-if="::vm.engine !== 'python'"
+        class="bi-c-h bi-grow bi-fade-in"
         ng-model="note.content"
         ng-change="events.onContentChange()"
         bsr-options="::{
