@@ -1,4 +1,4 @@
-import { inject } from "../../../core";
+import { inject } from '../../../core';
 
 export default () => {
   let timeout;
@@ -14,7 +14,7 @@ export default () => {
       const delay = parseInt(scope.biHtmlDelay, 10);
       const render = () => element.html(scope.biHtml({scope: scope.$parent}).html);
 
-      if (scope.biHtmlDelay) {
+      if (!isNaN(scope.biHtmlDelay)) {
         (timeout = timeout || inject('$timeout'))(render, delay);
       } else {
         render();

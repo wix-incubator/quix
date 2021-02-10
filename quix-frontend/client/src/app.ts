@@ -67,7 +67,7 @@ const appBuilder = create<ClientConfigHelper>(
       clientConfig
         .getModulesByComponent(ModuleComponentType.Db)
         .forEach(({id, engine}) => {
-          pluginManager.module(ModuleComponentType.Db).plugin(id, engine, app);
+          pluginManager.module(ModuleComponentType.Db).plugin(id, engine, app, store);
         });
 
       clientConfig
@@ -75,7 +75,7 @@ const appBuilder = create<ClientConfigHelper>(
         .forEach(({id, engine}) => {
           pluginManager
             .module(ModuleComponentType.Note)
-            .plugin(id, engine, app);
+            .plugin(id, engine, app, store);
         });
 
       pluginManager

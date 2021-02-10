@@ -33,6 +33,8 @@ export default (app: App, store: Store) => () => ({
   },
   link: {
     async pre(scope: IScope) {
+      const plugin = pluginManager.module('note').plugin(scope.note.type);
+    
       const conf = initNgScope(scope)
         .withOptions(
           'quixNoteOptions',
@@ -56,9 +58,8 @@ export default (app: App, store: Store) => () => ({
           runner: null,
           isFolded: false,
           isMaximized: false,
+          enabled: false,
           $init() {
-            const plugin = pluginManager.module('note').plugin(scope.note.type);
-
             this.showSyntaxErrors = plugin.getConfig().syntaxValidation;
             this.type = plugin.getRunnerType();
             this.engine = plugin.getEngine();
@@ -74,8 +75,13 @@ export default (app: App, store: Store) => () => ({
         }.csv`;
       };
 
+      scope.renderRunner = () => {
+        const html = inject('$compile')(plugin.renderRunner())(scope.$new(false));
+
+        return {html};
+      };
+
       scope.renderStats = () => {
-        const plugin = pluginManager.module('note').plugin(scope.note.type);
         const stats = scope.vm.runner.getCurrentQuery().getStats();
         const formattedStats = plugin.formatStats(stats);
 
