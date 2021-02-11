@@ -52,12 +52,12 @@ const Dropdown: React.FunctionComponent<IDropdownProps> = ({
           {icon}
         </div>
         <Popper open={open} anchorEl={anchorEl} transition placement={placement}>
-          {({ TransitionProps, placement }) => (
+          {({ TransitionProps, placement: placementProp }) => (
             <Grow
               {...TransitionProps}
               style={{
                 transformOrigin:
-                  placement === "bottom" ? "center top" : "center bottom"
+                  placementProp === "bottom" ? "center top" : "center bottom"
               }}
             >
               <Paper>

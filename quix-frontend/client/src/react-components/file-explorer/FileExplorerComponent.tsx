@@ -68,7 +68,7 @@ const recursiveTransformNode = (tree: Tree[], transformNode: Function) => {
   entrances.map(key => {
     const currentTree: Tree = tree[key];
     if (!currentTree.transformed) {
-      const shouldBeLazy = !!currentTree.children && !!!currentTree.children.length;;
+      const shouldBeLazy = !!currentTree.children && !currentTree.children.length;
       transformNode(currentTree);
       currentTree.children = currentTree.lazy && shouldBeLazy ? currentTree.children = [{} as any] : currentTree.children;
       currentTree.id = currentTree.id || uuid();
