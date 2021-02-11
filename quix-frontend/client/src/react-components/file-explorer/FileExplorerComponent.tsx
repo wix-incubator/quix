@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import {TreeView, TreeItem} from '@material-ui/lab';
+import uuid from 'uuid/v4';
 import MaterialIcon from 'material-icons-react';
 import Dropdown from '../../lib/ui/components/dropdown/Dropdown';
 import SelectItem from '../../lib/ui/components/dropdown/MenuItem';
@@ -50,11 +51,40 @@ export interface Tree {
   id: string;
   name: string;
   type: string;
+  transformed: boolean;
   lazy?: boolean;
   icon?: string;
   textIcon?: string;
   children?: Tree[];
   more?: boolean;
+}
+
+const recursiveTransformNode = (tree: Tree[], transformNode: Function) => {
+  const entrances = Object.keys(tree);
+  if (entrances.length === 0 || _.isEqual(tree, [{}])) {
+    return;
+  }
+
+  entrances.map(key => {
+    const currentTree: Tree = tree[key];
+    if (!currentTree.transformed) {
+      const shouldBeLazy = !!currentTree.children && !!!currentTree.children.length;;
+      transformNode(currentTree);
+      currentTree.children = currentTree.lazy && shouldBeLazy ? currentTree.children = [{} as any] : currentTree.children;
+      currentTree.id = currentTree.id || uuid();
+    }
+    currentTree.children && recursiveTransformNode(currentTree.children, transformNode);
+  });
+}
+
+const getAllNodeSubIds = (node: Tree, subIds: string[]) => {
+  if (!node.children) {
+    return;
+  }
+  node.children.map(child => {
+    subIds.push(child.id);
+    getAllNodeSubIds(child, subIds);
+  })
 }
 
 
@@ -63,24 +93,15 @@ const fileExplorer = (props: FileExplorerProps) => {
 
   const [innerTree, setInnerTree] = useState<Tree[]>(Array.isArray(props.tree) ? props.tree : [props.tree]);
   const [subTree, setSubTree] = useState<{sub: Tree; index: number}>();
-  const [initial, setInitial] = useState(true);
   const [expanded, setExpanded] = useState([]);
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
   useEffect(() => {
-    const updatedTree = innerTree.map(root => props.transformNode(_.cloneDeep(root)));
-    setInnerTree(updatedTree);
-    setInitial(false);
-  }, []);
+    const currentTree = _.cloneDeep(innerTree);
+    recursiveTransformNode(currentTree, props.transformNode);
+    if (!_.isEqual(innerTree, currentTree)) {
+      setInnerTree(currentTree);
+    }
+  }, [innerTree]);
 
   useEffect(() => {
     if (!subTree) {
@@ -91,13 +112,16 @@ const fileExplorer = (props: FileExplorerProps) => {
     setInnerTree(duplicatedTree)
   }, [subTree]);
 
-  const handleExpanded = (nodeId: string, sub: Tree, subIndex: number) => {
+  const handleExpanded = (nodeId: string, path: string[], sub: Tree, subIndex: number, node: Tree) => {
     if (!expanded.includes(nodeId)) {
       setExpanded([...expanded, nodeId]);
-      transformNode(nodeId.split(','), sub, subIndex);
+      transformNode(path, sub, subIndex);
     } else {
       const newArr = [];
-      expanded.forEach(element => element.includes(nodeId) ? null : newArr.push(element));
+      const subIds = [node.id];
+      getAllNodeSubIds(node, subIds);
+
+      expanded.forEach(element => subIds.includes(element) ? null : newArr.push(element));
       setExpanded(newArr);
     }
   }
@@ -106,45 +130,32 @@ const fileExplorer = (props: FileExplorerProps) => {
     const currentTree = _.cloneDeep(sub);
     let iteratorNode = currentTree;
     for (let i = 1; i < path.length; i++) {
-      iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.name === path[i]);
+      iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.id === path[i]);
     }
 
     if (_.isEqual(iteratorNode?.children, [{}])) {
       const fixedPath = [];
       path.forEach(part => fixedPath.push(part.split(',')[part.split(',').length - 1]));
-      iteratorNode.children = await props.fetchChildren(iteratorNode, fixedPath);
-    } else if (iteratorNode?.children) {
-      props.transformNode(iteratorNode);
-      iteratorNode.children.forEach(
-        child =>
-          child.lazy && child.children.length === 0 ? child.children = [{} as any]
-          : null
-      );
+      iteratorNode.children = await props.fetchChildren(sub, fixedPath);
     }
 
     setSubTree({sub: currentTree, index: subIndex});
   };
 
   const renderTree = (node: Tree, path: string[], sub: Tree, subIndex: number) => {
-    const uniquePath = path.join(',');
-    if (!node.name) {
+    if (!node.id) {
       return;
     }
 
-    // dont use name as id
-    // create MenuItem
-
-    // check is transformed already
-
     const isLoading = 
       node.children && node.children[0] ?
-          !node?.children[0].name && expanded.includes(uniquePath)
+          !node?.children[0].name && expanded.includes(node.id)
           : false;
 
     return (
     <TreeItem
       classes={{label: classes.label, content: 'bi-hover', group: classes.group}}
-      onIconClick={() => handleExpanded(uniquePath, sub, subIndex)}
+      onIconClick={() => handleExpanded(node.id, path, sub, subIndex, node)}
       icon={isLoading ?
         <span>
           <span className="bi-spinner--xs">
@@ -152,13 +163,13 @@ const fileExplorer = (props: FileExplorerProps) => {
         </span>
       : null
       }
-      key={uniquePath}
-      nodeId={uniquePath}
+      key={node.id}
+      nodeId={node.id}
       label={
         <div className={'bi-align ' + classes.treeItemRoot}>
           <div
             className={'bi-align bi-r-h bi-text--ellipsis bi-grow bi-text ' + classes.text}
-            onClick={() => handleExpanded(uniquePath, sub, subIndex)}
+            onClick={() => handleExpanded(node.id, path, sub, subIndex, node)}
           >
             {node.textIcon ?
               <div className={'bi-text--sm ng-binding ng-scope ' + classes.textIcon}>{node.textIcon}</div>
@@ -170,17 +181,15 @@ const fileExplorer = (props: FileExplorerProps) => {
           </div>
           {node.more ?
             <>
-              <div>
-                <MaterialIcon className={'bi-action bi-icon'} icon='more_vert' onClick={handleClick} />
-              </div>
               <Dropdown
-                open={Boolean(anchorEl)}
-                handleClose={handleClose}
-                referenceElement={anchorEl}
+                icon={<MaterialIcon className={'bi-action bi-icon'} icon='more_vert' />}
+                placement='bottom-end'
               >
                 <SelectItem
                   text="Select rows (limit 1000)"
-                  onClick={() => props.onClickMore(node, path)}
+                  onClick={() => {
+                    props.onClickMore(sub, path)
+                  }}
                 />
               </Dropdown>
             </>
@@ -191,25 +200,20 @@ const fileExplorer = (props: FileExplorerProps) => {
     >
       {
         Array.isArray(node.children) ?
-          node.children.map(
-            (childNode, index) => 
+          node.children.map(childNode =>
               renderTree(
                 childNode,
                 [
                   ...path,
-                  childNode.name || '' + index
+                  childNode.id,
                 ],
                 sub,
-                subIndex
+                subIndex,
               )
             )
           : null}
     </TreeItem>
   )};
-
-  if (initial) {
-    return (<div>Loading...</div>);
-  }
 
   return (
     <div className={classes.mainView}>
@@ -224,7 +228,7 @@ const fileExplorer = (props: FileExplorerProps) => {
             disableSelection={true}
             expanded={expanded}
           >
-            {renderTree(sub, [sub.name], sub, index)}
+            {renderTree(sub, [sub.id], sub, index)}
           </TreeView>
         )
       })}

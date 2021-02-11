@@ -74,20 +74,26 @@ export default (app: App, store: Store) => () => ({
               .then(({children: columns}) => convert(columns, {hideRoot: false}, [...path]));
           },
           async onLazyFolderFetchNew(n: Tree, path: string[]): Promise<Tree[]> {
+            const namePath = [n.name];
+            let iteratorNode = n;
+            for (let i = 1; i < path.length; i++) {
+              iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.id === path[i]);
+              namePath.push(iteratorNode.name);
+            }
             let response: any;
             if (scope.vm.hideRoot) {
               response = await Resources.dbColumns(
                 scope.vm.type,
                 DB.RootName, // catalog
-                path[0], // schema
-                path[1], // table
+                namePath[0], // schema
+                namePath[1], // table
                 );
             } else {
               response = await Resources.dbColumns(
                 scope.vm.type,
-                path[0], // catalog
-                path[1], // schema
-                path[2], // table
+                namePath[0], // catalog
+                namePath[1], // schema
+                namePath[2], // table
                 );
             }
             return response.children.map(child => {return {...child, textIcon: child.dataType}});
@@ -107,14 +113,9 @@ export default (app: App, store: Store) => () => ({
             }
 
             newNode.icon = chooseIcon(node.type);
-            newNode.children = newNode.children.map(child => {
-              return {
-                ...child,
-                icon: chooseIcon(child.type),
-                lazy: child.type === 'table',
-                more: child.type === 'table'
-              }
-            });
+            newNode.transformed = true;
+            newNode.lazy = newNode.type === 'table';
+            newNode.more = newNode.type === 'table';
             return newNode;
           },
           onSelectTableRows(table: IFile) {
@@ -124,15 +125,21 @@ export default (app: App, store: Store) => () => ({
             openTempQuery(scope, scope.vm.type, query, true);
           },
           onSelectTableRowsNew(n: Tree, path: string[]) {
+            const namePath = [n.name];
+            let iteratorNode = n;
+            for (let i = 1; i < path.length; i++) {
+              iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.id === path[i]);
+              namePath.push(iteratorNode.name);
+            }
             const query = pluginManager.module('db').plugin(scope.vm.type)
               .getSampleQuery(
                 {
-                  path: path.slice(0, path.length - 1).map(el => {
+                  path: namePath.slice(0, namePath.length - 1).map(el => {
                     return {
                       name: el
                     }
                   }),
-                  name: n.name,
+                  name: namePath[namePath.length - 1],
                 } as any);
 
             openTempQuery(scope, scope.vm.type, query, true);
