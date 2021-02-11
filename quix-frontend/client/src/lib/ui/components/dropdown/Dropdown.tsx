@@ -1,23 +1,29 @@
-import React, {useEffect} from 'react';
-import Popper from "@material-ui/core/Popper";
+import React, {useEffect, useRef} from 'react';
+import Popper, {PopperPlacementType} from "@material-ui/core/Popper";
 import { Grow, Paper, ClickAwayListener, MenuList } from '@material-ui/core';
 
 interface IDropdownProps {
-  open: boolean,
-  handleClose: Function,
-  referenceElement: HTMLElement,
+  icon: React.ReactNode;
+  placement: PopperPlacementType;
 }
 
 
 const Dropdown: React.FunctionComponent<IDropdownProps> = ({
-  open,
-  handleClose,
-  referenceElement,
   children,
+  icon,
+  placement,
 }) => {
-  if (!open) {
-    return null;
+
+  const refElement = useRef(null);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const handleClose = () => {
+    setAnchorEl(null);
   }
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
 
   const escFunction = (e) => {
     if (e.keyCode === 27) {
@@ -32,6 +38,8 @@ const Dropdown: React.FunctionComponent<IDropdownProps> = ({
       document.removeEventListener("keydown", escFunction, false);
     };
   }, []);
+  
+  const open = Boolean(anchorEl);
 
   if (!Array.isArray(children)) {
     children = [children];
@@ -39,25 +47,30 @@ const Dropdown: React.FunctionComponent<IDropdownProps> = ({
 
   if (Array.isArray(children)) {
     return (
-      <Popper open={open} anchorEl={referenceElement} transition placement='bottom-end'>
-        {({ TransitionProps, placement }) => (
-          <Grow
-            {...TransitionProps}
-            style={{
-              transformOrigin:
-                placement === "bottom" ? "center top" : "center bottom"
-            }}
-          >
-            <Paper>
-              <ClickAwayListener onClickAway={() => handleClose()}>
-                <MenuList>
-                  {children}
-                </MenuList>
-              </ClickAwayListener>
-            </Paper>
-          </Grow>
-        )}
-      </Popper>
+      <>
+        <div ref={refElement} onClick={handleClick}>
+          {icon}
+        </div>
+        <Popper open={open} anchorEl={anchorEl} transition placement={placement}>
+          {({ TransitionProps, placement }) => (
+            <Grow
+              {...TransitionProps}
+              style={{
+                transformOrigin:
+                  placement === "bottom" ? "center top" : "center bottom"
+              }}
+            >
+              <Paper>
+                <ClickAwayListener onClickAway={() => handleClose()}>
+                  <MenuList>
+                    {children}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </Grow>
+          )}
+        </Popper>
+      </>
     )
   }
 }
