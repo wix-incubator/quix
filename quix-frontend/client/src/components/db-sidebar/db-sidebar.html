@@ -54,7 +54,12 @@
       tree="vm.state.value().dbOriginal"
       transform-node="events.transformNode"
       fetch-children="events.onLazyFolderFetchNew"
-      on-click-more="events.onSelectTableRowsNew"
+      more-options="{
+        table: [{
+          title: 'Select rows (limit 1000)',
+          action: events.onSelectTableRowsNew,
+        }]
+      }"
     ></quix-file-explorer>
 
     <bi-file-explorer-static

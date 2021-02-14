@@ -44,7 +44,12 @@ export interface FileExplorerProps {
   tree: Tree[] | Tree;
   transformNode(node: Tree): Tree;
   fetchChildren?(node: Tree, path: string[]): Promise<Tree[]>;
-  onClickMore?(node: Tree, path: string[]): void;
+  moreOptions: {
+    [key:string]: {
+      title: string,
+      action(sub: Tree, path: string[]): void,
+    }[]
+  }
 }
 
 export interface Tree {
@@ -152,6 +157,8 @@ const fileExplorer = (props: FileExplorerProps) => {
           !node?.children[0].name && expanded.includes(node.id)
           : false;
 
+    const moreOptions = node.more && props.moreOptions[node.type];
+
     return (
     <TreeItem
       classes={{label: classes.label, content: 'bi-hover', group: classes.group}}
@@ -185,12 +192,16 @@ const fileExplorer = (props: FileExplorerProps) => {
                 icon={<MaterialIcon className={'bi-action bi-icon'} icon='more_vert' />}
                 placement='bottom-end'
               >
-                <SelectItem
-                  text="Select rows (limit 1000)"
-                  onClick={() => {
-                    props.onClickMore(sub, path)
-                  }}
-                />
+                {moreOptions.map((moreOption, index) => 
+                  <SelectItem
+                    key={index}
+                    text={moreOption.title}
+                    onClick={() => {
+                      moreOption.action(sub, path)
+                    }}
+                  />
+                )}
+                
               </Dropdown>
             </>
             : null
