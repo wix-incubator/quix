@@ -157,8 +157,6 @@ const fileExplorer = (props: FileExplorerProps) => {
           !node?.children[0].name && expanded.includes(node.id)
           : false;
 
-    const moreOptions = node.more && props.moreOptions[node.type];
-
     return (
     <TreeItem
       classes={{label: classes.label, content: 'bi-hover', group: classes.group}}
@@ -192,7 +190,7 @@ const fileExplorer = (props: FileExplorerProps) => {
                 icon={<MaterialIcon className={'bi-action bi-icon'} icon='more_vert' />}
                 placement='bottom-end'
               >
-                {moreOptions.map((moreOption, index) => 
+                {props.moreOptions[node.type].map((moreOption, index) => 
                   <SelectItem
                     key={index}
                     text={moreOption.title}
