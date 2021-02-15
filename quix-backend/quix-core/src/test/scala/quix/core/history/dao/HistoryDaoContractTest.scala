@@ -170,7 +170,7 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
   }
 
   "support filtering by query and user email" in {
-    def makeSubQueries(sql : String, userEmail: String) =
+    def makeSubQueries(sql: String, userEmail: String) =
       List(ImmutableSubQuery(sql, User(email = userEmail)))
 
     val query1 = query.copy(id = "query-1", subQueries = makeSubQueries("select 1", "foo@quix.com"))
@@ -215,6 +215,31 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
       case (ascending, descending) =>
         (ascending must contain(exactly(executionWithId(query1.id), executionWithId(query2.id)).inOrder)) and
           (descending must contain(exactly(executionWithId(query2.id), executionWithId(query1.id)).inOrder))
+    }
+  }
+
+  "support case-insentitive filtering by query text" in {
+    def makeSubQueries(userEmail: String) =
+      List(ImmutableSubQuery(s"select $userEmail as email", User(email = userEmail)))
+
+    val query1 = query.copy(id = "query-1", subQueries = makeSubQueries("foo@quix.com"))
+    val query2 = query.copy(id = "query-2", subQueries = makeSubQueries("boo@quix.com"))
+    val query3 = query.copy(id = "query-3", subQueries = makeSubQueries("bar@quix.com"))
+
+    val result = createDao().use { dao =>
+      for {
+        _ <- dao.executionStarted(query1, queryType)
+        _ <- dao.executionStarted(query2, queryType)
+        _ <- dao.executionStarted(query3, queryType)
+        lower <- dao.executions(filter = Filter.Query("select"))
+        upper <- dao.executions(filter = Filter.Query("SELECT"))
+      } yield (lower, upper)
+    }
+
+    result.runSyncUnsafe() must beLike {
+      case (lower, upper) =>
+        (lower must haveSize(3)) and
+          (upper must haveSize(3))
     }
   }
 
