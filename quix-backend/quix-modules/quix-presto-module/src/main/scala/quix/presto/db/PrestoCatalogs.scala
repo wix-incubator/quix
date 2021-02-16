@@ -5,7 +5,8 @@ import quix.api.v1.db.{Catalog, Catalogs, Schema, Table}
 import quix.api.v2.execute.Executor
 import quix.core.executions.SingleQueryExecutor
 
-class PrestoCatalogs(val queryExecutor: Executor)
+class PrestoCatalogs(val queryExecutor: Executor,
+                     val hiddenCatalogs: Set[String] = Set.empty)
   extends Catalogs with SingleQueryExecutor {
 
   override def fast: Task[List[Catalog]] = getCatalogNamesOnly
@@ -19,14 +20,20 @@ class PrestoCatalogs(val queryExecutor: Executor)
 
   private def inferCatalogsOneByOne = {
     for {
-      catalogNames <- executeForSingleColumn("show catalogs")
+      catalogNames <- getCatalogNames
       catalogs <- Task.traverse(catalogNames)(inferSchemaOfCatalog)
     } yield catalogs
   }
 
-  def getCatalogNamesOnly = {
+  private def getCatalogNames = {
     for {
       catalogNames <- executeForSingleColumn("show catalogs")
+    } yield catalogNames.filterNot(hiddenCatalogs)
+  }
+
+  def getCatalogNamesOnly = {
+    for {
+      catalogNames <- getCatalogNames
         .onErrorFallbackTo(Task.now(Nil))
     } yield catalogNames.map(name => Catalog(name, Nil))
   }

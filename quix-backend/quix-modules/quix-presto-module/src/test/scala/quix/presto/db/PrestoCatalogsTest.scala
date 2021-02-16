@@ -12,7 +12,7 @@ class PrestoCatalogsTest extends SpecWithJUnit with MustMatchers {
   class ctx extends Scope {
     val executor = new TestQueryExecutor
 
-    val catalogs = new PrestoCatalogs(executor)
+    val catalogs = new PrestoCatalogs(executor, Set("hidden-catalog"))
 
     def fastCatalogs = {
       catalogs.fast.runSyncUnsafe()
@@ -36,6 +36,13 @@ class PrestoCatalogsTest extends SpecWithJUnit with MustMatchers {
 
       fastCatalogs must beEmpty
     }
+
+    "skip hidden catalogs" in new ctx {
+      executor.withResults(List(List("test-catalog"), List("hidden-catalog")))
+
+      fastCatalogs must contain(Catalog("test-catalog", Nil))
+      fastCatalogs must not contain (Catalog("hidden-catalog", Nil))
+    }
   }
 
   "PrestoCatalogs.full" should {
@@ -51,6 +58,15 @@ class PrestoCatalogsTest extends SpecWithJUnit with MustMatchers {
       executor.withExceptions(new Exception("boom!"), 100)
 
       fullCatalogs must beEmpty
+    }
+
+    "skip hidden catalogs" in new ctx {
+      executor
+        .withResults(List(List("test-catalog"), List("hidden-catalog")))
+        .withResults(List(List("test-catalog", "test-schema", "test-table")))
+
+      fullCatalogs must contain(Catalog("test-catalog", List(Schema("test-schema", List(Table("test-table", List.empty))))))
+      fullCatalogs must not contain(Catalog("hidden-catalog", Nil))
     }
   }
 
