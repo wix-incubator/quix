@@ -45,34 +45,32 @@ const Dropdown: React.FunctionComponent<IDropdownProps> = ({
     children = [children];
   }
 
-  if (Array.isArray(children)) {
-    return (
-      <>
-        <div ref={refElement} onClick={handleClick}>
-          {icon}
-        </div>
-        <Popper open={open} anchorEl={anchorEl} transition placement={placement}>
-          {({ TransitionProps, placement: placementProp }) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin:
-                  placementProp === "bottom" ? "center top" : "center bottom"
-              }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={() => handleClose()}>
-                  <MenuList>
-                    {children}
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
-      </>
-    )
-  }
+  return (
+    <>
+      <div ref={refElement} onClick={handleClick}>
+        {icon}
+      </div>
+      <Popper open={open} anchorEl={anchorEl} transition placement={placement}>
+        {({ TransitionProps, placement: placementProp }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin:
+                placementProp === "bottom" ? "center top" : "center bottom"
+            }}
+          >
+            <Paper>
+              <ClickAwayListener onClickAway={() => handleClose()}>
+                <MenuList>
+                  {children}
+                </MenuList>
+              </ClickAwayListener>
+            </Paper>
+          </Grow>
+        )}
+      </Popper>
+    </>
+  )
 }
 
 

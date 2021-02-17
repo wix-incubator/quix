@@ -1,5 +1,6 @@
 import template from './db-sidebar.html';
 import './db-sidebar.scss';
+import _ from 'lodash';
 
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
@@ -24,6 +25,18 @@ enum States {
   SearchResult,
   SearchContent,
   Visible,
+}
+
+const getNamePath = (node: Tree, path: string[]) => {
+  const namePath = [node.name];
+  let iteratorNode = node;
+
+  for (let i = 1; i < path.length; i++) {
+    iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.id === path[i]);
+    namePath.push(iteratorNode.name);
+  }
+
+  return namePath;
 }
 
 export default (app: App, store: Store) => () => ({
@@ -73,13 +86,8 @@ export default (app: App, store: Store) => () => ({
             return Resources.dbColumns(scope.vm.type, catalog, schema, table)
               .then(({children: columns}) => convert(columns, {hideRoot: false}, [...path]));
           },
-          async onLazyFolderFetchNew(n: Tree, path: string[]): Promise<Tree[]> {
-            const namePath = [n.name];
-            let iteratorNode = n;
-            for (let i = 1; i < path.length; i++) {
-              iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.id === path[i]);
-              namePath.push(iteratorNode.name);
-            }
+          async onLazyFolderFetchNew(node: Tree, path: string[]): Promise<Tree[]> {
+            const namePath = getNamePath(node, path);
             let response: any;
             if (scope.vm.hideRoot) {
               response = await Resources.dbColumns(
@@ -124,13 +132,8 @@ export default (app: App, store: Store) => () => ({
 
             openTempQuery(scope, scope.vm.type, query, true);
           },
-          onSelectTableRowsNew(n: Tree, path: string[]) {
-            const namePath = [n.name];
-            let iteratorNode = n;
-            for (let i = 1; i < path.length; i++) {
-              iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.id === path[i]);
-              namePath.push(iteratorNode.name);
-            }
+          onSelectTableRowsNew(node: Tree, path: string[]) {
+            const namePath = getNamePath(node, path);
             const query = pluginManager.module('db').plugin(scope.vm.type)
               .getSampleQuery(
                 {
@@ -156,6 +159,7 @@ export default (app: App, store: Store) => () => ({
             if (!text) {
               state.set('Visible', true, {
                 dbFiltered: [],
+                dbOriginalFiltered: [],
               });
 
               return;
@@ -168,7 +172,8 @@ export default (app: App, store: Store) => () => ({
               .set('SearchContent', () => res.length, () => {
                 const filtered = convert(res, {hideRoot});
 
-                return {dbFiltered: filtered};
+                const dbOriginalFiltered = scope.vm.hideRoot ? _.flatten(res.map(tree => tree.children)) : res;
+                return {dbFiltered: filtered, dbOriginalFiltered};
               })
             );
           }
@@ -187,7 +192,7 @@ export default (app: App, store: Store) => () => ({
         if (dbOriginal) {
           scope.vm.hideRoot = dbOriginal.length === 1 && dbOriginal[0] && dbOriginal[0].name === DB.RootName;
           newDb = dbOriginal && convert(dbOriginal, {hideRoot: scope.vm.hideRoot});
-          dbOriginal = scope.vm.hideRoot ? dbOriginal[0].children : dbOriginal;
+          dbOriginal = scope.vm.hideRoot ? _.flatten(dbOriginal.map(tree => tree.children)) : dbOriginal;
         }
 
         scope.vm.state

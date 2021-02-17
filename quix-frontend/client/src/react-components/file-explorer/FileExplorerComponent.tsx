@@ -49,7 +49,8 @@ export interface FileExplorerProps {
       title: string,
       action(sub: Tree, path: string[]): void,
     }[]
-  }
+  };
+  expanded: boolean;
 }
 
 export interface Tree {
@@ -82,13 +83,17 @@ const recursiveTransformNode = (tree: Tree[], transformNode: Function) => {
   });
 }
 
-const getAllNodeSubIds = (node: Tree, subIds: string[]) => {
+const getAllNodeSubIds = (node: Tree, subIds: string[], withLazy: boolean = true) => {
   if (!node.children) {
     return;
   }
+
   node.children.map(child => {
-    subIds.push(child.id);
-    getAllNodeSubIds(child, subIds);
+    if (child.id && (withLazy || !child.lazy)) {
+      subIds.push(child.id);
+    }
+
+    getAllNodeSubIds(child, subIds, withLazy);
   })
 }
 
@@ -98,13 +103,24 @@ const fileExplorer = (props: FileExplorerProps) => {
 
   const [innerTree, setInnerTree] = useState<Tree[]>(Array.isArray(props.tree) ? props.tree : [props.tree]);
   const [subTree, setSubTree] = useState<{sub: Tree; index: number}>();
+  const [isInitialized, setIsInitialized] = useState(false);
   const [expanded, setExpanded] = useState([]);
+
+  useEffect(() => {
+    if (isInitialized && props.expanded) {
+      const subIds = [];
+      getAllNodeSubIds({children: innerTree} as Tree, subIds, false);
+      setExpanded(subIds)
+    }
+  }, [isInitialized]);
 
   useEffect(() => {
     const currentTree = _.cloneDeep(innerTree);
     recursiveTransformNode(currentTree, props.transformNode);
+    
     if (!_.isEqual(innerTree, currentTree)) {
       setInnerTree(currentTree);
+      !isInitialized && setIsInitialized(true);
     }
   }, [innerTree]);
 
