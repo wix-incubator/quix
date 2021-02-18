@@ -6,9 +6,6 @@ import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
 import {MenuItem} from '../../lib/ui/components/dropdown/MenuItem';
 
 const useStyles = makeStyles({
-  mainView: {
-    paddingLeft: '8px',
-  },
   treeItemRoot: {
     fontFamily: 'Open Sans',
   },
@@ -57,7 +54,6 @@ interface NodeProps {
   menuClick(node: Node, menuTypeIndex: number, path: string[]): void;
   transformChildNodes(node: Node, path: string[]): Promise<Node>;
   lazyTransformChildNodes(node: Node, path: string[]): Promise<Node>;
-  expanded: string[];
   expand(node: Node): void;
   path: string[];
   startupExpanded: boolean;
@@ -66,21 +62,27 @@ interface NodeProps {
 
 export const TreeNode = (props: NodeProps) => {
   const classes = useStyles();
-  const {transformChildNodes, lazyTransformChildNodes, expand, expanded, path, menuClick} = props;
+  const {transformChildNodes, lazyTransformChildNodes, expand, startupExpanded, path, menuClick} = props;
 
   const [node, setNode] = useState<Node>(props.node);
   const [isLoading, setIsLoading] = useState(false);
-  // const [clickedFirstTime, setClickedFirstTime] = useState(false);
-  const [clickedFirstTime] = useState(false);
+  const [clickedFirstTime, setClickedFirstTime] = useState(false);
 
 
   useEffect(() => {
-    if (!node.lazy && props.startupExpanded ) {
-      onClick();
+    if (!node.lazy && startupExpanded ) {
+      toggleNode();
     }
-  }, [])
+  }, []);
 
   const onClick = async () => {
+    if (!clickedFirstTime) {
+      setClickedFirstTime(true);
+    }
+    toggleNode();
+  }
+
+  const toggleNode = async () => {
     if (!node.children) {
       return;
     }
@@ -101,9 +103,6 @@ export const TreeNode = (props: NodeProps) => {
 
     setIsLoading(false);
     expand(node);
-    // if (!clickedFirstTime) {
-    //   setClickedFirstTime(true);
-    // }
     setNode(transformedNode);
   }
 
@@ -162,7 +161,6 @@ export const TreeNode = (props: NodeProps) => {
             childNode.id &&
             <TreeNode
               key={childNode.id}
-              expanded={expanded}
               menuOptions={props.menuOptions}
               node={childNode}
               transformChildNodes={transformChildNodes}
@@ -170,7 +168,7 @@ export const TreeNode = (props: NodeProps) => {
               expand={expand}
               menuClick={menuClick}
               path={[...path, node.id]}
-              startupExpanded={!clickedFirstTime ? props.startupExpanded : false}
+              startupExpanded={!clickedFirstTime ? startupExpanded : false}
             />
           )
         : <div></div>

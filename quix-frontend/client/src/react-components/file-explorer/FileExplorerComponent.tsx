@@ -12,30 +12,6 @@ const useStyles = makeStyles({
   mainView: {
     paddingLeft: '8px',
   },
-  treeItemRoot: {
-    fontFamily: 'Open Sans',
-  },
-  text: {
-    height: '35px',
-    '&:hover': {
-      color: 'white',
-    },
-  },
-  label: {
-    overflow: 'auto',
-    paddingRight: '5px',
-    paddingLeft: '2px',
-  },
-  group: {
-    marginLeft: '10px'
-  },
-  iconSm: {
-    marginRight: '5px',
-    marginTop: '3px',
-  },
-  textIcon: {
-    marginRight: '5px',
-  }
 });
 
 export interface FileExplorerProps {
@@ -169,16 +145,19 @@ export const FileExplorer = (props: FileExplorerProps) => {
     return iteratorNode;
   }
 
+  const onMenuClick = (subNode: Node, menuIndex: number, path: string[], node: Node) => {
+    props.menuOptions[subNode.type][menuIndex].action(node, [...path, subNode.id]);
+  };
+
   const renderTree = (node: Tree, index: number) => {
     return (
       <TreeNode
-        menuOptions={props.menuOptions}
-        menuClick={(subNode: Node, menuIndex: number, path: string[]) => props.menuOptions[subNode.type][menuIndex].action(node, [...path, subNode.id])}
         node={node}
+        menuOptions={props.menuOptions}
+        menuClick={(subNode: Node, menuIndex: number, path: string[]) => onMenuClick(subNode, menuIndex, path, node)}
         transformChildNodes={(subNode, path) => transform(index, subNode, path)}
         lazyTransformChildNodes={(subNode, path) => lazyTransform(index, subNode, path)}
         startupExpanded={props.expanded}
-        expanded={expanded}
         expand={expand}
         path={[]}
       />
