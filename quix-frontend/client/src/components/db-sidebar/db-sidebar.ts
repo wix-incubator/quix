@@ -5,10 +5,8 @@ import _ from 'lodash';
 import {initNgScope} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
-import {IFile} from '@wix/quix-shared';
 import {IScope} from './db-sidebar-types';
 import {cache} from '../../store';
-import {convert} from '../../services/db';
 import * as Resources from '../../services/resources';
 import {Tree} from '../../react-components/file-explorer/FileExplorerComponent';
 import {openTempQuery, StateManager} from '../../services';
@@ -65,28 +63,11 @@ export default (app: App, store: Store) => () => ({
               cache.db.fetch(plugin);
             }
           },
-          onFileExplorerLoad() {
-            scope.vm.state.set('Visible');
-          },
           onRetryClick() {
             scope.vm.state.force('Initial');
             cache.db.fetch(scope.vm.type);
           },
-          onLazyFolderFetch(folder: IFile) {
-            const path = [...folder.path, {id: folder.id, name: folder.name}];
-            let catalog, schema, table;
-
-            if (scope.vm.hideRoot) {
-              catalog = DB.RootName;
-              [schema, table] = path.map(({name}) => name);
-            } else {
-              [catalog, schema, table] = path.map(({name}) => name);
-            }
-
-            return Resources.dbColumns(scope.vm.type, catalog, schema, table)
-              .then(({children: columns}) => convert(columns, {hideRoot: false}, [...path]));
-          },
-          async onLazyFolderFetchNew(node: Tree, path: string[]): Promise<Tree[]> {
+          async onLazyFolderFetch(node: Tree, path: string[]): Promise<Tree[]> {
             const namePath = getNamePath(node, path);
             let response: any;
             if (scope.vm.hideRoot) {
@@ -106,7 +87,7 @@ export default (app: App, store: Store) => () => ({
             }
             return response.children.map(child => {return {...child, textIcon: child.dataType}});
           },
-          transformNode(node: Tree): Tree {
+          async transformNode(node: Tree, path: string[]): Promise<Tree> {
             const newNode = node;
 
             const chooseIcon = (type) => {
@@ -123,16 +104,9 @@ export default (app: App, store: Store) => () => ({
             newNode.icon = chooseIcon(node.type);
             newNode.transformed = true;
             newNode.lazy = newNode.type === 'table';
-            newNode.more = newNode.type === 'table';
             return newNode;
           },
-          onSelectTableRows(table: IFile) {
-            const query = pluginManager.module('db').plugin(scope.vm.type)
-              .getSampleQuery(table);
-
-            openTempQuery(scope, scope.vm.type, query, true);
-          },
-          onSelectTableRowsNew(node: Tree, path: string[]) {
+          onSelectTableRows(node: Tree, path: string[]) {
             const namePath = getNamePath(node, path);
             const query = pluginManager.module('db').plugin(scope.vm.type)
               .getSampleQuery(
@@ -158,7 +132,6 @@ export default (app: App, store: Store) => () => ({
 
             if (!text) {
               state.set('Visible', true, {
-                dbFiltered: [],
                 dbOriginalFiltered: [],
               });
 
@@ -170,10 +143,9 @@ export default (app: App, store: Store) => () => ({
             search(text)(res => state
               .set('SearchResult', !!res)
               .set('SearchContent', () => res.length, () => {
-                const filtered = convert(res, {hideRoot});
+                const dbOriginalFiltered = hideRoot ? _.flatten(res.map(tree => tree.children)) : res;
 
-                const dbOriginalFiltered = scope.vm.hideRoot ? _.flatten(res.map(tree => tree.children)) : res;
-                return {dbFiltered: filtered, dbOriginalFiltered};
+                return {dbOriginalFiltered};
               })
             );
           }
@@ -186,19 +158,15 @@ export default (app: App, store: Store) => () => ({
       }
 
       store.subscribe('db.db', (dbOriginal: any) => {
-        const isInitial = scope.vm.state.is('Initial');
-        
-        let newDb = [];
         if (dbOriginal) {
           scope.vm.hideRoot = dbOriginal.length === 1 && dbOriginal[0] && dbOriginal[0].name === DB.RootName;
-          newDb = dbOriginal && convert(dbOriginal, {hideRoot: scope.vm.hideRoot});
           dbOriginal = scope.vm.hideRoot ? _.flatten(dbOriginal.map(tree => tree.children)) : dbOriginal;
         }
 
         scope.vm.state
-          .force('Result', !!dbOriginal, {db: newDb, dbOriginal})
-          .set('Content', () => !!newDb.length)
-          .set('Visible', !isInitial)
+          .force('Result', !!dbOriginal, {dbOriginal})
+          .set('Content', () => !!dbOriginal.length)
+          .set('Visible', !!dbOriginal)
       }, scope);
 
       store.subscribe('db.error', (error: any) => {

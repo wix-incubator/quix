@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import Popper, {PopperPlacementType} from "@material-ui/core/Popper";
+import Popper, {PopperPlacementType} from '@material-ui/core/Popper';
 import { Grow, Paper, ClickAwayListener, MenuList } from '@material-ui/core';
 
 interface IDropdownProps {
@@ -8,7 +8,7 @@ interface IDropdownProps {
 }
 
 
-const Dropdown: React.FunctionComponent<IDropdownProps> = ({
+export const Dropdown: React.FunctionComponent<IDropdownProps> = ({
   children,
   icon,
   placement,
@@ -32,10 +32,10 @@ const Dropdown: React.FunctionComponent<IDropdownProps> = ({
   }
 
   useEffect(() => {
-    document.addEventListener("keydown", escFunction, false);
+    document.addEventListener('keydown', escFunction, false);
 
     return () => {
-      document.removeEventListener("keydown", escFunction, false);
+      document.removeEventListener('keydown', escFunction, false);
     };
   }, []);
   
@@ -56,7 +56,7 @@ const Dropdown: React.FunctionComponent<IDropdownProps> = ({
             {...TransitionProps}
             style={{
               transformOrigin:
-                placementProp === "bottom" ? "center top" : "center bottom"
+                placementProp === 'bottom' ? 'center top' : 'center bottom'
             }}
           >
             <Paper>
@@ -72,6 +72,3 @@ const Dropdown: React.FunctionComponent<IDropdownProps> = ({
     </>
   )
 }
-
-
-export default Dropdown;

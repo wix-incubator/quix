@@ -54,11 +54,11 @@
       ng-show="vm.state.is('Visible')"
       tree="vm.state.value().dbOriginal"
       transform-node="events.transformNode"
-      fetch-children="events.onLazyFolderFetchNew"
-      more-options="{
+      fetch-children="events.onLazyFolderFetch"
+      menu-options="{
         table: [{
           title: 'Select rows (limit 1000)',
-          action: events.onSelectTableRowsNew,
+          action: events.onSelectTableRows,
         }]
       }"
     ></quix-file-explorer>
@@ -68,78 +68,14 @@
       tree="vm.state.value().dbOriginalFiltered"
       expanded="true"
       transform-node="events.transformNode"
-      fetch-children="events.onLazyFolderFetchNew"
-      more-options="{
+      fetch-children="events.onLazyFolderFetch"
+      menu-options="{
         table: [{
           title: 'Select rows (limit 1000)',
-          action: events.onSelectTableRowsNew,
+          action: events.onSelectTableRows,
         }]
       }"
     ></quix-file-explorer>
 
-    <bi-file-explorer-static
-      ng-show="vm.state.is('Visible')"
-      ng-model="vm.state.value().db"
-      fe-options="::{draggable: true, expandRootFolder: true}"
-      on-load="events.onFileExplorerLoad(fileExplorer)"
-      on-lazy-folder-fetch="events.onLazyFolderFetch(folder)"
-      permissions="getFolderPermissions(folder)"
-      readonly="true"
-    > 
-      <folder-icon class="bi-icon--xs">
-        {{::{
-          catalog: 'book',
-          schema: 'storage',
-          table: 'view_module'
-        }[folder.nodeType]}}
-      </folder-icon>
-
-      <file-icon class="bi-text--sm">
-      {{file.nodeType}}
-      </file-icon>
-
-      <menu>
-        <ul class="bi-dropdown-menu" ng-if="::folder.nodeType === 'table'">
-          <li 
-            class="bi-align bi-space-h"
-            ng-click="events.onSelectTableRows(folder)"
-          >
-            <div>Select rows (limit 1000)</div>
-          </li>
-        </ul>
-      </menu>
-    </bi-file-explorer-static>
-
-    <bi-file-explorer-static
-      ng-if="vm.state.is('SearchContent')"
-      ng-model="vm.state.value().dbFiltered"
-      fe-options="::{draggable: true, expandAllFolders: true}"
-      on-lazy-folder-fetch="events.onLazyFolderFetch(folder)"
-      permissions="getFolderPermissions(folder)"
-      readonly="true"
-    > 
-      <folder-icon class="bi-icon--xs">
-        {{::{
-          catalog: 'book',
-          schema: 'storage',
-          table: 'view_module'
-        }[folder.nodeType]}}
-      </folder-icon>
-
-      <file-icon class="bi-text--sm">
-      {{file.nodeType}}
-      </file-icon>
-
-      <menu>
-        <ul class="bi-dropdown-menu" ng-if="::folder.nodeType === 'table'">
-          <li 
-            class="bi-align bi-space-h"
-            ng-click="events.onSelectTableRows(folder)"
-          >
-            <div>Select rows (limit 1000)</div>
-          </li>
-        </ul>
-      </menu>
-    </bi-file-explorer-static>
   </div>
 </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { MenuItem } from '@material-ui/core';
+import { MenuItem as BaseMenuItem } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 
 
@@ -16,22 +16,19 @@ interface IDropdownProps {
   onClick?: Function,
 }
 
-const SelectItem = ({
+export const MenuItem = ({
   text,
   onClick,
 }: IDropdownProps) => {
   const classes = useStyles();
 
   return (
-    <MenuItem
+    <BaseMenuItem
       classes={{root: classes.root}}
       onClick={() => typeof onClick === 'function' && onClick()}
     >
       {text}
-    </MenuItem>
+    </BaseMenuItem>
   )
   
 }
-
-
-export default SelectItem;
