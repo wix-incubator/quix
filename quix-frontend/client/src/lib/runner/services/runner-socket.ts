@@ -2,6 +2,9 @@ import {srv} from '../../core';
 import {RunnerType} from '../typings/runner-types';
 
 function attachProtocol(url: string) {
+  if (url.startsWith('http')) {
+    return url;
+  }
   return (window.location.protocol === 'https:' ? 'wss:' : 'ws:') + url;
 }
 
