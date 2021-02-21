@@ -21,6 +21,10 @@ const users = [
 ];
 
 const siteConfig = {
+  algolia: {
+    apiKey: '706ea6606dcf22ab4091945383d0cff9',
+    indexName: 'quix',
+  },
   title: 'Quix', // Title for your website.
   tagline: 'An easy-to-use notebook manager',
   // url: 'https://your-docusaurus-test-site.com', // Your website URL
