@@ -161,22 +161,25 @@ export const FileExplorer = (props: FileExplorerProps) => {
   };
 
   return (
-    <div className={classes.mainView}>
-      {innerTree.map((sub, index) => {
-        return (
-          <TreeView
-            className="bi-muted"
-            key={sub.id}
-            defaultCollapseIcon={<ExpandMoreIcon />}
-            defaultExpanded={[]}
-            defaultExpandIcon={<ChevronRightIcon />}
-            disableSelection={true}
-            expanded={expanded}
-          >
-            {renderTree(sub, index)}
-          </TreeView>
-        )
-      })}
+    <div className={'bi-muted ' + classes.mainView}>
+      {
+        innerTree.length === 0 ?
+        'Loading...'
+        : innerTree.map((sub, index) => {
+          return (
+            <TreeView
+              key={sub.id}
+              defaultCollapseIcon={<ExpandMoreIcon />}
+              defaultExpanded={[]}
+              defaultExpandIcon={<ChevronRightIcon />}
+              disableSelection={true}
+              expanded={expanded}
+            >
+              {renderTree(sub, index)}
+            </TreeView>
+          )
+        })
+      }
     </div>
   )
 }

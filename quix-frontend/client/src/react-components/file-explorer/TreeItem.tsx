@@ -44,41 +44,40 @@ export interface Node {
   more?: boolean;
 }
 
-interface NodeProps {
+interface TreeItemProps {
   node: Node;
   menuOptions: {
     [key:string]: {
       title: string;
     }[];
   };
-  menuClick(node: Node, menuTypeIndex: number, path: string[]): void;
-  transformChildNodes(node: Node, path: string[]): Promise<Node>;
-  lazyTransformChildNodes(node: Node, path: string[]): Promise<Node>;
-  expand(node: Node): void;
   path: string[];
   startupExpanded: boolean;
+  expand(node: Node): void;
+  menuClick(node: Node, menuTypeIndex: number, path: string[]): void;
+  transformChildNodes(node: Node, path: string[]): Promise<Node> | Node;
+  lazyTransformChildNodes(node: Node, path: string[]): Promise<Node>;
 }
 
 
 export const TreeItem = ({
-    transformChildNodes,
-    lazyTransformChildNodes,
-    expand,
-    startupExpanded,
-    path,
-    menuClick,
     node: initialNode,
     menuOptions,
-  }: NodeProps) => {
+    path,
+    startupExpanded,
+    expand,
+    menuClick,
+    transformChildNodes,
+    lazyTransformChildNodes,
+  }: TreeItemProps) => {
   const classes = useStyles();
 
   const [node, setNode] = useState<Node>(initialNode);
   const [isLoading, setIsLoading] = useState(false);
   const [clickedFirstTime, setClickedFirstTime] = useState(false);
 
-
   useEffect(() => {
-    if (!node.lazy && startupExpanded ) {
+    if (!node.lazy && startupExpanded) {
       toggleNode();
     }
   }, []);
@@ -135,7 +134,7 @@ export const TreeItem = ({
           >
             {node.textIcon ?
               <div className={'bi-text--sm ng-binding ng-scope ' + classes.textIcon}>{node.textIcon}</div>
-              : <MaterialIcon className={'bi-icon--xs ' + classes.iconSm}  icon={node.icon || 'hourglass_empty'}/>
+              : <MaterialIcon className={'bi-icon--xs ' + classes.iconSm}  icon={node.icon || 'hourglass_empty'} />
             }
             <span className="bi-text--ellipsis">
               {node.name}
@@ -161,8 +160,7 @@ export const TreeItem = ({
       }
     >
       {
-        node.children?.length > 0 || node.lazy === true ? 
-        !isLoading ?
+        (node.children?.length > 0 || node.lazy === true) && !isLoading ? 
           node.children.map(childNode =>
             childNode.id &&
             <TreeItem
@@ -177,7 +175,6 @@ export const TreeItem = ({
               startupExpanded={!clickedFirstTime ? startupExpanded : false}
             />
           )
-        : <div></div>
         : null
       }
     </MaterialTreeItem>
