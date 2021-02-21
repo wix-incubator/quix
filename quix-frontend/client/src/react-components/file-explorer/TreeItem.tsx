@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import {TreeItem} from '@material-ui/lab';
+import {TreeItem as MaterialTreeItem} from '@material-ui/lab';
 import MaterialIcon from 'material-icons-react';
 import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
 import {MenuItem} from '../../lib/ui/components/dropdown/MenuItem';
@@ -60,11 +60,19 @@ interface NodeProps {
 }
 
 
-export const TreeNode = (props: NodeProps) => {
+export const TreeItem = ({
+    transformChildNodes,
+    lazyTransformChildNodes,
+    expand,
+    startupExpanded,
+    path,
+    menuClick,
+    node: initialNode,
+    menuOptions,
+  }: NodeProps) => {
   const classes = useStyles();
-  const {transformChildNodes, lazyTransformChildNodes, expand, startupExpanded, path, menuClick} = props;
 
-  const [node, setNode] = useState<Node>(props.node);
+  const [node, setNode] = useState<Node>(initialNode);
   const [isLoading, setIsLoading] = useState(false);
   const [clickedFirstTime, setClickedFirstTime] = useState(false);
 
@@ -107,7 +115,7 @@ export const TreeNode = (props: NodeProps) => {
   }
 
   return (
-    <TreeItem
+    <MaterialTreeItem
       classes={{label: classes.label, content: 'bi-hover', group: classes.group}}
       onIconClick={() => onClick()}
       icon={isLoading ?
@@ -133,22 +141,20 @@ export const TreeNode = (props: NodeProps) => {
               {node.name}
             </span>
           </div>
-          {props.menuOptions[node.type] ?
-            <>
-              <Dropdown
-                icon={<MaterialIcon className={'bi-action bi-icon'} icon='more_vert' />}
-                placement='bottom-end'
-              >
-                {props.menuOptions[node.type].map((moreOption, index) => 
-                  <MenuItem
-                    key={index}
-                    text={moreOption.title}
-                    onClick={() => menuClick(node, index, path)}
-                  />
-                )}
-                
-              </Dropdown>
-            </>
+          {menuOptions[node.type] ?
+            <Dropdown
+              icon={<MaterialIcon className={'bi-action bi-icon'} icon='more_vert' />}
+              placement='bottom-end'
+            >
+              {menuOptions[node.type].map((moreOption, index) => 
+                <MenuItem
+                  key={index}
+                  text={moreOption.title}
+                  onClick={() => menuClick(node, index, path)}
+                />
+              )}
+              
+            </Dropdown>
             : null
           }
         </div>
@@ -159,9 +165,9 @@ export const TreeNode = (props: NodeProps) => {
         !isLoading ?
           node.children.map(childNode =>
             childNode.id &&
-            <TreeNode
+            <TreeItem
               key={childNode.id}
-              menuOptions={props.menuOptions}
+              menuOptions={menuOptions}
               node={childNode}
               transformChildNodes={transformChildNodes}
               lazyTransformChildNodes={lazyTransformChildNodes}
@@ -174,6 +180,6 @@ export const TreeNode = (props: NodeProps) => {
         : <div></div>
         : null
       }
-    </TreeItem>
+    </MaterialTreeItem>
 )
 }

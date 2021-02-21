@@ -6,7 +6,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import {TreeView} from '@material-ui/lab';
 import uuid from 'uuid/v4';
-import {TreeNode, Node} from './Node';
+import {TreeItem, Node} from './TreeItem';
 
 const useStyles = makeStyles({
   mainView: {
@@ -16,7 +16,7 @@ const useStyles = makeStyles({
 
 export interface FileExplorerProps {
   tree: Tree[] | Tree;
-  transformNode(node: Tree): Tree;
+  transformNode(node: Tree, path: string[]): Tree;
   fetchChildren?(node: Tree, path: string[]): Promise<Tree[]>;
   menuOptions: {
     [key:string]: {
@@ -52,28 +52,6 @@ const getAllNodeSubIds = (node: Tree, subIds: string[], withLazy: boolean = true
   })
 }
 
-const transformChildNodes = async (node: Node, transformNode: Function, path: string[]): Promise<Node> => {
-  const currentNode = _.cloneDeep(node);
-  for (const child of currentNode.children) {
-    if (!child.transformed) {
-      const shouldBeLazy = !!child.children && !child.children.length;
-      await transformNode(child, path);
-      child.children = child.lazy && shouldBeLazy ? [{} as any] : child.children;
-      child.id = child.id || uuid();
-    }
-  }
-  return currentNode;
-}
-
-const lazyTransformChildNodes = async (mainNode: Node, node: Node, fetchChildren: Function, transformNode: Function, path: string[]): Promise<Node> => {
-  const currentNode = _.cloneDeep(node);
-  if (_.isEqual(currentNode.children, [{}])) {
-    const transformedChildren = await fetchChildren(mainNode, [...path, node.id]);
-    return transformChildNodes({children: transformedChildren} as any, transformNode, path);
-  }
-  return currentNode;
-}
-
 
 export const FileExplorer = (props: FileExplorerProps) => {
   const classes = useStyles();
@@ -83,19 +61,15 @@ export const FileExplorer = (props: FileExplorerProps) => {
   const [expandNode, setExpandNode] = useState<Node>(null);
 
   useEffect(() => {
-    transformChildNodes(
-        {
-          children: Array.isArray(props.tree) ? props.tree : [props.tree]
-        } as any,
-        props.transformNode,
-        [],
-      )
-      .then(transformedNode => setInnerTree(transformedNode.children));
+    const transformedNode = transformChildNodes(
+      {
+        children: Array.isArray(props.tree) ? props.tree : [props.tree]
+      } as any,
+      [],
+    );
+    
+    setInnerTree(transformedNode.children);
   }, []);
-
-  const expand = (node: Node) => {
-    setExpandNode(node);
-  }
 
   useEffect(() => {
     if (!expandNode) {
@@ -116,8 +90,8 @@ export const FileExplorer = (props: FileExplorerProps) => {
     setExpandNode(null);
   }, [expandNode]);
 
-  const transform = async (index: number, subNode: Node, path: string[]) => {
-    const transformedNode = await transformChildNodes(subNode, props.transformNode, path);
+  const transform = (index: number, subNode: Node, path: string[]) => {
+    const transformedNode = transformChildNodes(subNode, path);
     const fullPath = [...path, transformedNode.id];
 
     let iteratorNode = innerTree[index];
@@ -131,9 +105,24 @@ export const FileExplorer = (props: FileExplorerProps) => {
     return transformedNode;
   }
 
-  const lazyTransform = async (index: number, subNode: Node, path: string[]) => {
+  const transformChildNodes = (node: Node, path: string[]): Node => {
+    const currentNode = _.cloneDeep(node);
+    for (const [index, child] of currentNode.children.entries()) {
+      if (!child.transformed) {
+        const shouldBeLazy = !!child.children && !child.children.length;
+        const transformedChild = props.transformNode(child, path);
+        transformedChild.children = transformedChild.lazy && shouldBeLazy ? [{} as any] : transformedChild.children;
+        transformedChild.id = transformedChild.id || uuid();
+  
+        currentNode.children[index] = transformedChild;
+      }
+    }
+    return currentNode;
+  }
+
+  const lazyTransform = async (index: number, subNode: Node, path: string[]): Promise<Tree> => {
     let iteratorNode = innerTree[index];
-    const transformedNode = await lazyTransformChildNodes(iteratorNode, subNode, props.fetchChildren, props.transformNode, path);
+    const transformedNode = await lazyTransformChildNodes(iteratorNode, subNode, path);
     const fullPath = [...path, subNode.id];
   
     for (let i = 1; i < fullPath.length; i++) {
@@ -141,8 +130,15 @@ export const FileExplorer = (props: FileExplorerProps) => {
     }
 
     iteratorNode.children = transformedNode.children;
-
     return iteratorNode;
+  }
+
+  const lazyTransformChildNodes = async (mainNode: Node, node: Node, path: string[]): Promise<Node> => {
+    if (_.isEqual(node.children, [{}])) {
+      const transformedChildren = await props.fetchChildren(mainNode, [...path, node.id]);
+      return transformChildNodes({children: transformedChildren} as any, path);
+    }
+    return node;
   }
 
   const onMenuClick = (subNode: Node, menuIndex: number, path: string[], node: Node) => {
@@ -151,14 +147,14 @@ export const FileExplorer = (props: FileExplorerProps) => {
 
   const renderTree = (node: Tree, index: number) => {
     return (
-      <TreeNode
+      <TreeItem
         node={node}
         menuOptions={props.menuOptions}
-        menuClick={(subNode: Node, menuIndex: number, path: string[]) => onMenuClick(subNode, menuIndex, path, node)}
+        menuClick={(subNode, menuIndex, path) => onMenuClick(subNode, menuIndex, path, node)}
         transformChildNodes={(subNode, path) => transform(index, subNode, path)}
         lazyTransformChildNodes={(subNode, path) => lazyTransform(index, subNode, path)}
         startupExpanded={props.expanded}
-        expand={expand}
+        expand={setExpandNode}
         path={[]}
       />
     )
@@ -170,7 +166,7 @@ export const FileExplorer = (props: FileExplorerProps) => {
         return (
           <TreeView
             className="bi-muted"
-            key={index}
+            key={sub.id}
             defaultCollapseIcon={<ExpandMoreIcon />}
             defaultExpanded={[]}
             defaultExpandIcon={<ChevronRightIcon />}

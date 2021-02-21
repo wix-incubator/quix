@@ -87,8 +87,8 @@ export default (app: App, store: Store) => () => ({
             }
             return response.children.map(child => {return {...child, textIcon: child.dataType}});
           },
-          async transformNode(node: Tree, path: string[]): Promise<Tree> {
-            const newNode = node;
+          transformNode(node: Tree, path: string[]): Tree {
+            const newNode = _.cloneDeep(node);
 
             const chooseIcon = (type) => {
               switch(type) {
