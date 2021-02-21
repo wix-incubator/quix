@@ -53,8 +53,8 @@
     <quix-file-explorer
       ng-show="vm.state.is('Visible')"
       tree="vm.state.value().dbOriginal"
-      transform-node="events.transformNode"
-      fetch-children="events.onLazyFolderFetch"
+      on-transform-node="events.transformNode"
+      on-fetch-children="events.onLazyFolderFetch"
       menu-options="{
         table: [{
           title: 'Select rows (limit 1000)',
@@ -66,9 +66,9 @@
     <quix-file-explorer
       ng-if="vm.state.is('SearchContent')"
       tree="vm.state.value().dbOriginalFiltered"
-      expanded="true"
-      transform-node="events.transformNode"
-      fetch-children="events.onLazyFolderFetch"
+      expanded-nodes="true"
+      on-transform-node="events.transformNode"
+      on-fetch-children="events.onLazyFolderFetch"
       menu-options="{
         table: [{
           title: 'Select rows (limit 1000)',

@@ -52,11 +52,11 @@ interface TreeItemProps {
     }[];
   };
   path: string[];
-  startupExpanded: boolean;
-  expand(node: Node): void;
-  menuClick(node: Node, menuTypeIndex: number, path: string[]): void;
-  transformChildNodes(node: Node, path: string[]): Promise<Node> | Node;
-  lazyTransformChildNodes(node: Node, path: string[]): Promise<Node>;
+  // expandedNodes: string[];
+  expandAllNodes: boolean;
+  onToggleNode(node: Node): void;
+  onMenuClick(node: Node, menuTypeIndex: number, path: string[]): void;
+  onTransformChildNodes(node: Node, path: string[]): Promise<Node> | Node;
 }
 
 
@@ -64,11 +64,10 @@ export const TreeItem = ({
     node: initialNode,
     menuOptions,
     path,
-    startupExpanded,
-    expand,
-    menuClick,
-    transformChildNodes,
-    lazyTransformChildNodes,
+    expandAllNodes,
+    onToggleNode,
+    onMenuClick,
+    onTransformChildNodes,
   }: TreeItemProps) => {
   const classes = useStyles();
 
@@ -77,7 +76,7 @@ export const TreeItem = ({
   const [clickedFirstTime, setClickedFirstTime] = useState(false);
 
   useEffect(() => {
-    if (!node.lazy && startupExpanded) {
+    if (!node.lazy && expandAllNodes) {
       toggleNode();
     }
   }, []);
@@ -95,21 +94,16 @@ export const TreeItem = ({
     }
 
     if (!node.children.find(child => !child.transformed)) {
-      expand(node);
+      onToggleNode(node);
       return;
     }
 
     setIsLoading(true);
-    let transformedNode;
 
-    if (!node.lazy) {
-      transformedNode = await transformChildNodes(node, path);
-    } else {
-      transformedNode = await lazyTransformChildNodes(node, path);
-    }
+    const transformedNode = await onTransformChildNodes(node, path);
 
     setIsLoading(false);
-    expand(node);
+    onToggleNode(node);
     setNode(transformedNode);
   }
 
@@ -134,7 +128,7 @@ export const TreeItem = ({
           >
             {node.textIcon ?
               <div className={'bi-text--sm ng-binding ng-scope ' + classes.textIcon}>{node.textIcon}</div>
-              : <MaterialIcon className={'bi-icon--xs ' + classes.iconSm}  icon={node.icon || 'hourglass_empty'} />
+              : <MaterialIcon className={'bi-icon--xs ' + classes.iconSm} icon={node.icon || 'hourglass_empty'} />
             }
             <span className="bi-text--ellipsis">
               {node.name}
@@ -149,7 +143,7 @@ export const TreeItem = ({
                 <MenuItem
                   key={index}
                   text={moreOption.title}
-                  onClick={() => menuClick(node, index, path)}
+                  onClick={() => onMenuClick(node, index, path)}
                 />
               )}
               
@@ -167,16 +161,15 @@ export const TreeItem = ({
               key={childNode.id}
               menuOptions={menuOptions}
               node={childNode}
-              transformChildNodes={transformChildNodes}
-              lazyTransformChildNodes={lazyTransformChildNodes}
-              expand={expand}
-              menuClick={menuClick}
+              onTransformChildNodes={onTransformChildNodes}
+              onToggleNode={onToggleNode}
+              onMenuClick={onMenuClick}
               path={[...path, node.id]}
-              startupExpanded={!clickedFirstTime ? startupExpanded : false}
+              expandAllNodes={!clickedFirstTime ? expandAllNodes : false}
             />
           )
         : null
       }
     </MaterialTreeItem>
-)
+  )
 }

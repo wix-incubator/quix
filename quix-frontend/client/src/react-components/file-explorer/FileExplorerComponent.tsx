@@ -2,8 +2,8 @@ import './FileExplorerComponent.scss';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import {TreeView} from '@material-ui/lab';
 import uuid from 'uuid/v4';
 import {TreeItem, Node} from './TreeItem';
@@ -16,15 +16,15 @@ const useStyles = makeStyles({
 
 export interface FileExplorerProps {
   tree: Tree[] | Tree;
-  transformNode(node: Tree, path: string[]): Tree;
-  fetchChildren?(node: Tree, path: string[]): Promise<Tree[]>;
+  onTransformNode(node: Tree, path: string[]): Tree;
+  onFetchChildren?(node: Tree, path: string[]): Promise<Tree[]>;
   menuOptions: {
     [key:string]: {
       title: string;
       action(sub: Tree, path: string[]): void;
     }[];
   };
-  expanded: boolean;
+  expandedNodes: boolean;
 }
 
 export interface Tree {
@@ -38,9 +38,11 @@ export interface Tree {
   children?: Tree[];
 }
 
-const getAllNodeSubIds = (node: Tree, subIds: string[], withLazy: boolean = true) => {
+// const getAllNodeSubIds = (node: Tree, subIds: string[], withLazy: boolean = true) => {
+const getAllNodeSubIds = (node: Tree, subIds: string[] = [], withLazy: boolean = true) => {
   if (!node.children) {
-    return;
+    return subIds;
+    // return;
   }
 
   node.children.map(child => {
@@ -49,7 +51,9 @@ const getAllNodeSubIds = (node: Tree, subIds: string[], withLazy: boolean = true
     }
 
     getAllNodeSubIds(child, subIds, withLazy);
-  })
+  });
+
+  return subIds;
 }
 
 
@@ -61,15 +65,14 @@ export const FileExplorer = (props: FileExplorerProps) => {
   const [expandNode, setExpandNode] = useState<Node>(null);
 
   useEffect(() => {
-    const transformedNode = transformChildNodes(
+    transformChildNodes(
+      null,
       {
         children: Array.isArray(props.tree) ? props.tree : [props.tree]
-      } as any,
+      } as Node,
       [],
-    );
-    
-    setInnerTree(transformedNode.children);
-  }, []);
+    ).then(transformedNode => setInnerTree(transformedNode.children));
+  }, [props.tree]);
 
   useEffect(() => {
     if (!expandNode) {
@@ -80,8 +83,7 @@ export const FileExplorer = (props: FileExplorerProps) => {
       setExpanded([...expanded, expandNode.id]);
     } else {
       const newArr = [];
-      const subIds = [expandNode.id];
-      getAllNodeSubIds(expandNode, subIds);
+      const subIds = getAllNodeSubIds(expandNode, [expandNode.id]);
 
       expanded.forEach(element => subIds.includes(element) ? null : newArr.push(element));
       setExpanded(newArr);
@@ -90,40 +92,16 @@ export const FileExplorer = (props: FileExplorerProps) => {
     setExpandNode(null);
   }, [expandNode]);
 
-  const transform = (index: number, subNode: Node, path: string[]) => {
-    const transformedNode = transformChildNodes(subNode, path);
-    const fullPath = [...path, transformedNode.id];
-
-    let iteratorNode = innerTree[index];
-  
-    for (let i = 1; i < fullPath.length; i++) {
-      iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.id === fullPath[i]);
-    }
-
-    iteratorNode.children = transformedNode.children;
-
-    return transformedNode;
+  const handleToggleNode = (node: Node) => {
+    setExpandNode(node);
   }
 
-  const transformChildNodes = (node: Node, path: string[]): Node => {
-    const currentNode = _.cloneDeep(node);
-    for (const [index, child] of currentNode.children.entries()) {
-      if (!child.transformed) {
-        const shouldBeLazy = !!child.children && !child.children.length;
-        const transformedChild = props.transformNode(child, path);
-        transformedChild.children = transformedChild.lazy && shouldBeLazy ? [{} as any] : transformedChild.children;
-        transformedChild.id = transformedChild.id || uuid();
-  
-        currentNode.children[index] = transformedChild;
-      }
-    }
-    return currentNode;
-  }
-
-  const lazyTransform = async (index: number, subNode: Node, path: string[]): Promise<Tree> => {
+  const transform = async (index: number, subNode: Node, path: string[]) => {
     let iteratorNode = innerTree[index];
-    const transformedNode = await lazyTransformChildNodes(iteratorNode, subNode, path);
-    const fullPath = [...path, subNode.id];
+    
+    const transformedNode = await transformChildNodes(iteratorNode, subNode, path);
+    
+    const fullPath = [...path, transformedNode.id || subNode.id];
   
     for (let i = 1; i < fullPath.length; i++) {
       iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.id === fullPath[i]);
@@ -133,12 +111,29 @@ export const FileExplorer = (props: FileExplorerProps) => {
     return iteratorNode;
   }
 
-  const lazyTransformChildNodes = async (mainNode: Node, node: Node, path: string[]): Promise<Node> => {
-    if (_.isEqual(node.children, [{}])) {
-      const transformedChildren = await props.fetchChildren(mainNode, [...path, node.id]);
-      return transformChildNodes({children: transformedChildren} as any, path);
+  const transformChildNodes = async (mainNode: Node, node: Node, path: string[]): Promise<Node> => {
+    let transformedNode = node;
+
+    if (node.lazy) {
+      if (!_.isEqual(node.children, [{}])) {
+        return node;
+      }
+      const fetchedChildren = await props.onFetchChildren(mainNode, [...path, node.id]);
+      transformedNode = {children: fetchedChildren} as Node;
     }
-    return node;
+
+    const currentNode = _.cloneDeep(transformedNode);
+    for (const [index, child] of currentNode.children.entries()) {
+      if (!child.transformed) {
+        const shouldBeLazy = !!child.children && !child.children.length;
+        const transformedChild = props.onTransformNode(child, path);
+        transformedChild.children = transformedChild.lazy && shouldBeLazy ? [{} as any] : transformedChild.children;
+        transformedChild.id = transformedChild.id || uuid();
+
+        currentNode.children[index] = transformedChild;
+      }
+    }
+    return currentNode;
   }
 
   const onMenuClick = (subNode: Node, menuIndex: number, path: string[], node: Node) => {
@@ -150,11 +145,10 @@ export const FileExplorer = (props: FileExplorerProps) => {
       <TreeItem
         node={node}
         menuOptions={props.menuOptions}
-        menuClick={(subNode, menuIndex, path) => onMenuClick(subNode, menuIndex, path, node)}
-        transformChildNodes={(subNode, path) => transform(index, subNode, path)}
-        lazyTransformChildNodes={(subNode, path) => lazyTransform(index, subNode, path)}
-        startupExpanded={props.expanded}
-        expand={setExpandNode}
+        onMenuClick={(subNode, menuIndex, path) => onMenuClick(subNode, menuIndex, path, node)}
+        onTransformChildNodes={(subNode, path) => transform(index, subNode, path)}
+        expandAllNodes={props.expandedNodes}
+        onToggleNode={handleToggleNode}
         path={[]}
       />
     )
@@ -169,9 +163,9 @@ export const FileExplorer = (props: FileExplorerProps) => {
           return (
             <TreeView
               key={sub.id}
-              defaultCollapseIcon={<ExpandMoreIcon />}
+              defaultCollapseIcon={<ArrowDropDownIcon />}
               defaultExpanded={[]}
-              defaultExpandIcon={<ChevronRightIcon />}
+              defaultExpandIcon={<ArrowRightIcon />}
               disableSelection={true}
               expanded={expanded}
             >
