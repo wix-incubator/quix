@@ -15,6 +15,8 @@ import {
   createFolderPayload
 } from "@wix/quix-shared";
 import * as moment from "moment";
+//TODO: CHECK ME
+import {ServerTreeItem} from '../src/components/db-sidebar/db-sidebar-types';
 
 const mocks = {
   "/api/user": () => createUser(),
@@ -348,6 +350,22 @@ export const createMockNote = (
   props: Partial<INote> = {}
 ) => {
   return createNote(notebookId, { owner: "local@quix.com", ...props });
+};
+
+export const createMockDbExplorer = (
+  items: ServerTreeItem[] = [],
+): ServerTreeItem[] => {
+  return items.length > 0 ? items : [createMockDbExplorerItem()];
+};
+
+export const createMockDbExplorerItem = (
+  props: Partial<ServerTreeItem> = {},
+): ServerTreeItem => {
+  return {
+    name: props.name || 'treeItem',
+    type: props.type || 'catalog',
+    children: props.children || [],
+  };
 };
 
 export const mock = (patternOrUrl: string, patternPayload?: any) => {

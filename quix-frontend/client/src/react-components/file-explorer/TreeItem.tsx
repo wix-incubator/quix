@@ -118,6 +118,7 @@ export const TreeItem = ({
         </span>
       : null
       }
+      data-hook="tree-item"
       key={node.id}
       nodeId={node.id}
       label={
@@ -130,7 +131,7 @@ export const TreeItem = ({
               <div className={'bi-text--sm ng-binding ng-scope ' + classes.textIcon}>{node.textIcon}</div>
               : <MaterialIcon className={'bi-icon--xs ' + classes.iconSm} icon={node.icon || 'hourglass_empty'} />
             }
-            <span className="bi-text--ellipsis">
+            <span data-hook="tree-item-content" className="bi-text--ellipsis">
               {node.name}
             </span>
           </div>
