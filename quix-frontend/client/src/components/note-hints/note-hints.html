@@ -1,0 +1,40 @@
+<bi-tooltip>
+  <bi-toggle>
+    <i class="bi-icon bi-disabled">keyboard</i>
+  </bi-toggle>
+
+  <table>
+    <tr>
+      <th>
+        <span class="bi-tag--sm">{{::ctrlKey}} + Enter</span>
+      </th>
+      <th>
+        Run note
+      </th>
+    </tr>
+    <tr>
+      <th>
+        <span class="bi-tag--sm">{{::ctrlKey}} + S</span>
+      </th>
+      <th>
+        Save note
+      </th>
+    </tr>
+    <tr>
+      <th>
+        <span class="bi-tag--sm">Ctrl + Space</span>
+      </th>
+      <th>
+        Toggle autocompletion
+      </th>
+    </tr>
+    <tr ng-if="::options.params">
+      <th>
+        <span class="bi-tag--sm">$</span>
+      </th>
+      <th>
+        Insert parameters
+      </th>
+    </tr>
+  </table>
+</bi-tooltip>

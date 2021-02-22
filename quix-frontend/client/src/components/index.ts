@@ -12,3 +12,4 @@ export {default as quixMeta} from './meta/meta';
 export {default as quixImage} from './image/image';
 export {default as quixNpc} from './npc/npc';
 export {default as quixNoteShare} from './note-share/note-share';
+export {default as quixNoteHints} from './note-hints/note-hints';

@@ -48,6 +48,6 @@
   </result>
 
   <run-hint>
-    <div class="bi-hint bi-fade-in" ng-if="vm.hint.run.enabled && !readonly">{{::getCtrlKeyName()}} + Enter to run</div>
+    <quix-note-hints ng-if="vm.hint.run.enabled && !readonly"></quix-note-hints>
   </run-hint>
 </bi-runner>

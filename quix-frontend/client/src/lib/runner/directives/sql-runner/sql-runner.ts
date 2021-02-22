@@ -264,10 +264,6 @@ export default () => {
           });
 
         scope.renderActions = () => ({html: renderActions(scope, editorInstance, runnerInstance, transclude)});
-
-        scope.getCtrlKeyName = () => {
-          return navigator.platform === 'MacIntel' ? 'Command' : 'Ctrl';
-        };
       }
     }
   };

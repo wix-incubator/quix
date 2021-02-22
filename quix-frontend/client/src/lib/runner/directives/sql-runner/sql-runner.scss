@@ -6,28 +6,4 @@ bi-sql-runner {
 
   width: 100%;
   flex-grow: 1;
-
-  run-hint {
-    display: block;
-    line-height: 0;
-
-    table {
-      tr {
-        line-height: 28px;
-      }
-
-      th:first-child {
-        padding-right: 12px;
-        text-align: right;
-      }
-
-      th:last-child {
-        text-align: left;
-      }
-
-      .bi-tag--sm {
-        color: $white;
-      }
-    }
-  }
 }
