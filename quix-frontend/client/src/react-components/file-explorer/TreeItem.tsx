@@ -113,12 +113,11 @@ export const TreeItem = ({
       onIconClick={() => onClick()}
       icon={isLoading ?
         <span>
-          <span className="bi-spinner--xs">
+          <span data-hook="tree-item-loading-icon" className="bi-spinner--xs">
           </span>
         </span>
       : null
       }
-      data-hook="tree-item"
       key={node.id}
       nodeId={node.id}
       label={

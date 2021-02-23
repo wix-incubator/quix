@@ -163,9 +163,9 @@ export const FileExplorer = (props: FileExplorerProps) => {
           return (
             <TreeView
               key={sub.id}
-              defaultCollapseIcon={<ArrowDropDownIcon />}
+              defaultCollapseIcon={<ArrowDropDownIcon data-hook="tree-item-collapse-icon" />}
               defaultExpanded={[]}
-              defaultExpandIcon={<ArrowRightIcon />}
+              defaultExpandIcon={<ArrowRightIcon data-hook="tree-item-expand-icon" />}
               disableSelection={true}
               expanded={expanded}
             >

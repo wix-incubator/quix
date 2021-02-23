@@ -2,8 +2,10 @@ import { Testkit } from '../../../test/e2e/driver';
 
 const enum Hooks {
   FileExplorerTab = 'app-menu-DB Explorer',
-  TreeItem = 'tree-item',
   TreeItemContent = 'tree-item-content',
+  TreeItemLoadingIcon = 'tree-item-loading-icon',
+  TreeItemCollapseIcon = 'tree-item-collapse-icon',
+  TreeItemExpandIcon = 'tree-item-expand-icon',
 }
 
 export class FileExplorerTestkit extends Testkit {
@@ -12,7 +14,7 @@ export class FileExplorerTestkit extends Testkit {
   }
   
   async numOfTreeItems() {
-    return (await this.query.hooks(Hooks.TreeItem)).length;
+    return (await this.query.hooks(Hooks.TreeItemContent)).length;
   }
 
   async clickOnTreeItemByPosition(position: number) {
@@ -36,6 +38,10 @@ export class FileExplorerTestkit extends Testkit {
   async clickOnItemByName(name: string) {
     const position = await this.getTreeItemIndexByName(name);
     return this.clickOnTreeItemByPosition(position);
+  }
+
+  async countLoadingState() {
+    return (await this.query.hooks(Hooks.TreeItemLoadingIcon)).length;
   }
 
 }
