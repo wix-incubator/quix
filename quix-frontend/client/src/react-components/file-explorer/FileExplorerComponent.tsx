@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import {TreeView} from '@material-ui/lab';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import {TreeItem, Node} from './TreeItem';
 
 const useStyles = makeStyles({
