@@ -38,11 +38,9 @@ export interface Tree {
   children?: Tree[];
 }
 
-// const getAllNodeSubIds = (node: Tree, subIds: string[], withLazy: boolean = true) => {
 const getAllNodeSubIds = (node: Tree, subIds: string[] = [], withLazy: boolean = true) => {
   if (!node.children) {
     return subIds;
-    // return;
   }
 
   node.children.map(child => {

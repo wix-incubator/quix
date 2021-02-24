@@ -6,6 +6,7 @@ const enum Hooks {
   TreeItemLoadingIcon = 'tree-item-loading-icon',
   TreeItemCollapseIcon = 'tree-item-collapse-icon',
   TreeItemExpandIcon = 'tree-item-expand-icon',
+  FileExplorerSearch = 'file-explorer-search',
 }
 
 export class FileExplorerTestkit extends Testkit {
@@ -14,7 +15,21 @@ export class FileExplorerTestkit extends Testkit {
   }
   
   async numOfTreeItems() {
+    const res = (await this.query.hooks(Hooks.TreeItemContent));
+    console.log(res);
     return (await this.query.hooks(Hooks.TreeItemContent)).length;
+  }
+
+  async numOfLoadingTreeItems() {
+    return (await this.query.hooks(Hooks.TreeItemLoadingIcon)).length;
+  }
+
+  async numOfOpenedTreeItems() {
+    return (await this.query.hooks(Hooks.TreeItemCollapseIcon)).length;
+  }
+
+  async numOfClosedTreeItems() {
+    return (await this.query.hooks(Hooks.TreeItemExpandIcon)).length;
   }
 
   async clickOnTreeItemByPosition(position: number) {
@@ -40,8 +55,8 @@ export class FileExplorerTestkit extends Testkit {
     return this.clickOnTreeItemByPosition(position);
   }
 
-  async countLoadingState() {
-    return (await this.query.hooks(Hooks.TreeItemLoadingIcon)).length;
+  async search(query: string) {
+    return this.keyboard.type(Hooks.FileExplorerSearch, query);
   }
 
 }

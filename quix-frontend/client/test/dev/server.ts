@@ -8,12 +8,33 @@ import {setupMockWs, setupSubscriptionMockWs} from './websocket-mock';
 
 const proxyBaseUrl = 'http://localhost:3000';
 
-export function start(port = process.env.PORT || '3000') {
+interface Options {
+  [path:string]: {
+    delay: number;
+  };
+}
+
+export function start(port = process.env.PORT || '3000', options: Options = {}) {
   const app = express();
   const server = http.createServer(app);
   expressWs(app, server);
 
   app.use(express.json());
+
+  app.use((req, res, next) => {
+    let waitForDelay = false;
+
+    Object.keys(options).map(option => {
+      if (req.path.includes(option)) {
+        waitForDelay = true;
+        setTimeout(next, options[option].delay);
+      }
+    });
+
+    if (!waitForDelay) {
+      next();
+    }
+  });
 
   app.post('/mock/pattern', (req, res) => {
     const { pattern, payload } = req.body;
