@@ -9,12 +9,22 @@ const COMPONENT_ANIMATION_TIME = 350;
 describe('FileExplorer ::', () => {
   let driver: Driver, testkit: FileExplorerTestkit;
 
-  const goToDbExplorer = async (items: ServerTreeItem[] = []) => {
+  const goToDbExplorer = async (items: ServerTreeItem[] = [], delay = 0) => {
     const tree = createMockDbExplorer(items);
 
-    await driver.mock.http(`/api/db/:type/explore`, tree);
-    await driver.mock.http(`/api/db/:type/search`, tree);
+    await driver.mock.http(`/api/db/:type/explore`, tree, {delay});
+    await driver.mock.http(`/api/db/:type/search`, tree, {delay});
     await driver.goto('/home');
+  }
+
+  const mockTableResponse = async (tableName: string, delay = 0) => {
+    const columns = {
+      children: [{
+        dataType: 'varchar',
+        name: 'column_of_' + tableName
+      }]
+    }
+    await driver.mock.http(`/api/db/:type/explore/:catalog/:schema/:table`, columns, {delay})
   }
 
   const ToggleTreeItemByName = async (name: string, wait = true) => {
@@ -96,13 +106,12 @@ describe('FileExplorer ::', () => {
     expect(await testkit.numOfTreeItems()).to.eq(3);
     expect(await testkit.isTreeItemExistsByName('childTest2')).to.be.true;
 
-
     await ToggleTreeItemByName('parentTest');
     expect(await testkit.numOfTreeItems()).to.eq(1);
     expect(await testkit.isTreeItemExistsByName('parentTest')).to.be.true;
   });
 
-  it('should close all tree items when reopen fileExplorer tab', async () => {
+  it('should close all tree items when reopening fileExplorer tab', async () => {
     await goToDbExplorer(
       [
         createMockDbExplorerItem({
@@ -159,12 +168,15 @@ describe('FileExplorer ::', () => {
       ]
     );
 
+    mockTableResponse('childTableTest1', 1000);
+    mockTableResponse('childTableTest2', 1000);
+
     await testkit.toggleFileExplorerTab();
     await ToggleTreeItemByName('parentTest');
     await ToggleTreeItemByName('childSchemaTest1');
-    await ToggleTreeItemByName('childTableTest1', false);
+    await ToggleTreeItemByName('childTableTest1');
     expect(await testkit.numOfLoadingTreeItems()).to.eq(1);
-    await ToggleTreeItemByName('childTableTest2', false);
+    await ToggleTreeItemByName('childTableTest2');
     expect(await testkit.numOfLoadingTreeItems()).to.eq(2);
   });
 
@@ -195,6 +207,8 @@ describe('FileExplorer ::', () => {
     await ToggleTreeItemByName('childTableTest1');
     expect(await testkit.numOfTreeItems()).to.eq(4);
     await ToggleTreeItemByName('childTableTest1');
+
+    mockTableResponse('childTableTest1', 10000);
     await ToggleTreeItemByName('childTableTest1', false);
     expect(await testkit.numOfOpenedTreeItems()).to.eq(3);
   });

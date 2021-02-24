@@ -77,13 +77,13 @@ export class Driver {
 export class Mock {
   constructor () {}
 
-  async http(pattern: string, payload: any) {
+  async http(pattern: string, payload: any, options?: {}) {
     return fetch(`${baseURL}/mock/pattern`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({pattern, payload})
+      body: JSON.stringify({pattern, payload, options})
     });
   }
 
