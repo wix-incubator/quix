@@ -8,8 +8,8 @@ import {
 } from '@nestjs/typeorm';
 import {Connection, Repository} from 'typeorm';
 import uuid from 'uuid/v4';
-import {FileType} from 'shared';
-import {ConfigService, ConfigModule} from 'config';
+import {FileType} from '@wix/quix-shared';
+import {ConfigService, ConfigModule} from '../../config';
 import {range} from 'lodash';
 
 import {
@@ -21,13 +21,15 @@ import {
   FileTreeRepository,
   DbUser,
   DbFavorites,
-} from 'entities';
+} from '../../entities';
 import {DbAction} from '../event-sourcing/infrastructure/action-store/entities/db-action.entity';
 import {FoldersService} from './folders/folders.service';
 import {NotebookService} from './notebooks/notebooks.service';
 import {FavoritesService} from './favorites/favorites.service';
 import {WebApiModule} from './web-api.module';
-import {EntityType} from 'common/entity-type.enum';
+import {EntityType} from '../../common/entity-type.enum';
+import {AuthModuleConfiguration} from '../auth/auth.module';
+import {AuthTypes} from '../auth/types';
 
 jest.setTimeout(60000);
 
@@ -131,10 +133,14 @@ describe('web-api module', () => {
   beforeAll(async () => {
     module = await Test.createTestingModule({
       imports: [
+        AuthModuleConfiguration.create({
+          type: AuthTypes.FAKE,
+          cookieName: 'foo',
+        }), // consider restructuring web-api module so it won't import auth. feels wrong needing to importing authModule here
         WebApiModule,
-        ConfigModule,
+        ConfigModule.create(),
         TypeOrmModule.forRootAsync({
-          imports: [ConfigModule],
+          imports: [],
           useFactory: async (cs: ConfigService) =>
             cs.getDbConnection([
               DbFileTreeNode,

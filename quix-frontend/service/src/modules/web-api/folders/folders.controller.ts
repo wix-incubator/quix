@@ -9,12 +9,12 @@ import {
 } from '@nestjs/common';
 import {FoldersService} from './folders.service';
 import {QuixEventBus} from '../../event-sourcing/quix-event-bus';
-import {IGoogleUser, User} from 'modules/auth';
-import {AuthGuard} from '@nestjs/passport';
-import {DemoModeInterceptor} from 'common/demo-mode-interceptor';
+import {IExternalUser, User} from '../../../modules/auth';
+import {AuthGuard} from '../../auth';
+import {DemoModeInterceptor} from '../../../common/demo-mode-interceptor';
 
 @Controller('/api')
-@UseGuards(AuthGuard())
+@UseGuards(AuthGuard)
 @UseInterceptors(DemoModeInterceptor)
 export class FoldersController {
   constructor(
@@ -23,7 +23,7 @@ export class FoldersController {
   ) {}
 
   @Get('files')
-  async getFullTree(@User() user: IGoogleUser) {
+  async getFullTree(@User() user: IExternalUser) {
     const {email} = user;
     const list = await this.foldersService.getFilesForUser(email);
 

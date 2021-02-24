@@ -161,3 +161,10 @@ lazy val quixPythonModule = (project in file("quix-modules/quix-python-module"))
     // https://mvnrepository.com/artifact/net.sf.py4j/py4j
     libraryDependencies += "net.sf.py4j" % "py4j" % "0.10.9",
   ) ++ baseSettings)
+
+lazy val root = (project in file("."))
+  .aggregate(quixApi, quixCore, quixAthenaModule, quixBigqueryModule, quixJdbcModule, quixPrestoModule, quixPythonModule)
+  .settings(
+    crossScalaVersions := Nil,
+    publish / skip := true,
+  )

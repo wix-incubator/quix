@@ -3,14 +3,14 @@
 
 import {TestingModule} from '@nestjs/testing';
 import 'reflect-metadata';
-import {INote, NoteActions, createNote} from 'shared/entities/note';
-import {NoteActionT} from 'shared/entities/note/actions';
-import {NotebookActions} from 'shared/entities/notebook';
-import {FileActions, FileType} from 'shared/entities/file';
+import {INote, NoteActions, createNote} from '@wix/quix-shared/entities/note';
+import {NoteActionT} from '@wix/quix-shared/entities/note/actions';
+import {NotebookActions} from '@wix/quix-shared/entities/notebook';
+import {FileActions, FileType} from '@wix/quix-shared/entities/file';
 import {QuixEventBus} from './quix-event-bus';
 import {QuixEventBusDriver} from './quix-event-bus.driver';
 import {range, reject, find} from 'lodash';
-import {EntityType} from 'common/entity-type.enum';
+import {EntityType} from '../../common/entity-type.enum';
 import {MockDataBuilder} from 'test/builder';
 import {IAction} from './infrastructure/types';
 

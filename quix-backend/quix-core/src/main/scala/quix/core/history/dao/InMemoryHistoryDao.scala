@@ -63,7 +63,7 @@ object InMemoryHistoryDao {
       execution.user.email == email
 
     case Filter.Query(text) =>
-      execution.statements.exists(_.contains(text))
+      execution.statements.exists(_.toLowerCase.contains(text.toLowerCase))
 
     case Filter.CompoundFilter(filters) =>
       filters.forall(filter => predicate(filter)(execution))

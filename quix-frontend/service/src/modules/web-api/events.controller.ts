@@ -1,22 +1,19 @@
 import {
   Body,
   Controller,
-  Post,
-  Get,
-  UsePipes,
-  UseGuards,
   HttpCode,
-  Param,
+  Post,
   Query,
+  UseGuards,
+  UsePipes,
 } from '@nestjs/common';
-import {AnyAction} from 'shared/entities/common/common-types';
+import {AuthGuard} from '../auth';
+import {AnyAction} from '@wix/quix-shared/entities/common/common-types';
+import {IExternalUser, User} from '../../modules/auth';
+import {EventsService} from '../../modules/event-sourcing/events.service';
+import {IAction} from '../../modules/event-sourcing/infrastructure/types';
 import {BaseActionValidation} from '../event-sourcing/base-action-validation';
 import {QuixEventBus} from '../event-sourcing/quix-event-bus';
-import {User, IGoogleUser} from 'modules/auth';
-import {AuthGuard} from '@nestjs/passport';
-import {IAction} from 'modules/event-sourcing/infrastructure/types';
-import {takeRightWhile} from 'lodash';
-import {EventsService} from 'modules/event-sourcing/events.service';
 
 @Controller('/api/events')
 export class EventsController {
@@ -26,12 +23,12 @@ export class EventsController {
   ) {}
 
   @Post()
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard)
   @UsePipes(BaseActionValidation)
   @HttpCode(200)
   async pushEvents(
     @Body() userAction: AnyAction | AnyAction[],
-    @User() user: IGoogleUser,
+    @User() user: IExternalUser,
     @Query('sessionId') sessionId: string,
   ) {
     if (Array.isArray(userAction)) {

@@ -9,11 +9,11 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import {IFile, FileType} from 'shared/entities/file';
+import {IFile, FileType} from '@wix/quix-shared/entities/file';
 import {DbNotebook} from '../notebook/dbnotebook.entity';
 import {DbFolder} from '../folder/folder.entity';
 import {dbConf} from '../../config/db-conf';
-import {IUser} from 'shared';
+import {IUser} from '@wix/quix-shared';
 
 @Entity({name: 'tree_nodes'})
 export class DbFileTreeNode {
@@ -48,13 +48,9 @@ export class DbFileTreeNode {
   @Column({nullable: true})
   parentId?: string;
 
-  @OneToOne(
-    type => DbNotebook,
-    notebook => notebook.fileNode,
-    {
-      onDelete: 'CASCADE',
-    },
-  )
+  @OneToOne(type => DbNotebook, notebook => notebook.fileNode, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn()
   notebook?: DbNotebook;
 

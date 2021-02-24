@@ -1,13 +1,12 @@
 import {NestFactory} from '@nestjs/core';
 import {AppModule} from './app.module';
 import {NestExpressApplication} from '@nestjs/platform-express';
-import path from 'path';
 import velocityEngine from './template-engine/velocity';
 import cookieParser from 'cookie-parser';
 import {createConnection} from 'typeorm';
-import {createMysqlConf} from 'config/db-connection';
-import {getEnv} from 'config/env/env';
-import {DbMetadata} from 'entities/version-metadata.entity';
+import {createMysqlConf} from './config/db-connection';
+import {getEnv} from './config/env/env';
+import {DbMetadata} from './entities/version-metadata.entity';
 import {Logger} from '@nestjs/common';
 import {
   checkSchemaVersion,
@@ -44,6 +43,8 @@ async function bootstrap() {
   app.engine('.vm', velocityEngine());
   app.use(cookieParser());
   app.useWebSocketAdapter(new WsAdapter(app));
+
   await app.listen(env.HttpPort);
 }
+
 bootstrap();

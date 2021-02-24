@@ -1,6 +1,6 @@
 /* tslint:disable:no-console */
 import {ComputedSettings} from './types';
-import {ModuleEngineType, ModuleEngineToSyntaxMap} from 'shared';
+import {ModuleEngineType, ModuleEngineToSyntaxMap} from '@wix/quix-shared';
 import {engineToClientComponents} from './engine-settings';
 
 export const computedSettingsDefaults: ComputedSettings = {

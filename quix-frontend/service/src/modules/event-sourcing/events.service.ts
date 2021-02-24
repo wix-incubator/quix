@@ -4,21 +4,11 @@ import {Observable, Subscriber} from 'rxjs';
 
 @Injectable()
 export class EventsService {
-  eventLog: {[id: string]: IAction[]} = {};
   userIdToSessionIds: {[userId: string]: string[]} = {};
   subscribers: {[sessionId: string]: Subscriber<IAction>} = {};
 
   logEvent(action: IAction) {
-    const email = action.user;
-    if (!this.eventLog[email]) {
-      this.eventLog[email] = [];
-    }
-    this.eventLog[email].push(action);
     this.sendMessage(action);
-  }
-
-  getEvents(email: string): IAction[] {
-    return this.eventLog[email];
   }
 
   getEventStream(sessionId: string, userId: string): Observable<IAction> {
@@ -26,6 +16,24 @@ export class EventsService {
       this.subscribers[sessionId] = subscriber;
       this.associateSessionIdWithUserId(sessionId, userId);
     });
+  }
+
+  closeEventStream(sessionId: string, userId: string) {
+    const subscriber = this.subscribers[sessionId];
+    if (subscriber) {
+      subscriber.complete();
+      delete this.subscribers[sessionId];
+    }
+    if (this.userIdToSessionIds[userId]) {
+      const subscribers = this.userIdToSessionIds[userId].filter(
+        s => s !== sessionId,
+      );
+      if (subscribers.length) {
+        this.userIdToSessionIds[userId] = subscribers;
+      } else {
+        delete this.userIdToSessionIds[userId];
+      }
+    }
   }
 
   associateSessionIdWithUserId(sessionId: string, userId: string) {

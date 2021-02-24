@@ -1,5 +1,6 @@
-import {Module} from '@nestjs/common';
+import {DynamicModule, Module} from '@nestjs/common';
 import {ConfigService, DefaultConfigService} from './config.service';
+import {EnvSettings} from './env';
 
 const configServiceProvider = {
   provide: ConfigService,
@@ -17,4 +18,17 @@ const globalEnvProvider = {
   providers: [configServiceProvider, globalEnvProvider],
   exports: [configServiceProvider],
 })
-export class ConfigModule {}
+export class ConfigModule {
+  static create(overrides: Partial<EnvSettings> = {}): DynamicModule {
+    return {
+      module: ConfigModule,
+      global: true,
+      providers: [
+        {
+          provide: 'CONFIG_OVERRIDES',
+          useValue: overrides,
+        },
+      ],
+    };
+  }
+}

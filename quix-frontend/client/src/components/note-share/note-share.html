@@ -1,0 +1,38 @@
+<div class="bi-c-h bi-s-v--x2">
+  <div class="bi-c-h bi-s-v--x05">
+    <div class="bi-spread">
+      <div class="bi-align bi-s-h--x05 bi-muted">
+        <i class="bi-icon">link</i>
+        <span class="bi-text--ui bi-text--md">Share</span>
+      </div>
+
+      <bi-copy-to-clipboard text="::shareUrl"></bi-copy-to-clipboard>
+    </div>
+
+
+    <div class="bi-panel">
+      <div class="bi-panel-content bi-theme--light">
+        <span class="bi-muted">{{::shareUrl}}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="bi-border--bottom"></div>
+
+  <div class="bi-c-h bi-s-v--x05">
+    <div class="bi-spread">
+      <div class="bi-align bi-s-h--x05 bi-muted">
+        <i class="bi-icon">code</i>
+        <span class="bi-text--ui bi-text--md">Embed</span>
+      </div>
+
+      <bi-copy-to-clipboard text="::embedHtml"></bi-copy-to-clipboard>
+    </div>
+
+    <div class="bi-panel">
+      <div class="bi-panel-content bi-theme--light">
+        <span class="bi-muted">{{::embedHtml}}</span>
+      </div>
+    </div>
+  </div>
+</div>

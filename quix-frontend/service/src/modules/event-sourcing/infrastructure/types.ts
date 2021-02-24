@@ -1,4 +1,4 @@
-import {BaseAction} from 'shared/entities/common/common-types';
+import {BaseAction} from '@wix/quix-shared/entities/common/common-types';
 export interface IEventData {
   [key: string]: any;
 }

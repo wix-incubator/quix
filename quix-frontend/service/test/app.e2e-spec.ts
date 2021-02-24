@@ -5,17 +5,16 @@ import {AppModule} from './../src/app.module';
 import {INestApplication, Logger} from '@nestjs/common';
 import {ConfigService, EnvSettings} from '../src/config';
 import nock from 'nock';
-import {IGoogleUser} from '../src/modules/auth/types';
+import {IExternalUser} from '../src/modules/auth/types';
 import {E2EDriver} from './driver';
 import {E2EMockDataBuilder} from './builder';
 import cookieParser = require('cookie-parser');
-import {sanitizeUserEmail} from 'common/user-sanitizer';
+import {sanitizeUserEmail} from '../src/common/user-sanitizer';
 import {getConnectionToken} from '@nestjs/typeorm';
 import {Connection} from 'typeorm';
 import WebSocket from 'ws';
 import './custom-matchers';
 import {WsAdapter} from '@nestjs/platform-ws';
-import uuid from 'uuid';
 
 let envSettingsOverride: Partial<EnvSettings> = {};
 
@@ -26,12 +25,12 @@ class E2EConfigService extends ConfigService {
   }
 }
 
-const user1profile: IGoogleUser = {
+const user1profile: IExternalUser = {
   email: 'testing@quix.com',
   id: '111111111',
   name: 'Testing User',
 };
-const user2profile: IGoogleUser = {
+const user2profile: IExternalUser = {
   email: 'secondUser@quix.com',
   id: '222222222',
   name: 'second User',
@@ -39,6 +38,7 @@ const user2profile: IGoogleUser = {
 };
 
 describe('Application (e2e)', () => {
+  jest.setTimeout(60000);
   let app: INestApplication;
   let driver: E2EDriver;
   let builder: E2EMockDataBuilder;
@@ -163,7 +163,7 @@ describe('Application (e2e)', () => {
     });
 
     const expectObject = (json: object) => ({
-      toNotLeakUserData(user: IGoogleUser) {
+      toNotLeakUserData(user: IExternalUser) {
         expect(JSON.stringify(json)).toEqual(
           expect.not.stringContaining(user2profile.email),
         );
@@ -187,19 +187,21 @@ describe('Application (e2e)', () => {
 
       await driver.doLogin('user2');
       users = await driver.as('user1').get('users');
-
-      expect(users).toMatchArrayAnyOrder([
-        {
-          id: user1profile.email,
-          name: user1profile.name,
-          rootFolder: expect.any(String),
-        },
-        {
-          id: expect.stringContaining('**'),
-          name: 'Quix User',
-          rootFolder: expect.any(String),
-        },
-      ]);
+      expect(users).toMatchArrayAnyOrder(
+        [
+          {
+            id: expect.stringContaining('**'),
+            name: 'Quix User',
+            rootFolder: expect.any(String),
+          },
+          {
+            id: user1profile.email,
+            name: user1profile.name,
+            rootFolder: expect.any(String),
+          },
+        ],
+        'name',
+      );
       expectObject(users).toNotLeakUserData(user2profile);
     });
 

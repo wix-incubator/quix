@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {EnvSettings} from 'config';
-import {ConfigService} from 'config';
+import {EnvSettings} from '../config';
+import {ConfigService} from '../config';
 import {sanitizeUserEmail, sanitizeUserName} from './user-sanitizer';
-import {IUser} from 'shared';
+import {IUser} from '@wix/quix-shared';
 
 @Injectable()
 export class DemoModeInterceptor implements NestInterceptor {

@@ -1,9 +1,9 @@
 import {MiddlewareConsumer, Module, NestModule} from '@nestjs/common';
 import httpProxy from 'http-proxy-middleware';
-import {ConfigService, ConfigModule} from 'config';
+import {ConfigService, ConfigModule} from '../../config';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [],
   controllers: [],
   providers: [],
 })
@@ -11,12 +11,16 @@ export class ProxyDbApiBackend implements NestModule {
   constructor(private configService: ConfigService) {}
 
   configure(consumer: MiddlewareConsumer) {
+    let backendUrl = this.configService.getEnvSettings().QuixBackendInternalUrl;
+    
+    if (['http://', 'https://'].every(s => !backendUrl.startsWith(s))) {
+      backendUrl = 'http://' + backendUrl;
+    }
+
     consumer
       .apply(
         httpProxy({
-          target: `http://${
-            this.configService.getEnvSettings().QuixBackendInternalUrl
-          }`,
+          target: backendUrl,
           changeOrigin: true,
         }),
       )
@@ -24,9 +28,7 @@ export class ProxyDbApiBackend implements NestModule {
     consumer
       .apply(
         httpProxy({
-          target: `http://${
-            this.configService.getEnvSettings().QuixBackendInternalUrl
-          }`,
+          target: backendUrl,
           changeOrigin: true,
           pathRewrite: {
             '^/api/history': '/api/history/executions',

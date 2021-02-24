@@ -1,7 +1,7 @@
 declare global {
   namespace jest {
     interface Matchers<R> {
-      toMatchArrayAnyOrder(expected: any): R;
+      toMatchArrayAnyOrder(expected: any, sortBy?: string): R;
     }
   }
 }

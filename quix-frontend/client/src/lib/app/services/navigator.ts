@@ -109,7 +109,7 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
   getUrl(state?: string, params?: Object): string {
     state = state || inject('$state').current.name;
 
-    return `${document.location.host + document.location.pathname}${inject('$state').href(state, params, {relative: true, inherit: false})}`;
+    return `${document.location.protocol}//${document.location.host}${document.location.pathname}${inject('$state').href(state, params, {relative: true, inherit: false})}`;
   }
 
   goHome() {

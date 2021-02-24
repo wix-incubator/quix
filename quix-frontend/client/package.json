@@ -1,6 +1,6 @@
 {
   "name": "@wix/quix-client",
-  "version": "1.0.13",
+  "version": "1.0.21",
   "license": "MIT",
   "description": "Presto-based notebook manager",
   "author": {
@@ -27,6 +27,7 @@
     "precommit": "yoshi lint",
     "pretest": "npm run build",
     "test": "yoshi test",
+    "test:ci": "yoshi test",
     "build": "tsc -b && yoshi build",
     "posttest": "yoshi lint",
     "release": "yoshi release"
@@ -35,7 +36,7 @@
     "@types/angular": "~1.5.0",
     "@types/chai": "~4.0.0",
     "@types/cookie": "^0.3.3",
-    "@types/express": "~4.0.0",
+    "@types/express": "^4.0.0",
     "@types/express-ws": "^3.0.0",
     "@types/lodash": "^4.14.149",
     "@types/mocha": "~2.2.0",
@@ -48,7 +49,7 @@
     "husky": "~0.14.0",
     "puppeteer": "^1.20.0",
     "tiny-worker": "^2.3.0",
-    "typescript": "^3.9.7",
+    "typescript": "^4.0.0",
     "utility-types": "^3.10.0",
     "velocity": "~0.7.0",
     "yoshi": "^3.23.0"
@@ -57,7 +58,7 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
-    "@wix/quix-shared": "^1.0.5",
+    "@wix/quix-shared": "^1.0.6",
     "angular": "^1.7.9",
     "angular-dragdrop": "^1.0.13",
     "angular-resource": "^1.7.9",
@@ -71,7 +72,7 @@
     "change-case": "^3.1.0",
     "classnames": "^2.2.6",
     "dialog-polyfill": "^0.4.10",
-    "highlight.js": "^9.17.1",
+    "highlight.js": "^10.4.1",
     "jquery": "^3.3.1",
     "jquery-datetimepicker": "^2.5.18",
     "jquery-ui": "^1.12.1",

@@ -1,4 +1,4 @@
-import {IFilePathItem, INotebook} from 'shared';
+import {IFilePathItem, INotebook} from '@wix/quix-shared';
 import {
   BeforeInsert,
   BeforeUpdate,

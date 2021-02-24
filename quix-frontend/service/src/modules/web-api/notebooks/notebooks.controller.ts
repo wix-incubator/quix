@@ -7,11 +7,11 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import {IUser} from 'shared';
-import {User} from 'modules/auth';
+import {IUser} from '@wix/quix-shared';
+import {User} from '../../../modules/auth';
 import {NotebookService} from './notebooks.service';
-import {AuthGuard} from '@nestjs/passport';
-import {DemoModeInterceptor} from 'common/demo-mode-interceptor';
+import {AuthGuard} from '../../auth';
+import {DemoModeInterceptor} from '../../../common/demo-mode-interceptor';
 
 @Controller('/api/notebook')
 @UseInterceptors(DemoModeInterceptor)
@@ -19,7 +19,7 @@ export class NotebookController {
   constructor(private notebookService: NotebookService) {}
 
   @Get(':id')
-  @UseGuards(AuthGuard())
+  @UseGuards(AuthGuard)
   async getNotebook(@User() user: IUser, @Param('id') id: string) {
     const notebook = await this.notebookService.getNotebook(user.email, id);
 

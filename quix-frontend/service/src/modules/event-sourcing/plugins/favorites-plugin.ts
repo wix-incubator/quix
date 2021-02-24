@@ -1,8 +1,11 @@
 import {Injectable} from '@nestjs/common';
 import {InjectEntityManager} from '@nestjs/typeorm';
-import {EntityType} from 'common/entity-type.enum';
-import {DbFavorites} from 'entities';
-import {NotebookActions, NotebookActionTypes} from 'shared/entities/notebook';
+import {EntityType} from '../../../common/entity-type.enum';
+import {DbFavorites} from '../../../entities';
+import {
+  NotebookActions,
+  NotebookActionTypes,
+} from '@wix/quix-shared/entities/notebook';
 import {EntityManager} from 'typeorm';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {QuixHookNames} from '../types';

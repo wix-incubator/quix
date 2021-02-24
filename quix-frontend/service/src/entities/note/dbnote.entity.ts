@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   CreateDateColumn,
 } from 'typeorm';
-import {INote, IBaseNote} from 'shared/entities/note';
+import {INote, IBaseNote} from '@wix/quix-shared/entities/note';
 import {DbNotebook} from '../notebook/dbnotebook.entity';
 import {dbConf} from '../../config/db-conf';
 
@@ -39,11 +39,7 @@ export class DbNote {
   @CreateDateColumn(dbConf.dateCreated)
   dateCreated!: number;
 
-  @ManyToOne(
-    type => DbNotebook,
-    n => n.notes,
-    {onDelete: 'CASCADE'},
-  )
+  @ManyToOne(type => DbNotebook, n => n.notes, {onDelete: 'CASCADE'})
   notebook?: DbNotebook;
 
   @Column()

@@ -4,7 +4,7 @@ import {
   EventBusMiddleware as Middleware,
   HookFn,
 } from './types';
-import {Dictionary} from 'global-types';
+import {Dictionary} from '../../../../types';
 import {Context} from './context';
 
 describe('event bus', () => {
@@ -27,9 +27,7 @@ describe('event bus', () => {
   describe('middlewares', () => {
     it('should call a middleware', async () => {
       const spy = jest.fn((action, api, next) => next(action));
-      const bus = EventBusBuilder()
-        .addMiddleware(spy)
-        .build();
+      const bus = EventBusBuilder().addMiddleware(spy).build();
       await bus.emit({type: 'foo.create', id: '1', user: 'foo'});
 
       expect(spy.mock.calls).toHaveLength(1);
@@ -40,9 +38,7 @@ describe('event bus', () => {
 
     it('should reject on timeout if callback is not called', async () => {
       const spy = jest.fn();
-      const bus = EventBusBuilder()
-        .addMiddleware(spy)
-        .build({timeout: 300});
+      const bus = EventBusBuilder().addMiddleware(spy).build({timeout: 300});
       const rv = bus.emit({type: 'foo.create', id: '1', user: 'foo'});
 
       return rv.catch((e: Error) => {

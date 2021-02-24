@@ -1,6 +1,6 @@
-import {FileType, IFile, IFilePathItem} from 'shared/entities/file';
-import {DbFileTreeNode} from 'entities';
-import {extractOwnerDetails} from 'entities/utils';
+import {FileType, IFile, IFilePathItem} from '@wix/quix-shared/entities/file';
+import {DbFileTreeNode} from '../../../entities';
+import {extractOwnerDetails} from '../../../entities/utils';
 
 /**
  * @param list The list dbNodes you want to convert to a IFile

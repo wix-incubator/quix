@@ -1,4 +1,3 @@
-export {IGoogleUser} from './types';
-export {User} from './user-decorator';
+export {IExternalUser} from './types';
+export {User, AuthGuard} from './user-decorator';
 export {UsersService} from './users.service';
-export {} from './common-auth';

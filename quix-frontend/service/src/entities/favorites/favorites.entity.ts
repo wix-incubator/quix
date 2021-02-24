@@ -1,5 +1,5 @@
-import {EntityType} from 'common/entity-type.enum';
-import {dbConf} from 'config/db-conf';
+import {EntityType} from '../../common/entity-type.enum';
+import {dbConf} from '../../config/db-conf';
 import {Column, Entity, Index} from 'typeorm';
 
 @Entity({name: 'favorites'})

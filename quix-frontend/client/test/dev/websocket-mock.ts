@@ -1,5 +1,5 @@
 import * as WebSocket from 'ws';
-import express from 'express';
+import {Router, Application} from 'express';
 
 const successEvents = [
   {event:'start',data:{id:'d85eed1e-fec8-4f1c-abba-5ab8593ea46b', 'numOfQueries':1}},
@@ -61,8 +61,8 @@ const failEvents = [
   {event: 'end', data: {id: '274370d2-6755-4d3c-8248-b573a63523d2'}}
 ];
 
-export const setupMockWs = (app: express.Express) => {
-  const router = express.Router();
+export const setupMockWs = (app: Application) => {
+  const router = Router();
 
   router.ws('/:type', (ws, req) => {
     ws.on('message', async (msg) => {
@@ -85,9 +85,9 @@ export const setupMockWs = (app: express.Express) => {
   app.use('/mock/api/v1/execute/', router);
 }
 
-export const setupSubscriptionMockWs = (app: express.Express) => {
+export const setupSubscriptionMockWs = (app: Application) => {
   const sockets = [];
-  const router = express.Router();
+  const router = Router();
 
   router.ws('/', (ws, req) => {
     ws.on('message', async (msg) => {
@@ -117,7 +117,7 @@ const promisifiedSend = (WS: WebSocket) => (data: any) => new Promise((resolve, 
     if (err) {
       reject(err);
     } else {
-      resolve()
+      resolve(void 0)
     }
   });
 });

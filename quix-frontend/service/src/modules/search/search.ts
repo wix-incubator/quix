@@ -1,12 +1,12 @@
-import {dbConf} from 'config/db-conf';
+import {dbConf} from '../../config/db-conf';
 import {Repository} from 'typeorm';
 import {DbNote} from '../../entities';
 import {isValidQuery, parse} from './parser';
 import {ISearch} from './types';
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {convertDbNote} from 'entities/note/dbnote.entity';
-import {INote} from 'shared';
+import {convertDbNote} from '../../entities/note/dbnote.entity';
+import {INote} from '@wix/quix-shared';
 
 @Injectable()
 export class SearchService implements ISearch {
@@ -51,10 +51,7 @@ export class SearchService implements ISearch {
 
       const whereSql = where.join(' AND ');
 
-      q = q
-        .take(total)
-        .skip(offset)
-        .where(whereSql, whereArgs);
+      q = q.take(total).skip(offset).where(whereSql, whereArgs);
 
       const [notes, count] = await q.getManyAndCount();
       return [notes.map(convertDbNote), count];

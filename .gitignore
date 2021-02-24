@@ -93,3 +93,5 @@ node_modules
 .terraform
 vpc.plan
 terraform.tfvars
+
+quix-frontend/.npmrc

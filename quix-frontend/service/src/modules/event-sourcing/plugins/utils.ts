@@ -1,5 +1,5 @@
 import {IAction} from '../infrastructure/types';
-import {BadAction} from 'errors';
+import {BadAction} from '../../../errors';
 import {last} from 'lodash';
 
 /**
