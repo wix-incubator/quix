@@ -15,6 +15,7 @@ import {
   createFolderPayload
 } from "@wix/quix-shared";
 import * as moment from "moment";
+import {ServerTreeItem} from '../src/components/db-sidebar/db-sidebar-types';
 
 const mocks = {
   "/api/user": () => createUser(),
@@ -167,6 +168,16 @@ ORDER BY 1
                   name: "table_with_a_very_looooooooooooooooong_name",
                   type: "table",
                   children: []
+                },
+                {
+                  name: "t1",
+                  type: "table",
+                  children: []
+                },
+                {
+                  name: "t2",
+                  type: "table",
+                  children: []
                 }
               ]
             }
@@ -176,6 +187,15 @@ ORDER BY 1
           name: "catalog2",
           type: "catalog",
           children: []
+        },
+        {
+          name: "catalog3",
+          type: "catalog",
+          children: [{
+            name: "schema",
+            type: "schema",
+            children: []
+          }]
         }
       ];
     }
@@ -331,29 +351,48 @@ export const createMockNote = (
   return createNote(notebookId, { owner: "local@quix.com", ...props });
 };
 
-export const mock = (patternOrUrl: string, patternPayload?: any) => {
+export const createMockDbExplorer = (
+  items: ServerTreeItem[] = [],
+): ServerTreeItem[] => {
+  return items.length > 0 ? items : [createMockDbExplorerItem()];
+};
+
+export const createMockDbExplorerItem = (
+  props: Partial<ServerTreeItem> = {},
+): ServerTreeItem => {
+  return {
+    name: props.name || 'treeItem',
+    type: props.type || 'catalog',
+    children: props.children || [],
+  };
+};
+
+export const mock = async (patternOrUrl: string, patternPayload?: any, options?: {}) => {
   if (patternPayload) {
-    mockOverrides[patternOrUrl] = () => patternPayload;
+    mockOverrides[patternOrUrl] = {options, getPayload: () => patternPayload};
   } else {
-    return (
-      Object.keys(mocks).reduce((res, key) => {
+    const [status, payload, delay] = Object.keys(mocks).reduce((res, key) => {
         if (!res) {
           const match = new UrlPattern(key).match(patternOrUrl);
 
           if (match) {
-            let payload = (mockOverrides[key] || mocks[key])(match);
+            let payloadResult = (mockOverrides[key]?.getPayload || mocks[key])(match);
 
-            if (payload && typeof payload[0] !== "number") {
-              payload = [200, payload];
+            if (payloadResult && typeof payloadResult[0] !== "number") {
+              payloadResult = [200, payloadResult];
             }
 
-            return payload;
+            return [...payloadResult, mockOverrides[key]?.options?.delay];
           }
         }
 
         return res;
       }, null) || [404, { message: "Mock not found" }]
-    );
+    
+    if (delay) {
+      await new Promise(res => setTimeout(res, delay));
+    }
+    return [status, payload];
   }
 };
 

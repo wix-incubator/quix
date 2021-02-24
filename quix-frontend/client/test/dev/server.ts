@@ -16,8 +16,8 @@ export function start(port = process.env.PORT || '3000') {
   app.use(express.json());
 
   app.post('/mock/pattern', (req, res) => {
-    const { pattern, payload } = req.body;
-    mock(pattern, payload);
+    const { pattern, payload, options } = req.body;
+    mock(pattern, payload, options);
 
     res.status(200).send('OK');
   });
@@ -31,9 +31,9 @@ export function start(port = process.env.PORT || '3000') {
   setupMockWs(app);
   setupSubscriptionMockWs(app);
 
-  app.all('/api/*', (req, res) => {
+  app.all('/api/*', async (req, res) => {
     if (port === '3000' || port === '3100') {
-      const [status, payload] = mock(req.path);
+      const [status, payload] = await mock(req.path);
 
       res.status(status).json(payload);
     } else {

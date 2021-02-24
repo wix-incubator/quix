@@ -44,7 +44,7 @@ export default () => {
               const {current, content} = scope.vm.menu;
 
               if (!item.template) {
-                item.onToggle(scope.app, item);
+                item.onToggle && item.onToggle(scope.app, item);
                 return;
               }
 

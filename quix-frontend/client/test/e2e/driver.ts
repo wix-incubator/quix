@@ -29,12 +29,12 @@ const evalOne = async (page: Page, selector, fn: (element: Element) => any) => {
   return page.$eval(selector, fn);
 }
 
-const evalMany = async (page: Page, selector, fn: (elements: Element[]) => any) => {
+const evalMany = async (page: Page, selector, fn: (elements: Element[], args) => any, args = {}) => {
   if (page.waitForSelector) {
     await page.waitForSelector(selector, {timeout: WAIT_TIMEOUT});
   }
 
-  return page.$$eval(selector, fn);
+  return page.$$eval(selector, fn, args);
 }
 
 export class Driver {
@@ -77,13 +77,13 @@ export class Driver {
 export class Mock {
   constructor () {}
 
-  async http(pattern: string, payload: any) {
+  async http(pattern: string, payload: any, options?: {}) {
     return fetch(`${baseURL}/mock/pattern`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({pattern, payload})
+      body: JSON.stringify({pattern, payload, options})
     });
   }
 
@@ -182,8 +182,8 @@ export class Evaluate {
     return evalOne(this.page, `[data-hook="${hook}"]`, fn);
   }
 
-  async hooks(hook: string, fn: (element: Element[]) => any) {
-   return evalMany(this.page, `[data-hook="${hook}"]`, fn);
+  async hooks(hook: string, fn: (element: Element[], args) => any, args = {}) {
+   return evalMany(this.page, `[data-hook="${hook}"]`, fn, args);
   }
 
   async attr(attr: string, fn: (element: Element) => any) {

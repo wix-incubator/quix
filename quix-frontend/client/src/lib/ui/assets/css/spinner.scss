@@ -7,11 +7,23 @@
 .bi-spinner--sm {
   @extend %spinner;
 
-  width: 20px;
-  height: 20px;
-  line-height: 20px;
+  width: 20px !important;
+  height: 20px !important;
+  line-height: 20px !important;
 
   &:after {
-    border-width: 2px;
+    border-width: 2px !important;
+  }
+}
+
+.bi-spinner--xs {
+  @extend %spinner;
+
+  width: 14px !important;
+  height: 14px !important;
+  line-height: 14px !important;
+
+  &:after {
+    border-width: 2px !important;
   }
 }
