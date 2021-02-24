@@ -6,7 +6,7 @@ import {ServerTreeItem} from '../../src/components/db-sidebar/db-sidebar-types';
 
 const COMPONENT_ANIMATION_TIME = 350;
 
-describe.only('FileExplorer ::', () => {
+describe('FileExplorer ::', () => {
   let driver: Driver, testkit: FileExplorerTestkit;
 
   const goToDbExplorer = async (items: ServerTreeItem[] = []) => {

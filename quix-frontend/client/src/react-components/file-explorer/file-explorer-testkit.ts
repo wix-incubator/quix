@@ -15,8 +15,6 @@ export class FileExplorerTestkit extends Testkit {
   }
   
   async numOfTreeItems() {
-    const res = (await this.query.hooks(Hooks.TreeItemContent));
-    console.log(res);
     return (await this.query.hooks(Hooks.TreeItemContent)).length;
   }
 
