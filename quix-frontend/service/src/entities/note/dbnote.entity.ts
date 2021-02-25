@@ -16,8 +16,13 @@ export class DbNote {
   @PrimaryColumn({...dbConf.idColumn})
   id!: string;
 
+  /** for any extra properties that might be added in the future */
   @Column({...dbConf.json, name: 'json_content'})
   jsonContent!: any;
+
+  /** for note data */
+  @Column({...dbConf.json, name: 'rich_content'})
+  richContent!: any;
 
   @Index({fulltext: true})
   @Column(dbConf.noteContent)
@@ -65,6 +70,7 @@ export const convertDbNote = (dbNote: DbNote): INote => {
     owner,
     textContent,
     jsonContent,
+    richContent,
     type,
   } = dbNote;
 
@@ -72,6 +78,7 @@ export const convertDbNote = (dbNote: DbNote): INote => {
     type,
     id,
     content: textContent,
+    richContent,
     dateCreated,
     dateUpdated,
     name,
@@ -90,13 +97,15 @@ export const convertNoteToDb = (note: INote): DbNote => {
     content,
     dateCreated,
     dateUpdated,
+    jsonContent,
   } = note;
 
   return new DbNote({
     type,
     id,
     textContent: note.content,
-    jsonContent: {},
+    jsonContent: jsonContent || {},
+    jsonExtraContent: {},
     name,
     notebookId,
     owner,

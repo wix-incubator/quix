@@ -6,19 +6,21 @@ const commonReducer = (state: INote | undefined, action: NoteActions) => {
   switch (action.type) {
     case NoteActionTypes.move:
       return state && {...state, notebookId: action.newNotebookId};
+    case NoteActionTypes.updateContent:
+      return state && {...state, richContent: action.richContent}; // update of "plain text" content happens in the default reducer
     default:
       return state;
   }
 }
 
 export const noteReducer = composeReducers(
+  commonReducer,
   createReducer('note'),
-  commonReducer
 );
 
 export const clientNoteReducer = composeReducers(
+  commonReducer,
   createClientReducer('note'),
-  commonReducer
 );
 
 export const noteListReducer = composeReducers(
