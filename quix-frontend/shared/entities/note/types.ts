@@ -6,6 +6,7 @@ export interface IBaseNote extends Omit<IEntity, 'ownerDetails'> {
   notebookId: string;
   type: string;
   content: string;
+  richContent?: Record<string, any>,
   owner: string;
 }
 

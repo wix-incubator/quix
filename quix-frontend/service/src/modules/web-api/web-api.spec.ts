@@ -65,6 +65,7 @@ function createNote(defaultUser: string, noteName: string, notebookId: string) {
     notebookId,
     dateCreated: 1,
     dateUpdated: 1,
+    richContent: {},
   });
   return note;
 }

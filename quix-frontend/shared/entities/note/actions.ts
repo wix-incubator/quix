@@ -8,10 +8,11 @@ export const NoteActions = {
     id
   }),
 
-  updateContent: (id: string, content: any) => ({
+  updateContent: (id: string, content: any, richContent?: any) => ({
     type: 'note.update.content' as const,
     id,
-    content
+    content,
+    richContent
   }),
 
   move: (id: string, newNotebookId: string) => ({
