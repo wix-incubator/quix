@@ -67,7 +67,6 @@ export const FileExplorer = (props: FileExplorerProps) => {
 
   useEffect(() => {
     const transformedNode = transformChildNodes(
-      null,
       {
         children: Array.isArray(props.tree) ? props.tree : [props.tree]
       } as Node,
@@ -86,12 +85,8 @@ export const FileExplorer = (props: FileExplorerProps) => {
     }
     forceUpdate();
   }
-
-  const transformLazy = async (index: number, subNode: Node, path: string[]) => {
-    let iteratorNode = innerTree[index];
-    
-    const transformedNode = await transformChildNodesLazy(iteratorNode, subNode, path);
-    
+  
+  const updateNode = (subNode: Node, transformedNode: Node, iteratorNode: Tree, path: string[]) => {
     const fullPath = [...path, transformedNode.id || subNode.id];
   
     for (let i = 1; i < fullPath.length; i++) {
@@ -102,19 +97,16 @@ export const FileExplorer = (props: FileExplorerProps) => {
     return iteratorNode;
   }
 
+  const transformLazy = async (index: number, subNode: Node, path: string[]) => {
+    let iteratorNode = innerTree[index];
+    const transformedNode = await transformChildNodesLazy(iteratorNode, subNode, path);
+    return updateNode(subNode, transformedNode, iteratorNode, path);
+  }
+
   const transform = (index: number, subNode: Node, path: string[]) => {
     let iteratorNode = innerTree[index];
-    
-    const transformedNode = transformChildNodes(iteratorNode, subNode, path);
-    
-    const fullPath = [...path, transformedNode.id || subNode.id];
-  
-    for (let i = 1; i < fullPath.length; i++) {
-      iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.id === fullPath[i]);
-    }
-
-    iteratorNode.children = transformedNode.children;
-    return iteratorNode;
+    const transformedNode = transformChildNodes(subNode, path);
+    return updateNode(subNode, transformedNode, iteratorNode, path);
   }
 
   const transformChildNodesLazy = async (mainNode: Node, node: Node, path: string[]): Promise<Node> => {
@@ -128,21 +120,10 @@ export const FileExplorer = (props: FileExplorerProps) => {
       transformedNode = {children: fetchedChildren} as Node;
     }
 
-    const currentNode = _.cloneDeep(transformedNode);
-    for (const [index, child] of currentNode.children.entries()) {
-      if (!child.transformed) {
-        const shouldBeLazy = !!child.children && !child.children.length;
-        const transformedChild = props.onTransformNode(child, path);
-        transformedChild.children = transformedChild.lazy && shouldBeLazy ? [{} as any] : transformedChild.children;
-        transformedChild.id = transformedChild.id || uuid();
-
-        currentNode.children[index] = transformedChild;
-      }
-    }
-    return currentNode;
+    return transformChildNodes(transformedNode, path);
   }
 
-  const transformChildNodes = (mainNode: Node, node: Node, path: string[]): Node => {
+  const transformChildNodes = (node: Node, path: string[]): Node => {
     const currentNode = _.cloneDeep(node);
     for (const [index, child] of currentNode.children.entries()) {
       if (!child.transformed) {
