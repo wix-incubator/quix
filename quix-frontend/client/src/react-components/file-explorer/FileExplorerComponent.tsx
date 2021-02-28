@@ -90,13 +90,13 @@ export const FileExplorer = (props: FileExplorerProps) => {
   }
 
   const transformLazy = async (index: number, subNode: Node, path: string[]) => {
-    let iteratorNode = innerTree[index];
+    const iteratorNode = innerTree[index];
     const transformedNode = await transformChildNodesLazy(iteratorNode, subNode, path);
     return updateNode(subNode, transformedNode, iteratorNode, path);
   }
 
   const transform = (index: number, subNode: Node, path: string[]) => {
-    let iteratorNode = innerTree[index];
+    const iteratorNode = innerTree[index];
     const transformedNode = transformChildNodes(subNode, path);
     return updateNode(subNode, transformedNode, iteratorNode, path);
   }
