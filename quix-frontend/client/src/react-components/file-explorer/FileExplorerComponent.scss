@@ -9,4 +9,9 @@ quix-file-explorer {
       border-right-color: transparent;
     }
   }
+  @for $i from 0 through 3 {
+    .fe-item-depth-#{$i} {
+      padding-left: $i * 12px + 6px;
+    }
+  }
 }

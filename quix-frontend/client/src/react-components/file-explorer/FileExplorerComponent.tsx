@@ -1,18 +1,12 @@
 import './FileExplorerComponent.scss';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import {TreeView} from '@material-ui/lab';
 import { v4 as uuid } from 'uuid';
 import {TreeItem, Node} from './TreeItem';
 
-const useStyles = makeStyles({
-  mainView: {
-    paddingLeft: '8px',
-  },
-});
 
 export interface FileExplorerProps {
   tree: Tree[] | Tree;
@@ -56,49 +50,35 @@ const getAllNodeSubIds = (node: Tree, subIds: string[] = [], withLazy: boolean =
 
 
 export const FileExplorer = (props: FileExplorerProps) => {
-  const classes = useStyles();
 
   const [innerTree, setInnerTree] = useState<Tree[]>([]);
-  const [expanded, setExpanded] = useState([]);
-  const [expandNode, setExpandNode] = useState<Node>(null);
+  const [expanded] = useState([]);
+
+  const [, updateState] = React.useState<any>();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
 
   useEffect(() => {
-    transformChildNodes(
-      null,
+    const transformedNode = transformChildNodes(
       {
         children: Array.isArray(props.tree) ? props.tree : [props.tree]
       } as Node,
       [],
-    ).then(transformedNode => setInnerTree(transformedNode.children));
+    );
+    setInnerTree(transformedNode.children);
   }, [props.tree]);
 
-  useEffect(() => {
-    if (!expandNode) {
-      return;
-    }
-
-    if (!expanded.includes(expandNode.id)) {
-      setExpanded([...expanded, expandNode.id]);
-    } else {
-      const newArr = [];
-      const subIds = getAllNodeSubIds(expandNode, [expandNode.id]);
-
-      expanded.forEach(element => subIds.includes(element) ? null : newArr.push(element));
-      setExpanded(newArr);
-    }
-
-    setExpandNode(null);
-  }, [expandNode]);
-
   const handleToggleNode = (node: Node) => {
-    setExpandNode(node);
+    if (!expanded.includes(node.id)) {
+      expanded.push(node.id);
+    } else {
+      const subIds = getAllNodeSubIds(node, [node.id]);
+      const deleteArray = subIds.map(subId => expanded.indexOf(subId));
+      deleteArray.forEach(deleteIndex => deleteIndex !== -1 && expanded.splice(deleteIndex, 1));
+    }
+    forceUpdate();
   }
-
-  const transform = async (index: number, subNode: Node, path: string[]) => {
-    let iteratorNode = innerTree[index];
-    
-    const transformedNode = await transformChildNodes(iteratorNode, subNode, path);
-    
+  
+  const updateNode = (subNode: Node, transformedNode: Node, iteratorNode: Tree, path: string[]) => {
     const fullPath = [...path, transformedNode.id || subNode.id];
   
     for (let i = 1; i < fullPath.length; i++) {
@@ -109,7 +89,19 @@ export const FileExplorer = (props: FileExplorerProps) => {
     return iteratorNode;
   }
 
-  const transformChildNodes = async (mainNode: Node, node: Node, path: string[]): Promise<Node> => {
+  const transformLazy = async (index: number, subNode: Node, path: string[]) => {
+    const iteratorNode = innerTree[index];
+    const transformedNode = await transformChildNodesLazy(iteratorNode, subNode, path);
+    return updateNode(subNode, transformedNode, iteratorNode, path);
+  }
+
+  const transform = (index: number, subNode: Node, path: string[]) => {
+    const iteratorNode = innerTree[index];
+    const transformedNode = transformChildNodes(subNode, path);
+    return updateNode(subNode, transformedNode, iteratorNode, path);
+  }
+
+  const transformChildNodesLazy = async (mainNode: Node, node: Node, path: string[]): Promise<Node> => {
     let transformedNode = node;
 
     if (node.lazy) {
@@ -120,7 +112,11 @@ export const FileExplorer = (props: FileExplorerProps) => {
       transformedNode = {children: fetchedChildren} as Node;
     }
 
-    const currentNode = _.cloneDeep(transformedNode);
+    return transformChildNodes(transformedNode, path);
+  }
+
+  const transformChildNodes = (node: Node, path: string[]): Node => {
+    const currentNode = _.cloneDeep(node);
     for (const [index, child] of currentNode.children.entries()) {
       if (!child.transformed) {
         const shouldBeLazy = !!child.children && !child.children.length;
@@ -144,6 +140,7 @@ export const FileExplorer = (props: FileExplorerProps) => {
         node={node}
         menuOptions={props.menuOptions}
         onMenuClick={(subNode, menuIndex, path) => onMenuClick(subNode, menuIndex, path, node)}
+        onTransformChildNodesLazy={(subNode, path) => transformLazy(index, subNode, path)}
         onTransformChildNodes={(subNode, path) => transform(index, subNode, path)}
         expandAllNodes={props.expandedNodes}
         onToggleNode={handleToggleNode}
@@ -153,10 +150,10 @@ export const FileExplorer = (props: FileExplorerProps) => {
   };
 
   return (
-    <div className={'bi-muted ' + classes.mainView}>
+    <div className="bi-muted">
       {
         innerTree.length === 0 ?
-        'Loading...'
+        null
         : innerTree.map((sub, index) => {
           return (
             <TreeView

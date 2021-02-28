@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {TreeItem as MaterialTreeItem} from '@material-ui/lab';
 import MaterialIcon from 'material-icons-react';
+import _ from 'lodash';
 import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
 import {MenuItem} from '../../lib/ui/components/dropdown/MenuItem';
 
@@ -11,9 +12,6 @@ const useStyles = makeStyles({
   },
   text: {
     height: '35px',
-    '&:hover': {
-      color: 'white',
-    },
   },
   label: {
     overflow: 'auto',
@@ -21,7 +19,10 @@ const useStyles = makeStyles({
     paddingLeft: '2px',
   },
   group: {
-    marginLeft: '10px'
+    marginLeft: 0,
+  },
+  selected: {
+    backgroundColor: 'red',
   },
   iconSm: {
     marginRight: '5px',
@@ -56,11 +57,12 @@ interface TreeItemProps {
   expandAllNodes: boolean;
   onToggleNode(node: Node): void;
   onMenuClick(node: Node, menuTypeIndex: number, path: string[]): void;
-  onTransformChildNodes(node: Node, path: string[]): Promise<Node> | Node;
+  onTransformChildNodes(node: Node, path: string[]): Node;
+  onTransformChildNodesLazy(node: Node, path: string[]): Promise<Node>;
 }
 
 
-export const TreeItem = ({
+const InnerTreeItem = ({
     node: initialNode,
     menuOptions,
     path,
@@ -68,12 +70,16 @@ export const TreeItem = ({
     onToggleNode,
     onMenuClick,
     onTransformChildNodes,
+    onTransformChildNodesLazy,
   }: TreeItemProps) => {
   const classes = useStyles();
 
-  const [node, setNode] = useState<Node>(initialNode);
+  const [node] = useState<Node>(initialNode);
   const [isLoading, setIsLoading] = useState(false);
   const [clickedFirstTime, setClickedFirstTime] = useState(false);
+
+  const [, updateState] = React.useState<any>();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
 
   useEffect(() => {
     if (!node.lazy && expandAllNodes) {
@@ -98,22 +104,27 @@ export const TreeItem = ({
       return;
     }
 
-    setIsLoading(true);
-
-    const transformedNode = await onTransformChildNodes(node, path);
-
-    setIsLoading(false);
     onToggleNode(node);
-    setNode(transformedNode);
+    if (node.lazy) {
+      setIsLoading(true);
+      const transformedNode = await onTransformChildNodesLazy(node, path);
+      node.children = transformedNode.children;
+      setIsLoading(false);
+    } else {
+      const transformedNode = onTransformChildNodes(node, path);
+      node.children = transformedNode.children;
+      forceUpdate();
+    }
   }
 
   return (
     <MaterialTreeItem
-      classes={{label: classes.label, content: 'bi-hover', group: classes.group}}
+      TransitionProps={{enter: false, exit: false}}
+      classes={{label: 'bi-hover ' + classes.label, content: 'bi-hover fe-item-depth-' + path.length, group: classes.group}}
       onIconClick={() => onClick()}
       icon={isLoading ?
-        <span>
-          <span data-hook="tree-item-loading-icon" className="bi-spinner--xs">
+        <span className="bi-align">
+          <span data-hook="tree-item-loading-icon" className="bi-align bi-spinner--xs">
           </span>
         </span>
       : null
@@ -157,11 +168,12 @@ export const TreeItem = ({
         (node.children?.length > 0 || node.lazy === true) && !isLoading ? 
           node.children.map(childNode =>
             childNode.id &&
-            <TreeItem
+            <InnerTreeItem
               key={childNode.id}
               menuOptions={menuOptions}
               node={childNode}
               onTransformChildNodes={onTransformChildNodes}
+              onTransformChildNodesLazy={onTransformChildNodesLazy}
               onToggleNode={onToggleNode}
               onMenuClick={onMenuClick}
               path={[...path, node.id]}
@@ -173,3 +185,12 @@ export const TreeItem = ({
     </MaterialTreeItem>
   )
 }
+
+function TreeItemPropsAreEqual(prevProps, nextProps) {
+  const prevNode: Node = prevProps.node;
+  const nextNode: Node = nextProps.node;
+  
+  return prevNode.id === nextNode.id;
+}
+
+export const TreeItem = React.memo(InnerTreeItem, TreeItemPropsAreEqual);

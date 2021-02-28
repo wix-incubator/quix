@@ -155,49 +155,70 @@ ORDER BY 1
   // '/api/db/presto/explore': () => [],
   "/api/db/:type/explore": ({ type }) => {
     if (type === "presto") {
-      return [
-        {
-          name: "catalog",
-          type: "catalog",
+      const response = [];
+      for (let i = 0; i < 1; i++) {
+        response.push({
+          name: 'catalog' + i,
+          type: 'catalog',
           children: [
             {
-              name: "schema",
-              type: "schema",
+              name: 'schema' + i,
+              type: 'schema',
               children: [
                 {
-                  name: "table_with_a_very_looooooooooooooooong_name",
-                  type: "table",
-                  children: []
-                },
-                {
-                  name: "t1",
-                  type: "table",
-                  children: []
-                },
-                {
-                  name: "t2",
-                  type: "table",
+                  name: 'table' + i,
+                  type: 'table',
                   children: []
                 }
               ]
             }
           ]
-        },
-        {
-          name: "catalog2",
-          type: "catalog",
-          children: []
-        },
-        {
-          name: "catalog3",
-          type: "catalog",
-          children: [{
-            name: "schema",
-            type: "schema",
-            children: []
-          }]
-        }
-      ];
+        })
+      }
+      return response;
+      // return [
+      //   {
+      //     name: "catalog",
+      //     type: "catalog",
+      //     children: [
+      //       {
+      //         name: "schema",
+      //         type: "schema",
+      //         children: [
+      //           {
+      //             name: "table_with_a_very_looooooooooooooooong_name",
+      //             type: "table",
+      //             children: []
+      //           },
+      //           {
+      //             name: "t1",
+      //             type: "table",
+      //             children: []
+      //           },
+      //           {
+      //             name: "t2",
+      //             type: "table",
+      //             children: []
+      //           }
+      //         ]
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     name: "catalog2",
+      //     type: "catalog",
+      //     children: []
+      //   },
+      //   {
+      //     name: "catalog3",
+      //     type: "catalog",
+      //     children: [{
+      //       name: "schema",
+      //       type: "schema",
+      //       children: []
+      //     }]
+      //   }
+      // ];
     }
 
     return [
@@ -235,42 +256,66 @@ ORDER BY 1
     columns: ["column"]
   }),
   // '/api/db/:type/search': () => [],
-  "/api/db/:type/search": () => [
-    {
-      name: "catalog",
-      type: "catalog",
-      children: [
-        {
-          name: "schema",
-          type: "schema",
+  "/api/db/:type/search": () => {
+    const response = [];
+      for (let i = 0; i < 10; i++) {
+        response.push({
+          name: 'catalog' + i,
+          type: 'catalog',
           children: [
             {
-              name: "table_with_a_very_looooooooooooooooong_name",
-              type: "table",
-              children: []
+              name: 'schema' + i,
+              type: 'schema',
+              children: [
+                {
+                  name: 'table' + i,
+                  type: 'table',
+                  children: []
+                }
+              ]
             }
           ]
-        }
-      ]
-    },
-    {
-      name: "catalog2",
-      type: "catalog",
-      children: [
-        {
-          name: "schema2",
-          type: "schema",
-          children: [
-            {
-              name: "table2_with_a_very_looooooooooooooooong_name",
-              type: "table",
-              children: []
-            }
-          ]
-        }
-      ]
-    }
-  ]
+        })
+      }
+      return response;
+      // [
+      //   {
+      //     name: "catalog",
+      //     type: "catalog",
+      //     children: [
+      //       {
+      //         name: "schema",
+      //         type: "schema",
+      //         children: [
+      //           {
+      //             name: "table_with_a_very_looooooooooooooooong_name",
+      //             type: "table",
+      //             children: []
+      //           }
+      //         ]
+      //       }
+      //     ]
+      //   },
+      //   {
+      //     name: "catalog2",
+      //     type: "catalog",
+      //     children: [
+      //       {
+      //         name: "schema2",
+      //         type: "schema",
+      //         children: [
+      //           {
+      //             name: "table2_with_a_very_looooooooooooooooong_name",
+      //             type: "table",
+      //             children: []
+      //           }
+      //         ]
+      //       }
+      //     ]
+      //   }
+      // ]
+  }
+  
 };
 
 let mockOverrides = {};

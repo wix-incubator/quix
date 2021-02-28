@@ -47,9 +47,9 @@ export const Dropdown: React.FunctionComponent<IDropdownProps> = ({
 
   return (
     <>
-      <div ref={refElement} onClick={handleClick}>
+      <span ref={refElement} onClick={handleClick} className="bi-align">
         {icon}
-      </div>
+      </span>
       <Popper open={open} anchorEl={anchorEl} transition placement={placement}>
         {({ TransitionProps, placement: placementProp }) => (
           <Grow
