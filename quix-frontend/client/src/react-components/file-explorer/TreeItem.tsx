@@ -104,6 +104,7 @@ const InnerTreeItem = ({
       return;
     }
 
+    onToggleNode(node);
     if (node.lazy) {
       setIsLoading(true);
       const transformedNode = await onTransformChildNodesLazy(node, path);
@@ -114,10 +115,8 @@ const InnerTreeItem = ({
       node.children = transformedNode.children;
       forceUpdate();
     }
-    onToggleNode(node);
   }
 
-  console.log(node.name);
   return (
     <MaterialTreeItem
       TransitionProps={{enter: false, exit: false}}

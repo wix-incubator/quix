@@ -59,8 +59,7 @@ export const FileExplorer = (props: FileExplorerProps) => {
   const classes = useStyles();
 
   const [innerTree, setInnerTree] = useState<Tree[]>([]);
-  const [expanded, setExpanded] = useState([]);
-  const [expandNode, setExpandNode] = useState<Node>(null);
+  const [expanded] = useState([]);
 
   const [, updateState] = React.useState<any>();
   const forceUpdate = React.useCallback(() => updateState({}), []);
@@ -77,32 +76,15 @@ export const FileExplorer = (props: FileExplorerProps) => {
     setInnerTree(transformedNode.children);
   }, [props.tree]);
 
-  useEffect(() => {
-    if (!expandNode) {
-      return;
-    }
-
-    if (!expanded.includes(expandNode.id)) {
-      setExpanded([...expanded, expandNode.id]);
-    } else {
-      const newArr = [];
-      const subIds = getAllNodeSubIds(expandNode, [expandNode.id]);
-
-      expanded.forEach(element => subIds.includes(element) ? null : newArr.push(element));
-      setExpanded(newArr);
-    }
-
-    setExpandNode(null);
-  }, [expandNode]);
-
   const handleToggleNode = (node: Node) => {
-    // setExpandNode(node);
     if (!expanded.includes(node.id)) {
       expanded.push(node.id);
-      forceUpdate();
     } else {
-      setExpandNode(node);
+      const subIds = getAllNodeSubIds(node, [node.id]);
+      const deleteArray = subIds.map(subId => expanded.indexOf(subId));
+      deleteArray.forEach(deleteIndex => deleteIndex !== -1 && expanded.splice(deleteIndex, 1));
     }
+    forceUpdate();
   }
 
   const transformLazy = async (index: number, subNode: Node, path: string[]) => {
