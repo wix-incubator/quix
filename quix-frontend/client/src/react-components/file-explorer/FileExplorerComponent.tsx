@@ -1,18 +1,12 @@
 import './FileExplorerComponent.scss';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import {TreeView} from '@material-ui/lab';
 import { v4 as uuid } from 'uuid';
 import {TreeItem, Node} from './TreeItem';
 
-const useStyles = makeStyles({
-  mainView: {
-    paddingLeft: '8px',
-  },
-});
 
 export interface FileExplorerProps {
   tree: Tree[] | Tree;
@@ -56,14 +50,12 @@ const getAllNodeSubIds = (node: Tree, subIds: string[] = [], withLazy: boolean =
 
 
 export const FileExplorer = (props: FileExplorerProps) => {
-  const classes = useStyles();
 
   const [innerTree, setInnerTree] = useState<Tree[]>([]);
   const [expanded] = useState([]);
 
   const [, updateState] = React.useState<any>();
   const forceUpdate = React.useCallback(() => updateState({}), []);
-
 
   useEffect(() => {
     const transformedNode = transformChildNodes(
@@ -158,7 +150,7 @@ export const FileExplorer = (props: FileExplorerProps) => {
   };
 
   return (
-    <div className={'bi-muted ' + classes.mainView}>
+    <div className="bi-muted">
       {
         innerTree.length === 0 ?
         null

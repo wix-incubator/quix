@@ -12,9 +12,6 @@ const useStyles = makeStyles({
   },
   text: {
     height: '35px',
-    '&:hover': {
-      color: 'white',
-    },
   },
   label: {
     overflow: 'auto',
@@ -22,7 +19,10 @@ const useStyles = makeStyles({
     paddingLeft: '2px',
   },
   group: {
-    marginLeft: '10px'
+    marginLeft: 0,
+  },
+  selected: {
+    backgroundColor: 'red',
   },
   iconSm: {
     marginRight: '5px',
@@ -120,7 +120,7 @@ const InnerTreeItem = ({
   return (
     <MaterialTreeItem
       TransitionProps={{enter: false, exit: false}}
-      classes={{label: classes.label, content: 'bi-hover', group: classes.group}}
+      classes={{label: 'bi-hover ' + classes.label, content: 'bi-hover fe-item-depth-' + path.length, group: classes.group}}
       onIconClick={() => onClick()}
       icon={isLoading ?
         <span className="bi-align">
