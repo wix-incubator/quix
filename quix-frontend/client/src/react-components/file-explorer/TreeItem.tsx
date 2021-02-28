@@ -57,7 +57,8 @@ interface TreeItemProps {
   expandAllNodes: boolean;
   onToggleNode(node: Node): void;
   onMenuClick(node: Node, menuTypeIndex: number, path: string[]): void;
-  onTransformChildNodes(node: Node, path: string[]): Promise<Node> | Node;
+  onTransformChildNodes(node: Node, path: string[]): Node;
+  onTransformChildNodesLazy(node: Node, path: string[]): Promise<Node>;
 }
 
 
@@ -69,6 +70,7 @@ const InnerTreeItem = ({
     onToggleNode,
     onMenuClick,
     onTransformChildNodes,
+    onTransformChildNodesLazy,
   }: TreeItemProps) => {
   const classes = useStyles();
 
@@ -81,7 +83,7 @@ const InnerTreeItem = ({
 
   useEffect(() => {
     if (!node.lazy && expandAllNodes) {
-      toggleNode(true);
+      toggleNode();
     }
   }, []);
 
@@ -92,7 +94,7 @@ const InnerTreeItem = ({
     toggleNode();
   }
 
-  const toggleNode = async (skipAnimation = false) => {
+  const toggleNode = async () => {
     if (!node.children) {
       return;
     }
@@ -102,23 +104,23 @@ const InnerTreeItem = ({
       return;
     }
 
-    if (skipAnimation) {
+    if (node.lazy) {
       setIsLoading(true);
-    }
-
-    const transformedNode = await onTransformChildNodes(node, path);
-
-    node.children = transformedNode.children;
-    if (skipAnimation) {
+      const transformedNode = await onTransformChildNodesLazy(node, path);
+      node.children = transformedNode.children;
       setIsLoading(false);
+    } else {
+      const transformedNode = onTransformChildNodes(node, path);
+      node.children = transformedNode.children;
       forceUpdate();
     }
     onToggleNode(node);
   }
 
-  // console.log(node.name);
+  console.log(node.name);
   return (
     <MaterialTreeItem
+      TransitionProps={{enter: false, exit: false}}
       classes={{label: classes.label, content: 'bi-hover', group: classes.group}}
       onIconClick={() => onClick()}
       icon={isLoading ?
@@ -172,6 +174,7 @@ const InnerTreeItem = ({
               menuOptions={menuOptions}
               node={childNode}
               onTransformChildNodes={onTransformChildNodes}
+              onTransformChildNodesLazy={onTransformChildNodesLazy}
               onToggleNode={onToggleNode}
               onMenuClick={onMenuClick}
               path={[...path, node.id]}
@@ -185,9 +188,10 @@ const InnerTreeItem = ({
 }
 
 function TreeItemPropsAreEqual(prevProps, nextProps) {
-  const prevNode = {...prevProps.node, children: [], childrenLength: prevProps.node.children.length};
-  const nextNode = {...nextProps.node, children: [], childrenLength: nextProps.node.children.length};
-  return _.isEqual(prevNode, nextNode);
+  const prevNode: Node = prevProps.node;
+  const nextNode: Node = nextProps.node;
+  
+  return prevNode.id === nextNode.id;
 }
 
 export const TreeItem = React.memo(InnerTreeItem, TreeItemPropsAreEqual);

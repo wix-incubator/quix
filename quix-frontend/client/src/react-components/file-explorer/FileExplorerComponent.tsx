@@ -62,14 +62,19 @@ export const FileExplorer = (props: FileExplorerProps) => {
   const [expanded, setExpanded] = useState([]);
   const [expandNode, setExpandNode] = useState<Node>(null);
 
+  const [, updateState] = React.useState<any>();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
+
+
   useEffect(() => {
-    transformChildNodes(
+    const transformedNode = transformChildNodes(
       null,
       {
         children: Array.isArray(props.tree) ? props.tree : [props.tree]
       } as Node,
       [],
-    ).then(transformedNode => setInnerTree(transformedNode.children));
+    );
+    setInnerTree(transformedNode.children);
   }, [props.tree]);
 
   useEffect(() => {
@@ -91,13 +96,19 @@ export const FileExplorer = (props: FileExplorerProps) => {
   }, [expandNode]);
 
   const handleToggleNode = (node: Node) => {
-    setExpandNode(node);
+    // setExpandNode(node);
+    if (!expanded.includes(node.id)) {
+      expanded.push(node.id);
+      forceUpdate();
+    } else {
+      setExpandNode(node);
+    }
   }
 
-  const transform = async (index: number, subNode: Node, path: string[]) => {
+  const transformLazy = async (index: number, subNode: Node, path: string[]) => {
     let iteratorNode = innerTree[index];
     
-    const transformedNode = await transformChildNodes(iteratorNode, subNode, path);
+    const transformedNode = await transformChildNodesLazy(iteratorNode, subNode, path);
     
     const fullPath = [...path, transformedNode.id || subNode.id];
   
@@ -109,7 +120,22 @@ export const FileExplorer = (props: FileExplorerProps) => {
     return iteratorNode;
   }
 
-  const transformChildNodes = async (mainNode: Node, node: Node, path: string[]): Promise<Node> => {
+  const transform = (index: number, subNode: Node, path: string[]) => {
+    let iteratorNode = innerTree[index];
+    
+    const transformedNode = transformChildNodes(iteratorNode, subNode, path);
+    
+    const fullPath = [...path, transformedNode.id || subNode.id];
+  
+    for (let i = 1; i < fullPath.length; i++) {
+      iteratorNode = iteratorNode?.children.find(nodeProps => nodeProps.id === fullPath[i]);
+    }
+
+    iteratorNode.children = transformedNode.children;
+    return iteratorNode;
+  }
+
+  const transformChildNodesLazy = async (mainNode: Node, node: Node, path: string[]): Promise<Node> => {
     let transformedNode = node;
 
     if (node.lazy) {
@@ -134,6 +160,21 @@ export const FileExplorer = (props: FileExplorerProps) => {
     return currentNode;
   }
 
+  const transformChildNodes = (mainNode: Node, node: Node, path: string[]): Node => {
+    const currentNode = _.cloneDeep(node);
+    for (const [index, child] of currentNode.children.entries()) {
+      if (!child.transformed) {
+        const shouldBeLazy = !!child.children && !child.children.length;
+        const transformedChild = props.onTransformNode(child, path);
+        transformedChild.children = transformedChild.lazy && shouldBeLazy ? [{} as any] : transformedChild.children;
+        transformedChild.id = transformedChild.id || uuid();
+
+        currentNode.children[index] = transformedChild;
+      }
+    }
+    return currentNode;
+  }
+
   const onMenuClick = (subNode: Node, menuIndex: number, path: string[], node: Node) => {
     props.menuOptions[subNode.type][menuIndex].action(node, [...path, subNode.id]);
   };
@@ -144,6 +185,7 @@ export const FileExplorer = (props: FileExplorerProps) => {
         node={node}
         menuOptions={props.menuOptions}
         onMenuClick={(subNode, menuIndex, path) => onMenuClick(subNode, menuIndex, path, node)}
+        onTransformChildNodesLazy={(subNode, path) => transformLazy(index, subNode, path)}
         onTransformChildNodes={(subNode, path) => transform(index, subNode, path)}
         expandAllNodes={props.expandedNodes}
         onToggleNode={handleToggleNode}
@@ -156,7 +198,7 @@ export const FileExplorer = (props: FileExplorerProps) => {
     <div className={'bi-muted ' + classes.mainView}>
       {
         innerTree.length === 0 ?
-        'Loading...'
+        null
         : innerTree.map((sub, index) => {
           return (
             <TreeView
