@@ -52,14 +52,6 @@ describe('event sourcing', () => {
       expect(notebook.id).toBe(createAction.id);
     });
 
-    it.only('create notebook with past date', async () => {
-      createAction.dateCreated = new Date(1000000);
-      await driver.emitAsUser(eventBus, [createAction]);
-      const notebook = await driver.getNotebook(id).and.expectToBeDefined();
-
-      expect(notebook.dateCreated).toBe(1000000);
-    });
-
     it('set owner correctly', async () => {
       await driver.emitAsUser(eventBus, [createAction]);
       const notebook = await driver.getNotebook(id).and.expectToBeDefined();

@@ -97,15 +97,15 @@ export const convertNoteToDb = (note: INote): DbNote => {
     content,
     dateCreated,
     dateUpdated,
-    jsonContent,
+    richContent,
   } = note;
 
   return new DbNote({
     type,
     id,
     textContent: note.content,
-    jsonContent: jsonContent || {},
-    jsonExtraContent: {},
+    jsonContent: {},
+    richContent,
     name,
     notebookId,
     owner,

@@ -86,6 +86,7 @@ describe('Search', () => {
       dateUpdated: 1,
       notebookId,
       jsonContent: undefined,
+      richContent: {},
     });
     note.rank = 0;
     return noteRepo.save(note);

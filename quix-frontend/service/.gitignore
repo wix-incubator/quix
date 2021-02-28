@@ -3,3 +3,4 @@ dist
 statics
 .env
 ormconfig.generated*
+.fnm-node
