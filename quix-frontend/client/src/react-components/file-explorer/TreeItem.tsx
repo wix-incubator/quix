@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {TreeItem as MaterialTreeItem} from '@material-ui/lab';
 import MaterialIcon from 'material-icons-react';
+import _ from 'lodash';
 import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
 import {MenuItem} from '../../lib/ui/components/dropdown/MenuItem';
 
@@ -60,7 +61,7 @@ interface TreeItemProps {
 }
 
 
-export const TreeItem = ({
+const InnerTreeItem = ({
     node: initialNode,
     menuOptions,
     path,
@@ -71,13 +72,16 @@ export const TreeItem = ({
   }: TreeItemProps) => {
   const classes = useStyles();
 
-  const [node, setNode] = useState<Node>(initialNode);
+  const [node] = useState<Node>(initialNode);
   const [isLoading, setIsLoading] = useState(false);
   const [clickedFirstTime, setClickedFirstTime] = useState(false);
 
+  const [, updateState] = React.useState<any>();
+  const forceUpdate = React.useCallback(() => updateState({}), []);
+
   useEffect(() => {
     if (!node.lazy && expandAllNodes) {
-      toggleNode();
+      toggleNode(true);
     }
   }, []);
 
@@ -88,7 +92,7 @@ export const TreeItem = ({
     toggleNode();
   }
 
-  const toggleNode = async () => {
+  const toggleNode = async (skipAnimation = false) => {
     if (!node.children) {
       return;
     }
@@ -98,22 +102,28 @@ export const TreeItem = ({
       return;
     }
 
-    setIsLoading(true);
+    if (skipAnimation) {
+      setIsLoading(true);
+    }
 
     const transformedNode = await onTransformChildNodes(node, path);
 
-    setIsLoading(false);
+    node.children = transformedNode.children;
+    if (skipAnimation) {
+      setIsLoading(false);
+      forceUpdate();
+    }
     onToggleNode(node);
-    setNode(transformedNode);
   }
 
+  // console.log(node.name);
   return (
     <MaterialTreeItem
       classes={{label: classes.label, content: 'bi-hover', group: classes.group}}
       onIconClick={() => onClick()}
       icon={isLoading ?
-        <span>
-          <span data-hook="tree-item-loading-icon" className="bi-spinner--xs">
+        <span className="bi-align">
+          <span data-hook="tree-item-loading-icon" className="bi-align bi-spinner--xs">
           </span>
         </span>
       : null
@@ -157,7 +167,7 @@ export const TreeItem = ({
         (node.children?.length > 0 || node.lazy === true) && !isLoading ? 
           node.children.map(childNode =>
             childNode.id &&
-            <TreeItem
+            <InnerTreeItem
               key={childNode.id}
               menuOptions={menuOptions}
               node={childNode}
@@ -173,3 +183,11 @@ export const TreeItem = ({
     </MaterialTreeItem>
   )
 }
+
+function TreeItemPropsAreEqual(prevProps, nextProps) {
+  const prevNode = {...prevProps.node, children: [], childrenLength: prevProps.node.children.length};
+  const nextNode = {...nextProps.node, children: [], childrenLength: nextProps.node.children.length};
+  return _.isEqual(prevNode, nextNode);
+}
+
+export const TreeItem = React.memo(InnerTreeItem, TreeItemPropsAreEqual);
