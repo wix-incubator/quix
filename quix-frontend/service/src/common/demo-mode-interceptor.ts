@@ -31,7 +31,7 @@ function removeOwnerNested(user: string, item: any): any {
   if (Array.isArray(item)) {
     return item.map(removeOwnerNested.bind(null, user));
   }
-  if (typeof item === 'object') {
+  if (item && typeof item === 'object') {
     if (item.owner) {
       item.owner = item.owner === user ? user : sanitizeUserEmail(item.owner);
     }

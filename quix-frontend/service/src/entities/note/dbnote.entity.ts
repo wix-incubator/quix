@@ -78,7 +78,7 @@ export const convertDbNote = (dbNote: DbNote): INote => {
     type,
     id,
     content: textContent,
-    richContent,
+    richContent: richContent || {},
     dateCreated,
     dateUpdated,
     name,
