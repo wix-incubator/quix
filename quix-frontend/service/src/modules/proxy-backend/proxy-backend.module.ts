@@ -12,7 +12,7 @@ export class ProxyDbApiBackend implements NestModule {
 
   configure(consumer: MiddlewareConsumer) {
     let backendUrl = this.configService.getEnvSettings().QuixBackendInternalUrl;
-    
+
     if (['http://', 'https://'].every(s => !backendUrl.startsWith(s))) {
       backendUrl = 'http://' + backendUrl;
     }

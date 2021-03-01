@@ -26,7 +26,9 @@ export class AuthController {
   @Get('user')
   @UseGuards(AuthGuard)
   async getUser(@User() user: IExternalUser) {
-    await this.userService.doUserLogin(user);
+    this.userService.doUserLogin(user).catch(e => {
+      this.logger.error('error updating user', e);
+    });
     return user;
   }
 

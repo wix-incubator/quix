@@ -7,3 +7,5 @@ export {NoteRepository} from './note/note.repository';
 export {DbUser} from './user/user.entity';
 export {DbFavorites} from './favorites/favorites.entity';
 export {DbMetadata} from './version-metadata.entity';
+export {NotebookRepository} from './notebook/notebook.repository';
+export {DbAction} from '../modules/event-sourcing/infrastructure/action-store/entities/db-action.entity';
