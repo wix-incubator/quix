@@ -229,7 +229,7 @@ describe('Application (e2e)', () => {
       expectObject(notebookFromServer).toNotLeakUserData(user1profile);
     });
 
-    it.only('when searching notebooks, sanitize user', async () => {
+    it('when searching notebooks, sanitize user', async () => {
       await driver.doLogin('user1');
 
       const [{id: rootFolder}] = await driver.as('user1').get('files');
