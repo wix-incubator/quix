@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { /*useEffect, */useState } from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import {TreeItem as MaterialTreeItem} from '@material-ui/lab';
 import MaterialIcon from 'material-icons-react';
@@ -81,11 +81,11 @@ const InnerTreeItem = ({
   const [, updateState] = React.useState<any>();
   const forceUpdate = React.useCallback(() => updateState({}), []);
 
-  useEffect(() => {
-    if (!node.lazy && expandAllNodes) {
-      toggleNode();
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!node.lazy && expandAllNodes) {
+  //     toggleNode();
+  //   }
+  // }, []);
 
   const onClick = async () => {
     if (!clickedFirstTime) {
