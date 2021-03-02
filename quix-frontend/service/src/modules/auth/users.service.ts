@@ -19,11 +19,11 @@ export class UsersService {
   ) {}
 
   async doUserLogin(userFromLogin: IExternalUser) {
-    const user = await this.userRepo.count({id: userFromLogin.email});
+    const user = await this.userRepo.findOne({id: userFromLogin.email});
     if (!user) {
       await this.doFirstTimeLogin(userFromLogin);
     } else {
-      await this.doLogin(userFromLogin);
+      await this.doLogin(userFromLogin, user);
     }
   }
 
@@ -45,10 +45,18 @@ export class UsersService {
     });
   }
 
-  private async doLogin(userFromLogin: IExternalUser) {
+  private async doLogin(userFromLogin: IExternalUser, dbUser: DbUser) {
     const {avatar, name, email: id, email} = userFromLogin;
+    const changeUserCreated =
+      dbUser.dateCreated.valueOf() === 0 ? new Date() : undefined;
     return this.quixEventBus.emit({
-      ...UserActions.updateUser(id, avatar || '', name || '', email),
+      ...UserActions.updateUser(
+        id,
+        avatar || '',
+        name || '',
+        email,
+        changeUserCreated,
+      ),
       user: id,
       ethereal: true,
     });

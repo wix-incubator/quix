@@ -7,12 +7,13 @@ export const UserActions = {
     newUser: user,
     id,
   }),
-  updateUser: (id: string, avatar: string, name: string, email: string) => ({
+  updateUser: (id: string, avatar: string, name: string, email: string, changeUserCreated?: Date) => ({
     type: 'user.update' as const,
     name,
     email,
     avatar,
     id,
+    changeUserCreated
   }),
 }
 
