@@ -9,6 +9,7 @@ import {EntityType} from '../common/entity-type.enum';
 interface DbColumnConf {
   json: ColumnOptions;
   shortTextField: ColumnOptions;
+  nameField: ColumnOptions;
   noteContent: ColumnOptions;
   dateUpdated: ColumnOptions;
   dateCreated: ColumnOptions;
@@ -27,6 +28,7 @@ interface DbColumnConf {
 const MySqlConf: DbColumnConf = {
   json: {type: 'json', nullable: true},
   shortTextField: {type: 'varchar', length: 64},
+  nameField: {type: 'varchar', length: 255},
   noteContent: {type: 'mediumtext', nullable: true},
   dateUpdated: {
     transformer: {
@@ -75,6 +77,7 @@ const MySqlConf: DbColumnConf = {
 const SqliteConf: DbColumnConf = {
   json: {type: 'simple-json', nullable: true},
   shortTextField: {type: 'varchar', length: 64},
+  nameField: {type: 'varchar', length: 255},
   noteContent: {type: 'text', nullable: true},
   dateUpdated: {
     type: 'integer',

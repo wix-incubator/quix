@@ -31,7 +31,7 @@ export class DbNote {
   @Column(dbConf.shortTextField)
   type!: string;
 
-  @Column(dbConf.shortTextField)
+  @Column(dbConf.nameField)
   name!: string;
 
   @Index()
