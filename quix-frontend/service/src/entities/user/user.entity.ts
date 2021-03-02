@@ -58,6 +58,14 @@ export const dbUserToUser = (dbUser: DbUser): IUser => {
 };
 
 export const userToDbUser = (user: IUser) => {
-  const {avatar, email, id, name, rootFolder} = user;
-  return new DbUser({avatar, id, name, rootFolder});
+  const {avatar, email, id, name, rootFolder, dateCreated, dateUpdated} = user;
+  const dbUser = new DbUser({
+    avatar,
+    id,
+    name,
+    rootFolder,
+    dateCreated,
+    dateUpdated,
+  });
+  return dbUser;
 };
