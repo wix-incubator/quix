@@ -11,12 +11,10 @@ export class EventsPlugin implements EventBusPlugin {
   constructor(@Inject(EventsService) private eventsService: EventsService) {}
 
   registerFn: EventBusPluginFn = api => {
-    api.hooks.listen(
-      QuixHookNames.VALIDATION,
-      async (action: IAction) => undefined,
-    );
     api.hooks.listen(QuixHookNames.PROJECTION, async (action: IAction) => {
-      this.eventsService.logEvent(action);
+      if (!action.ethereal) {
+        this.eventsService.logEvent(action);
+      }
     });
   };
 }
