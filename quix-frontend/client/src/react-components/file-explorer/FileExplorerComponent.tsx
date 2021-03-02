@@ -1,9 +1,6 @@
 import './FileExplorerComponent.scss';
 import * as _ from 'lodash';
 import React, { useEffect, useState } from 'react';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import {TreeView} from '@material-ui/lab';
 import { v4 as uuid } from 'uuid';
 import {TreeItem, Node} from './TreeItem';
 
@@ -52,10 +49,6 @@ const getAllNodeSubIds = (node: Tree, subIds: string[] = [], withLazy: boolean =
 export const FileExplorer = (props: FileExplorerProps) => {
 
   const [innerTree, setInnerTree] = useState<Tree[]>([]);
-  const [expanded] = useState([]);
-
-  const [, updateState] = React.useState<any>();
-  const forceUpdate = React.useCallback(() => updateState({}), []);
 
   useEffect(() => {
     const transformedNode = transformChildNodes(
@@ -67,17 +60,6 @@ export const FileExplorer = (props: FileExplorerProps) => {
     setInnerTree(transformedNode.children);
   }, [props.tree]);
 
-  const handleToggleNode = (node: Node) => {
-    if (!expanded.includes(node.id)) {
-      expanded.push(node.id);
-    } else {
-      const subIds = getAllNodeSubIds(node, [node.id]);
-      const deleteArray = subIds.map(subId => expanded.indexOf(subId));
-      deleteArray.forEach(deleteIndex => deleteIndex !== -1 && expanded.splice(deleteIndex, 1));
-    }
-    forceUpdate();
-  }
-  
   const updateNode = (subNode: Node, transformedNode: Node, iteratorNode: Tree, path: string[]) => {
     const fullPath = [...path, transformedNode.id || subNode.id];
   
@@ -134,40 +116,22 @@ export const FileExplorer = (props: FileExplorerProps) => {
     props.menuOptions[subNode.type][menuIndex].action(node, [...path, subNode.id]);
   };
 
-  const renderTree = (node: Tree, index: number) => {
-    return (
-      <TreeItem
-        node={node}
-        menuOptions={props.menuOptions}
-        onMenuClick={(subNode, menuIndex, path) => onMenuClick(subNode, menuIndex, path, node)}
-        onTransformChildNodesLazy={(subNode, path) => transformLazy(index, subNode, path)}
-        onTransformChildNodes={(subNode, path) => transform(index, subNode, path)}
-        expandAllNodes={props.expandedNodes}
-        onToggleNode={handleToggleNode}
-        path={[]}
-      />
-    )
-  };
-
   return (
     <div className="bi-muted">
       {
-        innerTree.length === 0 ?
-        null
-        : innerTree.map((sub, index) => {
-          return (
-            <TreeView
-              key={sub.id}
-              defaultCollapseIcon={<ArrowDropDownIcon data-hook="tree-item-collapse-icon" />}
-              defaultExpanded={[]}
-              defaultExpandIcon={<ArrowRightIcon data-hook="tree-item-expand-icon" />}
-              disableSelection={true}
-              expanded={expanded}
-            >
-              {renderTree(sub, index)}
-            </TreeView>
-          )
-        })
+        innerTree.length !== 0 ?
+        innerTree.map((sub, index) => (
+          <TreeItem
+            key={sub.id}
+            node={sub}
+            menuOptions={props.menuOptions}
+            onMenuClick={(subNode, menuIndex, path) => onMenuClick(subNode, menuIndex, path, sub)}
+            onTransformChildNodesLazy={(subNode, path) => transformLazy(index, subNode, path)}
+            onTransformChildNodes={(subNode, path) => transform(index, subNode, path)}
+            expandAllNodes={props.expandedNodes}
+            path={[]}
+          />
+        )) : null
       }
     </div>
   )

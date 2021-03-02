@@ -1,6 +1,6 @@
 {
   "name": "@wix/quix-client",
-  "version": "1.0.25",
+  "version": "1.0.26",
   "license": "MIT",
   "description": "Presto-based notebook manager",
   "author": {
@@ -78,7 +78,6 @@
     "jquery-ui": "^1.12.1",
     "js-search": "^1.4.3",
     "lodash": "^4.17.11",
-    "material-icons-react": "^1.0.4",
     "moment": "^2.24.0",
     "ng-csv": "^0.3.6",
     "node-sass": "^4.13.0",

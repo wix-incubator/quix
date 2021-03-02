@@ -156,7 +156,7 @@ ORDER BY 1
   "/api/db/:type/explore": ({ type }) => {
     if (type === "presto") {
       const response = [];
-      for (let i = 0; i < 1; i++) {
+      for (let i = 0; i < 50; i++) {
         response.push({
           name: 'catalog' + i,
           type: 'catalog',
@@ -176,49 +176,6 @@ ORDER BY 1
         })
       }
       return response;
-      // return [
-      //   {
-      //     name: "catalog",
-      //     type: "catalog",
-      //     children: [
-      //       {
-      //         name: "schema",
-      //         type: "schema",
-      //         children: [
-      //           {
-      //             name: "table_with_a_very_looooooooooooooooong_name",
-      //             type: "table",
-      //             children: []
-      //           },
-      //           {
-      //             name: "t1",
-      //             type: "table",
-      //             children: []
-      //           },
-      //           {
-      //             name: "t2",
-      //             type: "table",
-      //             children: []
-      //           }
-      //         ]
-      //       }
-      //     ]
-      //   },
-      //   {
-      //     name: "catalog2",
-      //     type: "catalog",
-      //     children: []
-      //   },
-      //   {
-      //     name: "catalog3",
-      //     type: "catalog",
-      //     children: [{
-      //       name: "schema",
-      //       type: "schema",
-      //       children: []
-      //     }]
-      //   }
-      // ];
     }
 
     return [
@@ -278,42 +235,6 @@ ORDER BY 1
         })
       }
       return response;
-      // [
-      //   {
-      //     name: "catalog",
-      //     type: "catalog",
-      //     children: [
-      //       {
-      //         name: "schema",
-      //         type: "schema",
-      //         children: [
-      //           {
-      //             name: "table_with_a_very_looooooooooooooooong_name",
-      //             type: "table",
-      //             children: []
-      //           }
-      //         ]
-      //       }
-      //     ]
-      //   },
-      //   {
-      //     name: "catalog2",
-      //     type: "catalog",
-      //     children: [
-      //       {
-      //         name: "schema2",
-      //         type: "schema",
-      //         children: [
-      //           {
-      //             name: "table2_with_a_very_looooooooooooooooong_name",
-      //             type: "table",
-      //             children: []
-      //           }
-      //         ]
-      //       }
-      //     ]
-      //   }
-      // ]
   }
   
 };

@@ -1,10 +1,12 @@
-import React, { /*useEffect, */useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {makeStyles} from '@material-ui/core/styles';
-import {TreeItem as MaterialTreeItem} from '@material-ui/lab';
-import MaterialIcon from 'material-icons-react';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
+import Icon from '@material-ui/core/Icon';
 import _ from 'lodash';
 import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
 import {MenuItem} from '../../lib/ui/components/dropdown/MenuItem';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
 const useStyles = makeStyles({
   treeItemRoot: {
@@ -30,6 +32,10 @@ const useStyles = makeStyles({
   },
   textIcon: {
     marginRight: '5px',
+    marginLeft: '10px',
+  },
+  moreVert: {
+    fontSize: '30px',
   }
 });
 
@@ -53,9 +59,7 @@ interface TreeItemProps {
     }[];
   };
   path: string[];
-  // expandedNodes: string[];
   expandAllNodes: boolean;
-  onToggleNode(node: Node): void;
   onMenuClick(node: Node, menuTypeIndex: number, path: string[]): void;
   onTransformChildNodes(node: Node, path: string[]): Node;
   onTransformChildNodesLazy(node: Node, path: string[]): Promise<Node>;
@@ -67,7 +71,6 @@ const InnerTreeItem = ({
     menuOptions,
     path,
     expandAllNodes,
-    onToggleNode,
     onMenuClick,
     onTransformChildNodes,
     onTransformChildNodesLazy,
@@ -76,35 +79,32 @@ const InnerTreeItem = ({
 
   const [node] = useState<Node>(initialNode);
   const [isLoading, setIsLoading] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [clickedFirstTime, setClickedFirstTime] = useState(false);
 
-  const [, updateState] = React.useState<any>();
-  const forceUpdate = React.useCallback(() => updateState({}), []);
-
-  // useEffect(() => {
-  //   if (!node.lazy && expandAllNodes) {
-  //     toggleNode();
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (!node.lazy && expandAllNodes) {
+      toggleNode();
+    }
+  }, []);
 
   const onClick = async () => {
+    if (!expanded) {
+      toggleNode();
+    } else {
+      setExpanded(false);
+    }
     if (!clickedFirstTime) {
       setClickedFirstTime(true);
     }
-    toggleNode();
   }
 
   const toggleNode = async () => {
-    if (!node.children) {
+    setExpanded(true);
+    if (!node.children || !node.children.find(child => !child.transformed)) {
       return;
     }
 
-    if (!node.children.find(child => !child.transformed)) {
-      onToggleNode(node);
-      return;
-    }
-
-    onToggleNode(node);
     if (node.lazy) {
       setIsLoading(true);
       const transformedNode = await onTransformChildNodesLazy(node, path);
@@ -113,60 +113,66 @@ const InnerTreeItem = ({
     } else {
       const transformedNode = onTransformChildNodes(node, path);
       node.children = transformedNode.children;
-      forceUpdate();
     }
   }
 
-  return (
-    <MaterialTreeItem
-      TransitionProps={{enter: false, exit: false}}
-      classes={{label: 'bi-hover ' + classes.label, content: 'bi-hover fe-item-depth-' + path.length, group: classes.group}}
-      onIconClick={() => onClick()}
-      icon={isLoading ?
-        <span className="bi-align">
-          <span data-hook="tree-item-loading-icon" className="bi-align bi-spinner--xs">
-          </span>
+  const preIcon = (
+    isLoading ? 
+      <span className={'bi-align ' + classes.iconSm}>
+        <span data-hook="tree-item-loading-icon" className="bi-align bi-spinner--xs">
         </span>
+      </span>
+    : Array.isArray(node.children) ?
+        expanded ?
+          <ArrowDropDownIcon data-hook="tree-item-opened-icon" className={'bi-icon--sm ' + classes.iconSm} />
+        : <ArrowRightIcon data-hook="tree-item-closed-icon" className={'bi-icon--sm ' + classes.iconSm} />
       : null
-      }
-      key={node.id}
-      nodeId={node.id}
-      label={
-        <div className={'bi-align ' + classes.treeItemRoot}>
-          <div
-            className={'bi-align bi-r-h bi-text--ellipsis bi-grow bi-text ' + classes.text}
-            onClick={() => onClick()}
-          >
-            {node.textIcon ?
-              <div className={'bi-text--sm ng-binding ng-scope ' + classes.textIcon}>{node.textIcon}</div>
-              : <MaterialIcon className={'bi-icon--xs ' + classes.iconSm} icon={node.icon || 'hourglass_empty'} />
-            }
-            <span data-hook="tree-item-content" className="bi-text--ellipsis">
-              {node.name}
-            </span>
-          </div>
-          {menuOptions[node.type] ?
-            <Dropdown
-              icon={<MaterialIcon className={'bi-action bi-icon'} icon='more_vert' />}
-              placement='bottom-end'
-            >
-              {menuOptions[node.type].map((moreOption, index) => 
-                <MenuItem
-                  key={index}
-                  text={moreOption.title}
-                  onClick={() => onMenuClick(node, index, path)}
-                />
-              )}
-              
-            </Dropdown>
-            : null
-          }
+  )
+
+  const describeIcon = (
+    node.textIcon ?
+      <div className={'bi-text--sm ng-binding ng-scope ' + classes.textIcon}>{node.textIcon}</div>
+    : <Icon className={'bi-icon--xs ' + classes.iconSm} >{node.icon || 'hourglass_empty'}</Icon>
+  )
+
+  const menu = (
+    menuOptions[node.type] ?
+      <Dropdown
+        icon={<MoreVertIcon classes={{root: classes.moreVert}} className={'bi-action'} />}
+        placement='bottom-end'
+      >
+        {menuOptions[node.type].map((moreOption, index) => 
+          <MenuItem
+            key={index}
+            text={moreOption.title}
+            onClick={() => onMenuClick(node, index, path)}
+          />
+        )}
+        
+      </Dropdown>
+      : null
+  )
+
+  return (
+    <div>
+      <div className={`bi-align bi-hover bi-fade-in bi-pointer fe-item-depth-${path.length} ${classes.treeItemRoot}`}>
+        <div
+          className={'bi-align bi-r-h bi-text--ellipsis bi-grow bi-text ' + classes.text}
+          onClick={() => onClick()}
+        >
+          {preIcon}
+          {describeIcon}
+
+          <span data-hook="tree-item-content" className="bi-text--ellipsis">
+            {node.name}
+          </span>
         </div>
-      }
-    >
+
+        {menu}
+      </div>
       {
-        (node.children?.length > 0 || node.lazy === true) && !isLoading ? 
-          node.children.map(childNode =>
+        expanded && !isLoading ? 
+          node.children?.map(childNode =>
             childNode.id &&
             <InnerTreeItem
               key={childNode.id}
@@ -174,7 +180,6 @@ const InnerTreeItem = ({
               node={childNode}
               onTransformChildNodes={onTransformChildNodes}
               onTransformChildNodesLazy={onTransformChildNodesLazy}
-              onToggleNode={onToggleNode}
               onMenuClick={onMenuClick}
               path={[...path, node.id]}
               expandAllNodes={!clickedFirstTime ? expandAllNodes : false}
@@ -182,7 +187,7 @@ const InnerTreeItem = ({
           )
         : null
       }
-    </MaterialTreeItem>
+    </div>
   )
 }
 

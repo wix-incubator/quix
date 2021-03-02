@@ -213,31 +213,31 @@ describe('FileExplorer ::', () => {
     expect(await testkit.numOfOpenedTreeItems()).to.eq(3);
   });
 
-  // it('should expand all tree items after searching', async () => {
-  //   await goToDbExplorer(
-  //     [
-  //       createMockDbExplorerItem({
-  //         name: 'parentTest',
-  //         children: [
-  //           createMockDbExplorerItem({
-  //             name: 'childTest1',
-  //             type: 'schema',
-  //             children: [
-  //               createMockDbExplorerItem({
-  //                 name: 'childTest2',
-  //                 type: 'table'
-  //               })
-  //             ]
-  //           }),
-  //         ]
-  //       })
-  //     ]
-  //   );
+  it('should expand all tree items after searching', async () => {
+    await goToDbExplorer(
+      [
+        createMockDbExplorerItem({
+          name: 'parentTest',
+          children: [
+            createMockDbExplorerItem({
+              name: 'childTest1',
+              type: 'schema',
+              children: [
+                createMockDbExplorerItem({
+                  name: 'childTest2',
+                  type: 'table'
+                })
+              ]
+            }),
+          ]
+        })
+      ]
+    );
 
-  //   await testkit.toggleFileExplorerTab();
-  //   await driver.sleep(COMPONENT_ANIMATION_TIME);
-  //   await testkit.search('bla');
-  //   await driver.sleep(2 * COMPONENT_ANIMATION_TIME);
-  //   expect(await testkit.numOfTreeItems()).to.eq(4); // 3 visible and 1 hidden by angular
-  // });
+    await testkit.toggleFileExplorerTab();
+    await driver.sleep(COMPONENT_ANIMATION_TIME);
+    await testkit.search('bla');
+    await driver.sleep(2 * COMPONENT_ANIMATION_TIME);
+    expect(await testkit.numOfTreeItems()).to.eq(4); // 3 visible and 1 hidden by angular
+  });
 });

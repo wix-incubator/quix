@@ -4,8 +4,8 @@ const enum Hooks {
   FileExplorerTab = 'app-menu-DB Explorer',
   TreeItemContent = 'tree-item-content',
   TreeItemLoadingIcon = 'tree-item-loading-icon',
-  TreeItemCollapseIcon = 'tree-item-collapse-icon',
-  TreeItemExpandIcon = 'tree-item-expand-icon',
+  TreeItemOpenedIcon = 'tree-item-opened-icon',
+  TreeItemClosedIcon = 'tree-item-closed-icon',
   FileExplorerSearch = 'file-explorer-search',
 }
 
@@ -23,11 +23,11 @@ export class FileExplorerTestkit extends Testkit {
   }
 
   async numOfOpenedTreeItems() {
-    return (await this.query.hooks(Hooks.TreeItemCollapseIcon)).length;
+    return (await this.query.hooks(Hooks.TreeItemOpenedIcon)).length;
   }
 
   async numOfClosedTreeItems() {
-    return (await this.query.hooks(Hooks.TreeItemExpandIcon)).length;
+    return (await this.query.hooks(Hooks.TreeItemClosedIcon)).length;
   }
 
   async clickOnTreeItemByPosition(position: number) {
