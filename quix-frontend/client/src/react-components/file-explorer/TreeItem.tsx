@@ -3,10 +3,12 @@ import {makeStyles} from '@material-ui/core/styles';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Icon from '@material-ui/core/Icon';
 import _ from 'lodash';
-import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
-import {MenuItem} from '../../lib/ui/components/dropdown/MenuItem';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
+import Highlighter from 'react-highlight-words';
+import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
+import {MenuItem} from '../../lib/ui/components/dropdown/MenuItem';
+import {highlightText} from '../../services/search';
 
 const useStyles = makeStyles({
   treeItemRoot: {
@@ -59,6 +61,7 @@ interface TreeItemProps {
     }[];
   };
   path: string[];
+  highlight: string;
   expandAllNodes: boolean;
   onMenuClick(node: Node, menuTypeIndex: number, path: string[]): void;
   onTransformChildNodes(node: Node, path: string[]): Node;
@@ -70,6 +73,7 @@ const InnerTreeItem = ({
     node: initialNode,
     menuOptions,
     path,
+    highlight,
     expandAllNodes,
     onMenuClick,
     onTransformChildNodes,
@@ -153,6 +157,20 @@ const InnerTreeItem = ({
       : null
   )
 
+  const getText = () => {
+    if (highlight && node.children) {
+      const props = highlightText(node.name, highlight);
+      return (
+        <Highlighter
+          searchWords={[props.currentFilter]}
+          autoEscape={true}
+          textToHighlight={props.textToHighlight}
+        />
+      )
+    }
+    return node.name;
+  }
+
   return (
     <div>
       <div className={`bi-align bi-hover bi-fade-in bi-pointer fe-item-depth-${path.length} ${classes.treeItemRoot}`}>
@@ -164,7 +182,7 @@ const InnerTreeItem = ({
           {describeIcon}
 
           <span data-hook="tree-item-content" className="bi-text--ellipsis">
-            {node.name}
+            {getText()}
           </span>
         </div>
 
@@ -183,6 +201,7 @@ const InnerTreeItem = ({
               onMenuClick={onMenuClick}
               path={[...path, node.id]}
               expandAllNodes={!clickedFirstTime ? expandAllNodes : false}
+              highlight={highlight}
             />
           )
         : null

@@ -4,7 +4,7 @@ import { IHistory } from '@wix/quix-shared';
 import _ from 'lodash';
 import { SortableTable } from '../../lib/ui/components/SortableTable';
 import { historyTableFields } from './history-table-fields';
-import {extractTextAroundMatch} from '../../services/search';
+import {highlightText} from '../../services/search';
 import Highlighter from 'react-highlight-words';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
 import Select from '../../lib/ui/components/Select';
@@ -91,16 +91,13 @@ export function History(props: HistoryProps) {
   );
 
   const highlight = (term: string, filter: string) => {
-    const text = term.replace(/\s+/g,' ');
-    const currentFilter = filter;
-    const needlePresent = !!currentFilter;
-    const wrapLinesCount = needlePresent ? 1 : 0;
+    const highlightProps = highlightText(term, filter);
       
     return (
       <Highlighter
-        searchWords={[currentFilter]}
+        searchWords={[highlightProps.currentFilter]}
         autoEscape={true}
-        textToHighlight={extractTextAroundMatch(text, currentFilter || '', wrapLinesCount)}
+        textToHighlight={highlightProps.textToHighlight}
       />
     )
   }

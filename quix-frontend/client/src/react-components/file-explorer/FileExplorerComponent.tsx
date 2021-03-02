@@ -17,6 +17,7 @@ export interface FileExplorerProps {
     }[];
   };
   expandedNodes: boolean;
+  highlight: string;
 }
 
 export interface Tree {
@@ -128,6 +129,7 @@ export const FileExplorer = (props: FileExplorerProps) => {
               props.expandedNodes && countAllSubChildren({children: innerTree} as Node) < EXPAND_ALL_NODES_LIMIT
             }
             path={[]}
+            highlight={props.highlight || null}
           />
         )) : null
       }

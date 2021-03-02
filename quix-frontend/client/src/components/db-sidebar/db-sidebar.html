@@ -69,6 +69,7 @@
       ng-if="vm.state.is('SearchContent')"
       tree="vm.state.value().dbOriginalFiltered"
       expanded-nodes="true"
+      highlight="vm.search.text"
       on-transform-node="events.transformNode"
       on-fetch-children="events.onLazyFolderFetch"
       menu-options="{
