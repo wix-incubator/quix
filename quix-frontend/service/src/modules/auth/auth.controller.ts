@@ -8,7 +8,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {AuthGuard} from './user-decorator';
-import {ConfigService, EnvSettings} from '../../config';
 import {Response, Request} from 'express';
 import {LoginService} from './login.service';
 import {IExternalUser} from './types';

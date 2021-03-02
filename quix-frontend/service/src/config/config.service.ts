@@ -49,7 +49,6 @@ export abstract class ConfigService {
     clientConfig
       .setAuth({
         googleClientId: env.GoogleClientId,
-        authCookieName: env.AuthCookieName,
       })
       .setClientTopology({
         executeBaseUrl: env.QuixBackendPublicUrl,
