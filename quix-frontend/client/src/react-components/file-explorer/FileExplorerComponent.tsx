@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { v4 as uuid } from 'uuid';
 import {TreeItem, Node} from './TreeItem';
 
+const EXPAND_ALL_NODES_LIMIT = 3000;
 
 export interface FileExplorerProps {
   tree: Tree[] | Tree;
@@ -29,20 +30,15 @@ export interface Tree {
   children?: Tree[];
 }
 
-const getAllNodeSubIds = (node: Tree, subIds: string[] = [], withLazy: boolean = true) => {
-  if (!node.children) {
-    return subIds;
+const countAllSubChildren = (node: Tree, withLazy: boolean = false, count = 0) => {
+  if (!node.children || (!withLazy && node.lazy)) {
+    return count;
   }
 
-  node.children.map(child => {
-    if (child.id && (withLazy || !child.lazy)) {
-      subIds.push(child.id);
-    }
+  const sum = node.children.length;
+  const sumChildren = node.children.map(child => countAllSubChildren(child, withLazy, count)).reduce((a, b) => a + b, 0);
 
-    getAllNodeSubIds(child, subIds, withLazy);
-  });
-
-  return subIds;
+  return sum + sumChildren;
 }
 
 
@@ -128,7 +124,9 @@ export const FileExplorer = (props: FileExplorerProps) => {
             onMenuClick={(subNode, menuIndex, path) => onMenuClick(subNode, menuIndex, path, sub)}
             onTransformChildNodesLazy={(subNode, path) => transformLazy(index, subNode, path)}
             onTransformChildNodes={(subNode, path) => transform(index, subNode, path)}
-            expandAllNodes={props.expandedNodes}
+            expandAllNodes={
+              props.expandedNodes && countAllSubChildren({children: innerTree} as Node) < EXPAND_ALL_NODES_LIMIT
+            }
             path={[]}
           />
         )) : null
