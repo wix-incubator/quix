@@ -45,9 +45,9 @@ export class EventBus {
       reject(new Error('Event Bus: timeout'));
     }, this.timeout);
 
-    const next = (i: number) => {
-      let cachedAction = action;
+    let cachedAction = action;
 
+    const next = (i: number) => {
       return (nextAction?: A | Error) => {
         if (nextAction instanceof Error) {
           reject(nextAction);
