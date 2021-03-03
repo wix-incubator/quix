@@ -45,8 +45,6 @@ export const onRun = (scope: IScope, store: Store) => () => {
 
 export const onMaximizeToggle = (scope: IScope, store: Store, app: App) => () => {
   scope.vm.isFolded = false;
-
-  inject('$timeout')(() => scope.vm.editor.focus());
 };
 
 export const onEditorInstanceLoad = (scope: IScope, store: Store, app: App) => (editor) => {
