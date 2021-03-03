@@ -96,7 +96,7 @@ const SqliteConf: DbColumnConf = {
           date.getUTCSeconds(),
         ).valueOf();
       },
-      to: (v?: number) => (v !== undefined ? new Date(v) : undefined),
+      to: (v?: number) => v,
     },
   },
   dateCreated: {
@@ -113,7 +113,7 @@ const SqliteConf: DbColumnConf = {
           date.getUTCSeconds(),
         ).valueOf();
       },
-      to: (v?: number) => (v !== undefined ? new Date(v) : undefined),
+      to: (v?: number) => v,
     },
   },
   eventsTimestamp: {

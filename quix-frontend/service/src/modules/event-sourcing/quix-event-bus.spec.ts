@@ -580,8 +580,8 @@ describe('event sourcing', () => {
     it('should add user with dateCreated in the past', async () => {
       const createAction = UserActions.createNewUser('foo', {
         avatar: '',
-        dateCreated: 1,
-        dateUpdated: 1,
+        dateCreated: 1000,
+        dateUpdated: 1000,
         email: 'foo',
         id: 'foo',
         name: '',
@@ -589,7 +589,7 @@ describe('event sourcing', () => {
       });
       await driver.emitAsUser(eventBus, [createAction], 'foo');
       const users = await driver.getUsers();
-      expect(users[0]).toMatchObject({dateCreated: 1, dateUpdated: 1});
+      expect(users[0]).toMatchObject({dateCreated: 1000, dateUpdated: 1000});
     });
   });
 });
