@@ -99,7 +99,8 @@ export default () => {
         const modelConf = createNgModel(scope, ngModel)
           .formatWith(model => ({value: model}))
           .parseWith(({value}) => value)
-          .watchDeep(true);
+          .watchDeep(true)
+          .then(() => scope.vm.toggle(true));
 
         initNgScope(scope)
           .withOptions('bprOptions', {
@@ -110,6 +111,7 @@ export default () => {
             showSyntaxErrors: true,
             fitContent: false,
             shareParams: false,
+            autoRun: false,
             dateFormat: null,
           })
           .withVM({

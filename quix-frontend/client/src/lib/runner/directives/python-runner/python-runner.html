@@ -1,10 +1,12 @@
 <bi-runner
+  ng-if="vm.enabled"
   data="model.value"
   version="version"
   runner="runner"
   br-options="{
     type: type,
-    buttonText: vm.runnerOptions.buttonText
+    buttonText: vm.runnerOptions.buttonText,
+    autoRun: options.autoRun,
   }"
   on-run="events.onRun(runner)"
   on-runner-created="events.onRunnerCreated(runner)"
@@ -48,6 +50,6 @@
   </result>
 
   <run-hint>
-    <div class="bi-hint bi-fade-in" ng-if="vm.hint.run.enabled && !readonly">{{::getCtrlKeyName()}} + Enter to run</div>
+    <quix-note-hints ng-if="vm.hint.run.enabled && !readonly"></quix-note-hints>
   </run-hint>
 </bi-runner>

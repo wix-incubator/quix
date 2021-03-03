@@ -12,32 +12,60 @@ export default (app: App, store: Store) => () => ({
   template,
   scope: {
     type: '<',
-    code: '<',
+    textContent: '<',
+    richContent: '<',
     autorun: '<'
   },
   link: {
-    async pre(scope: IScope) {
+    pre(scope: IScope) {
       initNgScope(scope)
         .withVM({
-          $import({code} = {code: ''}) {
-            scope.code = scope.code || code;
+          $import({engines} = {engines: {}}) {
+            scope.vm.engines = engines || {};
           },
           $export() {
-            return {code: scope.code};
+            return {engines: scope.vm.engines};
           },
-          type: scope.type,
+          runner: {
+            enabled: false,
+          },
           pluginFilter(plugin: NotePlugin) {
             return plugin.getConfig().canCreate;
+          },
+          $init() {
+            this.engines = {};
+            this.plugin = null;
           }
         })
         .withEvents({
-          onChange() {
+          onContentChange(textContent, richContent) {
+            const engine = scope.vm.plugin.getEngine();
+            const engineContent = scope.vm.engines[engine] = scope.vm.engines[engine] || {};
+
+            engineContent.textContent = textContent;
+            engineContent.richContent = richContent;
+
             scope.state.save();
           },
-          onRunnerInstanceLoad(instance) {
-            if (scope.autorun) {
-              instance.run();
-            }
+          onPluginLoad(plugin: NotePlugin) {
+            const engine = plugin.getEngine();
+            const engineContent = scope.vm.engines[engine] = scope.vm.engines[engine] || {};
+
+            engineContent.textContent = scope.textContent || engineContent.textContent || '';
+            engineContent.richContent = scope.richContent || engineContent.richContent;
+
+            scope.vm.plugin = plugin;
+            scope.vm.runner.reload();
+          },
+          onPluginChange(plugin: NotePlugin) {
+            const engine = plugin.getEngine();
+            const engineContent = scope.vm.engines[engine] = scope.vm.engines[engine] || {};
+
+            engineContent.textContent = engineContent.textContent || '';
+            engineContent.richContent = engineContent.richContent;
+
+            scope.vm.plugin = plugin;
+            scope.vm.runner.reload();
           }
         })
         .withState('playground', 'playground', {});

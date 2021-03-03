@@ -8,6 +8,7 @@ export class BigQueryNotePlugin extends NotePlugin {
     super(app, name, ModuleEngineType.BigQuery, hooks, {
       syntaxValidation: true,
       canCreate: true,
+      dateFormat: 'YYYY/MM/DD HH:mm:ss',
     });
   }
 
@@ -24,9 +25,5 @@ export class BigQueryNotePlugin extends NotePlugin {
       title: 'Bytes billed',
       value: bytes(stats.bytesBilled, bytesConfig),
     }];
-  }
-
-  getDateFormat() {
-    return 'YYYY/MM/DD HH:mm:ss';
   }
 }

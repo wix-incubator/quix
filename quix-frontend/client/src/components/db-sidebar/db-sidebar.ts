@@ -13,6 +13,7 @@ import {openTempQuery, StateManager} from '../../services';
 import {pluginManager} from '../../plugins';
 import {debounceAsync} from '../../utils';
 import {DB} from '../../config';
+import { DbPlugin } from '../../services/plugins';
 
 enum States {
   Initial,
@@ -58,10 +59,16 @@ export default (app: App, store: Store) => () => ({
           }
         })
         .withEvents({
-          onPluginPickerLoad(plugin) {
+          onPluginPickerLoad(plugin: DbPlugin) {
             if (!store.getState('db.db')) {
-              cache.db.fetch(plugin);
+              cache.db.fetch(plugin.getId());
             }
+          },
+          onPluginPickerChange(plugin: DbPlugin) {
+            scope.vm.search.text = null;
+            scope.vm.state.force('Initial');
+
+            cache.db.fetch(plugin.getId());
           },
           onRetryClick() {
             scope.vm.state.force('Initial');
@@ -120,12 +127,6 @@ export default (app: App, store: Store) => () => ({
                 } as any);
 
             openTempQuery(scope, scope.vm.type, query, true);
-          },
-          onTypeChange(type) {
-            scope.vm.search.text = null;
-            scope.vm.state.force('Initial');
-
-            cache.db.fetch(type);
           },
           onSearchChange(text) {
             const {state, hideRoot} = scope.vm;

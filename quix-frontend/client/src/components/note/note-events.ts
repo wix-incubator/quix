@@ -16,7 +16,10 @@ export const onNameChange = (scope: IScope, store: Store) => () => {
   scope.onNameChange({note: scope.note});
 };
 
-export const onContentChange = (scope: IScope, store: Store) => () => {
+export const onContentChange = (scope: IScope, store: Store) => (textContent: string, richContent: Record<string, any>) => {
+  scope.note.content = textContent;
+  scope.note.richContent = richContent;
+
   scope.onContentChange({note: scope.note});
 };
 
@@ -43,7 +46,7 @@ export const onRun = (scope: IScope, store: Store) => () => {
 export const onMaximizeToggle = (scope: IScope, store: Store, app: App) => () => {
   scope.vm.isFolded = false;
 
-  inject('$timeout')(() => scope.vm.editor.focus());
+  inject('$timeout')(() => scope.vm.editor?.focus());
 };
 
 export const onEditorInstanceLoad = (scope: IScope, store: Store, app: App) => (editor) => {

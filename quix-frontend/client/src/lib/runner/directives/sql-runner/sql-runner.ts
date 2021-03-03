@@ -72,7 +72,8 @@ export default () => {
         const modelConf = createNgModel(scope, ngModel)
           .formatWith(model => ({value: model}))
           .parseWith(({value}) => value)
-          .watchDeep(true);
+          .watchDeep(true)
+          .then(() => scope.vm.toggle(true));
 
         initNgScope(scope)
           .withOptions('bsrOptions', {
@@ -264,10 +265,6 @@ export default () => {
           });
 
         scope.renderActions = () => ({html: renderActions(scope, editorInstance, runnerInstance, transclude)});
-
-        scope.getCtrlKeyName = () => {
-          return navigator.platform === 'MacIntel' ? 'Command' : 'Ctrl';
-        };
       }
     }
   };

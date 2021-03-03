@@ -5,23 +5,25 @@
     </div>
 
     <quix-plugin-picker
-      type="note"
+      module="note"
       filter="vm.pluginFilter"
-      ng-model="vm.type"
+      ng-model="type"
+      on-load="events.onPluginLoad(plugin)"
+      on-change="events.onPluginChange(plugin)"
     ></quix-plugin-picker>
   </div>
 
-  <bi-sql-runner
-    class="bi-c-h bi-grow"
-    ng-model="code"
-    ng-change="events.onChange()"
-    bsr-options="::{fitContent: true, params: true, focus: true}"
-    type="vm.type"
+  <quix-runner
+    class="bi-c-h bi-grow bi-fade-in"
+    ng-show="vm.runner.visible"
+    ng-if="vm.runner.enabled"
+    type="type"
     runner="runner"
+    quix-runner-options="::{autoRun: autorun, shareParams: false}"
+    text-content="vm.engines[vm.plugin.getEngine()].textContent"
+    rich-content="vm.engines[vm.plugin.getEngine()].richContent"
+    on-content-change="events.onContentChange(textContent, richContent)"
     on-save="events.onSave()"
     on-run="events.onRun()"
-    on-runner-load="events.onRunnerInstanceLoad(instance)"
-    on-runner-created="events.onRunnerCreated(runner)"
-    on-runner-destroyed="events.onRunnerDestroyed(runner)"
-  ></bi-sql-runner>
+  ></quix-runner>
 </div>
