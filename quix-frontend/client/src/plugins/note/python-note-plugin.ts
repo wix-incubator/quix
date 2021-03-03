@@ -21,7 +21,7 @@ export class PythonNotePlugin extends NotePlugin {
           params: true,
           focus: options.focusEditor,
           showSyntaxErrors: vm.showSyntaxErrors,
-          shareParams: true,
+          shareParams: options.shareParams,
           autoRun: options.autoRun,
           dateFormat: vm.dateFormat
         }"

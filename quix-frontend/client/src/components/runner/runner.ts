@@ -38,6 +38,7 @@ export default (app: App, store: Store) => () => ({
           {
             focusEditor: true,
             autoRun: false,
+            shareParams: true,
           },
         )
         .withVM({
