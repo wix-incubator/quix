@@ -9,13 +9,13 @@ export class v41614712161318 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      'ALTER TABLE `notes` MODIFY COLUMN `name` varchar(255) NOT NULL',
+      'ALTER TABLE `notes` MODIFY COLUMN `name` varchar(512) NOT NULL',
     );
     await queryRunner.query(
-      'ALTER TABLE `notebooks` MODIFY COLUMN `name` varchar(255) NOT NULL',
+      'ALTER TABLE `notebooks` MODIFY COLUMN `name` varchar(512) NOT NULL',
     );
     await queryRunner.query(
-      'ALTER TABLE `folders` MODIFY COLUMN `name` varchar(255) NOT NULL',
+      'ALTER TABLE `folders` MODIFY COLUMN `name` varchar(512) NOT NULL',
     );
     const metadata = new DbMetadata(QUIX_SCHEMA, CURRENT_QUIX_SCHEMA_VERSION);
     const manager = queryRunner.manager;
