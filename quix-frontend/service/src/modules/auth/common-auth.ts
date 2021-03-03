@@ -7,14 +7,14 @@ const defaultUser: IExternalUser = {
   name: 'Default User',
 };
 
-export const fakeAuth = (token: string): IExternalUser => {
+export const fakeAuth = (token: string): IExternalUser | undefined => {
   try {
     const user = JSON.parse(Buffer.from(token, 'base64').toString());
 
     return user;
   } catch (e) {
     if (isJestTest()) {
-      throw new Error('no user');
+      return undefined;
     }
     // tslint:disable-next-line: no-console
     console.debug(`Can't parse cookie, using default user.`);

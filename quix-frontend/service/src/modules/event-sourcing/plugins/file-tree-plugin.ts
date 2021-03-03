@@ -125,7 +125,8 @@ export class FileTreePlugin implements EventBusPlugin {
               folder,
             });
 
-            return this.fileTreeNodeRepo.save(node);
+            // we should use .insert() here, but looks like it doesn't cascade folder row
+            return this.fileTreeNodeRepo.save(node, {reload: false});
           }
 
           case FileActionTypes.updateName: {
@@ -135,7 +136,7 @@ export class FileTreePlugin implements EventBusPlugin {
             });
 
             folder.name = action.name;
-            return this.folderRepo.save(folder);
+            return this.folderRepo.save(folder, {reload: false});
           }
 
           case NotebookActionTypes.moveNotebook: {
@@ -143,7 +144,7 @@ export class FileTreePlugin implements EventBusPlugin {
             const parent = lastAndAssertExist(path, action);
 
             const node = new DbFileTreeNode(id, {parentId: parent.id});
-            return this.fileTreeNodeRepo.save(node);
+            return this.fileTreeNodeRepo.save(node, {reload: false});
           }
 
           case FileActionTypes.moveFile: {

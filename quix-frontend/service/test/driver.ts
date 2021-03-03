@@ -6,6 +6,7 @@ import {testingDefaults} from '../src/config/env/static-settings';
 import {INotebook, INote, IFolder, IFile, IUser} from '@wix/quix-shared';
 import WebSocket from 'ws';
 import uuid from 'uuid';
+import {serialize} from 'cookie';
 
 const defaultCookie = testingDefaults.AuthCookieName;
 
@@ -81,7 +82,11 @@ class HttpHelper {
   };
 
   async wsConnect() {
-    const ws = new WebSocket('ws://localhost:3000/subscription');
+    const ws = new WebSocket('ws://localhost:3000/subscription', {
+      headers: this.user
+        ? {Cookie: serialize(defaultCookie, createUserCookie(this.user))}
+        : {},
+    });
     const sessionId = uuid.v4();
     await new Promise(resolve => ws.on('open', resolve));
 

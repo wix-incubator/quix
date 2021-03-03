@@ -38,7 +38,7 @@ export class UserPlugin implements EventBusPlugin {
         switch (action.type) {
           case UserActionTypes.createNewUser: {
             const dbUser = userToDbUser(action.newUser);
-            return this.userRepository.save(dbUser);
+            return this.userRepository.insert(dbUser);
           }
           case UserActionTypes.updateUser: {
             const {id, avatar, email, name, changeUserCreated} = action;
@@ -50,7 +50,7 @@ export class UserPlugin implements EventBusPlugin {
             if (changeUserCreated) {
               dbUser.dateCreated = changeUserCreated.valueOf();
             }
-            return this.userRepository.save(dbUser);
+            return this.userRepository.save(dbUser, {reload: false});
           }
         }
       },

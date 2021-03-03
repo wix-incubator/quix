@@ -33,13 +33,16 @@ const MySqlConf: DbColumnConf = {
   dateUpdated: {
     transformer: {
       from: (d?: Date) => d && d.valueOf(),
-      to: () => undefined,
+      to: (v?: number) => (v !== undefined ? new Date(v) : undefined),
     },
     readonly: true,
     name: 'date_updated',
   },
   dateCreated: {
-    transformer: {from: (d?: Date) => d && d.valueOf(), to: () => undefined},
+    transformer: {
+      from: (d?: Date) => d && d.valueOf(),
+      to: (v?: number) => (v !== undefined ? new Date(v) : undefined),
+    },
     readonly: true,
     name: 'date_created',
   },
@@ -93,7 +96,7 @@ const SqliteConf: DbColumnConf = {
           date.getUTCSeconds(),
         ).valueOf();
       },
-      to: () => undefined,
+      to: (v?: number) => (v !== undefined ? new Date(v) : undefined),
     },
   },
   dateCreated: {
@@ -110,7 +113,7 @@ const SqliteConf: DbColumnConf = {
           date.getUTCSeconds(),
         ).valueOf();
       },
-      to: () => undefined,
+      to: (v?: number) => (v !== undefined ? new Date(v) : undefined),
     },
   },
   eventsTimestamp: {

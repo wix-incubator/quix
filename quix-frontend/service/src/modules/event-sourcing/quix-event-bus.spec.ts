@@ -13,6 +13,8 @@ import {range, reject, find} from 'lodash';
 import {EntityType} from '../../common/entity-type.enum';
 import {MockDataBuilder} from 'test/builder';
 import {IAction} from './infrastructure/types';
+import {UserActions} from '@wix/quix-shared';
+import {emit} from 'process';
 
 jest.setTimeout(300000);
 
@@ -571,6 +573,23 @@ describe('event sourcing', () => {
       await driver
         .getFavorite(defaultUser, notebookId, EntityType.Notebook)
         .and.expectToBeUndefined();
+    });
+  });
+
+  describe('user list::', () => {
+    it('should add user with dateCreated in the past', async () => {
+      const createAction = UserActions.createNewUser('foo', {
+        avatar: '',
+        dateCreated: 1,
+        dateUpdated: 1,
+        email: 'foo',
+        id: 'foo',
+        name: '',
+        rootFolder: '',
+      });
+      await driver.emitAsUser(eventBus, [createAction], 'foo');
+      const users = await driver.getUsers();
+      expect(users[0]).toMatchObject({dateCreated: 1, dateUpdated: 1});
     });
   });
 });

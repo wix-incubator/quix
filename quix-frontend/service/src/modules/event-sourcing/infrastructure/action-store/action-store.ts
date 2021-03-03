@@ -5,7 +5,6 @@ import {IActionStore, IDBAction} from './types';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Injectable} from '@nestjs/common';
 
-// TODO: benchmark
 const convertDbActionToAction = (input: IDBAction): IAction => {
   const {data, ...rest} = input;
   return {...rest, ...data};
@@ -29,7 +28,15 @@ export class DbActionStore implements IActionStore {
 
   async pushAction(action: IAction | IAction[]) {
     const actions: IAction[] = Array.isArray(action) ? action : [action];
-    await this.repo.save(actions.map(convertActionToDbAction));
+
+    // not using simple .insert() or .save() to supress excessive select typeorm does
+    this.repo
+      .createQueryBuilder()
+      .insert()
+      .values(actions.map(convertActionToDbAction))
+      .updateEntity(false)
+      .execute();
+    // await this.repo.insert(actions.map(convertActionToDbAction));
     return actions;
   }
 

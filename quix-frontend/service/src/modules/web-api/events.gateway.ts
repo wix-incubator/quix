@@ -18,6 +18,7 @@ import {IncomingMessage} from 'http';
 import {parse} from 'cookie';
 import {Inject} from '@nestjs/common';
 import {AuthOptions, AuthTypes, IExternalUser} from '../auth/types';
+import {cons} from 'fp-ts/lib/ReadonlyNonEmptyArray';
 interface ExtendedWebSocket extends WebSocket {
   userId?: string;
   sessionId?: string;
@@ -61,13 +62,14 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
   onSubscribe(
     client: ExtendedWebSocket,
     data: any,
-  ): Observable<WsResponse<any>> {
+  ): Observable<WsResponse<any>> | undefined {
     const {sessionId} = data;
 
     try {
       const userId = client.userId;
       if (!userId) {
-        return from([{event: 'error', data: 'invalid user'}]);
+        client.terminate();
+        return;
       }
 
       client.sessionId = sessionId;
@@ -80,7 +82,7 @@ export class EventsGateway implements OnGatewayDisconnect, OnGatewayConnection {
       );
     } catch (e) {
       client.close();
-      return EMPTY;
+      return;
     }
   }
 

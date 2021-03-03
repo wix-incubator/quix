@@ -6,7 +6,7 @@ export class NoteRepository extends Repository<DbNote> {
   async insertNewWithRank(note: DbNote) {
     const currentCount = await this.count({notebookId: note.notebookId});
     note.rank = currentCount;
-    return this.save(note);
+    return this.insert(note);
   }
 
   async deleteOneAndOrderRank(item: string | DbNote) {

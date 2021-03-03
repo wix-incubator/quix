@@ -36,6 +36,7 @@ export class QuixEventBusDriver {
     public folderRepo: Repository<DbFolder>,
     public fileTreeRepo: Repository<DbFileTreeNode>,
     public favoritesRepo: Repository<DbFavorites>,
+    public userRepo: Repository<DbUser>,
     private conn: Connection,
     private configService: ConfigService,
     private defaultUser: string,
@@ -84,6 +85,7 @@ export class QuixEventBusDriver {
     const favoritesRepo: Repository<DbFavorites> = module.get(
       getRepositoryToken(DbFavorites),
     );
+    const userRepo: Repository<DbUser> = module.get(getRepositoryToken(DbUser));
     const conn: Connection = module.get(getConnectionToken());
     const configService: ConfigService = module.get(ConfigService);
 
@@ -96,6 +98,7 @@ export class QuixEventBusDriver {
       folderRepo,
       fileTreeRepo,
       favoritesRepo,
+      userRepo,
       conn,
       configService,
       defaultUser,
@@ -114,6 +117,7 @@ export class QuixEventBusDriver {
     await this.clearFolders();
     await this.clearNotebooks();
     await this.clearFavorites();
+    await this.userRepo.clear();
     await this.conn.query(
       dbType === 'mysql'
         ? 'SET FOREIGN_KEY_CHECKS = 1'
@@ -176,6 +180,10 @@ export class QuixEventBusDriver {
 
   async getNote(id: string) {
     return this.noteRepo.findOne(id);
+  }
+
+  async getUsers() {
+    return this.userRepo.find();
   }
 
   async getUserFileTree(user: string) {

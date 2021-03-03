@@ -74,7 +74,7 @@ export class NotebookPlugin implements EventBusPlugin {
     const newModel = notebookReducer(model, action);
 
     if (newModel && model !== newModel) {
-      return tm.save(covertNotebookToDb(newModel));
+      return tm.save(covertNotebookToDb(newModel), {reload: false});
     } else if (action.type === NotebookActionTypes.deleteNotebook) {
       await tm.delete(DbNotebook, {id: action.id});
     }
@@ -96,7 +96,9 @@ export class NotebookPlugin implements EventBusPlugin {
         node.type = FileType.notebook;
         node.parent = parent ? new DbFileTreeNode(parent.id) : undefined;
 
-        return tm.getCustomRepository(FileTreeRepository).save(node);
+        return tm
+          .getCustomRepository(FileTreeRepository)
+          .save(node, {reload: false});
       }
     }
   }

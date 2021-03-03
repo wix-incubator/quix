@@ -15,6 +15,9 @@ import {Connection} from 'typeorm';
 import WebSocket from 'ws';
 import './custom-matchers';
 import {WsAdapter} from '@nestjs/platform-ws';
+import {serialize as serializeCookie} from 'cookie';
+import {testingDefaults} from '../src/config/env/static-settings';
+import {cons} from 'fp-ts/lib/ReadonlyArray';
 
 let envSettingsOverride: Partial<EnvSettings> = {};
 
@@ -247,7 +250,6 @@ describe('Application (e2e)', () => {
       let searchResults = await driver
         .as('user1')
         .search('"some query goes here"');
-      console.log(searchResults);
       expect(searchResults.notes[0].owner).toBe(user1profile.email);
 
       searchResults = await driver.as('user2').search('"some query goes here"');
@@ -259,6 +261,8 @@ describe('Application (e2e)', () => {
   });
 
   describe('Synchronize sessions', () => {
+    const defaultCookie = testingDefaults.AuthCookieName;
+
     beforeAndAfter();
 
     beforeEach(() => {
@@ -266,14 +270,14 @@ describe('Application (e2e)', () => {
     });
 
     describe('websocket', () => {
-      it(`should close connection if token is not supplied in subscription`, async () => {
+      it(`should close connection if token is not passed in subscription`, async () => {
         await app.listenAsync(3000);
 
-        const ws1 = new WebSocket('ws://localhost:3000/subscription');
+        const ws1 = new WebSocket('ws://localhost:3000/subscription', {
+          headers: {Cookie: serializeCookie(defaultCookie, 'abc')},
+        });
         await new Promise(resolve => ws1.on('open', resolve));
-        ws1.send(
-          JSON.stringify({event: 'subscribe', data: {token: 'fake-token'}}),
-        );
+        ws1.send(JSON.stringify({event: 'subscribe', data: {}}));
         await new Promise(resolve => ws1.on('close', resolve));
       });
 
