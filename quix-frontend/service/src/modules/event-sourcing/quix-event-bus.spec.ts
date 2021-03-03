@@ -592,6 +592,16 @@ describe('event sourcing', () => {
       expect(users[0]).toMatchObject({dateCreated: 1000, dateUpdated: 1000});
     });
   });
+
+  describe('error handling::', () => {
+    it('should throw an error on invalid action', async () => {
+      const error = await driver
+        .emitAsUser(eventBus, [{type: 'foo'}])
+        .catch(e => e);
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      expect(error instanceof Error).toBe(true);
+    });
+  });
 });
 
 function reorderPos<T>(items: T[], from: number, to: number) {

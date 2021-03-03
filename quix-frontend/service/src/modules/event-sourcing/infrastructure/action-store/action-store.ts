@@ -29,8 +29,8 @@ export class DbActionStore implements IActionStore {
   async pushAction(action: IAction | IAction[]) {
     const actions: IAction[] = Array.isArray(action) ? action : [action];
 
-    // not using simple .insert() or .save() to supress excessive select typeorm does
-    this.repo
+    // not using simple .insert() or .save() to suppress excessive select typeorm does
+    await this.repo
       .createQueryBuilder()
       .insert()
       .values(actions.map(convertActionToDbAction))
