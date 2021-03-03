@@ -1,0 +1,93 @@
+import template from './runner.html';
+import './runner.scss';
+
+import {initNgScope, inject} from '../../lib/core';
+import {Store} from '../../lib/store';
+import {App} from '../../lib/app';
+import {IScope} from './runner-types';
+import {pluginManager} from '../../plugins';
+
+export default (app: App, store: Store) => () => ({
+  restrict: 'E',
+  template,
+  scope: {
+    type: '<',
+    textContent: '=',
+    richContent: '=',
+    runner: '<',
+    quixRunnerOptions: '<',
+    renderStats: '&',
+    getDownloadFileName: '&',
+    onContentChange: '&',
+    onSave: '&',
+    onRun: '&',
+    onEditorInstanceLoad: '&',
+    onRunnerInstanceLoad: '&',
+    onRunnerCreated: '&',
+    onRunnerDestroyed: '&',
+    onParamsShare: '&',
+    readonly: '<',
+  },
+  link: {
+    async pre(scope: IScope) {
+      const plugin = pluginManager.module('note').plugin(scope.type);
+    
+      initNgScope(scope)
+        .withOptions(
+          'quixRunnerOptions',
+          {
+            focusEditor: true,
+            autoRun: false,
+          },
+        )
+        .withVM({
+          $init() {
+            this.type = plugin.getId();
+            this.engine = plugin.getEngine();
+            this.showSyntaxErrors = plugin.getConfig().syntaxValidation;
+            this.dateFormat = plugin.getConfig().dateFormat;
+          },
+        })
+        .withEvents({
+          onContentChange(textContent, richContent) {
+            return scope.onContentChange({textContent, richContent});
+          },
+          onSave() {
+            return scope.onSave();
+          },
+          onRun() {
+            return scope.onRun();
+          },
+          onEditorInstanceLoad(instance) {
+            return scope.onEditorInstanceLoad({instance});
+          },
+          onRunnerInstanceLoad(instance) {
+            return scope.onRunnerInstanceLoad({instance});
+          },
+          onRunnerCreated(runner) {
+            return scope.onRunnerCreated({runner});
+          },
+          onRunnerDestroyed(runner) {
+            return scope.onRunnerDestroyed({runner});
+          },
+          onParamsShare(params) {
+            return scope.onParamsShare({params});
+          }
+        })
+        .withActions({
+          getDownloadFileName(query) {
+            return scope.getDownloadFileName({query});
+          },
+          renderStats() {
+            return scope.renderStats();
+          }
+        });
+
+      scope.renderRunner = () => {
+        const html = inject('$compile')(plugin.renderRunner())(scope.$new(false));
+
+        return {html};
+      };
+    },
+  },
+});

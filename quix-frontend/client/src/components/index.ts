@@ -13,3 +13,4 @@ export {default as quixImage} from './image/image';
 export {default as quixNpc} from './npc/npc';
 export {default as quixNoteShare} from './note-share/note-share';
 export {default as quixNoteHints} from './note-hints/note-hints';
+export {default as quixRunner} from './runner/runner';

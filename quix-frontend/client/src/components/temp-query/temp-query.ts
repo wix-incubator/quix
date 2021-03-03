@@ -34,6 +34,9 @@ export default (app: App, store: Store) => () => ({
           onChange() {
             scope.state.save();
           },
+          onPluginChange(type: string) {
+            console.log(type)
+          },
           onRunnerInstanceLoad(instance) {
             if (scope.autorun) {
               instance.run();

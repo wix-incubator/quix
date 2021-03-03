@@ -35,21 +35,16 @@ export class NotePlugin extends Plugin {
     private readonly config: {
       syntaxValidation: boolean;
       canCreate: boolean;
+      dateFormat?: string;
     },
   ) {
     super(app, id, engine, hooks);
-  }
 
-  getRunnerType() {
-    return this.getId();
+    this.config.dateFormat = this.config.dateFormat || 'YYYY/MM/DD HH:mm';
   }
 
   getConfig() {
     return this.config;
-  }
-
-  getDateFormat() {
-    return 'YYYY/MM/DD HH:mm';
   }
 
   formatStats(stats: {[key: string]: any}) {
@@ -60,8 +55,8 @@ export class NotePlugin extends Plugin {
     return `
       <bi-sql-runner
         class="bi-c-h bi-grow bi-fade-in"
-        ng-model="note.content"
-        ng-change="events.onContentChange()"
+        ng-model="textContent"
+        ng-change="events.onContentChange(textContent)"
         bsr-options="::{
           fitContent: true,
           params: true,
@@ -73,21 +68,21 @@ export class NotePlugin extends Plugin {
         }"
         type="vm.type"
         runner="runner"
-        download-file-name="getDownloadFileName(query)"
+        download-file-name="actions.getDownloadFileName(query)"
         on-save="events.onSave()"
         on-run="events.onRun()"
         on-editor-load="events.onEditorInstanceLoad(instance)"
         on-runner-load="events.onRunnerInstanceLoad(instance)"
         on-runner-created="events.onRunnerCreated(runner)"
         on-runner-destroyed="events.onRunnerDestroyed(runner)"
-        on-params-share="events.onShare(note, params)"
-        readonly="!permissions.edit"
+        on-params-share="events.onParamsShare(params)"
+        readonly="readonly"
       >
         <controls>
           <quix-npc></quix-npc>
         </controls>
 
-        <stats class="bi-align bi-s-h--x15" bi-html="renderStats()"></stats>
+        <stats class="bi-align bi-s-h--x15" bi-html="actions.renderStats()"></stats>
       </bi-sql-runner>
     `;
   }

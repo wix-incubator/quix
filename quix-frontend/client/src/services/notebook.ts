@@ -109,7 +109,9 @@ export const deleteNotebook = async (store: Store, app: App, notebook: INotebook
 export const saveQueuedNotes = (store: Store) => {
   const {notes} = store.getState('notebook.queue') as {notes: Record<string, INote>};
 
-  return store.logAndDispatch(Object.keys(notes).map(id => NoteActions.updateContent(id, notes[id].content)));
+  return store.logAndDispatch(Object.keys(notes).map(id =>
+    NoteActions.updateContent(id, notes[id].content, notes[id].richContent)
+  ));
 }
 
 export const hasQueuedNotes = (store: Store) => {

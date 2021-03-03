@@ -60,10 +60,7 @@ export default (app: App, store: Store) => () => ({
           isMaximized: false,
           enabled: false,
           $init() {
-            this.showSyntaxErrors = plugin.getConfig().syntaxValidation;
-            this.type = plugin.getRunnerType();
-            this.engine = plugin.getEngine();
-            this.dateFormat = plugin.getDateFormat();
+            this.type = plugin.getId();
           },
         });
 
@@ -73,12 +70,6 @@ export default (app: App, store: Store) => () => ({
         return `${scope.note.name}${
           query.getIndex() > 0 ? `_${query.getIndex()}` : ''
         }.csv`;
-      };
-
-      scope.renderRunner = () => {
-        const html = inject('$compile')(plugin.renderRunner())(scope.$new(false));
-
-        return {html};
       };
 
       scope.renderStats = () => {

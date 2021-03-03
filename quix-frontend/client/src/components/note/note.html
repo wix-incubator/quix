@@ -74,11 +74,29 @@
         </div>
       </div>
 
-      <div 
+      <div
         class="bi-panel-content bi-c-h bi-grow bi-fade-in"
         ng-if="!bf.fold"
       >
-        <div class="bi-c-h bi-grow" bi-html="::renderRunner()" bi-html-delay="0"></div>
+        <quix-runner
+          class="bi-c-h bi-grow"
+          type="::vm.type"
+          runner="runner"
+          quix-runner-options="::options"
+          text-content="note.content"
+          rich-content="note.richContent"
+          get-download-file-name="getDownloadFileName(query)"
+          render-stats="renderStats()"
+          on-content-change="events.onContentChange(textContent, richContent)"
+          on-save="events.onSave()"
+          on-run="events.onRun()"
+          on-editor-instance-load="events.onEditorInstanceLoad(instance)"
+          on-runner-instance-load="events.onRunnerInstanceLoad(instance)"
+          on-runner-created="events.onRunnerCreated(runner)"
+          on-runner-destroyed="events.onRunnerDestroyed(runner)"
+          on-params-share="events.onShare(note, params)"
+          readonly="!permissions.edit"
+        ></quix-runner>
       </div>
     </div>
   </bi-foldable>
