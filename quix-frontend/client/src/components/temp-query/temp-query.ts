@@ -66,11 +66,6 @@ export default (app: App, store: Store) => () => ({
 
             scope.vm.plugin = plugin;
             scope.vm.runner.reload();
-          },
-          onRunnerInstanceLoad(instance) {
-            if (scope.autorun) {
-              instance.run();
-            }
           }
         })
         .withState('playground', 'playground', {});

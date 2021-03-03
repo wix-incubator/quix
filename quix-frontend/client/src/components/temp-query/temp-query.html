@@ -19,12 +19,11 @@
     ng-if="vm.runner.enabled"
     type="type"
     runner="runner"
-    quix-runner-options="::{fitContent: true, params: true, focus: true, shareParams: false}"
+    quix-runner-options="::{autoRun: autorun, shareParams: false}"
     text-content="vm.engines[vm.plugin.getEngine()].textContent"
     rich-content="vm.engines[vm.plugin.getEngine()].richContent"
     on-content-change="events.onContentChange(textContent, richContent)"
     on-save="events.onSave()"
     on-run="events.onRun()"
-    on-runner-instance-load="events.onRunnerInstanceLoad(instance)"
   ></quix-runner>
 </div>
