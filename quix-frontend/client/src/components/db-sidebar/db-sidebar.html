@@ -1,8 +1,8 @@
 <div class="bi-center bi-heading bi-fade-in" ng-show="vm.types.length > 1">
   <quix-plugin-picker
-    type="db"
+    module="db"
     ng-model="vm.type"
-    ng-change="events.onTypeChange(vm.type)"
+    on-change="events.onPluginPickerChange(plugin)"
     on-load="events.onPluginPickerLoad(plugin)"
   ></quix-plugin-picker>
 </div>

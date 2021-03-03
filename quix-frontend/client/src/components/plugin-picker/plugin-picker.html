@@ -1,5 +1,6 @@
   <bi-simple-select
     ng-model="model"
+    ng-change="events.onChange(model)"
     bi-options="plugin as plugin | biToHumanCase for plugin in ::vm.plugins"
     bs-options="::{alignDropdown: 'center'}"
   >

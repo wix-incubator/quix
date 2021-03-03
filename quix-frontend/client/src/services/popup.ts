@@ -59,7 +59,7 @@ export const openTempQuery = (scope, type?: string, code: string = '', autorun =
     <quix-temp-query
       class="bi-c-h bi-grow"
       type="type"
-      code="code"
+      text-content="code"
       autorun="autorun"
     ></quix-temp-query>`, 
     scope, {

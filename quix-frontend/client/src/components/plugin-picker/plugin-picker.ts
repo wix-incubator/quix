@@ -12,7 +12,7 @@ export default (app: App, store: Store) => () => ({
   template,
   require: 'ngModel',
   scope: {
-    type: '@',
+    module: '@',
     filter: '&',
     onChange: '&',
     onLoad: '&',
@@ -24,7 +24,7 @@ export default (app: App, store: Store) => () => ({
         .then(() => {
           initNgScope(scope)
           .withVM({
-            plugins: pluginManager.module(scope.type)
+            plugins: pluginManager.module(scope.module)
               .plugins()
               .filter(plugin => !scope.filter() || scope.filter()(plugin))
               .map(plugin => plugin.getId()),
@@ -35,12 +35,17 @@ export default (app: App, store: Store) => () => ({
               scope.model = scope.model || (this.plugins.includes(type) ? type : null);
             }
           })
+          .withEvents({
+            onChange(model) {
+              scope.onChange({plugin: pluginManager.module(scope.module).plugin(model)});
+            }
+          })
           .withState('pluginPicker', 'pluginPicker', {});
         });
 
       inject('$timeout')(() => {
         scope.model = scope.model || scope.vm.plugins[0];
-        scope.onLoad({plugin: scope.model});
+        scope.onLoad({plugin: pluginManager.module(scope.module).plugin(scope.model)});
       });  
     }
   }

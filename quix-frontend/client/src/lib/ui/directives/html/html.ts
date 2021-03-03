@@ -12,7 +12,13 @@ export default () => {
 
     async link(scope, element) {
       const delay = parseInt(scope.biHtmlDelay, 10);
-      const render = () => element.html(scope.biHtml({scope: scope.$parent}).html);
+      const html = scope.biHtml({scope: scope.$parent});
+
+      if (!html) {
+        return;
+      }
+
+      const render = () => element.html(html.html);
 
       if (!isNaN(scope.biHtmlDelay)) {
         (timeout = timeout || inject('$timeout'))(render, delay);
