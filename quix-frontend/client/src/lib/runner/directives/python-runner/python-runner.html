@@ -1,10 +1,12 @@
 <bi-runner
+  ng-if="vm.enabled"
   data="model.value"
   version="version"
   runner="runner"
   br-options="{
     type: type,
-    buttonText: vm.runnerOptions.buttonText
+    buttonText: vm.runnerOptions.buttonText,
+    autoRun: options.autoRun,
   }"
   on-run="events.onRun(runner)"
   on-runner-created="events.onRunnerCreated(runner)"

@@ -97,7 +97,9 @@ export default () => {
 
         createNgModel(scope, ngModel)
           .renderWith(text => editor = render(scope, element, text, editor, urlImports))
-          .then(() => scope.onLoad({instance: new Instance(editor, scope)}));
+          .then(() => {
+            scope.onLoad({instance: new Instance(editor, scope)});
+          });
 
         initNgScope(scope)
           .withOptions('bceOptions', {
