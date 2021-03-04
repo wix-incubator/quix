@@ -64,8 +64,12 @@ export const userToDbUser = (user: IUser) => {
     id,
     name,
     rootFolder,
-    dateCreated,
-    dateUpdated,
   });
+  if (dateCreated !== undefined) {
+    dbUser.dateCreated = dateCreated;
+  }
+  if (dateUpdated !== undefined) {
+    dbUser.dateUpdated = dateUpdated;
+  }
   return dbUser;
 };
