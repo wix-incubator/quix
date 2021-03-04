@@ -33,7 +33,7 @@ const aceDefaults = {
 };
 function getHeight(_ace) {
   // tslint:disable-next-line: restrict-plus-operands
-  return _ace.getSession().getScreenLength() * _ace.renderer.lineHeight + _ace.renderer.scrollBar.getWidth();
+  return _ace.getSession().getScreenLength() * 16 + _ace.renderer.scrollBar.getWidth();
 }
 
 function setHeight(_ace, element) {
@@ -107,6 +107,7 @@ export default class CodeEditor extends srv.eventEmitter.EventEmitter {
 
     if (options.fitContent) {
       setHeight(this.ace, this.element);
+    
       this.ace.getSession().on('change', () => {
         setHeight(this.ace, this.element);
         this.resize();
