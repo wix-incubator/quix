@@ -115,6 +115,8 @@ export class FileTreePlugin implements EventBusPlugin {
               id: file.id,
               owner: action.user,
               name: file.name,
+              dateCreated: action.dateCreated,
+              dateUpdated: action.dateCreated,
             });
             const node = new DbFileTreeNode();
 

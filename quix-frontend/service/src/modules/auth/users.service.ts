@@ -47,8 +47,11 @@ export class UsersService {
 
   private async doLogin(userFromLogin: IExternalUser, dbUser: DbUser) {
     const {avatar, name, email: id, email} = userFromLogin;
+    /* small hack when migrating users, creating users with epoch 1000 (1970-01-01 00:00:01) */
+    /* once they login, change dateCreated */
     const changeUserCreated =
-      dbUser.dateCreated.valueOf() === 0 ? new Date() : undefined;
+      dbUser.dateCreated.valueOf() === 1000 ? new Date() : undefined;
+
     return this.quixEventBus.emit({
       ...UserActions.updateUser(
         id,
