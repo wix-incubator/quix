@@ -1,4 +1,4 @@
-import {IFile, TModuleComponentType, ModuleEngineType} from '@wix/quix-shared';
+import {IFile, TModuleComponentType, ModuleEngineType, INote} from '@wix/quix-shared';
 import {App} from '../../lib/app';
 
 export const resolvePluginType = (type: TModuleComponentType) => {
@@ -85,6 +85,10 @@ export class NotePlugin extends Plugin {
         <stats class="bi-align bi-s-h--x15" bi-html="actions.renderStats()"></stats>
       </bi-sql-runner>
     `;
+  }
+
+  getCustomActions(): {icon: string, title: string, handler: (note: INote) => void}[] {
+    return [];
   }
 }
 

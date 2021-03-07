@@ -2,7 +2,7 @@ import template from './note.html';
 import './note.scss';
 
 import {assign} from 'lodash';
-import {initNgScope, inject} from '../../lib/core';
+import {initNgScope, inject, utils} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
 import {IScope} from './note-types';
@@ -24,6 +24,7 @@ export default (app: App, store: Store) => () => ({
     onNameChange: '&',
     onShare: '&',
     onClone: '&',
+    onFormat: '&',
     onDelete: '&',
     onMarkToggle: '&',
     onSave: '&',
@@ -61,6 +62,7 @@ export default (app: App, store: Store) => () => ({
           enabled: false,
           $init() {
             this.type = plugin.getId();
+            this.customActions = plugin.getCustomActions();
           },
         });
 
@@ -71,6 +73,11 @@ export default (app: App, store: Store) => () => ({
           query.getIndex() > 0 ? `_${query.getIndex()}` : ''
         }.csv`;
       };
+
+      scope.onCustomAction = (title: string) => {
+        const currentAction = scope.vm.customActions.find(customAction => customAction.title = title);
+        utils.scope.safeApply(scope, () => currentAction.handler(scope.note));
+      }
 
       scope.renderStats = () => {
         const stats = scope.vm.runner.getCurrentQuery().getStats();

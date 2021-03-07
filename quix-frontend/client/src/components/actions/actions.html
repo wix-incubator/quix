@@ -40,7 +40,21 @@
     <i class="bi-icon--sm">delete_sweep</i>
     <span>Delete {{::type}}s</span>
   </button>
-    
+
+  <bi-tooltip ng-repeat="action in custom.actions">
+    <bi-toggle>
+      <i 
+        class="bi-action"
+        ng-class="::{
+          'bi-icon': !options.compact,
+          'bi-icon--sm': options.compact
+        }"
+        ng-click="$event.stopPropagation(); custom.handler(action.title)"
+      >{{::action.icon}}</i>
+    </bi-toggle>
+    {{::action.title}} {{::type}}
+  </bi-tooltip>
+
   <bi-tooltip ng-if="::permissions.clone">
     <bi-toggle>
       <i 
