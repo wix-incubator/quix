@@ -1,4 +1,4 @@
-import {inject} from '../../lib/core';
+import {inject, utils} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {INote} from '@wix/quix-shared';
 import {IScope} from './note-types';
@@ -30,6 +30,10 @@ export const onShare = (scope: IScope, store: Store) => (note: INote, params: st
 export const onClone = (scope: IScope, store: Store) => (note: INote) => {
   scope.onClone({note});
 };
+
+export const onCustomAction = (scope: IScope, store: Store) => (action: any) => {
+  utils.scope.safeApply(scope, () => action.handler(scope.note));
+}
 
 export const onDelete = (scope: IScope, store: Store) => (note: INote) => {
   scope.onDelete({note});

@@ -62,6 +62,20 @@
         >
           <quix-meta entity="note"></quix-meta>
 
+          <bi-tooltip ng-repeat="action in ::vm.customActions">
+            <bi-toggle>
+              <i 
+                class="bi-action"
+                ng-class="::{
+                  'bi-icon': !options.compact,
+                  'bi-icon--sm': options.compact
+                }"
+                ng-click="$event.stopPropagation(); events.onCustomAction(action)"
+              >{{::action.icon}}</i>
+            </bi-toggle>
+            {{::action.title}}
+          </bi-tooltip>
+
           <quix-actions
             type="note"
             context="note"
@@ -69,7 +83,6 @@
             quix-actions-options="{reverse: true, compact: true}"
             on-share="events.onShare(context)"
             on-clone="events.onClone(context)"
-            custom="{actions: vm.customActions, handler: onCustomAction}"
             on-delete="events.onDelete(context)"
           ></quix-actions>
         </div>
