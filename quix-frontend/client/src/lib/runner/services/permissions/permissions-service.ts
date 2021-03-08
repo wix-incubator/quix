@@ -1,4 +1,4 @@
-import {confirm} from '../../../ui';
+import {confirm} from '../../../../lib/ui';
 import {RunnerComponentInstance} from '../../directives/runner/runner';
 
 const PERMISSION_ERROR_PATTERNS = [
@@ -17,23 +17,23 @@ export const requestCredentials = (scope, runnerInstance: RunnerComponentInstanc
   const user = runnerInstance.getUser();
 
   if (!user) {
-    throw new Error('To use promptOnPermissionError please do runnerComponenetInstance.setUser(user)');
+    throw new Error('To use promptOnPermissionError please call runnerComponentInstance.setUser(user)');
   }
 
   user.getPermission().deelevate();
 
-  return confirm(`
-    <dialog yes="Submit" no="Cancel">
-      <dialog-title>Permission denied</dialog-title>
-      <dialog-content>
-        <div class="bi-c bi-s-v--x05" ng-form="form">
-          <span class="bi-text--sm">Please enter your password to access restricted data</span>
-          <input type="password" class="bi-input bi-grow" ng-model="model.password" placeholder="Password" required="true" bi-focus/>
-        </div>
-      </dialog-content>
-    </dialog>
-  `, scope, {model: {password: null}})
-    .then(({model}) => {
-      user.getPermission().elevate(model.password);
-    })
+  return confirm({
+    title: `Permission denied`,
+    actionType: 'neutral',
+    icon: 'gpp_bad',
+    yes: 'Submit',
+    html: `
+      <div class="bi-c-h bi-s-v--x05">
+        <span class="bi-text--sm bi-muted">Please enter your password to access restricted data</span>
+        <input type="password" class="bi-input" ng-model="model.password" placeholder="Password" required="true" bi-focus/>
+      </div>
+    `
+  }, scope, {model: {password: null}}).then(({model}) => {
+    user.getPermission().elevate(model.password);
+  });
 }

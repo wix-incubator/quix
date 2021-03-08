@@ -61,6 +61,17 @@ const failEvents = [
   {event: 'end', data: {id: '274370d2-6755-4d3c-8248-b573a63523d2'}}
 ];
 
+const permissionFailEvents = [
+  {event: 'start', data: {id: '274370d2-6755-4d3c-8248-b573a63523d2', 'numOfQueries': 1}},
+  {event: 'query-start', data: {id: '20190506_152226_00201_xps63'}},
+  {event: 'query-details', data: {id: '20190506_152226_00201_xps63', 'code': 'select a'}},
+  {event: 'percentage', data: {id: '20190506_152226_00201_xps63', 'percentage': 0}},
+  {event: 'percentage', data: {id: '20190506_152226_00201_xps63', 'percentage': 0}},
+  {event: 'error', data: {id: '20190506_152226_00201_xps63', 'message': 'permission denied'}},
+  {event: 'query-end', data: {id: '20190506_152226_00201_xps63'}},
+  {event: 'end', data: {id: '274370d2-6755-4d3c-8248-b573a63523d2'}}
+];
+
 export const setupMockWs = (app: Application) => {
   const router = Router();
 
@@ -75,6 +86,8 @@ export const setupMockWs = (app: Application) => {
           sendEvents(ws, successEvents, timeout);
         } else if ((payload.data.code).includes('do error')) {
           sendEvents(ws, failEvents, timeout);
+        } else if ((payload.data.code).includes('do permission error')) {
+          sendEvents(ws, permissionFailEvents, timeout);
         } else {
           ws.close();
         }
