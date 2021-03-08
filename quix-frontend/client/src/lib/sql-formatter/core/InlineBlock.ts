@@ -1,4 +1,3 @@
-// @ts-nocheck
 import tokenTypes from './tokenTypes';
 
 const INLINE_MAX_LENGTH = 50;
@@ -11,6 +10,7 @@ const INLINE_MAX_LENGTH = 50;
  * expressions where open-parenthesis causes newline and increase of indentation.
  */
 export default class InlineBlock {
+  private level: number;
   constructor() {
     this.level = 0;
   }
@@ -80,11 +80,11 @@ export default class InlineBlock {
 
   // Reserved words that cause newlines, comments and semicolons
   // are not allowed inside inline parentheses block
-  isForbiddenToken({ type, value }) {
+  isForbiddenToken({type, value}) {
     return (
-      type === tokenTypes.RESERVED_TOP_LEVEL ||
+      type === tokenTypes.RESERVED_TOPLEVEL ||
       type === tokenTypes.RESERVED_NEWLINE ||
-      type === tokenTypes.COMMENT ||
+      type === tokenTypes.LINE_COMMENT ||
       type === tokenTypes.BLOCK_COMMENT ||
       value === ';'
     );

@@ -1,7 +1,7 @@
 import { INote, ModuleEngineType } from '@wix/quix-shared';
 import { App } from '../../lib/app';
 import { NotePlugin } from '../../services/plugins';
-import { format } from '../../lib/sql-formatter/sqlFormatter';
+import formatter from '../../lib/sql-formatter/sqlFormatter';
 
 export class PrestoNotePlugin extends NotePlugin {
   constructor(app: App, name: string, hooks: any) {
@@ -16,7 +16,7 @@ export class PrestoNotePlugin extends NotePlugin {
       icon: 'format_paint',
       title: 'Format',
       handler: (note: INote) => {
-        note.content = format(note.content);
+        note.content = formatter.format(note.content);
       }
     }];
   }

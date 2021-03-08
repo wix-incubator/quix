@@ -1,8 +1,9 @@
-// @ts-nocheck
 /**
  * Handles placeholder replacement with given params.
  */
 export default class Params {
+  private readonly params: any;
+  private index: number;
   /**
    * @param {Object} params
    */
@@ -18,7 +19,7 @@ export default class Params {
    *   @param {String} token.value Placeholder value
    * @return {String} param or token.value when params are missing
    */
-  get({ key, value }) {
+  get({key, value}) {
     if (!this.params) {
       return value;
     }

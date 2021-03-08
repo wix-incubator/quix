@@ -1,5 +1,5 @@
-// @ts-nocheck
-import { last } from '../utils';
+import repeat from 'lodash/repeat';
+import last from 'lodash/last';
 
 const INDENT_TYPE_TOP_LEVEL = 'top-level';
 const INDENT_TYPE_BLOCK_LEVEL = 'block-level';
@@ -10,9 +10,11 @@ const INDENT_TYPE_BLOCK_LEVEL = 'block-level';
  * There are two types of indentation levels:
  *
  * - BLOCK_LEVEL : increased by open-parenthesis
- * - TOP_LEVEL : increased by RESERVED_TOP_LEVEL words
+ * - TOP_LEVEL : increased by RESERVED_TOPLEVEL words
  */
 export default class Indentation {
+  private readonly indent: string;
+  private readonly indentTypes: string[];
   /**
    * @param {String} indent Indent value, default is "  " (2 spaces)
    */
@@ -26,13 +28,13 @@ export default class Indentation {
    * @return {String}
    */
   getIndent() {
-    return this.indent.repeat(this.indentTypes.length);
+    return repeat(this.indent, this.indentTypes.length);
   }
 
   /**
    * Increases indentation by one top-level indent.
    */
-  increaseTopLevel() {
+  increaseToplevel() {
     this.indentTypes.push(INDENT_TYPE_TOP_LEVEL);
   }
 
@@ -48,7 +50,7 @@ export default class Indentation {
    * Does nothing when the previous indent is not top-level.
    */
   decreaseTopLevel() {
-    if (this.indentTypes.length > 0 && last(this.indentTypes) === INDENT_TYPE_TOP_LEVEL) {
+    if (last(this.indentTypes) === INDENT_TYPE_TOP_LEVEL) {
       this.indentTypes.pop();
     }
   }
@@ -65,9 +67,5 @@ export default class Indentation {
         break;
       }
     }
-  }
-
-  resetIndentation() {
-    this.indentTypes = [];
   }
 }

@@ -1,15 +1,31 @@
-// @ts-nocheck
+import isEmpty from 'lodash/isEmpty';
+import escapeRegExp from 'lodash/escapeRegExp';
 import tokenTypes from './tokenTypes';
-import * as regexFactory from './regexFactory';
-import { escapeRegExp } from '../utils';
 
 export default class Tokenizer {
+  private readonly WHITESPACE_REGEX: RegExp;
+  private readonly NUMBER_REGEX: RegExp;
+  private readonly OPERATOR_REGEX: RegExp;
+  private readonly BLOCK_COMMENT_REGEX: RegExp;
+  private readonly LINE_COMMENT_REGEX: RegExp;
+  private readonly RESERVED_TOPLEVEL_REGEX: RegExp;
+  private readonly RESERVED_NEWLINE_REGEX: RegExp;
+  private readonly RESERVED_PLAIN_REGEX: RegExp;
+  private readonly WORD_REGEX: RegExp;
+  private readonly STRING_REGEX: RegExp;
+  private readonly OPEN_PAREN_REGEX: RegExp;
+  private readonly CLOSE_PAREN_REGEX: RegExp;
+  private readonly INDEXED_PLACEHOLDER_REGEX: RegExp | false;
+  private readonly IDENT_NAMED_PLACEHOLDER_REGEX: RegExp | false;
+  private readonly STRING_NAMED_PLACEHOLDER_REGEX: RegExp | false;
+  // private readonly SPECIAL_TOKENS: RegExp | false = false;
+  private readonly upperCase: boolean = false;
+
   /**
    * @param {Object} cfg
    *  @param {String[]} cfg.reservedWords Reserved words in SQL
-   *  @param {String[]} cfg.reservedTopLevelWords Words that are set to new line separately
+   *  @param {String[]} cfg.reservedToplevelWords Words that are set to new line separately
    *  @param {String[]} cfg.reservedNewlineWords Words that are set to newline
-   *  @param {String[]} cfg.reservedTopLevelWordsNoIndent Words that are top level but have no indentation
    *  @param {String[]} cfg.stringTypes String types to enable: "", '', ``, [], N''
    *  @param {String[]} cfg.openParens Opening parentheses to enable, like (, [
    *  @param {String[]} cfg.closeParens Closing parentheses to enable, like ), ]
@@ -17,47 +33,91 @@ export default class Tokenizer {
    *  @param {String[]} cfg.namedPlaceholderTypes Prefixes for named placeholders, like @ and :
    *  @param {String[]} cfg.lineCommentTypes Line comments to enable, like # and --
    *  @param {String[]} cfg.specialWordChars Special chars that can be found inside of words, like @ and #
-   *  @param {String[]} [cfg.operator] Additional operators to recognize
+   * @param {boolean} cfg.upperCase
    */
-  constructor(cfg) {
-    this.WHITESPACE_REGEX = /^(\s+)/u;
-    this.NUMBER_REGEX = /^((-\s*)?[0-9]+(\.[0-9]+)?([eE]-?[0-9]+(\.[0-9]+)?)?|0x[0-9a-fA-F]+|0b[01]+)\b/u;
+  constructor(cfg: any) {
+    this.WHITESPACE_REGEX = /^(\s+)/;
+    this.NUMBER_REGEX = /^((-\s*)?[0-9]+(\.[0-9]+)?|0x[0-9a-fA-F]+|0b[01]+)\b/;
+    this.OPERATOR_REGEX = /^(!=|<>|==|<=|>=|!<|!>|\|\||::|->>|->|~~\*|~~|!~~\*|!~~|~\*|!~\*|!~|.)/;
 
-    this.OPERATOR_REGEX = regexFactory.createOperatorRegex([
-      '<>',
-      '<=',
-      '>=',
-      ...(cfg.operators || []),
-    ]);
+    this.BLOCK_COMMENT_REGEX = /^(\/\*[^]*?(?:\*\/|$))/;
+    this.LINE_COMMENT_REGEX = this.createLineCommentRegex(cfg.lineCommentTypes);
 
-    this.BLOCK_COMMENT_REGEX = /^(\/\*[^]*?(?:\*\/|$))/u;
-    this.LINE_COMMENT_REGEX = regexFactory.createLineCommentRegex(cfg.lineCommentTypes);
+    this.RESERVED_TOPLEVEL_REGEX = this.createReservedWordRegex(cfg.reservedToplevelWords);
+    this.RESERVED_NEWLINE_REGEX = this.createReservedWordRegex(cfg.reservedNewlineWords);
+    this.RESERVED_PLAIN_REGEX = this.createReservedWordRegex(cfg.reservedWords);
 
-    this.RESERVED_TOP_LEVEL_REGEX = regexFactory.createReservedWordRegex(cfg.reservedTopLevelWords);
-    this.RESERVED_TOP_LEVEL_NO_INDENT_REGEX = regexFactory.createReservedWordRegex(
-      cfg.reservedTopLevelWordsNoIndent
-    );
-    this.RESERVED_NEWLINE_REGEX = regexFactory.createReservedWordRegex(cfg.reservedNewlineWords);
-    this.RESERVED_PLAIN_REGEX = regexFactory.createReservedWordRegex(cfg.reservedWords);
+    this.WORD_REGEX = this.createWordRegex(cfg.specialWordChars);
+    this.STRING_REGEX = this.createStringRegex(cfg.stringTypes);
 
-    this.WORD_REGEX = regexFactory.createWordRegex(cfg.specialWordChars);
-    this.STRING_REGEX = regexFactory.createStringRegex(cfg.stringTypes);
+    this.OPEN_PAREN_REGEX = this.createParenRegex(cfg.openParens);
+    this.CLOSE_PAREN_REGEX = this.createParenRegex(cfg.closeParens);
 
-    this.OPEN_PAREN_REGEX = regexFactory.createParenRegex(cfg.openParens);
-    this.CLOSE_PAREN_REGEX = regexFactory.createParenRegex(cfg.closeParens);
-
-    this.INDEXED_PLACEHOLDER_REGEX = regexFactory.createPlaceholderRegex(
-      cfg.indexedPlaceholderTypes,
-      '[0-9]*'
-    );
-    this.IDENT_NAMED_PLACEHOLDER_REGEX = regexFactory.createPlaceholderRegex(
+    this.INDEXED_PLACEHOLDER_REGEX = this.createPlaceholderRegex(cfg.indexedPlaceholderTypes, '[0-9]*');
+    this.IDENT_NAMED_PLACEHOLDER_REGEX = this.createPlaceholderRegex(cfg.namedPlaceholderTypes, '[a-zA-Z0-9._$]+');
+    this.STRING_NAMED_PLACEHOLDER_REGEX = this.createPlaceholderRegex(
       cfg.namedPlaceholderTypes,
-      '[a-zA-Z0-9._$]+'
+      this.createStringPattern(cfg.stringTypes),
     );
-    this.STRING_NAMED_PLACEHOLDER_REGEX = regexFactory.createPlaceholderRegex(
-      cfg.namedPlaceholderTypes,
-      regexFactory.createStringPattern(cfg.stringTypes)
-    );
+    this.upperCase = !!cfg.upperCase;
+  }
+
+  createLineCommentRegex(lineCommentTypes) {
+    return new RegExp(`^((?:${lineCommentTypes.map(c => escapeRegExp(c)).join('|')}).*?(?:\n|$))`);
+  }
+
+  createReservedWordRegex(reservedWords) {
+    const reservedWordsPattern = reservedWords.join('|').replace(/ /g, '\\s+');
+    return new RegExp(`^(${reservedWordsPattern})\\b`, 'i');
+  }
+
+  createWordRegex(specialChars = []) {
+    return new RegExp(`^([\\w${specialChars.join('')}]+)`);
+  }
+
+  createStringRegex(stringTypes) {
+    return new RegExp('^(' + this.createStringPattern(stringTypes) + ')');
+  }
+
+  // This enables the following string patterns:
+  // 1. backtick quoted string using `` to escape
+  // 2. square bracket quoted string (SQL Server) using ]] to escape
+  // 3. double quoted string using "" or \" to escape
+  // 4. single quoted string using '' or \' to escape
+  // 5. national character quoted string using N'' or N\' to escape
+  createStringPattern(stringTypes) {
+    const patterns = {
+      '``': '((`[^`]*($|`))+)',
+      '[]': '((\\[[^\\]]*($|\\]))(\\][^\\]]*($|\\]))*)',
+      '""': '(("[^"\\\\]*(?:\\\\.[^"\\\\]*)*("|$))+)',
+      "''": "(('[^'\\\\]*(?:\\\\.[^'\\\\]*)*('|$))+)",
+      "N''": "((N'[^N'\\\\]*(?:\\\\.[^N'\\\\]*)*('|$))+)",
+    };
+
+    return stringTypes.map(t => patterns[t]).join('|');
+  }
+
+  createParenRegex(parens) {
+    return new RegExp('^(' + parens.map(p => this.escapeParen(p)).join('|') + ')', 'i');
+  }
+
+  escapeParen(paren) {
+    if (paren.length === 1) {
+      // A single punctuation character
+      return escapeRegExp(paren);
+    }
+
+    // longer word
+    return '\\b' + paren + '\\b';
+  }
+
+  createPlaceholderRegex(types, pattern) {
+    if (isEmpty(types)) {
+      return false;
+    }
+    const typesRegex = types.map(escapeRegExp).join('|');
+
+    return new RegExp(`^((?:${typesRegex})(?:${pattern}))`);
   }
 
   /**
@@ -68,7 +128,6 @@ export default class Tokenizer {
    * @return {Object[]} tokens An array of tokens.
    *  @return {String} token.type
    *  @return {String} token.value
-   *  @return {String} token.whitespaceBefore Preceding whitespace
    */
   tokenize(input) {
     const tokens = [];
@@ -76,29 +135,19 @@ export default class Tokenizer {
 
     // Keep processing the string until it is empty
     while (input.length) {
-      // grab any preceding whitespace
-      const whitespaceBefore = this.getWhitespace(input);
-      input = input.substring(whitespaceBefore.length);
+      // Get the next token and the token type
+      token = this.getNextToken(input, token);
+      // Advance the string
+      input = input.substring(token.value.length);
 
-      if (input.length) {
-        // Get the next token and the token type
-        token = this.getNextToken(input, token);
-        // Advance the string
-        input = input.substring(token.value.length);
-
-        tokens.push({ ...token, whitespaceBefore });
-      }
+      tokens.push(token);
     }
     return tokens;
   }
 
-  getWhitespace(input) {
-    const matches = input.match(this.WHITESPACE_REGEX);
-    return matches ? matches[1] : '';
-  }
-
   getNextToken(input, previousToken) {
     return (
+      this.getWhitespaceToken(input) ||
       this.getCommentToken(input) ||
       this.getStringToken(input) ||
       this.getOpenParenToken(input) ||
@@ -109,6 +158,14 @@ export default class Tokenizer {
       this.getWordToken(input) ||
       this.getOperatorToken(input)
     );
+  }
+
+  getWhitespaceToken(input) {
+    return this.getTokenOnFirstMatch({
+      input,
+      type: tokenTypes.WHITESPACE,
+      regex: this.WHITESPACE_REGEX,
+    });
   }
 
   getCommentToken(input) {
@@ -167,7 +224,7 @@ export default class Tokenizer {
     return this.getPlaceholderTokenWithKey({
       input,
       regex: this.IDENT_NAMED_PLACEHOLDER_REGEX,
-      parseKey: (v) => v.slice(1),
+      parseKey: v => v.slice(1),
     });
   }
 
@@ -175,8 +232,7 @@ export default class Tokenizer {
     return this.getPlaceholderTokenWithKey({
       input,
       regex: this.STRING_NAMED_PLACEHOLDER_REGEX,
-      parseKey: (v) =>
-        this.getEscapedPlaceholderKey({ key: v.slice(2, -1), quoteChar: v.slice(-1) }),
+      parseKey: v => this.getEscapedPlaceholderKey({key: v.slice(2, -1), quoteChar: v.slice(-1)}),
     });
   }
 
@@ -184,20 +240,20 @@ export default class Tokenizer {
     return this.getPlaceholderTokenWithKey({
       input,
       regex: this.INDEXED_PLACEHOLDER_REGEX,
-      parseKey: (v) => v.slice(1),
+      parseKey: v => v.slice(1),
     });
   }
 
-  getPlaceholderTokenWithKey({ input, regex, parseKey }) {
-    const token = this.getTokenOnFirstMatch({ input, regex, type: tokenTypes.PLACEHOLDER });
+  getPlaceholderTokenWithKey({input, regex, parseKey}) {
+    const token = this.getTokenOnFirstMatch({input, regex, type: tokenTypes.PLACEHOLDER});
     if (token) {
       token.key = parseKey(token.value);
     }
     return token;
   }
 
-  getEscapedPlaceholderKey({ key, quoteChar }) {
-    return key.replace(new RegExp(escapeRegExp('\\' + quoteChar), 'gu'), quoteChar);
+  getEscapedPlaceholderKey({key, quoteChar}) {
+    return key.replace(new RegExp(escapeRegExp('\\') + quoteChar, 'g'), quoteChar);
   }
 
   // Decimal, binary, or hex numbers
@@ -222,21 +278,18 @@ export default class Tokenizer {
     // A reserved word cannot be preceded by a "."
     // this makes it so in "mytable.from", "from" is not considered a reserved word
     if (previousToken && previousToken.value && previousToken.value === '.') {
-      return undefined;
+      return;
     }
     return (
-      this.getTopLevelReservedToken(input) ||
-      this.getNewlineReservedToken(input) ||
-      this.getTopLevelReservedTokenNoIndent(input) ||
-      this.getPlainReservedToken(input)
+      this.getToplevelReservedToken(input) || this.getNewlineReservedToken(input) || this.getPlainReservedToken(input)
     );
   }
 
-  getTopLevelReservedToken(input) {
+  getToplevelReservedToken(input) {
     return this.getTokenOnFirstMatch({
       input,
-      type: tokenTypes.RESERVED_TOP_LEVEL,
-      regex: this.RESERVED_TOP_LEVEL_REGEX,
+      type: tokenTypes.RESERVED_TOPLEVEL,
+      regex: this.RESERVED_TOPLEVEL_REGEX,
     });
   }
 
@@ -245,14 +298,6 @@ export default class Tokenizer {
       input,
       type: tokenTypes.RESERVED_NEWLINE,
       regex: this.RESERVED_NEWLINE_REGEX,
-    });
-  }
-
-  getTopLevelReservedTokenNoIndent(input) {
-    return this.getTokenOnFirstMatch({
-      input,
-      type: tokenTypes.RESERVED_TOP_LEVEL_NO_INDENT,
-      regex: this.RESERVED_TOP_LEVEL_NO_INDENT_REGEX,
     });
   }
 
@@ -272,9 +317,18 @@ export default class Tokenizer {
     });
   }
 
-  getTokenOnFirstMatch({ input, type, regex }) {
+  getTokenOnFirstMatch({input, type, regex}): any {
     const matches = input.match(regex);
 
-    return matches ? { type, value: matches[1] } : undefined;
+    if (matches) {
+      let value: string = matches[1];
+      if (
+        this.upperCase &&
+        (type === tokenTypes.RESERVED || type === tokenTypes.RESERVED_TOPLEVEL || type === tokenTypes.RESERVED_NEWLINE)
+      ) {
+        value = value.toLocaleUpperCase();
+      }
+      return {type, value};
+    }
   }
 }

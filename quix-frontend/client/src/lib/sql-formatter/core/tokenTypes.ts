@@ -2,11 +2,11 @@
  * Constants for token types
  */
 export default {
+  WHITESPACE: 'whitespace',
   WORD: 'word',
   STRING: 'string',
   RESERVED: 'reserved',
-  RESERVED_TOP_LEVEL: 'reserved-top-level',
-  RESERVED_TOP_LEVEL_NO_INDENT: 'reserved-top-level-no-indent',
+  RESERVED_TOPLEVEL: 'reserved-toplevel',
   RESERVED_NEWLINE: 'reserved-newline',
   OPERATOR: 'operator',
   OPEN_PAREN: 'open-paren',

@@ -1,61 +1,49 @@
-// @ts-nocheck
+import includes from 'lodash/includes';
+import trimEnd from 'lodash/trimEnd';
 import tokenTypes from './tokenTypes';
 import Indentation from './Indentation';
 import InlineBlock from './InlineBlock';
 import Params from './Params';
-import { trimSpacesEnd } from '../utils';
-import { isAnd, isBetween, isLimit } from './token';
+import Tokenizer from './Tokenizer';
 
+export interface Cfg {
+  indent?: string;
+  params?: Params;
+}
 export default class Formatter {
+  private readonly cfg: Cfg;
+  private readonly indentation: Indentation;
+  private readonly inlineBlock: InlineBlock;
+  private readonly params: Params;
+  private readonly tokenizer: Tokenizer;
+  private previousReservedWord: any;
+  private index: number;
+  private tokens: any[];
   /**
    * @param {Object} cfg
-   *  @param {String} cfg.language
-   *  @param {String} cfg.indent
-   *  @param {Boolean} cfg.uppercase
-   *  @param {Integer} cfg.linesBetweenQueries
-   *  @param {Object} cfg.params
+   *   @param {Object} cfg.indent
+   *   @param {Object} cfg.params
+   * @param {Tokenizer} tokenizer
    */
-  
-  constructor(cfg) {
-    this.cfg = cfg;
+  constructor(cfg, tokenizer) {
+    this.cfg = cfg || {};
     this.indentation = new Indentation(this.cfg.indent);
     this.inlineBlock = new InlineBlock();
     this.params = new Params(this.cfg.params);
-    this.previousReservedToken = {};
+    this.tokenizer = tokenizer;
+    this.previousReservedWord = {};
     this.tokens = [];
     this.index = 0;
   }
 
   /**
-   * SQL Tokenizer for this formatter, provided by subclasses.
-   */
-  tokenizer() {
-    throw new Error('tokenizer() not implemented by subclass');
-  }
-
-  /**
-   * Reprocess and modify a token based on parsed context.
-   *
-   * @param {Object} token The token to modify
-   *  @param {String} token.type
-   *  @param {String} token.value
-   * @return {Object} new token or the original
-   *  @return {String} token.type
-   *  @return {String} token.value
-   */
-  tokenOverride(token) {
-    // subclasses can override this to modify tokens during formatting
-    return token;
-  }
-
-  /**
-   * Formats whitespace in a SQL string to make it easier to read.
+   * Formats whitespaces in a SQL string to make it easier to read.
    *
    * @param {String} query The SQL query string
    * @return {String} formatted query
    */
   format(query) {
-    this.tokens = this.tokenizer().tokenize(query);
+    this.tokens = this.tokenizer.tokenize(query);
     const formattedQuery = this.getFormattedQueryFromTokens();
 
     return formattedQuery.trim();
@@ -67,24 +55,21 @@ export default class Formatter {
     this.tokens.forEach((token, index) => {
       this.index = index;
 
-      token = this.tokenOverride(token);
-
-      if (token.type === tokenTypes.LINE_COMMENT) {
+      if (token.type === tokenTypes.WHITESPACE) {
+        // ignore (we do our own whitespace formatting)
+      } else if (token.type === tokenTypes.LINE_COMMENT) {
         formattedQuery = this.formatLineComment(token, formattedQuery);
       } else if (token.type === tokenTypes.BLOCK_COMMENT) {
         formattedQuery = this.formatBlockComment(token, formattedQuery);
-      } else if (token.type === tokenTypes.RESERVED_TOP_LEVEL) {
-        formattedQuery = this.formatTopLevelReservedWord(token, formattedQuery);
-        this.previousReservedToken = token;
-      } else if (token.type === tokenTypes.RESERVED_TOP_LEVEL_NO_INDENT) {
-        formattedQuery = this.formatTopLevelReservedWordNoIndent(token, formattedQuery);
-        this.previousReservedToken = token;
+      } else if (token.type === tokenTypes.RESERVED_TOPLEVEL) {
+        formattedQuery = this.formatToplevelReservedWord(token, formattedQuery);
+        this.previousReservedWord = token;
       } else if (token.type === tokenTypes.RESERVED_NEWLINE) {
         formattedQuery = this.formatNewlineReservedWord(token, formattedQuery);
-        this.previousReservedToken = token;
+        this.previousReservedWord = token;
       } else if (token.type === tokenTypes.RESERVED) {
         formattedQuery = this.formatWithSpaces(token, formattedQuery);
-        this.previousReservedToken = token;
+        this.previousReservedWord = token;
       } else if (token.type === tokenTypes.OPEN_PAREN) {
         formattedQuery = this.formatOpeningParentheses(token, formattedQuery);
       } else if (token.type === tokenTypes.CLOSE_PAREN) {
@@ -106,63 +91,47 @@ export default class Formatter {
     return formattedQuery;
   }
 
-  formatLineComment(token, query) {
-    return this.addNewline(query + this.show(token));
+  formatLineComment(token, query: string) {
+    return this.addNewline(query + token.value);
   }
 
-  formatBlockComment(token, query) {
+  formatBlockComment(token, query: string) {
     return this.addNewline(this.addNewline(query) + this.indentComment(token.value));
   }
 
   indentComment(comment) {
-    return comment.replace(/\n[ \t]*/gu, '\n' + this.indentation.getIndent() + ' ');
+    return comment.replace(/\n/g, '\n' + this.indentation.getIndent());
   }
 
-  formatTopLevelReservedWordNoIndent(token, query) {
-    this.indentation.decreaseTopLevel();
-    query = this.addNewline(query) + this.equalizeWhitespace(this.show(token));
-    return this.addNewline(query);
-  }
-
-  formatTopLevelReservedWord(token, query) {
+  formatToplevelReservedWord(token, query) {
     this.indentation.decreaseTopLevel();
 
     query = this.addNewline(query);
 
-    this.indentation.increaseTopLevel();
+    this.indentation.increaseToplevel();
 
-    query += this.equalizeWhitespace(this.show(token));
+    query += this.equalizeWhitespace(token.value);
     return this.addNewline(query);
   }
 
   formatNewlineReservedWord(token, query) {
-    if (isAnd(token) && isBetween(this.tokenLookBehind(2))) {
-      return this.formatWithSpaces(token, query);
-    }
-    return this.addNewline(query) + this.equalizeWhitespace(this.show(token)) + ' ';
+    return this.addNewline(query) + this.equalizeWhitespace(token.value) + ' ';
   }
 
   // Replace any sequence of whitespace characters with single space
   equalizeWhitespace(string) {
-    return string.replace(/\s+/gu, ' ');
+    return string.replace(/\s+/g, ' ');
   }
 
   // Opening parentheses increase the block indent level and start a new line
   formatOpeningParentheses(token, query) {
     // Take out the preceding space unless there was whitespace there in the original query
     // or another opening parens or line comment
-    const preserveWhitespaceFor = {
-      [tokenTypes.OPEN_PAREN]: true,
-      [tokenTypes.LINE_COMMENT]: true,
-      [tokenTypes.OPERATOR]: true,
-    };
-    if (
-      token.whitespaceBefore.length === 0 &&
-      !preserveWhitespaceFor[this.tokenLookBehind()?.type]
-    ) {
-      query = trimSpacesEnd(query);
+    const preserveWhitespaceFor = [tokenTypes.WHITESPACE, tokenTypes.OPEN_PAREN, tokenTypes.LINE_COMMENT];
+    if (!includes(preserveWhitespaceFor, this.previousToken().type)) {
+      query = trimEnd(query);
     }
-    query += this.show(token);
+    query += token.value;
 
     this.inlineBlock.beginIfPossible(this.tokens, this.index);
 
@@ -178,10 +147,10 @@ export default class Formatter {
     if (this.inlineBlock.isActive()) {
       this.inlineBlock.end();
       return this.formatWithSpaceAfter(token, query);
-    } else {
-      this.indentation.decreaseBlockLevel();
-      return this.formatWithSpaces(token, this.addNewline(query));
     }
+
+    this.indentation.decreaseBlockLevel();
+    return this.formatWithSpaces(token, this.addNewline(query));
   }
 
   formatPlaceholder(token, query) {
@@ -190,64 +159,54 @@ export default class Formatter {
 
   // Commas start a new line (unless within inline parentheses or SQL "LIMIT" clause)
   formatComma(token, query) {
-    query = trimSpacesEnd(query) + this.show(token) + ' ';
+    query = this.trimTrailingWhitespace(query) + token.value + ' ';
 
     if (this.inlineBlock.isActive()) {
       return query;
-    } else if (isLimit(this.previousReservedToken)) {
-      return query;
-    } else {
-      return this.addNewline(query);
     }
+    if (/^LIMIT$/i.test(this.previousReservedWord.value)) {
+      return query;
+    }
+    return this.addNewline(query);
   }
 
   formatWithSpaceAfter(token, query) {
-    return trimSpacesEnd(query) + this.show(token) + ' ';
+    return this.trimTrailingWhitespace(query) + token.value + ' ';
   }
 
   formatWithoutSpaces(token, query) {
-    return trimSpacesEnd(query) + this.show(token);
+    return this.trimTrailingWhitespace(query) + token.value;
   }
 
   formatWithSpaces(token, query) {
-    return query + this.show(token) + ' ';
+    return query + token.value + ' ';
   }
 
   formatQuerySeparator(token, query) {
-    this.indentation.resetIndentation();
-    return trimSpacesEnd(query) + this.show(token) + '\n'.repeat(this.cfg.linesBetweenQueries || 1);
-  }
-
-  // Converts token to string (uppercasing it if needed)
-  show({ type, value }) {
-    if (
-      this.cfg.uppercase &&
-      (type === tokenTypes.RESERVED ||
-        type === tokenTypes.RESERVED_TOP_LEVEL ||
-        type === tokenTypes.RESERVED_TOP_LEVEL_NO_INDENT ||
-        type === tokenTypes.RESERVED_NEWLINE ||
-        type === tokenTypes.OPEN_PAREN ||
-        type === tokenTypes.CLOSE_PAREN)
-    ) {
-      return value.toUpperCase();
-    } else {
-      return value;
-    }
+    return this.trimTrailingWhitespace(query) + token.value + '\n';
   }
 
   addNewline(query) {
-    query = trimSpacesEnd(query);
-    if (!query.endsWith('\n')) {
-      query += '\n';
+    return trimEnd(query) + '\n' + this.indentation.getIndent();
+  }
+
+  trimTrailingWhitespace(query) {
+    if (this.previousNonWhitespaceToken().type === tokenTypes.LINE_COMMENT) {
+      return trimEnd(query) + '\n';
     }
-    return query + this.indentation.getIndent();
+
+    return trimEnd(query);
   }
 
-  tokenLookBehind(n = 1) {
-    return this.tokens[this.index - n];
+  previousNonWhitespaceToken() {
+    let n = 1;
+    while (this.previousToken(n).type === tokenTypes.WHITESPACE) {
+      n++;
+    }
+    return this.previousToken(n);
   }
 
-  tokenLookAhead(n = 1) {
-    return this.tokens[this.index + n];
+  previousToken(offset = 1) {
+    return this.tokens[this.index - offset] || {};
   }
 }
