@@ -3,14 +3,14 @@ package quix.python
 import java.util.UUID
 
 import monix.execution.Scheduler.Implicits.global
-import org.specs2.matcher.Matcher
+import org.specs2.matcher.{Matcher, MustMatchers}
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
 import quix.api.v1.users.User
 import quix.api.v2.execute.ImmutableSubQuery
-import quix.core.results.SingleBuilder
+import quix.core.results.{QueryStarted, SingleBuilder}
 
-class PythonExecutorTest extends SpecWithJUnit {
+class PythonExecutorTest extends SpecWithJUnit with MustMatchers {
   sequential
 
   class ctx extends Scope {
@@ -51,15 +51,19 @@ class PythonExecutorTest extends SpecWithJUnit {
   }
 
   "support q.fields and q.row methods" in new ctx {
-    executor.execute(script(
+    val code =
       """from quix import Quix
         |q = Quix()
         |
         |q.fields('foo', 'boo')
         |q.row(1, 2)
-        |""".stripMargin), builder).runSyncUnsafe()
+        |""".stripMargin
+
+    executor.execute(script(code), builder).runSyncUnsafe()
 
     builder.columns.map(_.name) must_=== List("foo", "boo")
+
+    builder.queries must contain(QueryStarted("query-id", code))
     builder.build().head.map(_.toString.toInt) must_=== List(1, 2)
   }
 
