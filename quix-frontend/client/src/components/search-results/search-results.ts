@@ -67,39 +67,40 @@ const initResults = (text: string, notes: INote[]) => {
   }));
 }
 
-const search = ((currentSearchId = 1) => debounce((scope: IScope, store: Store, text: string, page: number) => {
+const search = ((currentSearchId = 1) => (scope: IScope, store: Store, text: string, page: number) => {
   const searchId = ++currentSearchId;
-
-  if (!text) {
-    store.dispatch(AppActions.setUrlSearchText(null, 'user'));
-    return store.dispatch(AppActions.setInputSearchText(null));
-  }
-
-  return Resources.search(text, (page - 1) * Search.ResultsPerPage, Search.ResultsPerPage)
-    .then(async ({notes, count}: {notes: INote[]; count: number}) => {
-      // await new Promise(res => setTimeout(res, 200));
-      if (searchId === currentSearchId) {
-        scope.vm.state
-          .force('Result', true, {
-            totalResults: count,
-            notes: initResults(text, notes)
-          })
-          .set('Content', !!notes.length);
-
-        initPagination(scope, scope.vm.state.value().totalResults, scope.vm.state.value().currentPage);
-      }
-    })
-    .catch(e => {
-      if (searchId === currentSearchId) {
-        scope.vm.state.force('Error', true, {error: {...e.data, status: e.status}});
-      }
-    })
-    .then(() => {
-      if (searchId === currentSearchId) {
-        store.dispatch(AppActions.setUrlSearchText(text, 'user'));
-      }
-    });
-}, 300))();
+  return debounce(() => {
+    if (!text) {
+      store.dispatch(AppActions.setUrlSearchText(null, 'user'));
+      return store.dispatch(AppActions.setInputSearchText(null));
+    }
+  
+    return Resources.search(text, (page - 1) * Search.ResultsPerPage, Search.ResultsPerPage)
+      .then(async ({notes, count}: {notes: INote[]; count: number}) => {
+        // await new Promise(res => setTimeout(res, 200));
+        if (searchId === currentSearchId) {
+          scope.vm.state
+            .force('Result', true, {
+              totalResults: count,
+              notes: initResults(text, notes)
+            })
+            .set('Content', !!notes.length);
+  
+          initPagination(scope, scope.vm.state.value().totalResults, scope.vm.state.value().currentPage);
+        }
+      })
+      .catch(e => {
+        if (searchId === currentSearchId) {
+          scope.vm.state.force('Error', true, {error: {...e.data, status: e.status}});
+        }
+      })
+      .then(() => {
+        if (searchId === currentSearchId) {
+          store.dispatch(AppActions.setUrlSearchText(text, 'user'));
+        }
+      });
+  }, 300)();
+})();
 
 export default (app: App, store: Store) => () => ({
   restrict: 'E',

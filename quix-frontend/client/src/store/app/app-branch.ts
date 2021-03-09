@@ -42,7 +42,11 @@ export default (app: App): IBranch<IApp> => register => {
         return {...state, inputSearchText: action.inputSearchText};
       case 'app.setUrlSearchText':
         if (action.urlSearchText !== state.urlSearchText) {
-          return {...state, urlSearchText: action.urlSearchText};
+          return {
+            ...state,
+            urlSearchText: action.urlSearchText,
+            inputSearchText: action.origin === 'machine' ? action.urlSearchText : state.inputSearchText,
+          };
         }
       case 'app.setImportType':
         return {...state, import: {...state.import, type: action.importType}};
