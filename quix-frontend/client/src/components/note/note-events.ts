@@ -3,6 +3,7 @@ import {Store} from '../../lib/store';
 import {INote} from '@wix/quix-shared';
 import {IScope} from './note-types';
 import {App} from '../../lib/app';
+import { cloneDeep, isEqual } from 'lodash';
 
 export const onFoldToggle = (scope: IScope, store: Store) => () => {
   scope.options.focusEditor = true;
@@ -32,7 +33,13 @@ export const onClone = (scope: IScope, store: Store) => (note: INote) => {
 };
 
 export const onCustomAction = (scope: IScope, store: Store) => (action: any) => {
-  utils.scope.safeApply(scope, () => action.handler(scope.note));
+  utils.scope.safeApply(scope, () => {
+    const {content, richContent} = action.handler(cloneDeep(scope.note));
+
+    if (scope.note.content !== content || !isEqual(scope.note.richContent, richContent)) {
+      scope.events.onContentChange(content, richContent);
+    }
+  });
 }
 
 export const onDelete = (scope: IScope, store: Store) => (note: INote) => {
