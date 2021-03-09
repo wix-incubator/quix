@@ -77,7 +77,6 @@ const search = ((currentSearchId = 1) => (scope: IScope, store: Store, text: str
   
     return Resources.search(text, (page - 1) * Search.ResultsPerPage, Search.ResultsPerPage)
       .then(async ({notes, count}: {notes: INote[]; count: number}) => {
-        // await new Promise(res => setTimeout(res, 200));
         if (searchId === currentSearchId) {
           scope.vm.state
             .force('Result', true, {
