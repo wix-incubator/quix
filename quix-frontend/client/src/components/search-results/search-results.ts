@@ -69,19 +69,17 @@ const initResults = (text: string, notes: INote[]) => {
 
 const search = (scope: IScope, store: Store, text: string, page: number) => {
   ++scope.vm.currentSearch;
-  return searchDebounce(scope, store, text, page);
+  return searchDebounce(scope, store, text, page, scope.vm.currentSearch);
 }
 
-const searchDebounce = debounce((scope: IScope, store: Store, text: string, page: number) => {
-  const searchId = scope.vm.currentSearch;
-
+const searchDebounce = debounce((scope: IScope, store: Store, text: string, page: number, searchId: number) => {
   if (!text) {
     store.dispatch(AppActions.setUrlSearchText(null, 'user'));
     return store.dispatch(AppActions.setInputSearchText(null));
   }
 
   return Resources.search(text, (page - 1) * Search.ResultsPerPage, Search.ResultsPerPage)
-    .then(async ({notes, count}: {notes: INote[]; count: number}) => {
+    .then(({notes, count}: {notes: INote[]; count: number}) => {
       if (searchId === scope.vm.currentSearch) {
         scope.vm.state
           .force('Result', true, {
