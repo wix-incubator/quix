@@ -14,11 +14,13 @@ export const confirmAction = (
     icon: action === 'delete' ? 'report' : null,
     yes: action,
     html: `
-      Are you sure you want to delete ${isArray(context) ? 
-        `the <b>(${context.length})</b> selected ${utils.dom.escape(type)}s` 
-        : `the ${utils.dom.escape(type)} <b>"${utils.dom.escape(context.name)}</b>"`}
+      <div>
+        Are you sure you want to delete ${isArray(context) ? 
+          `the <b>(${context.length})</b> selected ${utils.dom.escape(type)}s` 
+          : `the ${utils.dom.escape(type)} <b>"${utils.dom.escape(context.name)}</b>"`}
 
-      ${customText ? `(${utils.dom.escape(customText)})` : ''} ?
+        ${customText ? `(${utils.dom.escape(customText)})` : ''} ?
+      </div>  
     `
   });
 }
