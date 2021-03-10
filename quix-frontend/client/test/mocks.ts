@@ -98,8 +98,9 @@ const mocks = {
           name: "Runnable (permission error)",
           content: "do permission error"
         }),
-        createMockNote(id, { id: "1006" }),
+        createMockNote(id, { id: "1006", content: 'select 1'}),
         createMockNote(id, { id: "1007" }),
+        createMockNote(id, { id: "1008" }),
       ],
       {
         id,

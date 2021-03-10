@@ -62,15 +62,27 @@
         >
           <quix-meta entity="note"></quix-meta>
 
-          <quix-actions
-            type="note"
-            context="note"
-            permissions="::permissions"
-            quix-actions-options="{reverse: true, compact: true}"
-            on-share="events.onShare(context)"
-            on-clone="events.onClone(context)"
-            on-delete="events.onDelete(context)"
-          ></quix-actions>
+          <div class="bi-align bi-s-h">
+            <bi-tooltip ng-repeat="action in ::vm.customActions">
+              <bi-toggle>
+                <i 
+                  class="bi-action bi-icon--sm"
+                  ng-click="$event.stopPropagation(); events.onCustomAction(action)"
+                >{{::action.icon}}</i>
+              </bi-toggle>
+              {{::action.title}}
+            </bi-tooltip>
+
+            <quix-actions
+              type="note"
+              context="note"
+              permissions="::permissions"
+              quix-actions-options="{reverse: true, compact: true}"
+              on-share="events.onShare(context)"
+              on-clone="events.onClone(context)"
+              on-delete="events.onDelete(context)"
+            ></quix-actions>
+          </div>
         </div>
       </div>
 

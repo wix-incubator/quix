@@ -61,6 +61,7 @@ export default (app: App, store: Store) => () => ({
           enabled: false,
           $init() {
             this.type = plugin.getId();
+            this.customActions = plugin.getCustomActions();
           },
         });
 

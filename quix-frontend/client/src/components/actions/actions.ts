@@ -16,6 +16,7 @@ export default (app: App, store: Store) => () => ({
     context: '<',
     permissions: '<',
     quixActionsOptions: '<',
+    custom: '<',
     onLikeToggle: '&',
     onShare: '&',
     onClone: '&',
@@ -32,6 +33,10 @@ export default (app: App, store: Store) => () => ({
           confirmOnDelete: true,
           bulk: isArray(scope.context),
         }, true)
+        .withOptions('custom', {
+          actions: [],
+          handler: () => {},
+        })
         .withEvents({
           onLikeToggle() {
             scope.onLikeToggle({context: scope.context});

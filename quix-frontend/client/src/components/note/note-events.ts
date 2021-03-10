@@ -1,8 +1,9 @@
-import {inject} from '../../lib/core';
+import {inject, utils} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {INote} from '@wix/quix-shared';
 import {IScope} from './note-types';
 import {App} from '../../lib/app';
+import { cloneDeep, isEqual } from 'lodash';
 import { RunnerComponentInstance } from '../../lib/runner/directives/runner/runner';
 
 export const onFoldToggle = (scope: IScope, store: Store) => () => {
@@ -31,6 +32,16 @@ export const onShare = (scope: IScope, store: Store) => (note: INote, params: st
 export const onClone = (scope: IScope, store: Store) => (note: INote) => {
   scope.onClone({note});
 };
+
+export const onCustomAction = (scope: IScope, store: Store) => (action: any) => {
+  utils.scope.safeApply(scope, () => {
+    const {content, richContent} = action.handler(cloneDeep(scope.note));
+
+    if (scope.note.content !== content || !isEqual(scope.note.richContent, richContent)) {
+      scope.events.onContentChange(content, richContent);
+    }
+  });
+}
 
 export const onDelete = (scope: IScope, store: Store) => (note: INote) => {
   scope.onDelete({note});

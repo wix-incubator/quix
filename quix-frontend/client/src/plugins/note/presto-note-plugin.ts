@@ -7,6 +7,7 @@ export class PrestoNotePlugin extends NotePlugin {
     super(app, name, ModuleEngineType.Presto, hooks, {
       syntaxValidation: true,
       canCreate: true,
+      enableQueryFormatter: true,
     });
   }
 }

@@ -1,5 +1,12 @@
-import {IFile, TModuleComponentType, ModuleEngineType} from '@wix/quix-shared';
+import {IFile, TModuleComponentType, ModuleEngineType, INote} from '@wix/quix-shared';
 import {App} from '../../lib/app';
+import formatter from '../../lib/sql-formatter/sqlFormatter';
+
+interface CustomAction {
+  icon: string;
+  title: string;
+  handler(note: INote): INote;
+}
 
 export const resolvePluginType = (type: TModuleComponentType) => {
   if (PluginMap[type]) {
@@ -36,6 +43,7 @@ export class NotePlugin extends Plugin {
       syntaxValidation: boolean;
       canCreate: boolean;
       dateFormat?: string;
+      enableQueryFormatter?: boolean;
     },
   ) {
     super(app, id, engine, hooks);
@@ -85,6 +93,24 @@ export class NotePlugin extends Plugin {
         <stats class="bi-align bi-s-h--x15" bi-html="actions.renderStats()"></stats>
       </bi-sql-runner>
     `;
+  }
+
+  getCustomActions(): CustomAction[] {
+    const res = [];
+
+    if (this.config.enableQueryFormatter) {
+      res.push({
+        icon: 'format_paint',
+        title: 'Format query',
+        handler: (note: INote) => {
+          note.content = formatter.format(note.content);
+  
+          return note;
+        }
+      })
+    }
+
+    return res;
   }
 }
 
