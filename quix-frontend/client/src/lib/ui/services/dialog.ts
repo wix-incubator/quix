@@ -70,11 +70,11 @@ function showDialog(scope, htmlOrOptions: string | IDialogOptions) {
           ` : ''}
             <span>${htmlOrOptions.title}</span>
           </dialog-title>
+
           ${htmlOrOptions.subTitle ? `<dialog-subtitle class="bi-muted">${htmlOrOptions.subTitle}</dialog-subtitle>` : ''}
-          <dialog-content>
-            <div class="bi-align bi-s-h">
-              <div>${htmlOrOptions.html}</div>
-            </div>  
+
+          <dialog-content class="bi-c-h">
+            ${htmlOrOptions.html}
           </dialog-content>
         </dialog>
       `

@@ -7,6 +7,7 @@ export class AthenaNotePlugin extends NotePlugin {
     super(app, name, ModuleEngineType.Athena, hooks, {
       syntaxValidation: true,
       canCreate: true,
+      enableQueryFormatter: true,
     });
   }
 }
