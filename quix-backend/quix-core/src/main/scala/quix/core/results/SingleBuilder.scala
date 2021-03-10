@@ -3,7 +3,7 @@ package quix.core.results
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Task
 import quix.api.v1.execute.{Batch, BatchColumn}
-import quix.api.v2.execute.{Builder, Query, SubQuery}
+import quix.api.v2.execute.{Builder, Query}
 
 import scala.collection.mutable.ListBuffer
 
@@ -17,16 +17,20 @@ class SingleBuilder extends Builder with LazyLogging {
   private var failureCause: Option[Throwable] = None
   private var logMessages = ListBuffer.empty[String]
   private var statistics = Map.empty[String, Any]
+  private val queriesStatuses = ListBuffer.empty[QueryStatus]
 
   /**
    * @returns the rows collected so far */
   def build(): List[Seq[Any]] = rows.toList
 
   override def errorSubQuery(subQueryId: String, e: Throwable) = Task {
+    queriesStatuses += QueryFailed(subQueryId, e.getMessage)
     failureCause = Option(e)
   }
 
-  override def startSubQuery(subQueryId: String, code : String) = Task.unit
+  override def startSubQuery(subQueryId: String, code: String) = Task {
+    queriesStatuses += QueryStarted(subQueryId, code)
+  }
 
   override def addSubQuery(subQueryId: String, results: Batch) = handleBatch(results)
 
@@ -42,7 +46,8 @@ class SingleBuilder extends Builder with LazyLogging {
     rows ++= batch.data
   }
 
-  override def endSubQuery(subQueryId: String, stats : Map[String, Any]) = Task {
+  override def endSubQuery(subQueryId: String, stats: Map[String, Any]) = Task {
+    queriesStatuses += QueryFinished(subQueryId)
     this.statistics = stats
   }
 
@@ -67,4 +72,14 @@ class SingleBuilder extends Builder with LazyLogging {
   }
 
   def logs = logMessages.toList
+
+  def queries = queriesStatuses.toList
 }
+
+sealed trait QueryStatus
+
+sealed case class QueryStarted(queryId: String, code: String) extends QueryStatus
+
+sealed case class QueryFinished(queryId: String) extends QueryStatus
+
+sealed case class QueryFailed(queryId: String, error: String) extends QueryStatus

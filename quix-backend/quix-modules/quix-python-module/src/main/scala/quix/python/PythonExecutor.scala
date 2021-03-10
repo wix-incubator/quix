@@ -140,10 +140,11 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends Executor wit
         case ProcessStderr(jobId, line) =>
           builder.log(jobId, line, "ERROR")
 
-        case TabFields(tabId, fields) => {
-          builder.startSubQuery(tabId, tabId)
-          builder.addSubQuery(tabId, Batch(columns = Option(fields.map(BatchColumn))))
-        }
+        case TabFields(tabId, fields) =>
+          for {
+            _ <- builder.startSubQuery(tabId, query.text)
+            _ <- builder.addSubQuery(tabId, Batch(columns = Option(fields.map(BatchColumn))))
+          } yield ()
 
         case TabRow(tabId, row) =>
           builder.addSubQuery(tabId, Batch(Seq(row)))

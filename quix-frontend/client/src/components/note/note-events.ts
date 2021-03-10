@@ -4,6 +4,7 @@ import {INote} from '@wix/quix-shared';
 import {IScope} from './note-types';
 import {App} from '../../lib/app';
 import { cloneDeep, isEqual } from 'lodash';
+import { RunnerComponentInstance } from '../../lib/runner/directives/runner/runner';
 
 export const onFoldToggle = (scope: IScope, store: Store) => () => {
   scope.options.focusEditor = true;
@@ -64,8 +65,10 @@ export const onEditorInstanceLoad = (scope: IScope, store: Store, app: App) => (
   scope.vm.editor = editor;
 };
 
-export const onRunnerInstanceLoad = (scope: IScope, store: Store, app: App) => (runner) => {
+export const onRunnerInstanceLoad = (scope: IScope, store: Store, app: App) => (runner: RunnerComponentInstance) => {
   scope.vm.runner = runner;
+
+  runner.setUser(app.getUser());
 };
 
 export const onRunnerCreated = (scope: IScope, store: Store) => (runner) => {
