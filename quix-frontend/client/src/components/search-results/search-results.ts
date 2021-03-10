@@ -67,16 +67,20 @@ const initResults = (text: string, notes: INote[]) => {
   }));
 }
 
-const search = ((currentSearchId = 1) => debounce((scope: IScope, store: Store, text: string, page: number) => {
-  const searchId = ++currentSearchId;
+const search = (scope: IScope, store: Store, text: string, page: number) => {
+  ++scope.vm.currentSearch;
+  return searchDebounce(scope, store, text, page, scope.vm.currentSearch);
+}
 
+const searchDebounce = debounce((scope: IScope, store: Store, text: string, page: number, searchId: number) => {
   if (!text) {
-    return store.dispatch(AppActions.setSearchText(null, 'user'));
+    store.dispatch(AppActions.setUrlSearchText(null, 'user'));
+    return store.dispatch(AppActions.setInputSearchText(null));
   }
 
   return Resources.search(text, (page - 1) * Search.ResultsPerPage, Search.ResultsPerPage)
     .then(({notes, count}: {notes: INote[]; count: number}) => {
-      if (searchId === currentSearchId) {
+      if (searchId === scope.vm.currentSearch) {
         scope.vm.state
           .force('Result', true, {
             totalResults: count,
@@ -88,16 +92,16 @@ const search = ((currentSearchId = 1) => debounce((scope: IScope, store: Store, 
       }
     })
     .catch(e => {
-      if (searchId === currentSearchId) {
+      if (searchId === scope.vm.currentSearch) {
         scope.vm.state.force('Error', true, {error: {...e.data, status: e.status}});
       }
     })
     .then(() => {
-      if (searchId === currentSearchId) {
-        store.dispatch(AppActions.setSearchText(text, 'user'));
+      if (searchId === scope.vm.currentSearch) {
+        store.dispatch(AppActions.setUrlSearchText(text, 'user'));
       }
     });
-}, 300))();
+}, 300);
 
 export default (app: App, store: Store) => () => ({
   restrict: 'E',
@@ -112,6 +116,7 @@ export default (app: App, store: Store) => () => ({
           currentResults: 1,
           $init() {
             this.state = new StateManager(States);
+            this.currentSearch = 1;
           }
         })
         .withEvents({
@@ -123,7 +128,7 @@ export default (app: App, store: Store) => () => ({
           }
         });
 
-      store.subscribe('app.searchText', text => {
+      store.subscribe('app.inputSearchText', text => {
         scope.vm.state.force('Initial', true, {text, currentPage: 1});
 
         return search(scope, store, text, scope.vm.state.value().currentPage);
@@ -150,7 +155,8 @@ export default (app: App, store: Store) => () => ({
 
       scope.$on('$destroy', () => store.dispatch([
         AppActions.setSearchPage(null, 'user'),
-        AppActions.setSearchText(null, 'user')
+        AppActions.setInputSearchText(null, 'user'),
+        AppActions.setUrlSearchText(null, 'user')
       ]));
     }
   }

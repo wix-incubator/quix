@@ -41,7 +41,7 @@ export default (app: App, store: Store) => () => ({
         })
         .withEvents({
           onSearch() {
-            store.dispatch(AppActions.setSearchText(scope.vm.searchText || null));
+            store.dispatch(AppActions.setInputSearchText(scope.vm.searchText || null));
           },
           onNavItemClick(item) {
             app.go(item.targetState, {id: null});
@@ -50,7 +50,7 @@ export default (app: App, store: Store) => () => ({
 
       listenToNavChange(scope, app, store);
 
-      store.subscribe('app.searchText', text => scope.vm.searchText = text, scope);
+      store.subscribe('app.inputSearchText', text => scope.vm.searchText = text, scope);
     }
   }
 });

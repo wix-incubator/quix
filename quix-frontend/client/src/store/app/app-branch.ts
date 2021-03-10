@@ -6,7 +6,8 @@ import * as Runners from '../../services/runners';
 
 export interface IApp {
   searchPage?: number;
-  searchText?: string;
+  inputSearchText?: string;
+  urlSearchText?: string;
   runners?: Record<string, any>;
   import: {
     type?: string;
@@ -37,8 +38,17 @@ export default (app: App): IBranch<IApp> => register => {
     switch (action.type) {
       case 'app.setSearchPage':
         return {...state, searchPage: action.searchPage};
-      case 'app.setSearchText':
-        return {...state, searchText: action.searchText};
+      case 'app.setInputSearchText':
+        return {...state, inputSearchText: action.inputSearchText};
+      case 'app.setUrlSearchText':
+        if (action.urlSearchText !== state.urlSearchText) {
+          return {
+            ...state,
+            urlSearchText: action.urlSearchText,
+            inputSearchText: action.origin === 'machine' ? action.urlSearchText : state.inputSearchText,
+          };
+        }
+        break;
       case 'app.setImportType':
         return {...state, import: {...state.import, type: action.importType}};
       case 'app.setImportValue':
