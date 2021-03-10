@@ -48,6 +48,7 @@ export default (app: App): IBranch<IApp> => register => {
             inputSearchText: action.origin === 'machine' ? action.urlSearchText : state.inputSearchText,
           };
         }
+        break;
       case 'app.setImportType':
         return {...state, import: {...state.import, type: action.importType}};
       case 'app.setImportValue':
