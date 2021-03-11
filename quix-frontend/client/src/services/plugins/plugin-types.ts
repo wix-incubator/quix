@@ -5,7 +5,7 @@ import formatter from '../../lib/sql-formatter/sqlFormatter';
 interface CustomAction {
   icon: string;
   title: string;
-  permissions: boolean | string;
+  permissions: string;
   handler(note: INote): INote;
 }
 
