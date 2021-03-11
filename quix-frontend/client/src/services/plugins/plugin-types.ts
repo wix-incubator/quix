@@ -5,6 +5,7 @@ import formatter from '../../lib/sql-formatter/sqlFormatter';
 interface CustomAction {
   icon: string;
   title: string;
+  permissions: boolean | string;
   handler(note: INote): INote;
 }
 
@@ -96,12 +97,13 @@ export class NotePlugin extends Plugin {
   }
 
   getCustomActions(): CustomAction[] {
-    const res = [];
+    const res: CustomAction[] = [];
 
     if (this.config.enableQueryFormatter) {
       res.push({
         icon: 'format_paint',
         title: 'Format query',
+        permissions: 'edit',
         handler: (note: INote) => {
           note.content = formatter.format(note.content);
   
