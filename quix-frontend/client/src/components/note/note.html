@@ -63,7 +63,7 @@
           <quix-meta entity="note"></quix-meta>
 
           <div class="bi-align bi-s-h">
-            <bi-tooltip ng-if="permissions[action.permission]" ng-repeat="action in ::vm.customActions">
+            <bi-tooltip ng-if="::permissions[action.permissions]" ng-repeat="action in ::vm.customActions">
               <bi-toggle>
                 <i 
                   class="bi-action bi-icon--sm"
