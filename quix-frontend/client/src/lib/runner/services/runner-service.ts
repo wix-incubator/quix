@@ -36,8 +36,8 @@ function sendSocketData(socket, code, user, transformers, mode = 'stream') {
     session['user.password'] = user.getPermission().getPassword();
   }
 
-  socket.on('open', () => {
-    code = transformers.request(code);
+  socket.on('open', async () => {
+    code = await transformers.request(code);
 
     socket.send({
       event: 'execute',
