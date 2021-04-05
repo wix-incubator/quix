@@ -51,7 +51,7 @@ val specs2Deps = Seq(
 lazy val quixApi = (project in file("quix-api"))
   .settings(Seq(
     name := "Quix Api",
-    libraryDependencies += "io.monix" %% "monix" % "3.2.1"
+    libraryDependencies += "io.monix" %% "monix" % "3.3.0"
   ) ++ baseSettings)
 
 lazy val quixCore = (project in file("quix-core"))
@@ -113,7 +113,7 @@ lazy val quixDummyModule = (project in file("quix-modules/quix-dummy-module"))
   .settings(Seq(
     name := "Quix Dummy Module",
 
-    libraryDependencies += "io.monix" %% "monix" % "3.2.1",
+    libraryDependencies += "io.monix" %% "monix" % "3.3.0",
     libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
   ) ++ baseSettings ++ noPublish)
@@ -123,7 +123,7 @@ lazy val quixJdbcModule = (project in file("quix-modules/quix-jdbc-module"))
   .settings(Seq(
     name := "Quix Jdbc Module",
 
-    libraryDependencies += "io.monix" %% "monix" % "3.2.1",
+    libraryDependencies += "io.monix" %% "monix" % "3.3.0",
     libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
     // https://mvnrepository.com/artifact/com.wix/wix-embedded-mysql
@@ -138,7 +138,7 @@ lazy val quixPrestoModule = (project in file("quix-modules/quix-presto-module"))
   .settings(Seq(
     name := "Quix Presto Module",
 
-    libraryDependencies += "io.monix" %% "monix" % "3.2.1",
+    libraryDependencies += "io.monix" %% "monix" % "3.3.0",
     libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
     // https://mvnrepository.com/artifact/io.prestosql/presto-parser
