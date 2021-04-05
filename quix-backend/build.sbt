@@ -38,14 +38,14 @@ lazy val baseSettings =
     )
 
 val loggingDeps = Seq(
-  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.3",
   "ch.qos.logback" % "logback-classic" % "1.2.3"
 )
 
 val specs2Deps = Seq(
-  "org.specs2" %% "specs2-core" % "4.9.4" % "test",
-  "org.specs2" %% "specs2-junit" % "4.9.4" % "test",
-  "org.specs2" %% "specs2-mock" % "4.9.4" % "test",
+  "org.specs2" %% "specs2-core" % "4.10.6" % "test",
+  "org.specs2" %% "specs2-junit" % "4.10.6" % "test",
+  "org.specs2" %% "specs2-mock" % "4.10.6" % "test",
 )
 
 lazy val quixApi = (project in file("quix-api"))
@@ -157,9 +157,9 @@ lazy val quixPythonModule = (project in file("quix-modules/quix-python-module"))
     libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
     // https://mvnrepository.com/artifact/com.zaxxer/nuprocess
-    libraryDependencies += "com.zaxxer" % "nuprocess" % "1.2.6",
+    libraryDependencies += "com.zaxxer" % "nuprocess" % "2.0.1",
     // https://mvnrepository.com/artifact/net.sf.py4j/py4j
-    libraryDependencies += "net.sf.py4j" % "py4j" % "0.10.9",
+    libraryDependencies += "net.sf.py4j" % "py4j" % "0.10.9.2",
   ) ++ baseSettings)
 
 lazy val root = (project in file("."))
