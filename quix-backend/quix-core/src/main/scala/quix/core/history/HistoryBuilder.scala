@@ -1,6 +1,5 @@
 package quix.core.history
 
-import cats.syntax.apply._
 import monix.eval.Task
 import quix.api.v1.execute.Batch
 import quix.api.v2.execute.{Builder, Query}
@@ -12,13 +11,13 @@ class HistoryBuilder[Results](delegate: Builder,
   extends Builder {
 
   override def start(query: Query): Task[Unit] =
-    delegate.start(query) *> historyWriteDao.executionStarted(query, queryType)
+    delegate.start(query).flatMap(_ => historyWriteDao.executionStarted(query, queryType))
 
   override def end(query: Query): Task[Unit] =
-    delegate.end(query) *> historyWriteDao.executionSucceeded(query.id)
+    delegate.end(query).flatMap(_ => historyWriteDao.executionSucceeded(query.id))
 
   override def error(queryId: String, e: Throwable): Task[Unit] =
-    delegate.error(queryId, e) *> historyWriteDao.executionFailed(queryId, e)
+    delegate.error(queryId, e).flatMap(_ => historyWriteDao.executionFailed(queryId, e))
 
   override def rowCount: Long =
     delegate.rowCount
