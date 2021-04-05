@@ -35,16 +35,24 @@ class PythonBridge(val queryId: String) {
 
   def tab_columns(tabId: String, columns: java.util.ArrayList[Any]): Unit = {
     for (subscriber <- subscriberOpt)
-      subscriber.onNext(TabFields(tabId, columns.asScala.map(_.toString).toList))
+      subscriber.onNext(TabFields(tabId, stringify(columns)))
   }
 
-  def tab_row(tabId: String, columns: java.util.ArrayList[Any]): Unit = {
+  def tab_row(tabId: String, row: java.util.ArrayList[Any]): Unit = {
     for (subscriber <- subscriberOpt)
-      subscriber.onNext(TabRow(tabId, columns.asScala.map(_.toString).toList))
+      subscriber.onNext(TabRow(tabId, stringify(row)))
   }
 
   def tab_end(tabId: String): Unit = {
     for (subscriber <- subscriberOpt)
       subscriber.onNext(TabEnd(tabId))
+  }
+
+  def nullToEmpty(javaList: java.util.ArrayList[Any]): List[Any] = {
+    Option(javaList).map(_.asScala.toList).getOrElse(Nil)
+  }
+
+  def stringify(javaList: java.util.ArrayList[Any]): List[String] = {
+    nullToEmpty(javaList).map(v => String.valueOf(v))
   }
 }
