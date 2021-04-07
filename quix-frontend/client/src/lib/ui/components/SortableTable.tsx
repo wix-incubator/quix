@@ -38,8 +38,10 @@ export const SortableTable = ({
 
   useEffect(() => {
     const currentRows = page.length < rows.length ? [] : rows;
+
     setRows([...currentRows, ...page.slice(rows.length).map((row, index) => {
       prepareRow(row);
+
       return (
         <tr
           key={index}
@@ -51,9 +53,9 @@ export const SortableTable = ({
             return (
               <td
                 {...cell.getCellProps()}
-                className={"bi-table-cells bi-table-cell-" + cell.column.id}
+                className={'bi-table-cells bi-table-cell-' + cell.column.id}
               >
-                {cell.render("Cell")}
+                {cell.render('Cell')}
               </td>
             );
           })}
@@ -71,24 +73,18 @@ export const SortableTable = ({
 
   return (
     <>
-      <div
-        className={
-          "bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header"
-        }
-      >
-        <div onScroll={scroll} className={"bi-fade-in"}>
-          <table {...getTableProps()} className={"bi-table"}>
+      <div className="bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header">
+        <div onScroll={scroll} className="bi-fade-in">
+          <table {...getTableProps()} className="bi-table">
             <thead className="bi-tbl-header">
               {headerGroups.map(headerGroup => (
                 <tr {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map(column => (
-                    <th
-                      {...column.getHeaderProps(column.getSortByToggleProps())}
-                    >
+                    <th className={column.className} {...column.getHeaderProps(column.getSortByToggleProps())}>
                       <div className="bi-table-th-content bi-text--ui">
                         <span className="bi-align ng-scope">
                           <span className="bi-text--600 ng-binding">
-                            {column.render("Header")}
+                            {column.render('Header')}
                           </span>
                         </span>
                       </div>
@@ -97,13 +93,18 @@ export const SortableTable = ({
                 </tr>
               ))}
             </thead>
+
             <tbody {...getTableBodyProps()}>
               {rows}
             </tbody>
           </table>
-          {isChunking ? <div className='bi-empty-state'>
-            <div className='bi-empty-state-content'>Loading...</div>
-          </div>: null}
+
+          {isChunking ? 
+            <div className='bi-empty-state'>
+              <div className='bi-empty-state-content'>Loading...</div>
+            </div>
+            : null
+          }
         </div>
       </div>
     </>

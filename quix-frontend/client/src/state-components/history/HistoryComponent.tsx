@@ -124,8 +124,9 @@ export function History(props: HistoryProps) {
             onRowClicked={onHistoryClicked}
             columns={historyTableFields.map(field => ({
               Header: field.title,
+              Cell: table => field.filter(undefined, table.row.original, 0, highlightQuery(field.name)),
               accessor: field.name,
-              Cell: table => field.filter(undefined, table.row.original, 0, highlightQuery(field.name))
+              className: field.className,
             }))}
             paginationSize={CHUNK_SIZE}
             tableSize={(size) => viewState.set(size > 0 ? 'Content' : 'Result', { size })}
@@ -136,42 +137,43 @@ export function History(props: HistoryProps) {
   );
 
   return (
-    <div className='history-component bi-section bi-c-h bi-grow'>
-      <div className='bi-section-header'>
-        <div className='bi-align bi-s-h--x3'>
-          <div className='bi-section-title'>
-            History
-            {stateData.size ? <span className='bi-fade-in'> ({stateData.size})</span> : ''}
-          </div>
-          <div className={`hc-filters bi-theme--lighter bi-align bi-space-h--x15`}>
-            <Select
-              highlight={highlight}
-              defaultLabel={user}
-              options={getUsers}
-              title={'email'}
-              primaryLabel={'All users'}
-              onOptionChange={(option) => {
-                if (viewState.get() !== 'Error') {
-                  viewState.set('Initial', { userFilter: option.id || '' });
-                }
-              }}
-              inputDataHook='history-filter-user-select'
-              liDataHook='history-filter-user-select-option'
-            />
-            <Input
-              fullWidth={true}
-              disableUnderline
-              onChange={(e) => {
-                if (viewState.get() !== 'Error') {
-                  viewState.set('Initial', { queryFilter: e.target.value });
-                }
-              }}
-              placeholder='Filter query'
-              data-hook='history-filter-query-input'
-            />
-          </div>
+    <div className="history-component bi-section bi-c-h bi-grow">
+      <div className="bi-section-header">
+        <div className="bi-section-title">
+          History
+          {stateData.size ? <span className='bi-fade-in'> ({stateData.size})</span> : ''}
         </div>
       </div>
+
+      <div className="bi-section-content bi-c-h bi-s-v--x15">
+        <div className="hc-filters bi-theme--lighter bi-align bi-space-h--x15">
+          <Select
+            highlight={highlight}
+            defaultLabel={user}
+            options={getUsers}
+            title={'email'}
+            primaryLabel={'All users'}
+            onOptionChange={(option) => {
+              if (viewState.get() !== 'Error') {
+                viewState.set('Initial', { userFilter: option.id || '' });
+              }
+            }}
+            inputDataHook='history-filter-user-select'
+            liDataHook='history-filter-user-select-option'
+          />
+          <Input
+            fullWidth={true}
+            disableUnderline
+            onChange={(e) => {
+              if (viewState.get() !== 'Error') {
+                viewState.set('Initial', { queryFilter: e.target.value });
+              }
+            }}
+            placeholder='Filter query'
+            data-hook='history-filter-query-input'
+          />
+        </div>
+
         {
           {
             'Initial':
@@ -191,6 +193,7 @@ export function History(props: HistoryProps) {
               </div>,
           }[viewState.get()]
         }
+      </div>
     </div>
   );
 }

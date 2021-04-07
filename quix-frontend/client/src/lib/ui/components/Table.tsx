@@ -10,22 +10,19 @@ interface TableProps<T> {
 export interface RowConfig<T> {
   name: keyof T;
   title?: string;
+  className?: string;
   filter?(value, item: T, index): React.ReactNode;
 }
 
 export const Table = <T extends {}>(props: TableProps<T>) => {
   return (
-    <div
-      className={
-        'bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header'
-      }
-    >
+    <div className="bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header">
       <div className={'bi-fade-in'}>
         <table className={'bi-table'}>
           <thead className="bi-tbl-header">
             <tr>
               {props.rowsConfig.map((rowConfig, index) => (
-                <th key={index}>
+                <th className={rowConfig.className} key={index}>
                   <div className="bi-table-th-content bi-text--ui">
                     <span className="bi-text--600">
                       {toHumanCase()(

@@ -1,5 +1,7 @@
 import { IHistory } from '@wix/quix-shared';
-import biRelativeDate from '../../lib/ui/filters/relative-date';
+import relativeDate from '../../lib/ui/filters/relative-date';
+import absoluteDate from '../../lib/ui/filters/absolute-date';
+import toHumanCase from '../../lib/ui/filters/to-human-case';
 import * as React from 'react';
 import { RowConfig } from '../../lib/ui/components/Table';
 
@@ -28,19 +30,19 @@ export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
       const fullQuery = hasQuery ? history.query.join(';\n') + ';' : '';
 
       return (
-      <span className='bi-muted bi-text--sm'>
-        {highlight(fullQuery)}
-      </span>
+        <span className="bi-muted bi-text--sm">
+          {highlight(fullQuery)}
+        </span>
       )
     }
   },
   {
     name: 'moduleType',
-    title: 'Note Type',
+    title: 'Type',
     filter(_, history: IHistory, index, highlight) {
       return (
-        <span className='bi-muted'>
-          {highlight(history.moduleType)}
+        <span className="bi-tag--sm">
+          {highlight(toHumanCase()(history.moduleType))}
         </span>
       );
     }
@@ -50,9 +52,15 @@ export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
     title: 'Started At',
     filter(_, history: IHistory, index) {
       return (
-        <span className='bi-text--sm bi-muted'>
-          {biRelativeDate()(history.startedAt as any)}
-        </span>
+        <div className="bi-align bi-s-h--x05 bi-text--sm bi-muted">
+          <span>
+            {relativeDate()(history.startedAt as any)}
+          </span>
+
+          <span>
+            ({absoluteDate()(history.startedAt as any)})
+          </span>
+        </div>
       );
     }
   }
