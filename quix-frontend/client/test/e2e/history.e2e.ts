@@ -46,7 +46,7 @@ describe('History ::', () => {
     expect(await testkit.userFilter.hasOptions()).to.be.true;
   });
 
-  it.only('should filter by user', async () => {
+  it('should filter by user', async () => {
     await gotoHistory();
     expect(await testkit.states.hasContentState()).to.be.true;
     expect(await testkit.table.totalRows()).to.equal(1);
