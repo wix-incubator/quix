@@ -28,7 +28,3 @@ export const toggleMark = (note: INote) => ({
 export const unmarkAll = () => ({
   type: 'notebook.view.unmarkAll'
 });
-
-export const noop = () => ({
-  type: 'notebook.noop'
-});
