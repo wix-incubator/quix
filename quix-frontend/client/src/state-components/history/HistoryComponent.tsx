@@ -110,7 +110,7 @@ export function History(props: HistoryProps) {
   const renderInitialState = () => (
     <div className="bi-c-h bi-align bi-center bi-grow">
       <div className="bi-empty-state--loading bi-fade-in">
-        <div className="bi-empty-state-content" data-hook='history-initial'>Loading query history...</div>
+        <div className="bi-empty-state-content" data-hook="history-initial">Loading query history...</div>
       </div>
     </div>
   );
@@ -118,7 +118,7 @@ export function History(props: HistoryProps) {
   const renderFilterInitialState = () => (
     <div className="bi-c-h bi-align bi-center bi-grow">
       <div className="bi-empty-state--loading bi-fade-in">
-        <div className="bi-empty-state-content" data-hook='history-initial'>Searching query history...</div>
+        <div className="bi-empty-state-content" data-hook="history-initial">Searching query history...</div>
       </div>
     </div>
   );
@@ -129,7 +129,7 @@ export function History(props: HistoryProps) {
         <div className="bi-empty-state-icon bi-danger">
           <i className="bi-icon bi-danger">error_outline</i>
         </div>
-        <div className="bi-empty-state-header" data-hook='history-error'>{stateData.errorMessage}</div>
+        <div className="bi-empty-state-header" data-hook="history-error">{stateData.errorMessage}</div>
       </div>
     </div>
   );
@@ -138,17 +138,17 @@ export function History(props: HistoryProps) {
     <div className="bi-c-h bi-align bi-center bi-grow">
       <div className="bi-empty-state bi-fade-in">
         <img className="bi-empty-state-image" src={noResultsImg}></img>
-        <div className="bi-empty-state-header" data-hook='history-result'>No results</div>
+        <div className="bi-empty-state-header" data-hook="history-result">No results</div>
       </div>
     </div>
   );
 
   const renderContentState = () => (
     <div
-      className='bi-panel bi-c-h bi-fade-in bi-theme--lighter'
-      data-hook='history-content'
+      className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
+      data-hook="history-content"
     >
-      <div className='bi-panel-content bi-c-h'>
+      <div className="bi-panel-content bi-c-h">
         <Table
           initialData={stateData.rows}
           loadMore={getChunk}
@@ -167,7 +167,7 @@ export function History(props: HistoryProps) {
   );
 
   const renderFilter = () => (
-    <div className="hc-filters bi-theme--lighter bi-align bi-space-h--x15 bi-fade-in">
+    <div className="hc-filters bi-theme--lighter bi-align bi-s-h--x15">
       <Select
         highlight={highlight}
         defaultLabel={user}

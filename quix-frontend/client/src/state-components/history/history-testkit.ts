@@ -32,18 +32,18 @@ export class HistoryTestkit extends Testkit {
   }
 
   table = {
-    rowNumbers: async () => {
+    totalRows: async () => {
       return (await this.query.hooks(Hooks.TableRow)).length;
     },
   }
 
   userFilter = {
-    clickOnDropdown: async () => {
-      await this.click.hook(Hooks.UserFilter);
+    clickOnDropdown: () => {
+      return this.click.hook(Hooks.UserFilter);
     },
 
-    clickOnOption: async () => {
-      await this.click.hook(Hooks.UserFilterOption);
+    clickOnOption: () => {
+      return this.click.hook(Hooks.UserFilterOption);
     },
 
     hasOptions: async () => {

@@ -35,7 +35,7 @@ describe('History ::', () => {
     await gotoHistory();
 
     expect(await testkit.states.hasContentState()).to.be.true;
-    expect(await testkit.table.rowNumbers()).to.equal(1);
+    expect(await testkit.table.totalRows()).to.equal(1);
   });
 
   it('should display user options', async () => {
@@ -46,31 +46,31 @@ describe('History ::', () => {
     expect(await testkit.userFilter.hasOptions()).to.be.true;
   });
 
-  it('should filter by user', async () => {
+  it.only('should filter by user', async () => {
     await gotoHistory();
     expect(await testkit.states.hasContentState()).to.be.true;
-    expect(await testkit.table.rowNumbers()).to.equal(1);
+    expect(await testkit.table.totalRows()).to.equal(1);
     
-    driver.mock.reset();
+    await driver.mock.reset();
     await testkit.userFilter.clickOnDropdown();
     await testkit.userFilter.clickOnOption();
 
     expect(await testkit.states.hasLoadingState()).to.be.true;
     expect(await testkit.states.hasContentState()).to.be.true;
-    expect(await testkit.table.rowNumbers()).to.equal(100);
+    expect(await testkit.table.totalRows()).to.equal(100);
   });
 
   it('should filter by query', async () => {
     await gotoHistory();
     expect(await testkit.states.hasContentState()).to.be.true;
-    expect(await testkit.table.rowNumbers()).to.equal(1);
+    expect(await testkit.table.totalRows()).to.equal(1);
 
-    driver.mock.reset();
+    await driver.mock.reset();
     await testkit.queryFilter.click();
 
     await testkit.queryFilter.set('example');
     expect(await testkit.states.hasLoadingState()).to.be.true;
     expect(await testkit.states.hasContentState()).to.be.true;
-    expect(await testkit.table.rowNumbers()).to.equal(100);
+    expect(await testkit.table.totalRows()).to.equal(100);
   });
 });
