@@ -17,7 +17,7 @@ interface HighlightedRowConfig<T> extends RowConfig<T> {
 export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
   {
     name: 'email',
-    title: 'Email',
+    title: 'User',
     filter(_, history: IHistory, index, highlight) {
       return <span>{highlight(history.email)}</span>;
     }
