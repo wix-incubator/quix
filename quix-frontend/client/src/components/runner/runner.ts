@@ -85,7 +85,7 @@ export default (app: App, store: Store) => () => ({
         });
 
       scope.renderRunner = () => {
-        const html = inject('$compile')(plugin.renderRunner())(scope.$new(false));
+        const html = inject('$compile')(plugin.renderRunner())(scope);
 
         return {html};
       };
