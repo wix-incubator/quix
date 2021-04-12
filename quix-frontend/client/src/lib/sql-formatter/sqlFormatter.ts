@@ -4,6 +4,7 @@ export interface Cfg {
   language?: 'sql' | 'quixsql';
   params?: Record<string, string> | string[];
   indent?: string;
+  upperCase?: boolean;
 }
 export default {
   /**

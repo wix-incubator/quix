@@ -142,9 +142,9 @@ export default class QuixSqlFormatter {
    * @param {String} query The Standard SQL string
    * @return {String} formatted string
    */
-  format(query, {keyWordsToUpperCase} = {keyWordsToUpperCase: false}) {
+  format(query) {
     if (!this.tokenizer) {
-      this.tokenizer = new Tokenizer({...newTokenizerConf, upperCase: keyWordsToUpperCase});
+      this.tokenizer = new Tokenizer({...newTokenizerConf, upperCase: this.cfg.upperCase});
     }
     return new Formatter(this.cfg, this.tokenizer).format(query);
   }

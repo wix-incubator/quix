@@ -105,7 +105,7 @@ export class NotePlugin extends Plugin {
         title: 'Format query',
         permissions: 'edit',
         handler: (note: INote) => {
-          note.content = formatter.format(note.content);
+          note.content = formatter.format(note.content, {upperCase: true, language: 'quixsql'});
   
           return note;
         }
