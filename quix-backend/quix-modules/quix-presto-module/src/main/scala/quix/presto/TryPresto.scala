@@ -14,7 +14,8 @@ object TryPresto extends LazyLogging {
     val statementApi = "http://<.....enter your presto coordinator hostname.....>:8181/v1/statement/"
     val healthApi = "http://<.....enter your presto coordinator hostname.....>:8181/v1/cluster"
     val infoQueryApi = "http://<.....enter your presto coordinator hostname.....>:8181/v1/query/"
-    val config = PrestoConfig(statementApi, healthApi, infoQueryApi, "events", "dbo", "quix")
+    val httpHeadersPrefix = "X-Presto-"
+    val config = PrestoConfig(statementApi, healthApi, infoQueryApi, "events", "dbo", "quix", httpHeadersPrefix)
     val client = new ScalaJPrestoStateClient(config)
 
     val executor = new QueryExecutor(client)

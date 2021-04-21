@@ -14,7 +14,7 @@ class ScalaJPrestoOpsTest extends SpecWithJUnit with MustMatchers {
   class ctx extends Scope {
     var factory = ScalaJPrestoOps
     val query = ImmutableSubQuery("select 1", User("user@quix"))
-    val config = PrestoConfig("statements", "health", "queryInfo", "default-schema", "default-catalog", "default-source")
+    val config = PrestoConfig("statements", "health", "queryInfo", "default-schema", "default-catalog", "default-source", "X-Presto-")
   }
 
   "ScalaJPrestoOps.buildPrestoRequest" should {
