@@ -1,9 +1,9 @@
 import {IUser} from '@wix/quix-shared';
 import biRelativeDate from '../../../src/lib/ui/filters/relative-date';
 import * as React from 'react';
-import {RowConfig} from '../../lib/ui/components/Table';
+import { HighlightedRowConfig } from '../common';
 
-export const usersTableFields: RowConfig<IUser>[] = [
+export const usersTableFields: HighlightedRowConfig<IUser>[] = [
   {
     name: 'name',
     title: 'user',
@@ -17,7 +17,15 @@ export const usersTableFields: RowConfig<IUser>[] = [
     }
   },
   {
-    name: 'email'
+    name: 'email',
+    title: 'email',
+    filter(_, user: IUser, index, highlight) {
+      return (
+        <div className="bi-align bi-s-h">
+          <span>{highlight(user.email)}</span>
+        </div>
+      );
+    }
   },
   {
     name: 'dateCreated',

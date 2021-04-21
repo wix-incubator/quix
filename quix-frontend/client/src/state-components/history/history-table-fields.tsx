@@ -3,16 +3,7 @@ import relativeDate from '../../lib/ui/filters/relative-date';
 import absoluteDate from '../../lib/ui/filters/absolute-date';
 import toHumanCase from '../../lib/ui/filters/to-human-case';
 import * as React from 'react';
-import { RowConfig } from '../../lib/ui/components/Table';
-
-interface HighlightedRowConfig<T> extends RowConfig<T> {
-  filter?(
-    value,
-    item: T,
-    index,
-    highlight?: (string) => React.ReactNode
-  ): React.ReactNode;
-}
+import { HighlightedRowConfig } from '../common';
 
 export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
   {

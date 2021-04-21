@@ -1,7 +1,11 @@
 import * as React from 'react';
 import {IUser} from '@wix/quix-shared';
-import {Table} from '../../lib/ui/components/Table';
+import Highlighter from 'react-highlight-words';
+import {SortableTable} from '../../lib/ui/components/SortableTable';
+import {highlightText} from '../../services/search';
+import {useViewState} from '../../services/hooks';
 import {usersTableFields} from './users-table-fields';
+import makePagination from '../../lib/ui/components/hoc/makePagination';
 
 export interface UsersProps {
   users: IUser[];
@@ -9,8 +13,25 @@ export interface UsersProps {
   onUserClicked(user: IUser): void;
 }
 
+export const CHUNK_SIZE = 100;
+
+const Table = makePagination(SortableTable);
+
+const States = [
+  'Initial',
+  'Error',
+  'Empty',
+  'Content',
+  'FilterInitial',
+];
+
 export function Users(props: UsersProps) {
   const {users, error, onUserClicked} = props;
+  const [stateData, viewState] = useViewState(States, {
+    rows: [],
+    size: 0,
+    userFilter: '',
+  });
 
   const displayLoadingState = () => (
     <div className="bi-empty-state--loading bi-fade-in">
@@ -30,6 +51,28 @@ export function Users(props: UsersProps) {
     </div>
   );
 
+  const highlight = (term: string, filter: string) => {
+    const highlightProps = highlightText(term, filter);
+      
+    return (
+      <Highlighter
+        searchWords={[highlightProps.currentFilter]}
+        autoEscape={true}
+        textToHighlight={highlightProps.textToHighlight}
+      />
+    )
+  }
+
+  const highlightQuery = (columnName: string) => (term: string) => {
+    const text = term.replace(/\s+/g,' ');
+    
+    if (columnName === 'query') {
+      return (highlight(term, stateData.userFilter));
+    }
+
+    return text;
+  }
+
   const displayLoadedState = () => (
       <div className="bi-section-content bi-c-h">
         <div
@@ -38,9 +81,16 @@ export function Users(props: UsersProps) {
         >
           <div className="bi-panel-content bi-c-h">
             <Table
-              rows={users}
-              rowsConfig={usersTableFields}
+              columns={usersTableFields.map(field => ({
+                Header: field.title,
+                Cell: table => field.filter(undefined, table.row.original, 0, highlightQuery(field.name)),
+                accessor: field.name,
+                className: field.className,
+              }))}
+              initialData={users}
+              loadMore={() => {}}
               onRowClicked={onUserClicked}
+              paginationSize={users.length}
             />
           </div>
         </div>
