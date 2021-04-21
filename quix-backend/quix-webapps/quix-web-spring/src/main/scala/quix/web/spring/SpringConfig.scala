@@ -123,7 +123,11 @@ class ModulesConfiguration extends LazyLogging {
           env.getProperty(s"modules.$presto.source", env.getProperty("presto.source", "quix"))
         }
 
-        PrestoConfig(statementsApi, healthApi, queryInfoApi, defaultSchema, defaultCatalog, defaultSource)
+        val httpHeadersPrefix = {
+          env.getProperty(s"modules.$presto.http.headers.prefix", "X-Presto-")
+        }
+
+        PrestoConfig(statementsApi, healthApi, queryInfoApi, defaultSchema, defaultCatalog, defaultSource, httpHeadersPrefix)
       }
 
       val client = new ScalaJPrestoStateClient(config)
@@ -342,7 +346,7 @@ class DownloadConfiguration extends LazyLogging {
           "bucket" -> env.getRequiredProperty("download.s3.bucket"),
           "region" -> env.getRequiredProperty("download.s3.region"),
           "accessKey" -> env.getRequiredProperty("download.s3.access"),
-          "secretKey" -> env.getRequiredProperty("download.s3.secret"),
+          "secretKey" -> env.getRequiredProperty("download.s3.secret")
         )
 
       case _ =>
