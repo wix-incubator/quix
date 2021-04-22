@@ -1,21 +1,33 @@
 import React from 'react';
 
+export interface RowProps {
+  columns: {
+    header: string,
+    renderRow: (cell: any) => React.ReactNode,
+    accessor: string,
+    className: string
+  }[];
+  onRowClicked: (row: any) => void;
+  row: {};
+}
+
 export const Row = ({
   row,
   onRowClicked,
-}) => {
+  columns,
+}: RowProps) => {
   return (
     <tr
       onClick={() => onRowClicked(row)}
       data-hook="table-row"
     >
-      {Object.keys(row).map((cell, index) => {
+      {columns.map((column, index) => {
         return (
           <td
             key={index}
-            className={'bi-table-cells bi-table-cell-' + cell}
+            className={'bi-table-cells bi-table-cell-' + column.accessor}
           >
-            {row[cell]}
+            {column.renderRow(row)}
           </td>
         );
       })}

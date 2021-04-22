@@ -105,8 +105,8 @@ export function Users(props: UsersProps) {
           <div className="bi-panel-content bi-c-h">
             <Table
               columns={usersTableFields.map(field => ({
-                Header: field.title,
-                Cell: table => field.filter(undefined, table.row.original, 0, highlightQuery(field.name)),
+                header: field.title,
+                renderRow: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
                 accessor: field.name,
                 className: field.className,
               }))}
@@ -114,6 +114,7 @@ export function Users(props: UsersProps) {
               loadMore={getChunk}
               onRowClicked={onUserClicked}
               paginationSize={stateData.users.length}
+              tableSize={(size) => viewState.update({ size })}
             />
           </div>
         </div>
@@ -148,7 +149,6 @@ export function Users(props: UsersProps) {
 
       <div className="bi-section-content bi-c-h bi-s-v--x15">
         {viewState.min('Error') && renderFilter()}
-
         {
           (() => {
             switch(viewState.get()) {

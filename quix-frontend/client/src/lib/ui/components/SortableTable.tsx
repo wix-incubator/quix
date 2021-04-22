@@ -4,13 +4,26 @@ import { Row } from './Row';
 import '../directives/search/search.scss';
 import './SortableTable.scss';
 
+export interface SortableTableProps {
+  columns: {
+    header: string,
+    renderRow: (cell: any) => React.ReactNode,
+    accessor: string,
+    className: string
+  }[];
+  data: any[];
+  onRowClicked: (row: any) => void;
+  getChunk: () => void;
+  isChunking: boolean;
+}
+
 export const SortableTable = ({
   columns,
   data,
   onRowClicked,
   getChunk,
   isChunking,
-}) => {
+}: SortableTableProps) => {
 
   const scroll = (UIElement) => {
     const element = UIElement.target;
@@ -30,7 +43,7 @@ export const SortableTable = ({
                       <div className="bi-table-th-content bi-text--ui">
                         <span className="bi-align ng-scope">
                           <span className="bi-text--600 ng-binding">
-                            {column.Header}
+                            {column.header}
                           </span>
                         </span>
                       </div>
@@ -46,6 +59,7 @@ export const SortableTable = ({
                       key={index}
                       onRowClicked={onRowClicked}
                       row={_.pick(fullRow, columns.map(column => column.accessor))}
+                      columns={columns}
                     />
                   )
                 })

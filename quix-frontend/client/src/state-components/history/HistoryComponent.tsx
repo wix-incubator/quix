@@ -118,8 +118,8 @@ export function History(props: HistoryProps) {
           loadMore={getChunk}
           onRowClicked={onHistoryClicked}
           columns={historyTableFields.map(field => ({
-            Header: field.title,
-            Cell: table => field.filter(undefined, table.row.original, 0, highlightQuery(field.name)),
+            header: field.title,
+            renderRow: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
             accessor: field.name,
             className: field.className,
           }))}
