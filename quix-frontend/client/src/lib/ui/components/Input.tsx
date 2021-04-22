@@ -3,7 +3,7 @@ import Input from '@material-ui/core/Input';
 import { grey, blue } from '@material-ui/core/colors';
 
 const StyledInput = withStyles({
-  fullWidth: {
+  root: {
     border: '1px solid #ebebec',
     height: '36px',
     minWidth: '200px',
