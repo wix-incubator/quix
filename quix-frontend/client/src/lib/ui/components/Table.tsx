@@ -1,17 +1,11 @@
 import * as React from 'react';
 import toHumanCase from '../filters/to-human-case';
+import {RowConfig} from '../../../state-components/common';
 
 interface TableProps<T> {
   rows: T[];
   rowsConfig: RowConfig<T>[];
   onRowClicked(T): any;
-}
-
-export interface RowConfig<T> {
-  name: keyof T;
-  title?: string;
-  className?: string;
-  filter?(value, item: T, index): React.ReactNode;
 }
 
 export const Table = <T extends {}>(props: TableProps<T>) => {
