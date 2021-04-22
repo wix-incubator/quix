@@ -1,10 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import {
-  useTable,
-  useSortBy,
-  useGlobalFilter,
-  usePagination
-} from 'react-table';
+import React from 'react';
+import _ from 'lodash';
+import { Row } from './Row';
 import '../directives/search/search.scss';
 import './SortableTable.scss';
 
@@ -15,54 +11,6 @@ export const SortableTable = ({
   getChunk,
   isChunking,
 }) => {
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    prepareRow,
-    page,
-  } = useTable(
-    {
-      columns,
-      data,
-      initialState: {
-        pageSize: 10000
-      }
-    },
-    useGlobalFilter,
-    useSortBy,
-    usePagination
-  );
-
-  const [rows, setRows] = useState([]);
-
-  useEffect(() => {
-    const currentRows = page.length < rows.length ? [] : rows;
-
-    setRows([...currentRows, ...page.slice(rows.length).map((row, index) => {
-      prepareRow(row);
-
-      return (
-        <tr
-          key={index}
-          {...row.getRowProps()}
-          onClick={() => onRowClicked(row.original)}
-          data-hook="history-table-row"
-        >
-          {row.cells.map(cell => {
-            return (
-              <td
-                {...cell.getCellProps()}
-                className={'bi-table-cells bi-table-cell-' + cell.column.id}
-              >
-                {cell.render('Cell')}
-              </td>
-            );
-          })}
-        </tr>
-      );
-    })]);
-  }, [page.length]);
 
   const scroll = (UIElement) => {
     const element = UIElement.target;
@@ -75,27 +23,33 @@ export const SortableTable = ({
     <>
       <div className="bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header">
         <div onScroll={scroll} className="bi-fade-in">
-          <table {...getTableProps()} className="bi-table">
+          <table className="bi-table">
             <thead className="bi-tbl-header">
-              {headerGroups.map(headerGroup => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
-                  {headerGroup.headers.map(column => (
-                    <th className={column.className} {...column.getHeaderProps(column.getSortByToggleProps())}>
+                  {columns.map((column, index) => (
+                    <th className={column.className} key={index}>
                       <div className="bi-table-th-content bi-text--ui">
                         <span className="bi-align ng-scope">
                           <span className="bi-text--600 ng-binding">
-                            {column.render('Header')}
+                            {column.Header}
                           </span>
                         </span>
                       </div>
                     </th>
                   ))}
-                </tr>
-              ))}
             </thead>
 
-            <tbody {...getTableBodyProps()}>
-              {rows}
+            <tbody>
+              {
+                data.map((fullRow, index) => {
+                  return (
+                    <Row
+                      key={index}
+                      onRowClicked={onRowClicked}
+                      row={_.pick(fullRow, columns.map(column => column.accessor))}
+                    />
+                  )
+                })
+              }
             </tbody>
           </table>
 
