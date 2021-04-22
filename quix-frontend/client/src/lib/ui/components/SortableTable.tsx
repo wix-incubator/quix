@@ -38,6 +38,7 @@ export const SortableTable = ({
         <div onScroll={scroll} className="bi-fade-in">
           <table className="bi-table">
             <thead className="bi-tbl-header">
+              <tr>
                   {columns.map((column, index) => (
                     <th className={column.className} key={index}>
                       <div className="bi-table-th-content bi-text--ui">
@@ -49,6 +50,7 @@ export const SortableTable = ({
                       </div>
                     </th>
                   ))}
+              </tr>
             </thead>
 
             <tbody>

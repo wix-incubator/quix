@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CircularProgress, List, ListItem, createStyles, makeStyles } from '@material-ui/core';
+import { CircularProgress, List, ListItem, makeStyles } from '@material-ui/core';
 import useAutocomplete from '@material-ui/lab/useAutocomplete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { grey } from '@material-ui/core/colors';
@@ -7,13 +7,9 @@ import _ from 'lodash';
 import { useViewState } from '../../../services/hooks';
 import Input from './Input';
 
-const useStyles = makeStyles(() =>
-  createStyles({
+const useStyles = makeStyles({
     inputArea: {
       display: 'inline-grid',
-    },
-    label: {
-      display: 'block',
     },
     center: {
       justifyContent: 'center',
@@ -37,11 +33,8 @@ const useStyles = makeStyles(() =>
         backgroundColor: grey[50],
         cursor: 'pointer',
       },
-      '&:hover $child': {
-        color: 'red'
-      }
     },
-  })
+  }
 );
 
 const checkIsPlainData = (data) => ['string', 'number', 'undefined'].includes(typeof data);
