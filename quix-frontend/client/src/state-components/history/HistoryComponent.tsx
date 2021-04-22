@@ -12,7 +12,7 @@ import makePagination from '../../lib/ui/components/hoc/makePagination';
 import { SortableTable } from '../../lib/ui/components/SortableTable';
 import Input from '../../lib/ui/components/Input';
 import Select from '../../lib/ui/components/Select';
-import noResultsImg from '../../../src/assets/no_data.svg';
+import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/table-states';
 
 export interface HistoryProps {
   error: { message: string };
@@ -107,42 +107,6 @@ export function History(props: HistoryProps) {
     }
   }
 
-  const renderInitialState = () => (
-    <div className="bi-c-h bi-align bi-center bi-grow">
-      <div className="bi-empty-state--loading bi-fade-in">
-        <div className="bi-empty-state-content" data-hook="history-initial">Loading query history...</div>
-      </div>
-    </div>
-  );
-
-  const renderFilterInitialState = () => (
-    <div className="bi-c-h bi-align bi-center bi-grow">
-      <div className="bi-empty-state--loading bi-fade-in">
-        <div className="bi-empty-state-content" data-hook="history-initial">Searching query history...</div>
-      </div>
-    </div>
-  );
-
-  const renderErrorState = () => (
-    <div className="bi-c-h bi-align bi-center bi-grow">
-      <div className="bi-empty-state bi-fade-in">
-        <div className="bi-empty-state-icon bi-danger">
-          <i className="bi-icon bi-danger">error_outline</i>
-        </div>
-        <div className="bi-empty-state-header" data-hook="history-error">{stateData.errorMessage}</div>
-      </div>
-    </div>
-  );
-
-  const renderEmptyState = () => (
-    <div className="bi-c-h bi-align bi-center bi-grow">
-      <div className="bi-empty-state bi-fade-in">
-        <img className="bi-empty-state-image" src={noResultsImg}></img>
-        <div className="bi-empty-state-header" data-hook="history-result">No results</div>
-      </div>
-    </div>
-  );
-
   const renderContentState = () => (
     <div
       className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
@@ -204,15 +168,15 @@ export function History(props: HistoryProps) {
           (() => {
             switch(viewState.get()) {
               case 'Initial':
-                return renderInitialState();
+                return <InitialState entityName={'history'}/>;
               case 'Error':
-                return renderErrorState();
+                return <ErrorState errorMessage={error.message} />;
               case 'Empty':
-                return renderEmptyState();
+                return <EmptyState />;
               case 'Content':
                 return renderContentState();
               case 'FilterInitial':
-                return renderFilterInitialState();
+                return <FilterInitialState entityName={'history'} />;
               default:
             }
           })()

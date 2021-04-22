@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
 import {IUser} from '@wix/quix-shared';
 import Highlighter from 'react-highlight-words';
 import _ from 'lodash';
@@ -8,9 +8,8 @@ import {useViewState} from '../../services/hooks';
 import {usersTableFields} from './users-table-fields';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
 import Input from '../../lib/ui/components/Input';
-import noResultsImg from '../../../src/assets/no_data.svg';
-import { useEffect } from 'react';
-import { debounceAsync } from '../../utils';
+import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/table-states';
+import {debounceAsync} from '../../utils';
 
 export interface UsersProps {
   users: IUser[];
@@ -67,24 +66,6 @@ export function Users(props: UsersProps) {
       });
     }
   }, [stateData.emailFilter, stateData.users]);
-
-  const renderInitialState = () => (
-    <div className="bi-empty-state--loading bi-fade-in">
-      <div className="bi-empty-state-content">Loading users...</div>
-    </div>
-  );
-
-  const renderErrorState = () => (
-    <div
-      className="bi-empty-state bi-fade-in"
-      data-hook="users-error"
-    >
-      <div className="bi-empty-state-icon bi-danger">
-        <i className="bi-icon bi-danger">error_outline</i>
-      </div>
-      <div className="bi-empty-state-header">{error.message}</div>
-    </div>
-  );
 
   const highlight = (term: string, filter: string) => {
     const highlightProps = highlightText(term, filter);
@@ -157,23 +138,6 @@ export function Users(props: UsersProps) {
     </div>
   );
 
-  const renderEmptyState = () => (
-    <div className="bi-c-h bi-align bi-center bi-grow">
-      <div className="bi-empty-state bi-fade-in">
-        <img className="bi-empty-state-image" src={noResultsImg}></img>
-        <div className="bi-empty-state-header" data-hook="users-result">No results</div>
-      </div>
-    </div>
-  );
-
-  const renderFilterInitialState = () => (
-    <div className="bi-c-h bi-align bi-center bi-grow">
-      <div className="bi-empty-state--loading bi-fade-in">
-        <div className="bi-empty-state-content" data-hook="users-initial">Searching users...</div>
-      </div>
-    </div>
-  );
-
   return (
     <div className="bi-section bi-c-h bi-grow">
       <div className="bi-section-header">
@@ -189,15 +153,15 @@ export function Users(props: UsersProps) {
           (() => {
             switch(viewState.get()) {
               case 'Initial':
-                return renderInitialState();
+                return <InitialState entityName={'users'}/>;
               case 'Error':
-                return renderErrorState();
+                return <ErrorState errorMessage={error.message} />;
               case 'Empty':
-                return renderEmptyState();
+                return <EmptyState />;
               case 'Content':
                 return renderContentState();
               case 'FilterInitial':
-                return renderFilterInitialState();
+                return <FilterInitialState entityName={'users'} />;
               default:
             }
           })()
