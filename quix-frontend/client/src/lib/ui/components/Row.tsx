@@ -2,12 +2,12 @@ import React from 'react';
 
 export interface RowProps {
   columns: {
-    header: string,
-    renderRow: (cell: any) => React.ReactNode,
-    accessor: string,
-    className: string
+    header: string;
+    renderRow(cell: any): React.ReactNode;
+    accessor: string;
+    className: string;
   }[];
-  onRowClicked: (row: any) => void;
+  onRowClicked(row: any): void;
   row: {};
 }
 

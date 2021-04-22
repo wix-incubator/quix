@@ -6,14 +6,14 @@ import './SortableTable.scss';
 
 export interface SortableTableProps {
   columns: {
-    header: string,
-    renderRow: (cell: any) => React.ReactNode,
-    accessor: string,
-    className: string
+    header: string;
+    renderRow(cell: any): React.ReactNode;
+    accessor: string;
+    className: string;
   }[];
   data: any[];
-  onRowClicked: (row: any) => void;
-  getChunk: () => void;
+  onRowClicked(row: any): void;
+  getChunk(): void;
   isChunking: boolean;
 }
 
