@@ -52,15 +52,17 @@ export function Users(props: UsersProps) {
   }, [error]);
 
   useEffect(() => {
-    viewState.set('Initial', {users: serverUsers});
+    if (!error) {
+      viewState.set('Initial', {users: serverUsers});
+    }
   },[serverUsers]);
 
   useEffect(() => {
     if (viewState.get() !== 'Error') {
       getChunk(0, CHUNK_SIZE + 1)(res => {
-        if (!_.isEqual(res, stateData.users)) {
+        if (!_.isEqual(res, stateData.users) || viewState.is('Initial')) {
           viewState.set(res.length > 0 ? 'Content' : 'Empty', {users: res});
-        } else if (stateData.users.length > 0 && !viewState.is('Content')) {
+        } else if (stateData.users?.length > 0 && !viewState.is('Content')) {
           viewState.set('Content');
         }
       });
@@ -100,7 +102,7 @@ export function Users(props: UsersProps) {
       <div className="bi-section-content bi-c-h">
         <div
           className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
-          data-hook="users-content"
+          data-hook="table-users-content"
         >
           <div className="bi-panel-content bi-c-h">
             <Table
@@ -128,9 +130,8 @@ export function Users(props: UsersProps) {
   }
 
   const renderFilter = () => (
-    <div className="hc-filters bi-theme--lighter bi-align bi-s-h--x15">
+    <div>
       <Input
-        fullWidth={true}
         disableUnderline
         onChange={handleEmailFilterChange}
         placeholder="Filter users"
@@ -148,7 +149,7 @@ export function Users(props: UsersProps) {
       </div>
 
       <div className="bi-section-content bi-c-h bi-s-v--x15">
-        {viewState.min('Error') && renderFilter()}
+        {!viewState.is('Error') && renderFilter()}
         {
           (() => {
             switch(viewState.get()) {

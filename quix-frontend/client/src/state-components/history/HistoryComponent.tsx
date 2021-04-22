@@ -110,7 +110,7 @@ export function History(props: HistoryProps) {
   const renderContentState = () => (
     <div
       className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
-      data-hook="history-content"
+      data-hook="table-history-content"
     >
       <div className="bi-panel-content bi-c-h">
         <Table
@@ -130,7 +130,7 @@ export function History(props: HistoryProps) {
     </div>
   );
 
-  const renderFilter = () => (
+  const renderFilters = () => (
     <div className="hc-filters bi-theme--lighter bi-align bi-s-h--x15">
       <Select
         highlight={highlight}
@@ -162,7 +162,7 @@ export function History(props: HistoryProps) {
       </div>
 
       <div className="bi-section-content bi-c-h bi-s-v--x15">
-        {viewState.min('Error') && renderFilter()}
+        {!viewState.is('Error') && renderFilters()}
 
         {
           (() => {
