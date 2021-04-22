@@ -36,7 +36,7 @@ const mocks = {
   "/api/history": () => {
     return [...Array(101).keys()].map(key =>
       createMockHistory({
-        id: uuidv4(),
+        id: "" + key,
         email: "valery" + key + "@wix.com",
         query: ["SELECT 1", "SELECT 2"],
         moduleType: key % 2 ? "presto" : "athena",
