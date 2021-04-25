@@ -158,7 +158,7 @@ export function History(props: HistoryProps) {
           (() => {
             switch(viewState.get()) {
               case 'Initial':
-                return <InitialState entityName={'history'}/>;
+                return <InitialState entityName={'history'} />;
               case 'Error':
                 return <ErrorState errorMessage={error.message} />;
               case 'Empty':

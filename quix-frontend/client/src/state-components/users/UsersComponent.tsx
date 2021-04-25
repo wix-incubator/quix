@@ -144,7 +144,7 @@ export function Users(props: UsersProps) {
           (() => {
             switch(viewState.get()) {
               case 'Initial':
-                return <InitialState entityName={'users'}/>;
+                return <InitialState entityName={'users'} />;
               case 'Error':
                 return <ErrorState errorMessage={error.message} />;
               case 'Empty':
