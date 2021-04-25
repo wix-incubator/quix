@@ -124,7 +124,7 @@ export function Users(props: UsersProps) {
       <Input
         disableUnderline
         onChange={handleEmailFilterChange}
-        placeholder="Filter users"
+        placeholder="Filter users by email"
         data-hook="users-filter-query-input"
       />
     </div>
