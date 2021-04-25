@@ -3,7 +3,7 @@ import relativeDate from '../../lib/ui/filters/relative-date';
 import absoluteDate from '../../lib/ui/filters/absolute-date';
 import toHumanCase from '../../lib/ui/filters/to-human-case';
 import * as React from 'react';
-import { HighlightedRowConfig } from '../common';
+import { HighlightedRowConfig } from '../../lib/ui/components/sortable-table/Row';
 
 export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
   {

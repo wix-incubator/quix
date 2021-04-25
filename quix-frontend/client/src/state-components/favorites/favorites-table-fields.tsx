@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {IFile} from '@wix/quix-shared';
-import {RowConfig} from '../common';
+import {RowConfig} from '../../lib/ui/components/sortable-table/Row';
 import classNames from 'classnames';
 
 export const favoritesTableFields = (onLikeToggle): RowConfig<IFile>[] => [

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import toHumanCase from '../filters/to-human-case';
-import {RowConfig} from '../../../state-components/common';
+import {RowConfig} from './sortable-table/Row';
 
 interface TableProps<T> {
   rows: T[];

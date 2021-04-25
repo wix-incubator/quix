@@ -1,7 +1,7 @@
 import {IUser} from '@wix/quix-shared';
 import biRelativeDate from '../../../src/lib/ui/filters/relative-date';
 import * as React from 'react';
-import { HighlightedRowConfig } from '../common';
+import { HighlightedRowConfig } from '../../lib/ui/components/sortable-table/Row';
 
 export const usersTableFields: HighlightedRowConfig<IUser>[] = [
   {
