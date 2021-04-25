@@ -10,6 +10,6 @@ export interface HighlightedRowConfig<T> extends RowConfig<T> {
     value,
     item: T,
     index,
-    highlight?: (string) => React.ReactNode
+    highlight?: (term: string) => React.ReactNode
   ): React.ReactNode;
 }
