@@ -1,5 +1,5 @@
 import React from 'react';
-import noResultsImg from '../../../../assets/no_data.svg';
+import noResultsImg from '../../../../../assets/no_data.svg';
 
 export const EmptyState = () => (
   <div className="bi-c-h bi-align bi-center bi-grow bi-fade-in">

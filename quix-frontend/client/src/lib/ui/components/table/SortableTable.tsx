@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import { Row } from './Row';
-import '../directives/search/search.scss';
+import '../../directives/search/search.scss';
 import './SortableTable.scss';
 
 export interface SortableTableProps {

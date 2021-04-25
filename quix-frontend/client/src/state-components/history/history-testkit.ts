@@ -1,45 +1,16 @@
-import { Testkit } from '../../../test/e2e/driver';
+import { TableTestkit } from '../../lib/ui/components/table/table-testkit';
 
 const enum Hooks {
-  Initial = 'table-initial',
-  FilterInitial = 'table-filter-initial',
-  Error = 'table-error',
   Content = 'table-history-content',
-  EmptyResult = 'table-empty-result',
-  TableRow = 'table-row',
   UserFilter = 'history-filter-user-select',
   UserFilterOption = 'history-filter-user-select-option',
   QueryFilter = 'history-filter-query-input',
 }
 
-export class HistoryTestkit extends Testkit {
+export class HistoryTestkit extends TableTestkit {
 
-  states = {
-    hasError: async () => {
-      return (await this.query.hook(Hooks.Error)) !== null;
-    },
-    
-    hasLoading: async () => {
-      return (await this.query.hook(Hooks.Initial)) !== null;
-    },
-
-    hasFilterLoading: async () => {
-      return (await this.query.hook(Hooks.FilterInitial)) !== null;
-    },
-  
-    hasEmptyResult: async () => {
-      return (await this.query.hook(Hooks.EmptyResult)) !== null;
-    },
-
-    hasContent: async () => {
-      return (await this.query.hook(Hooks.Content)) !== null;
-    }
-  }
-
-  table = {
-    totalRows: async () => {
-      return (await this.query.hooks(Hooks.TableRow)).length;
-    },
+  historyTableExists = async () => {
+    return (await this.query.hook(Hooks.Content)) !== null;
   }
 
   userFilter = {

@@ -7,11 +7,11 @@ import { User } from '../../lib/app/services/user';
 import { useViewState } from '../../services/hooks';
 import { debounceAsync } from '../../utils';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
-import { SortableTable } from '../../lib/ui/components/SortableTable';
+import { SortableTable } from '../../lib/ui/components/table/SortableTable';
 import { Highlighter } from '../../lib/ui/components/Highlighter';
 import Input from '../../lib/ui/components/Input';
 import Select from '../../lib/ui/components/Select';
-import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/table-states';
+import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/table/states';
 
 export interface HistoryProps {
   error: { message: string };

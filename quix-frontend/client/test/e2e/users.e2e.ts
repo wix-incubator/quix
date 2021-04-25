@@ -29,20 +29,20 @@ describe('Users ::', () => {
   it('should display error state when failed to fetch users', async () => {
     await gotoUsersWithError();
 
-    expect(await testkit.states.hasError()).to.be.true;
+    expect(await testkit.tableStates.hasError()).to.be.true;
   });
 
   it('should display content', async () => {
     await gotoUsers();
 
-    expect(await testkit.states.hasContent()).to.be.true;
-    expect(await testkit.table.totalRows()).to.equal(1);
+    expect(await testkit.usersTableExists()).to.be.true;
+    expect(await testkit.tableTotalRows()).to.equal(1);
   });
 
   it('should display empty result', async () => {
     await gotoUsers([]);
 
-    expect(await testkit.states.hasEmptyResult()).to.be.true;
+    expect(await testkit.tableStates.hasEmptyResult()).to.be.true;
   });
 
   it('should filter by users', async () => {
@@ -52,15 +52,15 @@ describe('Users ::', () => {
       {email: 'email2@bla.bla'},
     ]);
 
-    expect(await testkit.states.hasContent()).to.be.true;
-    expect(await testkit.table.totalRows()).to.equal(3);
+    expect(await testkit.usersTableExists()).to.be.true;
+    expect(await testkit.tableTotalRows()).to.equal(3);
 
     await driver.mock.reset();
     await testkit.usersFilter.click();
 
     await testkit.usersFilter.set('1');
-    expect(await testkit.states.hasFilterLoading()).to.be.true;
-    expect(await testkit.states.hasContent()).to.be.true;
-    expect(await testkit.table.totalRows()).to.equal(1);
+    expect(await testkit.tableStates.hasFilterLoading()).to.be.true;
+    expect(await testkit.usersTableExists()).to.be.true;
+    expect(await testkit.tableTotalRows()).to.equal(1);
   });
 });
