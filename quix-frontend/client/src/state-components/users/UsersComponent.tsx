@@ -21,9 +21,9 @@ export const CHUNK_SIZE = 100;
 const Table = makePagination(SortableTable);
 
 const search = debounceAsync((loadMore, { users, emailFilter }) => {
-  return new Promise(res => {
+  return new Promise(res => 
     res(users?.filter(user => user.email.includes(emailFilter)) || [])
-  });
+  );
 });
 
 const States = [
