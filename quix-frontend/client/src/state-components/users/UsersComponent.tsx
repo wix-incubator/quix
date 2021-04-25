@@ -1,9 +1,8 @@
 import React, {useEffect} from 'react';
-import {IUser} from '@wix/quix-shared';
-import Highlighter from 'react-highlight-words';
 import _ from 'lodash';
+import {IUser} from '@wix/quix-shared';
+import {Highlighter} from '../../lib/ui/components/Highlighter';
 import {SortableTable} from '../../lib/ui/components/SortableTable';
-import {highlightText} from '../../services/search';
 import {useViewState} from '../../services/hooks';
 import {usersTableFields} from './users-table-fields';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
@@ -69,23 +68,14 @@ export function Users(props: UsersProps) {
     }
   }, [stateData.emailFilter, stateData.users]);
 
-  const highlight = (term: string, filter: string) => {
-    const highlightProps = highlightText(term, filter);
-      
-    return (
-      <Highlighter
-        searchWords={[highlightProps.currentFilter]}
-        autoEscape={true}
-        textToHighlight={highlightProps.textToHighlight}
-      />
-    )
-  }
-
   const highlightQuery = (columnName: string) => (term: string) => {
     const text = term.replace(/\s+/g,' ');
     
     if (columnName === 'email') {
-      return highlight(term, stateData.emailFilter);
+      return <Highlighter
+        term={term}
+        filter={stateData.emailFilter}
+      />;
     }
 
     return text;

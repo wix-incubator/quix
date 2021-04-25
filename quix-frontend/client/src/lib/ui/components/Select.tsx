@@ -6,6 +6,7 @@ import { grey } from '@material-ui/core/colors';
 import _ from 'lodash';
 import { useViewState } from '../../../services/hooks';
 import Input from './Input';
+import { HighlighterProps } from './Highlighter';
 
 const useStyles = makeStyles({
     inputArea: {
@@ -77,7 +78,7 @@ interface ISelect {
   inputDataHook?: string,
   liDataHook?: string,
   onOptionChange?(options: any): void;
-  highlight?(term: any, filter: any): JSX.Element;
+  Highlighter?: React.ComponentType<HighlighterProps>;
 }
 
 interface a extends ISelect, ObjectTypes {}
@@ -92,7 +93,7 @@ const Select = ({
   inputDataHook,
   liDataHook,
   onOptionChange,
-  highlight,
+  Highlighter,
 }: a | b) => {
 
   const classes = useStyles();
@@ -281,7 +282,13 @@ const Select = ({
 
               return (
                 <ListItem {...getOptionProps({ option, index })} className={currentClassName} data-hook={liDataHook}>
-                  {isFiltering && highlight ? highlight(currentOptionLabel, inputProps.value) : currentOptionLabel}
+                  {isFiltering && Highlighter ?
+                    <Highlighter
+                      term={currentOptionLabel}
+                      filter={inputProps.value}
+                    /> :
+                    currentOptionLabel
+                  }
                 </ListItem>
             )})
             : NoMatchesState()
