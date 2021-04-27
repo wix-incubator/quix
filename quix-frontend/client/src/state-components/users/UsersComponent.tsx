@@ -38,7 +38,6 @@ export function Users(props: UsersProps) {
   const {users: serverUsers, error, onUserClicked} = props;
   const [stateData, viewState] = useViewState(States, {
     users: [],
-    rows: [],
     size: 0,
     emailFilter: '',
     errorMessage: '',
@@ -58,7 +57,7 @@ export function Users(props: UsersProps) {
 
   useEffect(() => {
     if (viewState.get() !== 'Error') {
-      getChunk(0, CHUNK_SIZE + 1)(res => {
+      loadMore(0, CHUNK_SIZE + 1)(res => {
         if (!_.isEqual(res, stateData.users) || viewState.is('Initial')) {
           viewState.set(res.length > 0 ? 'Content' : 'Empty', {users: res});
         } else if (stateData.users?.length > 0 && !viewState.is('Content')) {
@@ -81,7 +80,7 @@ export function Users(props: UsersProps) {
     return text;
   }
 
-  const getChunk = (offset: number, limit: number) => {
+  const loadMore = (offset: number, limit: number) => {
     return search(null, {
       users: serverUsers,
       emailFilter: stateData.emailFilter,
@@ -103,7 +102,7 @@ export function Users(props: UsersProps) {
                 className: field.className,
               }))}
               initialData={stateData.users}
-              loadMore={getChunk}
+              loadMore={loadMore}
               onRowClicked={onUserClicked}
               paginationSize={stateData.users.length}
               tableSize={(size) => viewState.update({ size })}
