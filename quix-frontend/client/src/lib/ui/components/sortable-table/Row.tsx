@@ -4,7 +4,7 @@ export interface RowConfig<T> {
   name: keyof T;
   title?: string;
   className?: string;
-  filter?(value, item: T, index): React.ReactNode;
+  filter?(value, item: T, index?): React.ReactNode;
 }
 
 export interface HighlightedRowConfig<T> extends RowConfig<T> {
@@ -24,7 +24,7 @@ export interface RowProps {
     className: string;
   }[];
   onRowClicked(row: any): void;
-  row: {};
+  row: any;
 }
 
 export const Row = ({

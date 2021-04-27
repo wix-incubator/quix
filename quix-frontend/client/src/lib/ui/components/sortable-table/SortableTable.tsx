@@ -1,5 +1,4 @@
 import React from 'react';
-import _ from 'lodash';
 import { Row } from './Row';
 import '../../directives/search/search.scss';
 import './SortableTable.scss';
@@ -13,8 +12,8 @@ export interface SortableTableProps {
   }[];
   data: any[];
   onRowClicked(row: any): void;
-  getChunk(): void;
-  isChunking: boolean;
+  getChunk?(): void;
+  isChunking?: boolean;
 }
 
 export const SortableTable = ({
@@ -22,13 +21,13 @@ export const SortableTable = ({
   data,
   onRowClicked,
   getChunk,
-  isChunking,
+  isChunking = false,
 }: SortableTableProps) => {
 
   const scroll = (UIElement) => {
     const element = UIElement.target;
     if (element.scrollHeight - element.scrollTop <= element.clientHeight + 1000) {
-      getChunk();
+      getChunk && getChunk();
     }
   }
 
@@ -55,16 +54,15 @@ export const SortableTable = ({
 
             <tbody>
               {
-                data.map((fullRow, index) => {
-                  return (
+                data.map((fullRow, index) => (
                     <Row
                       key={index}
                       onRowClicked={onRowClicked}
-                      row={_.pick(fullRow, columns.map(column => column.accessor))}
+                      row={fullRow}
                       columns={columns}
                     />
                   )
-                })
+                )
               }
             </tbody>
           </table>
