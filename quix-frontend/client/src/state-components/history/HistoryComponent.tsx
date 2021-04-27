@@ -7,11 +7,11 @@ import { User } from '../../lib/app/services/user';
 import { useViewState } from '../../services/hooks';
 import { debounceAsync } from '../../utils';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
-import { SortableTable } from '../../lib/ui/components/sortable-table/SortableTable';
+import { Table } from '../../lib/ui/components/table/Table';
 import { Highlighter } from '../../lib/ui/components/Highlighter';
 import Input from '../../lib/ui/components/Input';
 import Select from '../../lib/ui/components/Select';
-import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/sortable-table/states';
+import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/table/states';
 
 export interface HistoryProps {
   error: { message: string };
@@ -23,7 +23,7 @@ export interface HistoryProps {
 
 export const CHUNK_SIZE = 100;
 
-const Table = makePagination(SortableTable);
+const PaginatedTable = makePagination(Table);
 
 const search = debounceAsync((loadMore, { offset, limit, filters }) => {
   return loadMore({ offset, limit, filters });
@@ -103,7 +103,7 @@ export function History(props: HistoryProps) {
       data-hook="table-history-content"
     >
       <div className="bi-panel-content bi-c-h">
-        <Table
+        <PaginatedTable
           initialData={stateData.rows}
           loadMore={getChunk}
           onRowClicked={onHistoryClicked}

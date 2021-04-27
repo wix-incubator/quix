@@ -1,4 +1,4 @@
-import { TableTestkit } from '../../lib/ui/components/sortable-table/table-testkit';
+import { TableTestkit } from '../../lib/ui/components/table/table-testkit';
 
 const enum Hooks {
   Content = 'table-history-content',

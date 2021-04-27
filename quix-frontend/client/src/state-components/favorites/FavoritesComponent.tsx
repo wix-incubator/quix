@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
 import {IFile} from '@wix/quix-shared';
 import {useViewState} from '../../services/hooks';
-import {SortableTable} from '../../lib/ui/components/sortable-table/SortableTable';
+import {Table} from '../../lib/ui/components/table/Table';
 import {favoritesTableFields} from './favorites-table-fields';
-import {EmptyState, ErrorState, InitialState} from '../../lib/ui/components/sortable-table/states';
+import {EmptyState, ErrorState, InitialState} from '../../lib/ui/components/table/states';
 import {cloneDeep} from 'lodash';
 
 export interface FavoritesProps {
@@ -58,7 +58,7 @@ export function Favorites(props: FavoritesProps) {
           data-hook="favorites-content"
         >
           <div className="bi-panel-content bi-c-h">
-            <SortableTable
+            <Table
               columns={favoritesTableFields(onLikeToggle).map(field => ({
                 header: field.title || field.name,
                 renderRow: row => field.filter(undefined, row),

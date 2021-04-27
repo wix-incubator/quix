@@ -1,9 +1,9 @@
 import React from 'react';
 import { Row } from './Row';
 import '../../directives/search/search.scss';
-import './SortableTable.scss';
+import './Table.scss';
 
-export interface SortableTableProps {
+export interface TableProps {
   columns: {
     header: string;
     renderRow(cell: any): React.ReactNode;
@@ -16,13 +16,13 @@ export interface SortableTableProps {
   isChunking?: boolean;
 }
 
-export const SortableTable = ({
+export const Table = ({
   columns,
   data,
   onRowClicked,
   getChunk,
   isChunking = false,
-}: SortableTableProps) => {
+}: TableProps) => {
 
   const scroll = (UIElement) => {
     const element = UIElement.target;

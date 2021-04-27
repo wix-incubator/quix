@@ -2,12 +2,12 @@ import React, {useEffect} from 'react';
 import _ from 'lodash';
 import {IUser} from '@wix/quix-shared';
 import {Highlighter} from '../../lib/ui/components/Highlighter';
-import {SortableTable} from '../../lib/ui/components/sortable-table/SortableTable';
+import {Table} from '../../lib/ui/components/table/Table';
 import {useViewState} from '../../services/hooks';
 import {usersTableFields} from './users-table-fields';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
 import Input from '../../lib/ui/components/Input';
-import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/sortable-table/states';
+import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/table/states';
 import {debounceAsync} from '../../utils';
 
 export interface UsersProps {
@@ -18,7 +18,7 @@ export interface UsersProps {
 
 export const CHUNK_SIZE = 100;
 
-const Table = makePagination(SortableTable);
+const PaginatedTable = makePagination(Table);
 
 const search = debounceAsync((loadMore, { users, emailFilter }) => {
   return new Promise(res => 
@@ -94,7 +94,7 @@ export function Users(props: UsersProps) {
           data-hook="table-users-content"
         >
           <div className="bi-panel-content bi-c-h">
-            <Table
+            <PaginatedTable
               columns={usersTableFields.map(field => ({
                 header: field.title,
                 renderRow: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
