@@ -1,5 +1,6 @@
-import React, {useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {IFile} from '@wix/quix-shared';
+import {useViewState} from '../../services/hooks';
 import {SortableTable} from '../../lib/ui/components/sortable-table/SortableTable';
 import {favoritesTableFields} from './favorites-table-fields';
 import {EmptyState, ErrorState, InitialState} from '../../lib/ui/components/sortable-table/states';
@@ -13,38 +14,43 @@ export interface FavoritesProps {
   emptyStateImgSrc: string;
 }
 
+const States = [
+  'Initial',
+  'Error',
+  'Empty',
+  'Content',
+];
+
 export function Favorites(props: FavoritesProps) {
-  const {favorites, error, onFavoriteClick, onLikeToggle: onLikeToggleServer} = props;
-  const isEmptyState = favorites && favorites.length === 0;
-  const [rows, setRows] = useState<IFile[]>(favorites);
+  const {favorites: serverFavorites, error, onFavoriteClick, onLikeToggle: onLikeToggleServer} = props;
+
+  const [stateData, viewState] = useViewState(States, {
+    favorites: [],
+    emailFilter: '',
+    errorMessage: '',
+  });
 
   useEffect(() => {
-    setRows(favorites);
-  }, [favorites]);
+    if (!error) {
+      viewState.set(serverFavorites?.length ? 'Content' : 'Empty', {favorites: serverFavorites || []});
+    }
+  },[serverFavorites]);
 
-  const displayNoContentState = () => {
-    return (
-      <div className="bi-section-content--center">
-        {
-          error
-            ? <ErrorState errorMessage={error.message}/>
-            : isEmptyState
-            ? <EmptyState />
-            : <InitialState entityName={'favorites'}/>
-        }
-      </div>
-    );
-  };
+  useEffect(() => {
+    if (error) {
+      viewState.set('Error', {errorMessage: error.message});
+    }
+  }, [error]);
 
   const onLikeToggle = (file: IFile) => {
-    const tempRows = cloneDeep(rows);
-    const currentFile = tempRows.find(row => row.id === file.id);
+    const tempFavorites = cloneDeep(stateData.favorites);
+    const currentFile = tempFavorites.find(favorite => favorite.id === file.id);
     currentFile.isLiked = !currentFile.isLiked;
     onLikeToggleServer(file);
-    setRows(tempRows);
+    viewState.set('Content', {favorites: tempFavorites});
   }
 
-  const displayLoadedState = () => {
+  const renderContentState = () => {
     return (
       <div className="bi-section-content bi-c-h">
         <div
@@ -59,7 +65,7 @@ export function Favorites(props: FavoritesProps) {
                 accessor: field.name,
                 className: field.className,
               }))}
-              data={favorites}
+              data={stateData.favorites}
               onRowClicked={row => onFavoriteClick(row)}
             />
           </div>
@@ -71,18 +77,28 @@ export function Favorites(props: FavoritesProps) {
   return (
     <div className="bi-section bi-c-h bi-grow">
       <div className="bi-section-header">
-        <div>
-          <div className="bi-section-title">
-            Favorites
-            {favorites && !isEmptyState && (
-              <span className="bi-fade-in">{` (${favorites.length})`}</span>
-            )}
-          </div>
+        <div className="bi-section-title">
+          <span>Favorites {viewState.min('Empty') && <span className='bi-fade-in'>({stateData.favorites.length})</span>}</span>
         </div>
       </div>
-      {!favorites || isEmptyState
-        ? displayNoContentState()
-        : displayLoadedState()}
+
+      <div className="bi-section-content bi-c-h bi-s-v--x15">
+        {
+          (() => {
+            switch(viewState.get()) {
+              case 'Initial':
+                return <InitialState entityName={'favorites'} />;
+              case 'Error':
+                return <ErrorState errorMessage={error.message} />;
+              case 'Empty':
+                return <EmptyState />;
+              case 'Content':
+                return renderContentState();
+              default:
+            }
+          })()
+        }
+      </div>
     </div>
   );
 }
