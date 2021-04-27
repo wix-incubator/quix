@@ -1,11 +1,11 @@
 import React, {useEffect} from 'react';
 import {IFile} from '@wix/quix-shared';
+import {cloneDeep} from 'lodash';
+import {favoritesTableFields} from './favorites-table-fields';
 import {useViewState} from '../../services/hooks';
 import {Table} from '../../lib/ui/components/table/Table';
 import {Title} from '../../lib/ui/components/table/Title';
-import {favoritesTableFields} from './favorites-table-fields';
 import {EmptyState, ErrorState, InitialState} from '../../lib/ui/components/table/states';
-import {cloneDeep} from 'lodash';
 
 export interface FavoritesProps {
   favorites: IFile[];
