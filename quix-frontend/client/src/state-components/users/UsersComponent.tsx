@@ -93,7 +93,7 @@ export function Users(props: UsersProps) {
       entityName="users"
       columns={usersTableFields.map(field => ({
         header: field.title,
-        renderRow: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
+        render: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
         accessor: field.name,
         className: field.className,
       }))}

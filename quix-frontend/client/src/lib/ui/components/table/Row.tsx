@@ -19,7 +19,7 @@ export interface HighlightedRowConfig<T> extends RowConfig<T> {
 export interface RowProps {
   columns: {
     header: string;
-    renderRow(cell: any): React.ReactNode;
+    render(cell: any): React.ReactNode;
     accessor: string;
     className: string;
   }[];
@@ -43,7 +43,7 @@ export const Row = ({
             key={index}
             className={'bi-table-cells bi-table-cell-' + column.accessor}
           >
-            {column.renderRow(row)}
+            {column.render(row)}
           </td>
         );
       })}

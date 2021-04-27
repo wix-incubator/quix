@@ -7,7 +7,7 @@ export interface TableProps {
   entityName?: string;
   columns: {
     header: string;
-    renderRow(cell: any): React.ReactNode;
+    render(cell: any): React.ReactNode;
     accessor: string;
     className: string;
   }[];

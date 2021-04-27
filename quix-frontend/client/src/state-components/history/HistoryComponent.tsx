@@ -12,7 +12,7 @@ import { Title } from '../../lib/ui/components/table/Title';
 import { Highlighter } from '../../lib/ui/components/Highlighter';
 import Input from '../../lib/ui/components/Input';
 import Select from '../../lib/ui/components/Select';
-import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/table/states';
+import { FilterInitialState, InitialState, EmptyState, ErrorState } from '../../lib/ui/components/table/states';
 
 export interface HistoryProps {
   error: { message: string };
@@ -106,7 +106,7 @@ export function History(props: HistoryProps) {
       onRowClicked={onHistoryClicked}
       columns={historyTableFields.map(field => ({
         header: field.title,
-        renderRow: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
+        render: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
         accessor: field.name,
         className: field.className,
       }))}
