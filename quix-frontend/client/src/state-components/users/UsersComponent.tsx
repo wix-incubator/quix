@@ -3,6 +3,7 @@ import _ from 'lodash';
 import {IUser} from '@wix/quix-shared';
 import {Highlighter} from '../../lib/ui/components/Highlighter';
 import {Table} from '../../lib/ui/components/table/Table';
+import {Title} from '../../lib/ui/components/table/Title';
 import {useViewState} from '../../services/hooks';
 import {usersTableFields} from './users-table-fields';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
@@ -123,11 +124,11 @@ export function Users(props: UsersProps) {
 
   return (
     <div className="bi-section bi-c-h bi-grow">
-      <div className="bi-section-header">
-        <div className="bi-section-title">
-          <span>Users {viewState.min('Empty') && <span className='bi-fade-in'>({stateData.size})</span>}</span>
-        </div>
-      </div>
+      <Title
+        entityName="Users"
+        shouldDisplaySize={viewState.min('Empty')}
+        size={stateData.size}
+      />
 
       <div className="bi-section-content bi-c-h bi-s-v--x15">
         {!viewState.is('Error') && renderFilter()}

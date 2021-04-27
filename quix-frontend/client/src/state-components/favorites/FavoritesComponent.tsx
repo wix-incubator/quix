@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import {IFile} from '@wix/quix-shared';
 import {useViewState} from '../../services/hooks';
 import {Table} from '../../lib/ui/components/table/Table';
+import {Title} from '../../lib/ui/components/table/Title';
 import {favoritesTableFields} from './favorites-table-fields';
 import {EmptyState, ErrorState, InitialState} from '../../lib/ui/components/table/states';
 import {cloneDeep} from 'lodash';
@@ -66,11 +67,11 @@ export function Favorites(props: FavoritesProps) {
 
   return (
     <div className="bi-section bi-c-h bi-grow">
-      <div className="bi-section-header">
-        <div className="bi-section-title">
-          <span>Favorites {viewState.min('Empty') && <span className='bi-fade-in'>({stateData.favorites.length})</span>}</span>
-        </div>
-      </div>
+      <Title
+        entityName="History"
+        shouldDisplaySize={viewState.min('Empty')}
+        size={stateData.favorites.length}
+      />
 
       <div className="bi-section-content bi-c-h bi-s-v--x15">
         {

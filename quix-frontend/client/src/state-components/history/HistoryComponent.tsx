@@ -8,6 +8,7 @@ import { useViewState } from '../../services/hooks';
 import { debounceAsync } from '../../utils';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
 import { Table } from '../../lib/ui/components/table/Table';
+import { Title } from '../../lib/ui/components/table/Title';
 import { Highlighter } from '../../lib/ui/components/Highlighter';
 import Input from '../../lib/ui/components/Input';
 import Select from '../../lib/ui/components/Select';
@@ -139,11 +140,11 @@ export function History(props: HistoryProps) {
 
   return (
     <div className="history-component bi-section bi-c-h bi-grow">
-      <div className="bi-section-header">
-        <div className="bi-section-title">
-          <span>History {viewState.min('Empty') && <span className='bi-fade-in'>({stateData.size})</span>}</span>
-        </div>
-      </div>
+      <Title
+        entityName="History"
+        shouldDisplaySize={viewState.min('Empty')}
+        size={stateData.size}
+      />
 
       <div className="bi-section-content bi-c-h bi-s-v--x15">
         {!viewState.is('Error') && renderFilters()}
