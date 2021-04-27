@@ -1,8 +1,8 @@
 import { TableTestkit } from '../../lib/ui/components/table/table-testkit';
 
 const enum Hooks {
-  Content = 'table-users-content',
-  UsersFilter = 'users-filter-query-input',
+  Content = 'users-table',
+  FilterUsersInput = 'users-filter-users-input',
 }
 
 export class UsersTestkit extends TableTestkit {
@@ -13,15 +13,15 @@ export class UsersTestkit extends TableTestkit {
 
   usersFilter = {
     click: () => {
-      return this.click.hook(Hooks.UsersFilter);
+      return this.click.hook(Hooks.FilterUsersInput);
     },
 
     set: (value: string) => {
-      return this.keyboard.type(Hooks.UsersFilter, value);
+      return this.keyboard.type(Hooks.FilterUsersInput, value);
     },
 
     get: () => {
-      return this.evaluate.hook(Hooks.UsersFilter, (e: HTMLInputElement) => e.value);
+      return this.evaluate.hook(Hooks.FilterUsersInput, (e: HTMLInputElement) => e.value);
     },
   }
 }

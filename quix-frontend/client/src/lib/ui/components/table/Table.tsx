@@ -4,6 +4,7 @@ import '../../directives/search/search.scss';
 import './Table.scss';
 
 export interface TableProps {
+  entityName?: string;
   columns: {
     header: string;
     renderRow(cell: any): React.ReactNode;
@@ -17,6 +18,7 @@ export interface TableProps {
 }
 
 export const Table = ({
+  entityName,
   columns,
   data,
   onRowClicked,
@@ -32,49 +34,54 @@ export const Table = ({
   }
 
   return (
-    <>
-      <div className="bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header">
-        <div onScroll={scroll} className="bi-fade-in">
-          <table className="bi-table">
-            <thead className="bi-tbl-header">
-              <tr>
-                  {columns.map((column, index) => (
-                    <th className={column.className} key={index}>
-                      <div className="bi-table-th-content bi-text--ui">
-                        <span className="bi-align ng-scope">
-                          <span className="bi-text--600 ng-binding">
-                            {column.header}
+    <div
+      className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
+      data-hook={entityName ? entityName + '-table' : 'table'}
+    >
+      <div className="bi-panel-content bi-c-h">
+        <div className="bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header">
+          <div onScroll={scroll} className="bi-fade-in">
+            <table className="bi-table">
+              <thead className="bi-tbl-header">
+                <tr>
+                    {columns.map((column, index) => (
+                      <th className={column.className} key={index}>
+                        <div className="bi-table-th-content bi-text--ui">
+                          <span className="bi-align ng-scope">
+                            <span className="bi-text--600 ng-binding">
+                              {column.header}
+                            </span>
                           </span>
-                        </span>
-                      </div>
-                    </th>
-                  ))}
-              </tr>
-            </thead>
+                        </div>
+                      </th>
+                    ))}
+                </tr>
+              </thead>
 
-            <tbody>
-              {
-                data.map((fullRow, index) => (
-                    <Row
-                      key={index}
-                      onRowClicked={onRowClicked}
-                      row={fullRow}
-                      columns={columns}
-                    />
+              <tbody>
+                {
+                  data.map((fullRow, index) => (
+                      <Row
+                        key={index}
+                        onRowClicked={onRowClicked}
+                        row={fullRow}
+                        columns={columns}
+                      />
+                    )
                   )
-                )
-              }
-            </tbody>
-          </table>
+                }
+              </tbody>
+            </table>
 
-          {isChunking ? 
-            <div className='bi-empty-state'>
-              <div className='bi-empty-state-content'>Loading...</div>
-            </div>
-            : null
-          }
+            {isChunking ?
+              <div className='bi-empty-state'>
+                <div className='bi-empty-state-content'>Loading...</div>
+              </div>
+              : null
+            }
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };

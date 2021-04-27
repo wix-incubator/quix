@@ -88,28 +88,20 @@ export function Users(props: UsersProps) {
   }
 
   const renderContentState = () => (
-      <div className="bi-section-content bi-c-h">
-        <div
-          className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
-          data-hook="table-users-content"
-        >
-          <div className="bi-panel-content bi-c-h">
-            <PaginatedTable
-              columns={usersTableFields.map(field => ({
-                header: field.title,
-                renderRow: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
-                accessor: field.name,
-                className: field.className,
-              }))}
-              initialData={stateData.users}
-              loadMore={loadMore}
-              onRowClicked={onUserClicked}
-              paginationSize={stateData.users.length}
-              tableSize={(size) => viewState.update({ size })}
-            />
-          </div>
-        </div>
-      </div>
+    <PaginatedTable
+      entityName="users"
+      columns={usersTableFields.map(field => ({
+        header: field.title,
+        renderRow: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
+        accessor: field.name,
+        className: field.className,
+      }))}
+      initialData={stateData.users}
+      loadMore={loadMore}
+      onRowClicked={onUserClicked}
+      paginationSize={stateData.users.length}
+      tableSize={(size) => viewState.update({ size })}
+    />
   );
 
   const handleEmailFilterChange = (e) => {
@@ -124,7 +116,7 @@ export function Users(props: UsersProps) {
         disableUnderline
         onChange={handleEmailFilterChange}
         placeholder="Filter users by email"
-        data-hook="users-filter-query-input"
+        data-hook="users-filter-users-input"
       />
     </div>
   );

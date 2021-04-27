@@ -98,26 +98,20 @@ export function History(props: HistoryProps) {
   }
 
   const renderContentState = () => (
-    <div
-      className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
-      data-hook="table-history-content"
-    >
-      <div className="bi-panel-content bi-c-h">
-        <PaginatedTable
-          initialData={stateData.rows}
-          loadMore={getChunk}
-          onRowClicked={onHistoryClicked}
-          columns={historyTableFields.map(field => ({
-            header: field.title,
-            renderRow: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
-            accessor: field.name,
-            className: field.className,
-          }))}
-          paginationSize={CHUNK_SIZE}
-          tableSize={(size) => viewState.update({ size })}
-        />
-      </div>
-    </div>
+    <PaginatedTable
+      entityName="history"
+      initialData={stateData.rows}
+      loadMore={getChunk}
+      onRowClicked={onHistoryClicked}
+      columns={historyTableFields.map(field => ({
+        header: field.title,
+        renderRow: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
+        accessor: field.name,
+        className: field.className,
+      }))}
+      paginationSize={CHUNK_SIZE}
+      tableSize={(size) => viewState.update({ size })}
+    />
   );
 
   const renderFilters = () => (

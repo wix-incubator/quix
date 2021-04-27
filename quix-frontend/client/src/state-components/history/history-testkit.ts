@@ -1,47 +1,47 @@
 import { TableTestkit } from '../../lib/ui/components/table/table-testkit';
 
 const enum Hooks {
-  Content = 'table-history-content',
-  UserFilter = 'history-filter-user-select',
-  UserFilterOption = 'history-filter-user-select-option',
-  QueryFilter = 'history-filter-query-input',
+  Table = 'history-table',
+  UserFilterSelect = 'history-filter-user-select',
+  UserFilterSelectOption = 'history-filter-user-select-option',
+  QueryFilterInput = 'history-filter-query-input',
 }
 
 export class HistoryTestkit extends TableTestkit {
 
   historyTableExists = async () => {
-    return (await this.query.hook(Hooks.Content)) !== null;
+    return (await this.query.hook(Hooks.Table)) !== null;
   }
 
   userFilter = {
     clickOnDropdown: () => {
-      return this.click.hook(Hooks.UserFilter);
+      return this.click.hook(Hooks.UserFilterSelect);
     },
 
     clickOnOption: () => {
-      return this.click.hook(Hooks.UserFilterOption);
+      return this.click.hook(Hooks.UserFilterSelectOption);
     },
 
     hasOptions: async () => {
-      return (await this.query.hooks(Hooks.UserFilterOption)).length > 0;
+      return (await this.query.hooks(Hooks.UserFilterSelectOption)).length > 0;
     },
 
     value: () => {
-      return this.evaluate.hook(Hooks.UserFilter, (e: HTMLInputElement) => e.value);
+      return this.evaluate.hook(Hooks.UserFilterSelect, (e: HTMLInputElement) => e.value);
     },
   }
 
   queryFilter = {
     click: () => {
-      return this.click.hook(Hooks.QueryFilter);
+      return this.click.hook(Hooks.QueryFilterInput);
     },
 
     set: (value: string) => {
-      return this.keyboard.type(Hooks.QueryFilter, value);
+      return this.keyboard.type(Hooks.QueryFilterInput, value);
     },
 
     get: () => {
-      return this.evaluate.hook(Hooks.QueryFilter, (e: HTMLInputElement) => e.value);
+      return this.evaluate.hook(Hooks.QueryFilterInput, (e: HTMLInputElement) => e.value);
     },
   }
 }

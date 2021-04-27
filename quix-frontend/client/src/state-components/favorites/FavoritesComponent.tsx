@@ -50,29 +50,19 @@ export function Favorites(props: FavoritesProps) {
     viewState.set('Content', {favorites: tempFavorites});
   }
 
-  const renderContentState = () => {
-    return (
-      <div className="bi-section-content bi-c-h">
-        <div
-          className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
-          data-hook="favorites-content"
-        >
-          <div className="bi-panel-content bi-c-h">
-            <Table
-              columns={favoritesTableFields(onLikeToggle).map(field => ({
-                header: field.title || field.name,
-                renderRow: row => field.filter(undefined, row),
-                accessor: field.name,
-                className: field.className,
-              }))}
-              data={stateData.favorites}
-              onRowClicked={row => onFavoriteClick(row)}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  };
+  const renderContentState = () => (
+    <Table
+      entityName="favorites"
+      columns={favoritesTableFields(onLikeToggle).map(field => ({
+        header: field.title || field.name,
+        renderRow: row => field.filter(undefined, row),
+        accessor: field.name,
+        className: field.className,
+      }))}
+      data={stateData.favorites}
+      onRowClicked={row => onFavoriteClick(row)}
+    />
+  );
 
   return (
     <div className="bi-section bi-c-h bi-grow">
@@ -87,7 +77,7 @@ export function Favorites(props: FavoritesProps) {
           (() => {
             switch(viewState.get()) {
               case 'Initial':
-                return <InitialState entityName={'favorites'} />;
+                return <InitialState entityName="favorites" />;
               case 'Error':
                 return <ErrorState errorMessage={error.message} />;
               case 'Empty':
