@@ -1,8 +1,9 @@
-import * as React from 'react';
+import React, {useState, useEffect} from 'react';
 import {IFile} from '@wix/quix-shared';
-import {Table} from '../../lib/ui/components/Table';
-import {Image} from '../../lib/ui/components/Image';
+import {SortableTable} from '../../lib/ui/components/sortable-table/SortableTable';
 import {favoritesTableFields} from './favorites-table-fields';
+import {EmptyState, ErrorState, InitialState} from '../../lib/ui/components/sortable-table/states';
+import {cloneDeep} from 'lodash';
 
 export interface FavoritesProps {
   favorites: IFile[];
@@ -13,56 +14,35 @@ export interface FavoritesProps {
 }
 
 export function Favorites(props: FavoritesProps) {
-  const {favorites, error, onFavoriteClick, onLikeToggle} = props;
+  const {favorites, error, onFavoriteClick, onLikeToggle: onLikeToggleServer} = props;
   const isEmptyState = favorites && favorites.length === 0;
+  const [rows, setRows] = useState<IFile[]>(favorites);
 
-  const displayLoadingState = () => {
-    return (
-      <div className="bi-empty-state--loading bi-fade-in">
-        <div className="bi-empty-state-content">Loading favorites...</div>
-      </div>
-    );
-  };
-
-  const displayErrorState = () => {
-    return (
-      <div
-        className="bi-empty-state bi-fade-in"
-        data-hook="favorites-error"
-      >
-        <div className="bi-empty-state-icon bi-danger">
-          <i className="bi-icon bi-danger">error_outline</i>
-        </div>
-        <div className="bi-empty-state-header">{error.message}</div>
-      </div>
-    );
-  };
-
-  const displayEmptyState = () => {
-    return (
-      <div
-        className="bi-empty-state bi-fade-in"
-        data-hook="favorites-empty"
-      >
-        <Image className="bi-empty-state-image" name="no_data.svg" />
-        <div className="bi-empty-state-header">
-          You don't have any favorites
-        </div>
-      </div>
-    );
-  };
+  useEffect(() => {
+    setRows(favorites);
+  }, [favorites]);
 
   const displayNoContentState = () => {
     return (
       <div className="bi-section-content--center">
-        {error
-          ? displayErrorState()
-          : isEmptyState
-          ? displayEmptyState()
-          : displayLoadingState()}
+        {
+          error
+            ? <ErrorState errorMessage={error.message}/>
+            : isEmptyState
+            ? <EmptyState />
+            : <InitialState entityName={'favorites'}/>
+        }
       </div>
     );
   };
+
+  const onLikeToggle = (file: IFile) => {
+    const tempRows = cloneDeep(rows);
+    const currentFile = tempRows.find(row => row.id === file.id);
+    currentFile.isLiked = !currentFile.isLiked;
+    onLikeToggleServer(file);
+    setRows(tempRows);
+  }
 
   const displayLoadedState = () => {
     return (
@@ -72,10 +52,15 @@ export function Favorites(props: FavoritesProps) {
           data-hook="favorites-content"
         >
           <div className="bi-panel-content bi-c-h">
-            <Table
-              rows={favorites}
-              rowsConfig={favoritesTableFields(onLikeToggle)}
-              onRowClicked={onFavoriteClick}
+            <SortableTable
+              columns={favoritesTableFields(onLikeToggle).map(field => ({
+                header: field.title || field.name,
+                renderRow: row => field.filter(undefined, row),
+                accessor: field.name,
+                className: field.className,
+              }))}
+              data={favorites}
+              onRowClicked={row => onFavoriteClick(row)}
             />
           </div>
         </div>

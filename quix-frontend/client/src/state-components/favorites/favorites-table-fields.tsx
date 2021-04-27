@@ -16,7 +16,8 @@ export const favoritesTableFields = (onLikeToggle): RowConfig<IFile>[] => [
     }
   },
   {
-    name: 'owner',
+    name: 'ownerDetails',
+    title: 'Owner Details',
     filter(_, file: IFile) {
       return (
         <div className="bi-align bi-s-h">
