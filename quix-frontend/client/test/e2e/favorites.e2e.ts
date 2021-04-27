@@ -31,6 +31,12 @@ describe('Favorites ::', () => {
     expect(await testkit.tableStates.hasError()).to.be.true;
   });
 
+  it('should display empty state', async () => {
+    await gotoFavorites([]);
+
+    expect(await testkit.tableStates.hasEmptyResult()).to.be.true;
+  });
+
   it('should display content', async () => {
     await gotoFavorites();
 
