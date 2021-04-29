@@ -1,4 +1,5 @@
 import {IFile, TModuleComponentType, ModuleEngineType, INote} from '@wix/quix-shared';
+import { Time } from '../../config';
 import {App} from '../../lib/app';
 import formatter from '../../lib/sql-formatter/sqlFormatter';
 
@@ -49,7 +50,7 @@ export class NotePlugin extends Plugin {
   ) {
     super(app, id, engine, hooks);
 
-    this.config.dateFormat = this.config.dateFormat || 'YYYY/MM/DD HH:mm';
+    this.config.dateFormat = this.config.dateFormat || Time.Format;
   }
 
   getConfig() {

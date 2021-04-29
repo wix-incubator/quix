@@ -26,7 +26,7 @@ function getTimezoneOffset(date) {
 }
 
 export default class DateService {
-  public static DATE_FORMAT = 'YYYY/MM/DD HH:mm';
+  public static DATE_FORMAT = 'YYYY-MM-DD HH:mm';
   private readonly date: number | string;
 
   constructor(date?: number | string) {

@@ -4,7 +4,7 @@ import { isOwner } from './services';
 import { waitForEntity } from './store';
 
 export const Time = {
-  Format: 'YYYY/MM/DD HH:mm'
+  Format: 'YYYY-MM-DD HH:mm'
 };
 
 export const DB = {
