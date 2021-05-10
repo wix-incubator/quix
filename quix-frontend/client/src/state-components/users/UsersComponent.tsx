@@ -59,7 +59,7 @@ export function Users(props: UsersProps) {
   useEffect(() => {
     if (viewState.get() !== 'Error') {
       loadMore(0, CHUNK_SIZE + 1)(res => {
-        if (!_.isEqual(res, stateData.users) || viewState.is('Initial')) {
+        if (!_.isEqual(res, stateData.users) || viewState.is('Initial') || viewState.is('FilterInitial')) {
           viewState.set(res.length > 0 ? 'Content' : 'Empty', {users: res});
         } else if (stateData.users?.length > 0 && !viewState.is('Content')) {
           viewState.set('Content');
