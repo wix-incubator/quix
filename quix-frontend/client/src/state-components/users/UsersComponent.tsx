@@ -133,7 +133,7 @@ export function Users(props: UsersProps) {
       />
 
       <div className="bi-section-content bi-c-h bi-s-v--x15">
-        {!viewState.is('Error') && renderFilter()}
+        {viewState.min('Error') && renderFilter()}
         {
           (() => {
             switch(viewState.get()) {

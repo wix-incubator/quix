@@ -147,7 +147,7 @@ export function History(props: HistoryProps) {
       />
 
       <div className="bi-section-content bi-c-h bi-s-v--x15">
-        {!viewState.is('Error') && renderFilters()}
+        {viewState.min('Error') && renderFilters()}
 
         {
           (() => {
