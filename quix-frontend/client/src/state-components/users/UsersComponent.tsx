@@ -90,7 +90,7 @@ export function Users(props: UsersProps) {
 
   const renderContentState = () => (
     <PaginatedTable
-      entityName="users"
+      hookName="users"
       columns={usersTableFields.map(field => ({
         header: field.title,
         render: row => field.filter(undefined, row, 0, highlightQuery(field.name)),

@@ -4,7 +4,7 @@ import '../../directives/search/search.scss';
 import './Table.scss';
 
 export interface TableProps {
-  entityName?: string;
+  hookName?: string;
   columns: {
     header: string;
     render(cell: any): React.ReactNode;
@@ -18,7 +18,7 @@ export interface TableProps {
 }
 
 export const Table = ({
-  entityName,
+  hookName,
   columns,
   data,
   onRowClicked,
@@ -36,7 +36,7 @@ export const Table = ({
   return (
     <div
       className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
-      data-hook={entityName ? entityName + '-table' : 'table'}
+      data-hook={hookName ? hookName + '-table' : 'table'}
     >
       <div className="bi-panel-content bi-c-h">
         <div className="bi-table-container bi-table--nav bi-c-h bi-grow bi-table-sticky-header">

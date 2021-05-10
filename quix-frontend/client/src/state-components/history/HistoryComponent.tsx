@@ -100,7 +100,7 @@ export function History(props: HistoryProps) {
 
   const renderContentState = () => (
     <PaginatedTable
-      entityName="history"
+      hookName="history"
       initialData={stateData.rows}
       loadMore={getChunk}
       onRowClicked={onHistoryClicked}

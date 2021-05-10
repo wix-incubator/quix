@@ -53,7 +53,7 @@ export function Favorites(props: FavoritesProps) {
 
   const renderContentState = () => (
     <Table
-      entityName="favorites"
+      hookName="favorites"
       columns={favoritesTableFields(onLikeToggle).map(field => ({
         header: field.title || field.name,
         render: row => field.filter(undefined, row),
