@@ -20,7 +20,7 @@ const confirmAction = (action: 'delete', context: 'folder', name: string) => {
     actionType: action === 'delete' ? 'destroy' : 'neutral',
     yes: action,
     icon: 'report',
-    html: `Are you sure you want to delete the ${utils.dom.escape(context)} <b>"${utils.dom.escape(name)}"</b> ?`
+    html: `<div>Are you sure you want to delete the ${utils.dom.escape(context)} <b>"${utils.dom.escape(name)}"</b> ?</div>`
   });
 }
 
