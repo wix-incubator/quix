@@ -22,7 +22,7 @@ const mocks = {
   "/api/user": () => createUser(),
   "/api/events": () => [200],
   "/api/users": () => 
-    [...Array(100).keys()].map(key =>
+    [...Array(200).keys()].map(key =>
       createMockUser({
         id: uuidv4(),
         email: "valery" + key + "@wix.com",

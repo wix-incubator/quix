@@ -21,9 +21,9 @@ export const CHUNK_SIZE = 100;
 
 const PaginatedTable = makePagination(Table);
 
-const search = debounceAsync((loadMore, { users, emailFilter }) => {
+const search = debounceAsync((loadMore, { offset, limit, users, emailFilter }) => {
   return new Promise(res => 
-    res(users?.filter(user => user.email.includes(emailFilter)) || [])
+    res(users?.filter(user => user.email.includes(emailFilter)).slice(offset, offset + limit) || [])
   );
 });
 
@@ -52,7 +52,7 @@ export function Users(props: UsersProps) {
 
   useEffect(() => {
     if (!error) {
-      viewState.set('Initial', {users: serverUsers});
+      viewState.set('Initial', {users: serverUsers?.slice(0, CHUNK_SIZE) || []});
     }
   },[serverUsers]);
 
@@ -83,6 +83,8 @@ export function Users(props: UsersProps) {
 
   const loadMore = (offset: number, limit: number) => {
     return search(null, {
+      offset,
+      limit,
       users: serverUsers,
       emailFilter: stateData.emailFilter,
     });
@@ -100,7 +102,7 @@ export function Users(props: UsersProps) {
       initialData={stateData.users}
       loadMore={loadMore}
       onRowClicked={onUserClicked}
-      paginationSize={stateData.users.length}
+      paginationSize={CHUNK_SIZE}
       tableSize={(size) => viewState.update({ size })}
     />
   );
