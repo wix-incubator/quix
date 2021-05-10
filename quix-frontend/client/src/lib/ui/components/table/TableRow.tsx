@@ -16,7 +16,7 @@ export interface HighlightedRowConfig<T> extends RowConfig<T> {
   ): React.ReactNode;
 }
 
-export interface RowProps {
+export interface TableRowProps {
   columns: {
     header: string;
     render(cell: any): React.ReactNode;
@@ -27,11 +27,11 @@ export interface RowProps {
   row: any;
 }
 
-export const Row = ({
+export const TableRow = ({
   row,
   onRowClicked,
   columns,
-}: RowProps) => {
+}: TableRowProps) => {
   return (
     <tr
       onClick={() => onRowClicked(row)}

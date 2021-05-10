@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row } from './Row';
+import { TableRow } from './TableRow';
 import '../../directives/search/search.scss';
 import './Table.scss';
 
@@ -61,7 +61,7 @@ export const Table = ({
               <tbody>
                 {
                   data.map((fullRow, index) => (
-                      <Row
+                      <TableRow
                         key={index}
                         onRowClicked={onRowClicked}
                         row={fullRow}

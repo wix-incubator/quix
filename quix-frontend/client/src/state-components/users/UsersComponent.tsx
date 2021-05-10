@@ -3,12 +3,12 @@ import _ from 'lodash';
 import {IUser} from '@wix/quix-shared';
 import {Highlighter} from '../../lib/ui/components/Highlighter';
 import {Table} from '../../lib/ui/components/table/Table';
-import {Title} from '../../lib/ui/components/table/Title';
+import {TableTitle} from '../../lib/ui/components/table/TableTitle';
 import {useViewState} from '../../services/hooks';
 import {usersTableFields} from './users-table-fields';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
 import Input from '../../lib/ui/components/Input';
-import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/table/states';
+import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/states';
 import {debounceAsync} from '../../utils';
 
 export interface UsersProps {
@@ -124,7 +124,7 @@ export function Users(props: UsersProps) {
 
   return (
     <div className="bi-section bi-c-h bi-grow">
-      <Title
+      <TableTitle
         entityName="Users"
         shouldDisplaySize={viewState.min('Empty')}
         size={stateData.size}
@@ -136,7 +136,7 @@ export function Users(props: UsersProps) {
           (() => {
             switch(viewState.get()) {
               case 'Initial':
-                return <InitialState entityName={'users'} />;
+                return <InitialState entityName="users" />;
               case 'Error':
                 return <ErrorState errorMessage={error.message} />;
               case 'Empty':
@@ -144,7 +144,7 @@ export function Users(props: UsersProps) {
               case 'Content':
                 return renderContentState();
               case 'FilterInitial':
-                return <FilterInitialState entityName={'users'} />;
+                return <FilterInitialState entityName="users" />;
               default:
             }
           })()

@@ -1,16 +1,16 @@
 import React from 'react';
 
-export interface Title {
+export interface TableTitle {
   entityName: string;
   shouldDisplaySize?: boolean;
   size?: number;
 }
 
-export const Title = ({
+export const TableTitle = ({
   entityName,
   shouldDisplaySize = false,
   size = 0,
-}: Title) => {
+}: TableTitle) => {
   return (
     <div className="bi-section-header">
       <div className="bi-section-title">

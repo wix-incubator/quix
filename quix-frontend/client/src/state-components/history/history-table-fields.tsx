@@ -3,7 +3,7 @@ import { IHistory } from '@wix/quix-shared';
 import relativeDate from '../../lib/ui/filters/relative-date';
 import absoluteDate from '../../lib/ui/filters/absolute-date';
 import toHumanCase from '../../lib/ui/filters/to-human-case';
-import { HighlightedRowConfig } from '../../lib/ui/components/table/Row';
+import { HighlightedRowConfig } from '../../lib/ui/components/table/TableRow';
 
 export const historyTableFields: HighlightedRowConfig<IHistory>[] = [
   {

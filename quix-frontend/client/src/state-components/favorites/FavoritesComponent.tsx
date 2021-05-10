@@ -4,8 +4,8 @@ import {cloneDeep} from 'lodash';
 import {favoritesTableFields} from './favorites-table-fields';
 import {useViewState} from '../../services/hooks';
 import {Table} from '../../lib/ui/components/table/Table';
-import {Title} from '../../lib/ui/components/table/Title';
-import {EmptyState, ErrorState, InitialState} from '../../lib/ui/components/table/states';
+import {TableTitle} from '../../lib/ui/components/table/TableTitle';
+import {EmptyState, ErrorState, InitialState} from '../../lib/ui/components/states';
 
 export interface FavoritesProps {
   favorites: IFile[];
@@ -67,7 +67,7 @@ export function Favorites(props: FavoritesProps) {
 
   return (
     <div className="bi-section bi-c-h bi-grow">
-      <Title
+      <TableTitle
         entityName="History"
         shouldDisplaySize={viewState.min('Empty')}
         size={stateData.favorites.length}

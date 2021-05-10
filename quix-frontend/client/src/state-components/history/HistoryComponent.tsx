@@ -8,11 +8,11 @@ import { useViewState } from '../../services/hooks';
 import { debounceAsync } from '../../utils';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
 import { Table } from '../../lib/ui/components/table/Table';
-import { Title } from '../../lib/ui/components/table/Title';
+import { TableTitle } from '../../lib/ui/components/table/TableTitle';
 import { Highlighter } from '../../lib/ui/components/Highlighter';
 import Input from '../../lib/ui/components/Input';
 import Select from '../../lib/ui/components/Select';
-import { FilterInitialState, InitialState, EmptyState, ErrorState } from '../../lib/ui/components/table/states';
+import { FilterInitialState, InitialState, EmptyState, ErrorState } from '../../lib/ui/components/states';
 
 export interface HistoryProps {
   error: { message: string };
@@ -140,7 +140,7 @@ export function History(props: HistoryProps) {
 
   return (
     <div className="history-component bi-section bi-c-h bi-grow">
-      <Title
+      <TableTitle
         entityName="History"
         shouldDisplaySize={viewState.min('Empty')}
         size={stateData.size}
@@ -153,7 +153,7 @@ export function History(props: HistoryProps) {
           (() => {
             switch(viewState.get()) {
               case 'Initial':
-                return <InitialState entityName={'history'} />;
+                return <InitialState entityName="history" />;
               case 'Error':
                 return <ErrorState errorMessage={error.message} />;
               case 'Empty':
@@ -161,7 +161,7 @@ export function History(props: HistoryProps) {
               case 'Content':
                 return renderContentState();
               case 'FilterInitial':
-                return <FilterInitialState entityName={'history'} />;
+                return <FilterInitialState entityName="history" />;
               default:
             }
           })()
