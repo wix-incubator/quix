@@ -8,11 +8,10 @@ import { useViewState } from '../../services/hooks';
 import { debounceAsync } from '../../utils';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
 import { Table } from '../../lib/ui/components/table/Table';
-import { TableTitle } from '../../lib/ui/components/table/TableTitle';
 import { Highlighter } from '../../lib/ui/components/Highlighter';
 import Input from '../../lib/ui/components/Input';
 import Select from '../../lib/ui/components/Select';
-import { FilterInitialState, InitialState, EmptyState, ErrorState } from '../../lib/ui/components/states';
+import { FilterInitialState, InitialState, EmptyState, ErrorState, TitleState } from '../../lib/ui/components/states';
 
 export interface HistoryProps {
   error: { message: string };
@@ -140,9 +139,8 @@ export function History(props: HistoryProps) {
 
   return (
     <div className="history-component bi-section bi-c-h bi-grow">
-      <TableTitle
+      <TitleState
         entityName="History"
-        shouldDisplaySize={viewState.min('Empty')}
         size={stateData.size}
       />
 

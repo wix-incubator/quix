@@ -3,12 +3,11 @@ import _ from 'lodash';
 import {IUser} from '@wix/quix-shared';
 import {Highlighter} from '../../lib/ui/components/Highlighter';
 import {Table} from '../../lib/ui/components/table/Table';
-import {TableTitle} from '../../lib/ui/components/table/TableTitle';
 import {useViewState} from '../../services/hooks';
 import {usersTableFields} from './users-table-fields';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
 import Input from '../../lib/ui/components/Input';
-import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/states';
+import {FilterInitialState, InitialState, EmptyState, ErrorState, TitleState} from '../../lib/ui/components/states';
 import {debounceAsync} from '../../utils';
 
 export interface UsersProps {
@@ -126,9 +125,8 @@ export function Users(props: UsersProps) {
 
   return (
     <div className="bi-section bi-c-h bi-grow">
-      <TableTitle
+      <TitleState
         entityName="Users"
-        shouldDisplaySize={viewState.min('Empty')}
         size={stateData.size}
       />
 
