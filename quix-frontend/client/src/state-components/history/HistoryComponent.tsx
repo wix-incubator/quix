@@ -11,7 +11,7 @@ import { Table } from '../../lib/ui/components/table/Table';
 import { Highlighter } from '../../lib/ui/components/Highlighter';
 import Input from '../../lib/ui/components/Input';
 import Select from '../../lib/ui/components/Select';
-import { FilterInitialState, InitialState, EmptyState, ErrorState, TitleState } from '../../lib/ui/components/states';
+import { FilterInitialState, InitialState, EmptyState, ErrorState } from '../../lib/ui/components/states';
 
 export interface HistoryProps {
   error: { message: string };
@@ -139,10 +139,11 @@ export function History(props: HistoryProps) {
 
   return (
     <div className="history-component bi-section bi-c-h bi-grow">
-      <TitleState
-        entityName="History"
-        size={stateData.size}
-      />
+      <div className="bi-section-header">
+        <div className="bi-section-title">
+          <span>History {viewState.min('Empty') && <span className='bi-fade-in'>({stateData.size})</span>}</span>
+        </div>
+      </div>
 
       <div className="bi-section-content bi-c-h bi-s-v--x15">
         {viewState.min('Error') && renderFilters()}

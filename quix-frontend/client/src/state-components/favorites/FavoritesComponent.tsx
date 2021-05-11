@@ -4,7 +4,7 @@ import {cloneDeep} from 'lodash';
 import {favoritesTableFields} from './favorites-table-fields';
 import {useViewState} from '../../services/hooks';
 import {Table} from '../../lib/ui/components/table/Table';
-import {EmptyState, ErrorState, InitialState, TitleState} from '../../lib/ui/components/states';
+import {EmptyState, ErrorState, InitialState} from '../../lib/ui/components/states';
 
 export interface FavoritesProps {
   favorites: IFile[];
@@ -31,7 +31,7 @@ export function Favorites(props: FavoritesProps) {
   });
 
   useEffect(() => {
-    if (!error) {
+    if (!error && serverFavorites?.length >= 0) {
       viewState.set(serverFavorites?.length ? 'Content' : 'Empty', {favorites: serverFavorites || []});
     }
   },[serverFavorites]);
@@ -66,10 +66,11 @@ export function Favorites(props: FavoritesProps) {
 
   return (
     <div className="bi-section bi-c-h bi-grow">
-      <TitleState
-        entityName="History"
-        size={stateData.favorites.length}
-      />
+      <div className="bi-section-header">
+        <div className="bi-section-title">
+          <span>Favorites {viewState.min('Empty') && <span className='bi-fade-in'>({stateData.favorites.length})</span>}</span>
+        </div>
+      </div>
 
       <div className="bi-section-content bi-c-h bi-s-v--x15">
         {
