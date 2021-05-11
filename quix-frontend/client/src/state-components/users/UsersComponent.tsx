@@ -1,7 +1,14 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
+import _ from 'lodash';
 import {IUser} from '@wix/quix-shared';
-import {Table} from '../../lib/ui/components/Table';
+import {Highlighter} from '../../lib/ui/components/Highlighter';
+import {Table} from '../../lib/ui/components/table/Table';
+import {useViewState} from '../../services/hooks';
 import {usersTableFields} from './users-table-fields';
+import makePagination from '../../lib/ui/components/hoc/makePagination';
+import Input from '../../lib/ui/components/Input';
+import {FilterInitialState, InitialState, EmptyState, ErrorState, TitleState} from '../../lib/ui/components/states';
+import {debounceAsync} from '../../utils';
 
 export interface UsersProps {
   users: IUser[];
@@ -9,62 +16,140 @@ export interface UsersProps {
   onUserClicked(user: IUser): void;
 }
 
+export const CHUNK_SIZE = 100;
+
+const PaginatedTable = makePagination(Table);
+
+const search = debounceAsync((loadMore, { offset, limit, users, emailFilter }) => {
+  return new Promise(res => 
+    res(users?.filter(user => user.email.includes(emailFilter)).slice(offset, offset + limit) || [])
+  );
+});
+
+const States = [
+  'Initial',
+  'Error',
+  'Empty',
+  'Content',
+  'FilterInitial',
+];
+
 export function Users(props: UsersProps) {
-  const {users, error, onUserClicked} = props;
+  const {users: serverUsers, error, onUserClicked} = props;
+  const [stateData, viewState] = useViewState(States, {
+    users: [],
+    size: 0,
+    emailFilter: '',
+    errorMessage: '',
+  });
 
-  const displayLoadingState = () => (
-    <div className="bi-empty-state--loading bi-fade-in">
-      <div className="bi-empty-state-content">Loading users...</div>
+  useEffect(() => {
+    if (error) {
+      viewState.set('Error', { errorMessage: error.message });
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (!error) {
+      viewState.set('Initial', {users: serverUsers?.slice(0, CHUNK_SIZE) || []});
+    }
+  },[serverUsers]);
+
+  useEffect(() => {
+    if (viewState.get() !== 'Error') {
+      loadMore(0, CHUNK_SIZE + 1)(res => {
+        if (!_.isEqual(res, stateData.users) || viewState.is('Initial') || viewState.is('FilterInitial')) {
+          viewState.set(res.length > 0 ? 'Content' : 'Empty', {users: res});
+        } else if (stateData.users?.length > 0 && !viewState.is('Content')) {
+          viewState.set('Content');
+        }
+      });
+    }
+  }, [stateData.emailFilter, stateData.users]);
+
+  const highlightQuery = (columnName: string) => (term: string) => {
+    const text = term.replace(/\s+/g,' ');
+    
+    if (columnName === 'email') {
+      return <Highlighter
+        term={term}
+        filter={stateData.emailFilter}
+      />;
+    }
+
+    return text;
+  }
+
+  const loadMore = (offset: number, limit: number) => {
+    return search(null, {
+      offset,
+      limit,
+      users: serverUsers,
+      emailFilter: stateData.emailFilter,
+    });
+  }
+
+  const renderContentState = () => (
+    <PaginatedTable
+      hookName="users"
+      columns={usersTableFields.map(field => ({
+        header: field.title,
+        render: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
+        accessor: field.name,
+        className: field.className,
+      }))}
+      initialData={stateData.users}
+      loadMore={loadMore}
+      onRowClicked={onUserClicked}
+      paginationSize={CHUNK_SIZE}
+      tableSize={(size) => viewState.update({ size })}
+    />
+  );
+
+  const handleEmailFilterChange = (e) => {
+    if (viewState.get() !== 'Error') {
+      viewState.set('FilterInitial', { emailFilter: e.target.value });
+    }
+  }
+
+  const renderFilter = () => (
+    <div>
+      <Input
+        disableUnderline
+        onChange={handleEmailFilterChange}
+        placeholder="Filter users by email"
+        data-hook="users-filter-users-input"
+      />
     </div>
   );
 
-  const displayErrorState = () => (
-    <div
-      className="bi-empty-state bi-fade-in"
-      data-hook="users-error"
-    >
-      <div className="bi-empty-state-icon bi-danger">
-        <i className="bi-icon bi-danger">error_outline</i>
-      </div>
-      <div className="bi-empty-state-header">{error.message}</div>
-    </div>
-  );
-
-  const displayLoadedState = () => (
-      <div className="bi-section-content bi-c-h">
-        <div
-          className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
-          data-hook="users-content"
-        >
-          <div className="bi-panel-content bi-c-h">
-            <Table
-              rows={users}
-              rowsConfig={usersTableFields}
-              onRowClicked={onUserClicked}
-            />
-          </div>
-        </div>
-      </div>
-  );
   return (
     <div className="bi-section bi-c-h bi-grow">
-      <div className="bi-section-header">
-        <div>
-          <div className="bi-section-title">
-            Users
-            {users &&
-            <span className="bi-fade-in"> ({users.length})</span>
+      <TitleState
+        entityName="Users"
+        size={stateData.size}
+      />
+
+      <div className="bi-section-content bi-c-h bi-s-v--x15">
+        {viewState.min('Error') && renderFilter()}
+        {
+          (() => {
+            switch(viewState.get()) {
+              case 'Initial':
+                return <InitialState entityName="users" />;
+              case 'Error':
+                return <ErrorState errorMessage={error.message} />;
+              case 'Empty':
+                return <EmptyState />;
+              case 'Content':
+                return renderContentState();
+              case 'FilterInitial':
+                return <FilterInitialState entityName="users" />;
+              default:
             }
-          </div>
-        </div>
+          })()
+        }
       </div>
-      {!users ? (
-        <div className="bi-section-content--center">
-          {error ? displayErrorState() : displayLoadingState()}
-        </div>
-      ) : (
-        displayLoadedState()
-      )}
     </div>
   );
 }

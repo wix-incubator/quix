@@ -16,30 +16,23 @@ import {
 } from "@wix/quix-shared";
 import * as moment from "moment";
 import {ServerTreeItem} from '../src/components/db-sidebar/db-sidebar-types';
+import {v4 as uuidv4} from 'uuid';
 
 const mocks = {
   "/api/user": () => createUser(),
   "/api/events": () => [200],
-  "/api/users": () => [
-    createMockUser({
-      id: "valery@wix.com",
-      email: "valery@wix.com",
-      avatar: "http://quix.wix.com/assets/user.svg",
-      name: "Valery Frolov",
-      rootFolder: "6c98fe9a-39f7-4674-b003-70f9061bbee5",
-      dateCreated: Date.now(),
-      dateUpdated: Date.now()
-    }),
-    createMockUser({
-      id: "anton@wix.com",
-      email: "anton@wix.com",
-      avatar: "http://quix.wix.com/assets/user.svg",
-      name: "Anton Podolsky",
-      rootFolder: "de6908dd-7f1e-4803-ab0d-5f9d6a496609",
-      dateCreated: Date.now(),
-      dateUpdated: Date.now()
-    })
-  ],
+  "/api/users": () => 
+    [...Array(200).keys()].map(key =>
+      createMockUser({
+        id: uuidv4(),
+        email: "valery" + key + "@wix.com",
+        avatar: "http://quix.wix.com/assets/user.svg",
+        name: "Valery Frolov" + key,
+        rootFolder: "6c98fe9a-39f7-4674-b003-70f9061bbee5",
+        dateCreated: Date.now(),
+        dateUpdated: Date.now()
+      })
+    ),
   "/api/history": () => {
     return [...Array(101).keys()].map(key =>
       createMockHistory({

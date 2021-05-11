@@ -1,20 +1,27 @@
-import {Testkit} from '../../../test/e2e/driver';
+import { TableTestkit } from '../../lib/ui/components/table/table-testkit';
 
 const enum Hooks {
-  Error = 'users-error',
-  Content = 'users-content'
+  Content = 'users-table',
+  FilterUsersInput = 'users-filter-users-input',
 }
 
-export class UsersTestkit extends Testkit {
-  async hasErrorState() {
-    return (await this.query.hook(Hooks.Error)) !== null;
-  }
+export class UsersTestkit extends TableTestkit {
 
-  async hasContent() {
+  usersTableExists = async () => {
     return (await this.query.hook(Hooks.Content)) !== null;
   }
 
-  async numOfUsers() {
-    return (await this.query.hooks('table-row')).length;
+  usersFilter = {
+    click: () => {
+      return this.click.hook(Hooks.FilterUsersInput);
+    },
+
+    set: (value: string) => {
+      return this.keyboard.type(Hooks.FilterUsersInput, value);
+    },
+
+    get: () => {
+      return this.evaluate.hook(Hooks.FilterUsersInput, (e: HTMLInputElement) => e.value);
+    },
   }
 }

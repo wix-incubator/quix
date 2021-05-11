@@ -5,8 +5,8 @@ import _ from 'lodash';
 interface InjectedPaginationProps {
   data: any[];
   columns: any[];
-  getChunk(): void;
-  isChunking: boolean;
+  getChunk?(): void;
+  isChunking?: boolean;
 }
 
 interface MakePaginationProps {

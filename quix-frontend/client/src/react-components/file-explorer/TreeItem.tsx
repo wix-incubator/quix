@@ -1,14 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {makeStyles} from '@material-ui/core/styles';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Icon from '@material-ui/core/Icon';
 import _ from 'lodash';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
-import Highlighter from 'react-highlight-words';
+import {Highlighter} from '../../lib/ui/components/Highlighter';
 import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
 import {MenuItem} from '../../lib/ui/components/dropdown/MenuItem';
-import {highlightText} from '../../services/search';
 
 const useStyles = makeStyles({
   treeItemRoot: {
@@ -159,14 +158,12 @@ const InnerTreeItem = ({
 
   const getText = () => {
     if (highlight && node.children) {
-      const props = highlightText(node.name, highlight);
-      return (
+        return (
         <Highlighter
-          searchWords={[props.currentFilter]}
-          autoEscape={true}
-          textToHighlight={props.textToHighlight}
+          term={node.name}
+          filter={highlight}
         />
-      )
+      );
     }
     return node.name;
   }

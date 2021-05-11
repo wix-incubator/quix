@@ -1,19 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { CircularProgress, List, ListItem, createStyles, makeStyles } from '@material-ui/core';
+import { CircularProgress, List, ListItem, makeStyles } from '@material-ui/core';
 import useAutocomplete from '@material-ui/lab/useAutocomplete';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { grey } from '@material-ui/core/colors';
 import _ from 'lodash';
 import { useViewState } from '../../../services/hooks';
 import Input from './Input';
+import { HighlighterProps } from './Highlighter';
 
-const useStyles = makeStyles(() =>
-  createStyles({
+const useStyles = makeStyles({
     inputArea: {
       display: 'inline-grid',
-    },
-    label: {
-      display: 'block',
     },
     center: {
       justifyContent: 'center',
@@ -37,11 +34,8 @@ const useStyles = makeStyles(() =>
         backgroundColor: grey[50],
         cursor: 'pointer',
       },
-      '&:hover $child': {
-        color: 'red'
-      }
     },
-  })
+  }
 );
 
 const checkIsPlainData = (data) => ['string', 'number', 'undefined'].includes(typeof data);
@@ -84,7 +78,7 @@ interface ISelect {
   inputDataHook?: string,
   liDataHook?: string,
   onOptionChange?(options: any): void;
-  highlight?(term: any, filter: any): JSX.Element;
+  Highlighter?: React.ComponentType<HighlighterProps>;
 }
 
 interface a extends ISelect, ObjectTypes {}
@@ -99,7 +93,7 @@ const Select = ({
   inputDataHook,
   liDataHook,
   onOptionChange,
-  highlight,
+  Highlighter,
 }: a | b) => {
 
   const classes = useStyles();
@@ -288,7 +282,13 @@ const Select = ({
 
               return (
                 <ListItem {...getOptionProps({ option, index })} className={currentClassName} data-hook={liDataHook}>
-                  {isFiltering && highlight ? highlight(currentOptionLabel, inputProps.value) : currentOptionLabel}
+                  {isFiltering && Highlighter ?
+                    <Highlighter
+                      term={currentOptionLabel}
+                      filter={inputProps.value}
+                    /> :
+                    currentOptionLabel
+                  }
                 </ListItem>
             )})
             : NoMatchesState()

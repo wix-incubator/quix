@@ -1,8 +1,10 @@
-import * as React from 'react';
+import React, {useEffect} from 'react';
 import {IFile} from '@wix/quix-shared';
-import {Table} from '../../lib/ui/components/Table';
-import {Image} from '../../lib/ui/components/Image';
+import {cloneDeep} from 'lodash';
 import {favoritesTableFields} from './favorites-table-fields';
+import {useViewState} from '../../services/hooks';
+import {Table} from '../../lib/ui/components/table/Table';
+import {EmptyState, ErrorState, InitialState, TitleState} from '../../lib/ui/components/states';
 
 export interface FavoritesProps {
   favorites: IFile[];
@@ -12,92 +14,80 @@ export interface FavoritesProps {
   emptyStateImgSrc: string;
 }
 
+const States = [
+  'Initial',
+  'Error',
+  'Empty',
+  'Content',
+];
+
 export function Favorites(props: FavoritesProps) {
-  const {favorites, error, onFavoriteClick, onLikeToggle} = props;
-  const isEmptyState = favorites && favorites.length === 0;
+  const {favorites: serverFavorites, error, onFavoriteClick, onLikeToggle: onLikeToggleServer} = props;
 
-  const displayLoadingState = () => {
-    return (
-      <div className="bi-empty-state--loading bi-fade-in">
-        <div className="bi-empty-state-content">Loading favorites...</div>
-      </div>
-    );
-  };
+  const [stateData, viewState] = useViewState(States, {
+    favorites: [],
+    emailFilter: '',
+    errorMessage: '',
+  });
 
-  const displayErrorState = () => {
-    return (
-      <div
-        className="bi-empty-state bi-fade-in"
-        data-hook="favorites-error"
-      >
-        <div className="bi-empty-state-icon bi-danger">
-          <i className="bi-icon bi-danger">error_outline</i>
-        </div>
-        <div className="bi-empty-state-header">{error.message}</div>
-      </div>
-    );
-  };
+  useEffect(() => {
+    if (!error) {
+      viewState.set(serverFavorites?.length ? 'Content' : 'Empty', {favorites: serverFavorites || []});
+    }
+  },[serverFavorites]);
 
-  const displayEmptyState = () => {
-    return (
-      <div
-        className="bi-empty-state bi-fade-in"
-        data-hook="favorites-empty"
-      >
-        <Image className="bi-empty-state-image" name="no_data.svg" />
-        <div className="bi-empty-state-header">
-          You don't have any favorites
-        </div>
-      </div>
-    );
-  };
+  useEffect(() => {
+    if (error) {
+      viewState.set('Error', {errorMessage: error.message});
+    }
+  }, [error]);
 
-  const displayNoContentState = () => {
-    return (
-      <div className="bi-section-content--center">
-        {error
-          ? displayErrorState()
-          : isEmptyState
-          ? displayEmptyState()
-          : displayLoadingState()}
-      </div>
-    );
-  };
+  const onLikeToggle = (file: IFile) => {
+    const tempFavorites = cloneDeep(stateData.favorites);
+    const currentFile = tempFavorites.find(favorite => favorite.id === file.id);
+    currentFile.isLiked = !currentFile.isLiked;
+    onLikeToggleServer(file);
+    viewState.set('Content', {favorites: tempFavorites});
+  }
 
-  const displayLoadedState = () => {
-    return (
-      <div className="bi-section-content bi-c-h">
-        <div
-          className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
-          data-hook="favorites-content"
-        >
-          <div className="bi-panel-content bi-c-h">
-            <Table
-              rows={favorites}
-              rowsConfig={favoritesTableFields(onLikeToggle)}
-              onRowClicked={onFavoriteClick}
-            />
-          </div>
-        </div>
-      </div>
-    );
-  };
+  const renderContentState = () => (
+    <Table
+      hookName="favorites"
+      columns={favoritesTableFields(onLikeToggle).map(field => ({
+        header: field.title || field.name,
+        render: row => field.filter(undefined, row),
+        accessor: field.name,
+        className: field.className,
+      }))}
+      data={stateData.favorites}
+      onRowClicked={row => onFavoriteClick(row)}
+    />
+  );
 
   return (
     <div className="bi-section bi-c-h bi-grow">
-      <div className="bi-section-header">
-        <div>
-          <div className="bi-section-title">
-            Favorites
-            {favorites && !isEmptyState && (
-              <span className="bi-fade-in">{` (${favorites.length})`}</span>
-            )}
-          </div>
-        </div>
+      <TitleState
+        entityName="History"
+        size={stateData.favorites.length}
+      />
+
+      <div className="bi-section-content bi-c-h bi-s-v--x15">
+        {
+          (() => {
+            switch(viewState.get()) {
+              case 'Initial':
+                return <InitialState entityName="favorites" />;
+              case 'Error':
+                return <ErrorState errorMessage={error.message} />;
+              case 'Empty':
+                return <EmptyState />;
+              case 'Content':
+                return renderContentState();
+              default:
+            }
+          })()
+        }
       </div>
-      {!favorites || isEmptyState
-        ? displayNoContentState()
-        : displayLoadedState()}
     </div>
   );
 }

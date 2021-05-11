@@ -1,20 +1,12 @@
-import {Testkit} from '../../../test/e2e/driver';
+import { TableTestkit } from '../../lib/ui/components/table/table-testkit';
 
 const enum Hooks {
-  Error = 'favorites-error',
-  Content = 'favorites-content'
+  Table = 'favorites-table'
 }
 
-export class FavoritesTestkit extends Testkit {
-  async hasErrorState() {
-    return (await this.query.hook(Hooks.Error)) !== null;
-  }
+export class FavoritesTestkit extends TableTestkit {
 
-  async hasContent() {
-    return (await this.query.hook(Hooks.Content)) !== null;
-  }
-
-  async numOfFavorites() {
-    return (await this.query.hooks('table-row')).length;
+  favoritesTableExists = async () => {
+    return (await this.query.hook(Hooks.Table)) !== null;
   }
 }

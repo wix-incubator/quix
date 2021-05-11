@@ -1,18 +1,17 @@
 import './HistoryComponent.scss';
 
 import React, { useEffect } from 'react';
-import Highlighter from 'react-highlight-words';
 import { IHistory } from '@wix/quix-shared';
 import { historyTableFields } from './history-table-fields';
 import { User } from '../../lib/app/services/user';
 import { useViewState } from '../../services/hooks';
-import { highlightText } from '../../services/search';
 import { debounceAsync } from '../../utils';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
-import { SortableTable } from '../../lib/ui/components/SortableTable';
+import { Table } from '../../lib/ui/components/table/Table';
+import { Highlighter } from '../../lib/ui/components/Highlighter';
 import Input from '../../lib/ui/components/Input';
 import Select from '../../lib/ui/components/Select';
-import noResultsImg from '../../../src/assets/no_data.svg';
+import { FilterInitialState, InitialState, EmptyState, ErrorState, TitleState } from '../../lib/ui/components/states';
 
 export interface HistoryProps {
   error: { message: string };
@@ -24,7 +23,7 @@ export interface HistoryProps {
 
 export const CHUNK_SIZE = 100;
 
-const Table = makePagination(SortableTable);
+const PaginatedTable = makePagination(Table);
 
 const search = debounceAsync((loadMore, { offset, limit, filters }) => {
   return loadMore({ offset, limit, filters });
@@ -73,23 +72,14 @@ export function History(props: HistoryProps) {
     }
   }, [stateData.queryFilter, stateData.userFilter]);
 
-  const highlight = (term: string, filter: string) => {
-    const highlightProps = highlightText(term, filter);
-      
-    return (
-      <Highlighter
-        searchWords={[highlightProps.currentFilter]}
-        autoEscape={true}
-        textToHighlight={highlightProps.textToHighlight}
-      />
-    )
-  }
-
   const highlightQuery = (columnName: string) => (term: string) => {
     const text = term.replace(/\s+/g,' ');
     
     if (columnName === 'query') {
-      return (highlight(term, stateData.queryFilter));
+      return <Highlighter
+        term={term}
+        filter={stateData.queryFilter}
+      />;
     }
 
     return text;
@@ -107,69 +97,27 @@ export function History(props: HistoryProps) {
     }
   }
 
-  const renderInitialState = () => (
-    <div className="bi-c-h bi-align bi-center bi-grow">
-      <div className="bi-empty-state--loading bi-fade-in">
-        <div className="bi-empty-state-content" data-hook="history-initial">Loading query history...</div>
-      </div>
-    </div>
-  );
-
-  const renderFilterInitialState = () => (
-    <div className="bi-c-h bi-align bi-center bi-grow">
-      <div className="bi-empty-state--loading bi-fade-in">
-        <div className="bi-empty-state-content" data-hook="history-initial">Searching query history...</div>
-      </div>
-    </div>
-  );
-
-  const renderErrorState = () => (
-    <div className="bi-c-h bi-align bi-center bi-grow">
-      <div className="bi-empty-state bi-fade-in">
-        <div className="bi-empty-state-icon bi-danger">
-          <i className="bi-icon bi-danger">error_outline</i>
-        </div>
-        <div className="bi-empty-state-header" data-hook="history-error">{stateData.errorMessage}</div>
-      </div>
-    </div>
-  );
-
-  const renderEmptyState = () => (
-    <div className="bi-c-h bi-align bi-center bi-grow">
-      <div className="bi-empty-state bi-fade-in">
-        <img className="bi-empty-state-image" src={noResultsImg}></img>
-        <div className="bi-empty-state-header" data-hook="history-result">No results</div>
-      </div>
-    </div>
-  );
-
   const renderContentState = () => (
-    <div
-      className="bi-panel bi-c-h bi-fade-in bi-theme--lighter"
-      data-hook="history-content"
-    >
-      <div className="bi-panel-content bi-c-h">
-        <Table
-          initialData={stateData.rows}
-          loadMore={getChunk}
-          onRowClicked={onHistoryClicked}
-          columns={historyTableFields.map(field => ({
-            Header: field.title,
-            Cell: table => field.filter(undefined, table.row.original, 0, highlightQuery(field.name)),
-            accessor: field.name,
-            className: field.className,
-          }))}
-          paginationSize={CHUNK_SIZE}
-          tableSize={(size) => viewState.update({ size })}
-        />
-      </div>
-    </div>
+    <PaginatedTable
+      hookName="history"
+      initialData={stateData.rows}
+      loadMore={getChunk}
+      onRowClicked={onHistoryClicked}
+      columns={historyTableFields.map(field => ({
+        header: field.title,
+        render: row => field.filter(undefined, row, 0, highlightQuery(field.name)),
+        accessor: field.name,
+        className: field.className,
+      }))}
+      paginationSize={CHUNK_SIZE}
+      tableSize={(size) => viewState.update({ size })}
+    />
   );
 
-  const renderFilter = () => (
+  const renderFilters = () => (
     <div className="hc-filters bi-theme--lighter bi-align bi-s-h--x15">
       <Select
-        highlight={highlight}
+        Highlighter={Highlighter}
         defaultLabel={user}
         options={getUsers}
         title="email"
@@ -191,28 +139,27 @@ export function History(props: HistoryProps) {
 
   return (
     <div className="history-component bi-section bi-c-h bi-grow">
-      <div className="bi-section-header">
-        <div className="bi-section-title">
-          <span>History {viewState.min('Empty') && <span className='bi-fade-in'>({stateData.size})</span>}</span>
-        </div>
-      </div>
+      <TitleState
+        entityName="History"
+        size={stateData.size}
+      />
 
       <div className="bi-section-content bi-c-h bi-s-v--x15">
-        {viewState.min('Error') && renderFilter()}
+        {viewState.min('Error') && renderFilters()}
 
         {
           (() => {
             switch(viewState.get()) {
               case 'Initial':
-                return renderInitialState();
+                return <InitialState entityName="history" />;
               case 'Error':
-                return renderErrorState();
+                return <ErrorState errorMessage={error.message} />;
               case 'Empty':
-                return renderEmptyState();
+                return <EmptyState />;
               case 'Content':
                 return renderContentState();
               case 'FilterInitial':
-                return renderFilterInitialState();
+                return <FilterInitialState entityName="history" />;
               default:
             }
           })()

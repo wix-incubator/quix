@@ -3,7 +3,7 @@ import {Driver} from './driver';
 import {createMockFile} from '../mocks';
 import {FavoritesTestkit} from '../../src/state-components/favorites/favorites-testkit';
 
-describe('Users ::', () => {
+describe('Favorites ::', () => {
   let driver: Driver, testkit: FavoritesTestkit;
 
   const gotoFavoritesWithError = async () => {
@@ -28,13 +28,19 @@ describe('Users ::', () => {
   it('should display error state when failed to fetch favorites', async () => {
     await gotoFavoritesWithError();
 
-    expect(await testkit.hasErrorState()).to.be.true;
+    expect(await testkit.tableStates.hasError()).to.be.true;
+  });
+
+  it('should display empty state', async () => {
+    await gotoFavorites([]);
+
+    expect(await testkit.tableStates.hasEmptyResult()).to.be.true;
   });
 
   it('should display content', async () => {
     await gotoFavorites();
 
-    expect(await testkit.hasContent()).to.be.true;
-    expect(await testkit.numOfFavorites()).to.equal(1);
+    expect(await testkit.favoritesTableExists()).to.be.true;
+    expect(await testkit.tableTotalRows()).to.equal(1);
   });
 });

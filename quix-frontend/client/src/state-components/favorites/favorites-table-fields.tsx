@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {IFile} from '@wix/quix-shared';
-import {RowConfig} from '../../lib/ui/components/Table';
+import {RowConfig} from '../../lib/ui/components/table/TableRow';
 import classNames from 'classnames';
 
 export const favoritesTableFields = (onLikeToggle): RowConfig<IFile>[] => [
@@ -16,7 +16,8 @@ export const favoritesTableFields = (onLikeToggle): RowConfig<IFile>[] => [
     }
   },
   {
-    name: 'owner',
+    name: 'ownerDetails',
+    title: 'Owner Details',
     filter(_, file: IFile) {
       return (
         <div className="bi-align bi-s-h">
