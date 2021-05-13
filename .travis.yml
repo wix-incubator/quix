@@ -32,7 +32,7 @@ jobs:
       language: scala
       jdk: openjdk8
       scala:
-        - 2.12.11
+        - 2.12.13
       cache:
         directories:
           - $HOME/.m2
@@ -58,7 +58,7 @@ jobs:
     - <<: *scala-builds
       name: "Scala 2.13"
       scala:
-        - 2.13.2
+        - 2.13.5
       script:
         - $TRAVIS_BUILD_DIR/build-selector.sh $TRAVIS_COMMIT_RANGE $PROJECT || exit 0
         - pyenv versions
