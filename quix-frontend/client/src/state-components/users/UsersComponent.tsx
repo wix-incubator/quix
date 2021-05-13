@@ -39,6 +39,7 @@ export function Users(props: UsersProps) {
   const [stateData, viewState] = useViewState(States, {
     users: [],
     size: 0,
+    totalUsers: 0,
     emailFilter: '',
     errorMessage: '',
   });
@@ -59,7 +60,18 @@ export function Users(props: UsersProps) {
     if (viewState.get() !== 'Error' && serverUsers?.length >= 0) {
       loadMore(0, CHUNK_SIZE + 1)(res => {
         if (!_.isEqual(res, stateData.users) || viewState.is('Initial') || viewState.is('FilterInitial')) {
-          viewState.set(res.length > 0 ? 'Content' : 'Empty', {users: res});
+          if (res.length > 0) {
+            viewState.set('Content', {
+              users: res,
+              totalUsers: serverUsers.filter(user => user.email.includes(stateData.emailFilter)).length,
+            });
+          } else {
+            viewState.set('Empty', {
+              users: [],
+              totalUsers: 0,
+              size: 0,
+            });
+          }
         } else if (stateData.users?.length > 0 && !viewState.is('Content')) {
           viewState.set('Content');
         }
@@ -127,7 +139,7 @@ export function Users(props: UsersProps) {
     <div className="bi-section bi-c-h bi-grow">
       <div className="bi-section-header">
         <div className="bi-section-title">
-          <span>Users {viewState.min('Empty') && <span className='bi-fade-in'>({stateData.size})</span>}</span>
+          <span>Users {viewState.min('Empty') && <span className='bi-fade-in'>({stateData.size}/{stateData.totalUsers})</span>}</span>
         </div>
       </div>
 
