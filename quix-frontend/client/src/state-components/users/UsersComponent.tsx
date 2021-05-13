@@ -139,7 +139,7 @@ export function Users(props: UsersProps) {
     <div className="bi-section bi-c-h bi-grow">
       <div className="bi-section-header">
         <div className="bi-section-title">
-          <span>Users {viewState.min('Empty') && <span className='bi-fade-in'>({stateData.size}/{stateData.totalUsers})</span>}</span>
+          <span>Users {viewState.min('Empty') && <span className='bi-fade-in'>({stateData.size} / {stateData.totalUsers})</span>}</span>
         </div>
       </div>
 
