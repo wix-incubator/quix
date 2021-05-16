@@ -6,7 +6,7 @@ import { HighlightedRowConfig } from '../../lib/ui/components/table/TableRow';
 export const usersTableFields: HighlightedRowConfig<IUser>[] = [
   {
     name: 'name',
-    title: 'user',
+    title: 'User',
     filter(_, user: IUser, index) {
       return (
         <div className="bi-align bi-s-h">
@@ -18,7 +18,7 @@ export const usersTableFields: HighlightedRowConfig<IUser>[] = [
   },
   {
     name: 'email',
-    title: 'email',
+    title: 'Email',
     filter(_, user: IUser, index, highlight) {
       return (
         <div className="bi-align bi-s-h">
