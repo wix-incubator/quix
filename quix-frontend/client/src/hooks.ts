@@ -6,5 +6,10 @@ export const hooks = {
     plugin: new SyncWaterfallHook(['app', 'store', 'engine', 'id']),
     import: new AsyncSeriesHook(['app', 'store', 'note', 'value']),
     runFinish: new SyncHook(['app', 'store', 'note', 'runner']),
+    config: {
+      editor: {
+        autoParams: new SyncWaterfallHook(['app', 'store']),
+      }
+    }
   },
 };

@@ -1,3 +1,4 @@
+import { isArray } from 'lodash';
 import {setupNotifications} from './bootstrap';
 import create from './lib/app';
 import {hooks} from './hooks';
@@ -11,6 +12,7 @@ import {pluginManager} from './plugins';
 import {ClientConfigHelper, ModuleComponentType} from '@wix/quix-shared';
 import {openTempQuery} from './services';
 import {inject} from './lib/core';
+import { AUTO_PARAMS, AUTO_PARAM_DEFAULTS, AUTO_PARAM_TYPES } from './lib/code-editor/services/param-parser/param-types';
 
 export {hooks} from './hooks';
 
@@ -57,6 +59,16 @@ const appBuilder = create<ClientConfigHelper>(
     });
 
     plugin.onPluginReady((app, store) => {
+      const autoParams = hooks.note.config.editor.autoParams.call(app, store);
+
+      if (isArray(autoParams)) {
+        autoParams.forEach(({name, type, defaultValue}) => {
+          AUTO_PARAMS.push(name);
+          AUTO_PARAM_TYPES[name] = type;
+          AUTO_PARAM_DEFAULTS[name] = defaultValue;
+        });
+      }
+
       runnerConfig.set({
         executeBaseUrl,
         apiBasePath,
