@@ -51,10 +51,10 @@ export default (app: App, store: Store) => () => ({
         })
         .withEvents({
           onContentChange(textContent, richContent) {
-            return scope.onContentChange({textContent, richContent});
+            return !scope.readonly && scope.onContentChange({textContent, richContent});
           },
           onSave() {
-            return scope.onSave();
+            return !scope.readonly && scope.onSave();
           },
           onRun() {
             return scope.onRun();
