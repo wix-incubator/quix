@@ -22,12 +22,20 @@ export const onGoToRootClick = (scope: IScope, store: Store, app: App) => () => 
 };
 
 export const onNameChange = (scope: IScope, store: Store, app: App) => (file: IFile) => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   const {id, name} = file;
 
   store.dispatchAndLog(NotebookActions.updateName(id, name));
 }
 
 export const onDelete = (scope: IScope, store: Store, app: App) => (notebook: INotebook) => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   deleteNotebook(store, app, notebook)
     .then(() => toast.showToast({
       text: `Deleted notebook "${notebook.name}"`,
@@ -72,22 +80,42 @@ export const onLikeToggle = (scope: IScope, store: Store, app: App) => (notebook
 }
 
 export const onSave = (scope: IScope, store: Store, app: App) => () => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   saveQueuedNotes(store);
 }
 
 export const onRun = (scope: IScope, store: Store, app: App) => () => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   saveQueuedNotes(store);
 }
 
 export const onNoteSave = (scope: IScope, store: Store, app: App) => () => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   saveQueuedNotes(store);
 }
 
 export const onNoteRun = (scope: IScope, store: Store, app: App) => () => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   saveQueuedNotes(store);
 }
 
 export const onNoteAdd = (scope: IScope, store: Store, app: App) => (type: any = scope.vm.noteTypes[0]) => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   const {notebook} = scope.vm.state.value();
 
   addNote(store, notebook.id, type, {}, note => {
@@ -122,6 +150,10 @@ export const onNoteShare = (scope: IScope, store: Store, app: App) => (note: INo
 }
 
 export const onNoteDelete = (scope: IScope, store: Store, app: App) => (note: INote) => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   store.dispatchAndLog(NoteActions.deleteNote(note.id))
     .then(() => toast.showToast({
       text: `Deleted note "${note.name}"`,
@@ -130,14 +162,26 @@ export const onNoteDelete = (scope: IScope, store: Store, app: App) => (note: IN
 }
 
 export const onNoteContentChange = (scope: IScope, store: Store, app: App) => (note: INote) => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   store.dispatch(queueNote(note));
 }
 
 export const onNoteNameChange = (scope: IScope, store: Store, app: App) => (note: INote) => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   store.dispatchAndLog(NoteActions.updateName(note.id, note.name));
 }
 
 export const onNoteReorder = (scope: IScope, store: Store, app: App) => (e: any, {item}: any) => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   const {model: note, dropindex: index} = item.sortable;
 
   if (typeof index !== 'undefined') {
@@ -146,11 +190,18 @@ export const onNoteReorder = (scope: IScope, store: Store, app: App) => (e: any,
 }
 
 export const onMarkToggle = (scope: IScope, store: Store, app: App) => (note: INote) => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   store.dispatch(toggleMark(note));
 };
 
-
 export const onMarkedNotesDelete = (scope: IScope, store: Store, app: App) => (notes: INote[]) => {
+  if (!scope.permissions.edit) {
+    return;
+  }
+
   store.dispatchAndLog(notes.map(note => NoteActions.deleteNote(note.id)))
     .then(() => toast.showToast({
       text: `Deleted ${notes.length} notes`,
@@ -171,6 +222,9 @@ export const onRunnerDestroyed = (scope: IScope, store: Store) => (note) => {
 };
 
 export const $onDestroy = (scope: IScope, store: Store, app: App) => () => {
-  saveQueuedNotes(store);
+  if (scope.permissions.edit) {
+    saveQueuedNotes(store);
+  }
+  
   store.dispatch(setNotebook(null));
 }
