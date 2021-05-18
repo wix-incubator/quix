@@ -9,6 +9,13 @@ const sqlContextGroups = ['subQueries', 'tableAlias', 'strings', 'tables', 'colu
 
 let sqlParser: BiSqlWebWorkerMngr;
 let keywords: Promise<AceCompletion[]>; // All Completions
+let tables: Promise<AceCompletion[]>;
+
+async function getTablesCompletions(dbInfoService: DbInfo): Promise<AceCompletion[]> {
+  keywords = keywords || dbInfoService.fetchAllKeywords();
+  const completions = await keywords;
+  return completions.filter(completion => completion.meta === 'table');
+}
 
 /* tslint:disable:no-shadowed-variable */
 export async function setupCompleters(editorInstance: CodeEditorInstance, type: string, apiBasePath = '') {
@@ -16,9 +23,11 @@ export async function setupCompleters(editorInstance: CodeEditorInstance, type: 
   const dbInfoService = new DbInfo(type, apiBasePath);
 
   keywords = keywords || dbInfoService.fetchAllKeywords();
+  tables = tables || getTablesCompletions(dbInfoService);
 
   editorInstance.addOnDemandCompleter(/[\w.]+/, ((prefix, session) => {
     let contextCompletions: Promise<AceCompletion[]>;
+
     if (sqlParser) {
       const text = session.getDocument().getAllLines().join('\n');
       contextCompletions = sqlParser.parse(text)
@@ -31,9 +40,9 @@ export async function setupCompleters(editorInstance: CodeEditorInstance, type: 
       contextCompletions = Promise.resolve([]);
     }
 
-    return Promise.all([keywords, contextCompletions])
-      .then(([keywordCompletions, contextCompletions]) => {
-        let all = contextCompletions.concat(keywordCompletions);
+    return Promise.all([tables, contextCompletions])
+      .then(([tableCompletions, contextCompletions]) => {
+        let all = contextCompletions.concat(tableCompletions);
 
         if (prefix) {
           all = all.reduce((resultArr: AceCompletion[], completion) => {

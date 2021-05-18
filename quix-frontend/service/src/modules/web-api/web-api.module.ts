@@ -24,6 +24,8 @@ import {UserListController} from './user-list.controller';
 import {FavoritesService} from './favorites/favorites.service';
 import {FavoritesController} from './favorites/favorites.controller';
 import {EventsGateway} from './events.gateway';
+import { AutocompleteService } from './autocomplete/autocomplete.service';
+import { AutocompleteController } from './autocomplete/autocomplete.controller';
 
 @Module({
   imports: [
@@ -49,8 +51,9 @@ import {EventsGateway} from './events.gateway';
     SearchController,
     UserListController,
     FavoritesController,
+    AutocompleteController,
   ],
-  providers: [NotebookService, FoldersService, FavoritesService, EventsGateway],
+  providers: [NotebookService, FoldersService, FavoritesService, EventsGateway, AutocompleteService],
   exports: [],
 })
 export class WebApiModule {}
