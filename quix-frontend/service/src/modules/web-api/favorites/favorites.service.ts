@@ -39,7 +39,7 @@ export class FavoritesService {
   async getFavoritesForUser(user: string): Promise<IFile[]> {
     const favoritesQuery = this.favoritesRepo
       .createQueryBuilder('fav')
-      .leftJoinAndMapOne(
+      .innerJoinAndMapOne(
         'fav.notebook',
         DbNotebook,
         'notebook',
@@ -55,6 +55,7 @@ export class FavoritesService {
       .orderBy({'notebook.name': 'ASC'});
 
     const res = (await favoritesQuery.getMany()) as GetFavoritesQueryReturnValue[];
+
     return res.map(favoriteToIFile);
   }
 }
