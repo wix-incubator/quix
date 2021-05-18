@@ -19,7 +19,7 @@ export class AutocompleteService {
       backendUrl = 'http://' + backendUrl;
     }
 
-    const dbTree = await axios.get(`${backendUrl}/db/${type}/explore`);
+    const dbTree = await axios.get(`${backendUrl}/api/db/${type}/explore`);
 
     return this.flattenTables(dbTree.data);
   }
