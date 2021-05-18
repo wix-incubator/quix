@@ -20,13 +20,10 @@ export class DbInfo {
 
   fetchAllKeywords(): Promise<IAutocomplete[]> {
     return this.$http<any>({
-      url: `${this.apiBasePath}/api/db/${this.type}/autocomplete`,
+      url: `${this.apiBasePath}/api/autocomplete/${this.type}`,
       method: 'GET'
     })
-      .then(({data}) => Object.keys(data).reduce((res, meta) => {
-        data[meta].forEach((value: string) => res.push({meta, value}));
-        return res;
-      }, []))
+      .then(({data}) => data)
       .catch(e => console.log(e)) as any;
   }
 

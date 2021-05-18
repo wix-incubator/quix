@@ -27,13 +27,13 @@ export class AutocompleteService {
   flattenTables(
     treeNodes: any[],
     path: string[] = [],
-    tables: TableAutocompleteItem[] = []
+    tables: TableAutocompleteItem[] = [],
   ) {
     if (!isArray(treeNodes)) {
       return tables;
     }
 
-    return treeNodes.reduce<TableAutocompleteItem[]>(({name, type, children}: any, res: TableAutocompleteItem[]) => {
+    return treeNodes.reduce<TableAutocompleteItem[]>((res, {name, type, children}: any) => {
       if (type === 'table') {
         res.push({value: [...path, name].join('.'), meta: type});
       } else {
