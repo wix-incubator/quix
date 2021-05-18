@@ -32,6 +32,11 @@ quix-note {
   .bi-panel-header {
     position: relative;
 
+    &.quix-note-hidden-editor {
+      margin-bottom: -10px;
+      border-bottom: 1px solid $grey--200;
+    }
+
     .quix-note-drag-indicator {
       position: absolute;
       top: 11px;

@@ -20,6 +20,7 @@ export class PythonNotePlugin extends NotePlugin {
           fitContent: true,
           params: true,
           focus: options.focusEditor,
+          showEditor: options.showEditor,
           showSyntaxErrors: vm.showSyntaxErrors,
           shareParams: options.shareParams,
           autoRun: options.autoRun,

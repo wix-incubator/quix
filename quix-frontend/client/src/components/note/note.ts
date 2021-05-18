@@ -42,6 +42,8 @@ export default (app: App, store: Store) => () => ({
             fold: false,
             focusName: false,
             focusEditor: true,
+            showEditor: true,
+            showDates: true,
             autoRun: false,
             maximizable: true,
           },

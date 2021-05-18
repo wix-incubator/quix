@@ -71,6 +71,7 @@ export class NotePlugin extends Plugin {
           fitContent: true,
           params: true,
           focus: options.focusEditor,
+          showEditor: options.showEditor,
           showSyntaxErrors: vm.showSyntaxErrors,
           shareParams: options.shareParams,
           autoRun: options.autoRun,

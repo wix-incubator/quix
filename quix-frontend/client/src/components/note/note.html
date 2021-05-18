@@ -27,7 +27,7 @@
       is-maximized="vm.isMaximized"
       on-toggle="events.onMaximizeToggle(maximized)"
     >
-      <div class="bi-panel-header bi-hover-parent">
+      <div class="bi-panel-header bi-hover-parent" ng-class="::{'quix-note-hidden-editor': !options.showEditor}">
         <span
           class="quix-note-drag-handle quix-note-drag-indicator bi-hover-target"
           ng-if="permissions.reorder && !vm.isMaximized"
@@ -60,7 +60,7 @@
           ng-class="{'bi-hover-target': bf.fold}"
           bf-toggle
         >
-          <quix-meta entity="note"></quix-meta>
+          <quix-meta ng-if="::options.showDates" entity="note"></quix-meta>
 
           <div class="bi-align bi-s-h">
             <bi-tooltip ng-if="::permissions[action.permissions]" ng-repeat="action in ::vm.customActions">

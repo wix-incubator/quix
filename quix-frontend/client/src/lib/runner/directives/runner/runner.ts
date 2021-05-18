@@ -225,6 +225,7 @@ export default () => {
             buttonText: 'Run',
             disableCustomActions: false,
             autoRun: false,
+            showEditor: true,
           }, true)
           .withVM({
             runner: {},

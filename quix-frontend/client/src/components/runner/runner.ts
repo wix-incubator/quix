@@ -37,6 +37,7 @@ export default (app: App, store: Store) => () => ({
           'quixRunnerOptions',
           {
             focusEditor: true,
+            showEditor: true,
             autoRun: false,
             shareParams: true,
           },
