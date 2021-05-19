@@ -1,12 +1,12 @@
 package quix.core.history.dao
+
 import java.sql.{Connection, DriverManager, PreparedStatement, ResultSet}
 import java.time.{Clock, Instant}
 
 import cats.effect.Resource
-import cats.syntax.apply._
 import monix.eval.Task
-import quix.api.v2.execute.{Query => ActiveQuery}
 import quix.api.v1.users.User
+import quix.api.v2.execute.{Query => ActiveQuery}
 import quix.core.history.dao.MySqlHistoryDao._
 import quix.core.history.{Execution, ExecutionStatus}
 
@@ -36,6 +36,7 @@ class MySqlHistoryReadDao(connection: Connection) extends HistoryReadDao {
     case Filter.Status(status) => s"status = '${status.toString.toUpperCase}'"
     case Filter.User(userEmail) => s"user_email = '$userEmail'"
     case Filter.Query(query) => s"statements like '%$query%'"
+    case Filter.QueryType(queryType) => s"query_type = '$queryType'"
     case Filter.CompoundFilter(filters) => filters.map(where).mkString(" and ")
     case Filter.None => "1 = 1"
   }
