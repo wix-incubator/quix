@@ -43,7 +43,7 @@ async function bootstrap() {
   app.setBaseViewsDir(env.localStaticsPath);
   app.engine('.vm', velocityEngine());
   app.use(cookieParser());
-  app.use(json({limit: '5mb'}));
+  app.use(json({limit: '2mb'}));
   app.useWebSocketAdapter(new WsAdapter(app));
 
   await app.listen(env.HttpPort);
