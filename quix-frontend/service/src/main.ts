@@ -1,3 +1,4 @@
+import { json } from 'express';
 import {NestFactory} from '@nestjs/core';
 import {AppModule} from './app.module';
 import {NestExpressApplication} from '@nestjs/platform-express';
@@ -42,6 +43,7 @@ async function bootstrap() {
   app.setBaseViewsDir(env.localStaticsPath);
   app.engine('.vm', velocityEngine());
   app.use(cookieParser());
+  app.use(json({limit: '5mb'}));
   app.useWebSocketAdapter(new WsAdapter(app));
 
   await app.listen(env.HttpPort);
