@@ -23,13 +23,18 @@ object Filter {
 
   case class Query(query: String) extends Filter
 
+  case class QueryType(queryType: String) extends Filter
+
   case class CompoundFilter(filters: List[Filter]) extends Filter
 
-  def apply(userEmail: String, query: String): Filter = {
+  def apply(userEmail: String, query: String): Filter = apply(userEmail, query, "")
+
+  def apply(userEmail: String, query: String, queryType: String): Filter = {
     var filters = ListBuffer.empty[Filter]
 
     if (userEmail.nonEmpty) filters += User(userEmail)
     if (query.nonEmpty) filters += Query(query)
+    if (queryType.nonEmpty) filters += QueryType(queryType)
 
     filters.toList match {
       case Nil => None

@@ -89,6 +89,30 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
     }
   }
 
+  "support filtering by queryType" in {
+    val query1 = query.copy(id = "query-1")
+    val query2 = query.copy(id = "query-2")
+    val query3 = query.copy(id = "query-3")
+
+    val result = createDao().use { dao =>
+      for {
+        _ <- dao.executionStarted(query1, "query-type-1")
+        _ <- dao.executionStarted(query2, "query-type-1")
+        _ <- dao.executionStarted(query3, "query-type-2")
+        _ <- dao.executionSucceeded(query2.id)
+        _ <- dao.executionFailed(query3.id, new RuntimeException)
+        firstType <- dao.executions(filter = Filter.QueryType("query-type-1"))
+        secondType <- dao.executions(filter = Filter.QueryType("query-type-2"))
+      } yield (firstType, secondType)
+    }
+
+    result.runSyncUnsafe() must beLike {
+      case (firstType, secondType) =>
+        (firstType must contain(exactly(executionWithId(query1.id), executionWithId(query2.id)))) and
+          (secondType must contain(exactly(executionWithId(query3.id))))
+    }
+  }
+
   "support filtering by status" in {
     val query1 = query.copy(id = "query-1")
     val query2 = query.copy(id = "query-2")
