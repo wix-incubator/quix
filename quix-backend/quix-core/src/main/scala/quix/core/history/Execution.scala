@@ -7,6 +7,7 @@ import quix.api.v1.users.User
 case class Execution(id: String,
                      queryType: String,
                      statements: Seq[String],
+                     code: String,
                      user: User,
                      startedAt: Instant,
                      status: ExecutionStatus)

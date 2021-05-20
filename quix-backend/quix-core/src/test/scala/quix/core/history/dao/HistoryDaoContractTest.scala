@@ -35,6 +35,7 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
         id = "query-id",
         queryType = queryType,
         statements = statements,
+        code = query.rawCode,
         user = user,
         startedAt = now,
         status = ExecutionStatus.Running))
@@ -167,12 +168,14 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
   }
 
   "support filtering by query text" in {
-    def makeSubQueries(userEmail: String) =
-      List(ImmutableSubQuery(s"select $userEmail as email", User(email = userEmail)))
+    def newQuery(queryId: String, userEmail: String) = query.copy(id = queryId,
+      subQueries = List(ImmutableSubQuery(s"select $userEmail as email", User(email = userEmail))),
+      rawCode = s"select $userEmail as email"
+    )
 
-    val query1 = query.copy(id = "query-1", subQueries = makeSubQueries("foo@quix.com"))
-    val query2 = query.copy(id = "query-2", subQueries = makeSubQueries("boo@quix.com"))
-    val query3 = query.copy(id = "query-3", subQueries = makeSubQueries("bar@quix.com"))
+    val query1 = newQuery("query-1", "foo@quix.com")
+    val query2 = newQuery("query-2", "boo@quix.com")
+    val query3 = newQuery("query-3", "bar@quix.com")
 
     val result = createDao().use { dao =>
       for {
@@ -194,12 +197,14 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
   }
 
   "support filtering by query and user email" in {
-    def makeSubQueries(sql: String, userEmail: String) =
-      List(ImmutableSubQuery(sql, User(email = userEmail)))
+    def newQuery(queryId: String, sql: String, userEmail: String) = query.copy(id = queryId,
+      subQueries = List(ImmutableSubQuery(sql, User(email = userEmail))),
+      rawCode = sql
+    )
 
-    val query1 = query.copy(id = "query-1", subQueries = makeSubQueries("select 1", "foo@quix.com"))
-    val query2 = query.copy(id = "query-2", subQueries = makeSubQueries("select 2", "foo@quix.com"))
-    val query3 = query.copy(id = "query-3", subQueries = makeSubQueries("select 3", "foo@quix.com"))
+    val query1 = newQuery("query-1", "select 1", "foo@quix.com")
+    val query2 = newQuery("query-2", "select 2", "foo@quix.com")
+    val query3 = newQuery("query-3", "select 3", "foo@quix.com")
 
     val result = createDao().use { dao =>
       for {
@@ -243,12 +248,14 @@ trait HistoryDaoContractTest extends SpecificationWithJUnit {
   }
 
   "support case-insentitive filtering by query text" in {
-    def makeSubQueries(userEmail: String) =
-      List(ImmutableSubQuery(s"select $userEmail as email", User(email = userEmail)))
+    def newQuery(queryId: String, userEmail: String) = query.copy(id = queryId,
+      subQueries = List(ImmutableSubQuery(s"select $userEmail as email", User(email = userEmail))),
+      rawCode = s"select $userEmail as email"
+    )
 
-    val query1 = query.copy(id = "query-1", subQueries = makeSubQueries("foo@quix.com"))
-    val query2 = query.copy(id = "query-2", subQueries = makeSubQueries("boo@quix.com"))
-    val query3 = query.copy(id = "query-3", subQueries = makeSubQueries("bar@quix.com"))
+    val query1 = newQuery("query-1", "foo@quix.com")
+    val query2 = newQuery("query-2", "boo@quix.com")
+    val query3 = newQuery("query-3", "bar@quix.com")
 
     val result = createDao().use { dao =>
       for {
@@ -278,6 +285,6 @@ object HistoryDaoContractTest {
 
   val query1 = ImmutableSubQuery("code1", user)
   val query2 = ImmutableSubQuery("code2", user)
-  val query = Query(Seq(query1, query2), id = queryId)
+  val query = Query(Seq(query1, query2), id = queryId, rawCode = "code1\ncode2")
   val statements = query.subQueries.map(_.text)
 }
