@@ -72,6 +72,7 @@ class Packages:
 
             pipargs = ['install'] + list(required_packages) + ['--prefix', self.dir, '--ignore-installed',
                                                                '--no-warn-script-location',
+                                                               '--disable-pip-version-check',
                                                                '--no-warn-conflicts'] + index_url_args + extra_index_url_args
 
             import subprocess
