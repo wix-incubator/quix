@@ -37,7 +37,9 @@ async function bootstrap() {
     await new Promise(resolve => setTimeout(resolve, 3000)); // let master process do it's thing, create schema and all;
   }
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bodyParser: false,
+  });
 
   app.useStaticAssets(env.localStaticsPath);
   app.setBaseViewsDir(env.localStaticsPath);
