@@ -28,6 +28,7 @@ class HistoryController(historyReadDao: HistoryReadDao) {
 case class ExecutionDto(id: String,
                         email: String,
                         query: Seq[String],
+                        code: String,
                         moduleType: String,
                         startedAt: String)
 
@@ -37,6 +38,7 @@ object ExecutionDto {
       id = execution.id,
       email = execution.user.email,
       query = execution.statements,
+      code = execution.code,
       moduleType = execution.queryType,
       startedAt = execution.startedAt.toString)
 }
