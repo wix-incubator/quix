@@ -56,7 +56,7 @@ export abstract class ConfigService {
         apiBasePath: env.MountPath,
       })
       .setMode({
-        debug: env.UseMinifiedStatics,
+        debug: !env.UseMinifiedStatics,
         demo: env.DemoMode,
       });
 
