@@ -191,7 +191,7 @@ lazy val quixWebSpring = (project in file("quix-webapps/quix-web-spring"))
       "javax.servlet" % "javax.servlet-api" % "4.0.1" % "provided",
 
       // https://mvnrepository.com/artifact/com.pauldijou/jwt-core
-      "com.pauldijou" %% "jwt-core" % "2.1.0",
+      "com.pauldijou" %% "jwt-core" % "3.0.1",
 
       "org.springframework.boot" % "spring-boot-starter-test" % "2.2.2.RELEASE" % Test,
 
