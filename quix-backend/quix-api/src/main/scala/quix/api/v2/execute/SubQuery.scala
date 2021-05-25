@@ -22,4 +22,7 @@ case class ImmutableSubQuery(text: String, user: User,
                              id: String = UUID.randomUUID().toString,
                              session: Session = new MutableSession) extends SubQuery
 
-case class Query(subQueries: Seq[SubQuery], id: String = UUID.randomUUID().toString, canceled: Atomic[Boolean] = Atomic(false))
+case class Query(subQueries: Seq[SubQuery],
+                 id: String = UUID.randomUUID().toString,
+                 canceled: Atomic[Boolean] = Atomic(false),
+                 rawCode: String = "")

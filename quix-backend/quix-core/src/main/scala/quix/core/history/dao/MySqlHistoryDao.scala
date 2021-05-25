@@ -15,7 +15,7 @@ class MySqlHistoryReadDao(connection: Connection) extends HistoryReadDao {
   override def executions(filter: Filter, sort: Sort, page: Page): Task[List[Execution]] = {
     val insertStatement = prepare(connection) {
       s"""
-        SELECT id, query_type, statements, user_id, user_email, created_at, status
+        SELECT id, query_type, statements, code, user_id, user_email, created_at, status
         FROM executions_history
         WHERE ${where(filter)}
         ${orderBy(sort)}
@@ -35,7 +35,7 @@ class MySqlHistoryReadDao(connection: Connection) extends HistoryReadDao {
   private def where(filter: Filter): String = filter match {
     case Filter.Status(status) => s"status = '${status.toString.toUpperCase}'"
     case Filter.User(userEmail) => s"user_email = '$userEmail'"
-    case Filter.Query(query) => s"statements like '%$query%'"
+    case Filter.Query(query) => s"code like '%$query%'"
     case Filter.QueryType(queryType) => s"query_type = '$queryType'"
     case Filter.CompoundFilter(filters) => filters.map(where).mkString(" and ")
     case Filter.None => "1 = 1"
@@ -64,6 +64,7 @@ class MySqlHistoryReadDao(connection: Connection) extends HistoryReadDao {
     id <- Task(resultSet.getString("id"))
     queryType <- Task(resultSet.getString("query_type"))
     statements <- Task(resultSet.getString("statements"))
+    code <- Task(resultSet.getString("code"))
     userEmail <- Task(resultSet.getString("user_email"))
     userId <- Task(resultSet.getString("user_id"))
     createdAt <- Task(resultSet.getLong("created_at"))
@@ -72,6 +73,7 @@ class MySqlHistoryReadDao(connection: Connection) extends HistoryReadDao {
     id = id,
     queryType = queryType,
     statements = statements.split(separator),
+    code = code,
     user = User(userEmail, userId),
     startedAt = Instant.ofEpochMilli(createdAt),
     status = statusFrom(status))
@@ -90,8 +92,8 @@ class MySqlHistoryWriteDao(connection: Connection, clock: Clock) extends History
 
   private val startStatement = prepare(connection) {
     """
-      INSERT INTO executions_history (id, query_type, statements, user_id, user_email, created_at)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO executions_history (id, query_type, statements, code, user_id, user_email, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     """
   }
 
@@ -109,11 +111,11 @@ class MySqlHistoryWriteDao(connection: Connection, clock: Clock) extends History
         now <- instant
         _ <- Task(statement.setString(1, query.id))
         _ <- Task(statement.setString(2, queryType))
-        // TODO - this is not a good way to save multiple statements, better use a JSON list
         _ <- Task(statement.setString(3, query.subQueries.map(_.text).mkString(separator)))
-        _ <- Task(statement.setString(4, query.subQueries.map(_.user).head.id))
-        _ <- Task(statement.setString(5, query.subQueries.map(_.user).head.email))
-        _ <- Task(statement.setLong(6, now.toEpochMilli))
+        _ <- Task(statement.setString(4, query.rawCode))
+        _ <- Task(statement.setString(5, query.subQueries.map(_.user).head.id))
+        _ <- Task(statement.setString(6, query.subQueries.map(_.user).head.email))
+        _ <- Task(statement.setLong(7, now.toEpochMilli))
         _ <- Task(statement.executeUpdate())
       } yield ()
     }

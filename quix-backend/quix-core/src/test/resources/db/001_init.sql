@@ -2,6 +2,7 @@ CREATE TABLE executions_history (
     id CHAR(36) NOT NULL PRIMARY KEY,
     query_type VARCHAR(64) NOT NULL,
     statements MEDIUMTEXT NOT NULL,
+    code MEDIUMTEXT NOT NULL,
     user_id VARCHAR(64) NOT NULL,
     user_email VARCHAR(64) NOT NULL,
     status ENUM('RUNNING', 'FINISHED', 'FAILED') NOT NULL DEFAULT 'RUNNING',

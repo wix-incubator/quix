@@ -19,6 +19,7 @@ case class InMemoryHistoryDao(state: Ref[Task, Map[String, Execution]], clock: C
         id = query.id,
         queryType = queryType,
         statements = query.subQueries.map(_.text),
+        code = query.rawCode,
         user = query.subQueries.map(_.user).head,
         startedAt = now,
         status = ExecutionStatus.Running)
@@ -66,7 +67,7 @@ object InMemoryHistoryDao {
       execution.queryType == queryType
 
     case Filter.Query(text) =>
-      execution.statements.exists(_.toLowerCase.contains(text.toLowerCase))
+      execution.code.toLowerCase.contains(text.toLowerCase())
 
     case Filter.CompoundFilter(filters) =>
       filters.forall(filter => predicate(filter)(execution))

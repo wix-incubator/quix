@@ -18,7 +18,7 @@ trait SqlSplitter {
       ImmutableSubQuery(sql, user, canceled = canceled, session = session)
     }
 
-    Query(subQueries, id, canceled)
+    Query(subQueries, id, canceled, rawCode = command.code)
   }
 }
 
