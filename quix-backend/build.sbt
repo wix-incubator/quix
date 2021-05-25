@@ -76,7 +76,7 @@ lazy val quixCore = (project in file("quix-core"))
     // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3
     libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.11.728",
 
-      libraryDependencies ++= loggingDeps,
+    libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
 
     // https://mvnrepository.com/artifact/com.wix/wix-embedded-mysql
@@ -162,8 +162,51 @@ lazy val quixPythonModule = (project in file("quix-modules/quix-python-module"))
     libraryDependencies += "net.sf.py4j" % "py4j" % "0.10.9.2",
   ) ++ baseSettings)
 
+lazy val quixWebSpring = (project in file("quix-webapps/quix-web-spring"))
+  .dependsOn(quixCore, quixPrestoModule, quixAthenaModule, quixPythonModule, quixBigqueryModule, quixJdbcModule)
+  .settings(Seq(
+    name := "Quix Web Spring",
+    assembly / mainClass in Compile := Some("quix.web.Server"),
+
+    publish / skip := true,
+
+    assembly / assemblyMergeStrategy := {
+      case PathList("META-INF", "spring.factories") => MergeStrategy.filterDistinctLines
+      case PathList("META-INF", _*) => MergeStrategy.discard
+      case _ => MergeStrategy.first
+    },
+
+    assembly / assemblyJarName := "quix-web-spring.jar",
+
+    libraryDependencies ++= loggingDeps,
+    libraryDependencies ++= specs2Deps,
+    libraryDependencies ++= Seq(
+      "org.springframework.boot" % "spring-boot-starter-web" % "2.2.2.RELEASE",
+      "org.springframework.boot" % "spring-boot-starter-jetty" % "2.2.2.RELEASE",
+      "org.springframework" % "spring-websocket" % "5.2.2.RELEASE",
+      "org.eclipse.jetty.websocket" % "websocket-api" % "9.4.24.v20191120",
+      "org.eclipse.jetty.websocket" % "websocket-common" % "9.4.24.v20191120",
+      "org.eclipse.jetty.websocket" % "websocket-server" % "9.4.24.v20191120",
+
+      "javax.servlet" % "javax.servlet-api" % "4.0.1" % "provided",
+
+      // https://mvnrepository.com/artifact/com.pauldijou/jwt-core
+      "com.pauldijou" %% "jwt-core" % "2.1.0",
+
+      "org.springframework.boot" % "spring-boot-starter-test" % "2.2.2.RELEASE" % Test,
+
+      // https://mvnrepository.com/artifact/org.asynchttpclient/async-http-client
+      "org.asynchttpclient" % "async-http-client" % "2.10.4" % Test,
+
+      // https://mvnrepository.com/artifact/com.wix/wix-embedded-mysql
+      "com.wix" % "wix-embedded-mysql" % "4.6.1" % Test,
+    )
+
+
+  ) ++ compileOptions)
+
 lazy val root = (project in file("."))
-  .aggregate(quixApi, quixCore, quixAthenaModule, quixBigqueryModule, quixJdbcModule, quixPrestoModule, quixPythonModule)
+  .aggregate(quixApi, quixCore, quixAthenaModule, quixBigqueryModule, quixJdbcModule, quixPrestoModule, quixPythonModule, quixWebSpring)
   .settings(
     crossScalaVersions := Nil,
     publish / skip := true,
