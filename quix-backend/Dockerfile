@@ -13,6 +13,7 @@ RUN \
 
 COPY build.sbt .
 COPY version.sbt .
+COPY project/plugins.sbt project
 RUN sbt update -Dsbt.rootdir=true;
 COPY /quix-webapps/quix-web-spring/pom.xml ./quix-webapps/quix-web-spring/pom.xml
 RUN mvn -B -f /quix-webapps/quix-web-spring/pom.xml dependency:resolve --fail-never
@@ -27,6 +28,7 @@ COPY /quix-modules/quix-python-module/src ./quix-modules/quix-python-module/src
 COPY /quix-modules/quix-dummy-module/src ./quix-modules/quix-dummy-module/src
 COPY /quix-webapps/quix-web-spring/src ./quix-webapps/quix-web-spring/src
 
+RUN sbt quixWebSpring/assembly -Dsbt.rootdir=true;
 RUN sbt +publishM2 -Dsbt.rootdir=true;
 RUN mvn -f /quix-webapps/quix-web-spring/pom.xml install -DskipTests
 
