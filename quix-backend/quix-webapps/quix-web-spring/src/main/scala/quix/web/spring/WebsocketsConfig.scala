@@ -5,9 +5,11 @@ import java.util
 import com.typesafe.scalalogging.LazyLogging
 import monix.execution.Scheduler
 import org.eclipse.jetty.websocket.api.WebSocketPolicy
-import org.springframework.context.annotation.{Bean, Configuration, ImportResource}
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.annotation.Configuration
 import org.springframework.http.server.{ServerHttpRequest, ServerHttpResponse, ServletServerHttpRequest}
 import org.springframework.web.socket.WebSocketHandler
+import org.springframework.web.socket.config.annotation.{EnableWebSocket, WebSocketConfigurer, WebSocketHandlerRegistry}
 import org.springframework.web.socket.server.HandshakeInterceptor
 import org.springframework.web.socket.server.jetty.JettyRequestUpgradeStrategy
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
@@ -18,41 +20,43 @@ import quix.core.history.dao.HistoryWriteDao
 import quix.web.controllers.SqlStreamingController
 
 @Configuration
-@ImportResource(Array("classpath:websockets.xml"))
-class WebsocketsConfig extends LazyLogging {
+@EnableWebSocket
+class WebsocketsConfig extends LazyLogging with WebSocketConfigurer {
 
-  @Bean def initSqlStreamingController(users: Users,
-                                       modules: Map[String, ExecutionModule],
-                                       downloadConfig: DownloadConfig,
-                                       queryResultsStorage: QueryResultsStorage,
-                                       historyWriteDao: HistoryWriteDao) = {
-    logger.info("event=[spring-config] bean=[PrestoController]")
-    new SqlStreamingController(
+  @Autowired var users: Users = _
+  @Autowired var modules: Map[String, ExecutionModule] = _
+  @Autowired var downloadConfig: DownloadConfig = _
+  @Autowired var queryResultsStorage: QueryResultsStorage = _
+  @Autowired var historyWriteDao: HistoryWriteDao = _
+
+  override def registerWebSocketHandlers(registry: WebSocketHandlerRegistry): Unit = {
+    val handler = new SqlStreamingController(
       modules = modules,
       users = users,
       downloadConfig = downloadConfig,
       queryResultsStorage = queryResultsStorage,
       historyWriteDao = historyWriteDao,
       io = Scheduler.io("presto-io"))
-  }
 
-  @Bean def initWebSocketPolicy(): WebSocketPolicy = {
-    logger.info("event=[spring-config] bean=[WebSocketPolicy]")
-    val policy = WebSocketPolicy.newServerPolicy()
-    policy.setIdleTimeout(10 * 60 * 1000) // 60 seconds
-    policy.setInputBufferSize(8092) // 2 KB
-    policy.setMaxTextMessageSize(1024 * 1024) // 1 MB
-    policy
-  }
+    val handshakeHandler = {
+      val policy = WebSocketPolicy.newServerPolicy()
+      policy.setIdleTimeout(10 * 60 * 1000) // 60 seconds
+      policy.setInputBufferSize(8092) // 2 KB
+      policy.setMaxTextMessageSize(1024 * 1024) // 1 MB
 
-  @Bean def initRequestUpgradeStrategyFactory(policy: WebSocketPolicy): JettyRequestUpgradeStrategy = {
-    logger.info("event=[spring-config] bean=[JettyRequestUpgradeStrategy]")
-    new JettyRequestUpgradeStrategy(policy)
-  }
+      val requestUpgradeStrategy = new JettyRequestUpgradeStrategy(policy)
 
-  @Bean def initDefaultHandshakeHandler(requestUpgradeStrategy: JettyRequestUpgradeStrategy): DefaultHandshakeHandler = {
-    logger.info("event=[spring-config] bean=[DefaultHandshakeHandler]")
-    new DefaultHandshakeHandler(requestUpgradeStrategy)
+      new DefaultHandshakeHandler(requestUpgradeStrategy)
+    }
+
+    val endpoints = modules.keys.map(module => "/api/v1/execute/" + module).toList
+
+    logger.info(s"event=[spring-config] bean=[registerWebSocketHandlers] endponts=[$endpoints]")
+
+    registry.addHandler(handler, endpoints: _*)
+      .addInterceptors(new CookiesInterceptor)
+      .setHandshakeHandler(handshakeHandler)
+      .setAllowedOrigins("*")
   }
 }
 
