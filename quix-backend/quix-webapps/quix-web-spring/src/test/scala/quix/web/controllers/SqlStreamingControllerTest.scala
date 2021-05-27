@@ -42,7 +42,7 @@ class SqlStreamingControllerTest extends E2EContext with LazyLogging {
   @Test
   def handleUnknownMessage(): Unit = {
     executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = send("ping", "prod")
+    val listener = send("ping", "presto-prod")
 
     assertThat(listener.messagesJ, Matchers.hasItem(Matchers.containsString("Failed to handle unknown message : [ping]")))
   }
@@ -50,7 +50,7 @@ class SqlStreamingControllerTest extends E2EContext with LazyLogging {
   @Test
   def handlePingEvent(): Unit = {
     executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = send("""{"event":"ping"}""", "prod")
+    val listener = send("""{"event":"ping"}""", "presto-prod")
 
     assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"pong","data":{}}"""))
   }
