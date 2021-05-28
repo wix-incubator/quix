@@ -1,189 +1,162 @@
 package quix.web.controllers
 
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers
-import org.junit.runner.RunWith
-import org.junit.{Before, Test}
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT
-import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit4.SpringRunner
-import org.springframework.test.context.{TestContextManager, TestPropertySource}
 import quix.api.v1.db.{Catalog, Kolumn, Schema, Table}
 import quix.core.db.State
-import quix.web.{E2EContext, MockBeans, SpringConfigWithTestExecutor}
+import quix.web.{E2EContext, MockBeans}
 
-@RunWith(classOf[SpringRunner])
-@DirtiesContext
-@SpringBootTest(webEnvironment = DEFINED_PORT, classes = Array(classOf[SpringConfigWithTestExecutor]))
-@TestPropertySource(locations = Array("classpath:test.properties"))
 class PrestoDbControllerTest extends E2EContext {
+  sequential
 
-  new TestContextManager(this.getClass).prepareTestInstance(this)
   val executor = MockBeans.queryExecutor
   val db = MockBeans.db
   val prestoCatalogs = MockBeans.refreshableCatalogs
 
-  @Before
-  def executeBeforeEachTest = {
+  override def before = {
     executor.clear
     MockBeans.refreshableAutocomplete.state = State(Map.empty, 0L)
     MockBeans.refreshableCatalogs.state = State(List.empty, 0L)
   }
 
-  @Test
-  def returnEmptyCatalogsWhenPrestoIsDown(): Unit = {
-    executor.withExceptions(new Exception("presto is down!"), 100)
+  "PrestoDbController" should {
+    "returnEmptyCatalogsWhenPrestoIsDown" in {
+      executor.withExceptions(new Exception("presto is down!"), 100)
 
-    val catalogs = get[List[Catalog]]("api/db/presto-prod/explore")
+      val catalogs = get[List[Catalog]]("api/db/presto-prod/explore")
 
-    assertThat(catalogs, Matchers.is(List.empty[Catalog]))
-  }
+      catalogs must beEmpty
+    }
 
-  @Test
-  def sendFastPrestoQueryWhenDBTreeIsEmptyAndSlowInBackground(): Unit = {
-    executor
-      .withResults(List(List("catalog1")))
-      .withResults(List(List("catalog1", "schema", "table")))
+    "sendFastPrestoQueryWhenDBTreeIsEmptyAndSlowInBackground" in {
+      executor
+        .withResults(List(List("catalog1")))
+        .withResults(List(List("catalog1", "schema", "table")))
 
-    val catalogs = get[List[Catalog]]("api/db/presto-prod/explore")
-    val resultOfFastQuery = Catalog("catalog1", children = Nil)
-    assertThat(catalogs, Matchers.is(List(resultOfFastQuery)))
+      val catalogs = get[List[Catalog]]("api/db/presto-prod/explore")
+      val resultOfFastQuery = Catalog("catalog1", children = Nil)
 
-  }
+      catalogs must_=== List(resultOfFastQuery)
+    }
 
-  @Test
-  def returnEmptyListForNonMatchingQuery(): Unit = {
-    executor.withResults(List(List("catalog", "schema", "table")))
+    "returnEmptyListForNonMatchingQuery" in {
+      executor.withResults(List(List("catalog", "schema", "table")))
 
-    val catalogs = get[List[Catalog]]("api/db/presto-prod/search?q=foo")
+      val catalogs = get[List[Catalog]]("api/db/presto-prod/search?q=foo")
 
-    assertThat(catalogs, Matchers.is(List.empty[Catalog]))
-  }
+      catalogs must beEmpty
+    }
 
-  @Test
-  def searchByTableName(): Unit = {
-    val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", Nil)))))
-    prestoCatalogs.state = prestoCatalogs.state.copy(data = List(catalog), expirationDate = Long.MaxValue)
+    "searchByTableName" in {
+      val catalog = Catalog("catalog", children = List(Schema("schema", children = List(Table("table", Nil)))))
+      prestoCatalogs.state = prestoCatalogs.state.copy(data = List(catalog), expirationDate = Long.MaxValue)
 
-    val catalogs = get[List[Catalog]]("api/db/presto-prod/search?q=table")
+      val catalogs = get[List[Catalog]]("api/db/presto-prod/search?q=table")
 
-    assertThat(catalogs, Matchers.is(List(catalog)))
-  }
+      catalogs must_=== List(catalog)
+    }
 
-  @Test
-  def searchBySchemaName(): Unit = {
-    val catalog = Catalog("catalog", children = List(Schema("schema", children = Nil)))
-    prestoCatalogs.state = prestoCatalogs.state.copy(data = List(catalog), expirationDate = Long.MaxValue)
+    "searchBySchemaName" in {
+      val catalog = Catalog("catalog", children = List(Schema("schema", children = Nil)))
+      prestoCatalogs.state = prestoCatalogs.state.copy(data = List(catalog), expirationDate = Long.MaxValue)
 
-    val catalogs = get[List[Catalog]]("api/db/presto-prod/search?q=schema")
+      val catalogs = get[List[Catalog]]("api/db/presto-prod/search?q=schema")
 
-    assertThat(catalogs, Matchers.is(List(catalog)))
-  }
+      catalogs must_=== List(catalog)
+    }
 
-  @Test
-  def searchByCatalogName(): Unit = {
-    executor
-      .withResults(List(List("catalog")))
-      .withResults(List(List("catalog", "schema", "table")))
+    "searchByCatalogName" in {
+      executor
+        .withResults(List(List("catalog")))
+        .withResults(List(List("catalog", "schema", "table")))
 
-    val catalogs = get[List[Catalog]]("api/db/presto-prod/search?q=catalog")
+      val catalogs = get[List[Catalog]]("api/db/presto-prod/search?q=catalog")
 
-    val catalog = Catalog("catalog", children = Nil)
+      val catalog = Catalog("catalog", children = Nil)
 
-    assertThat(catalogs, Matchers.is(List(catalog)))
-  }
+      catalogs must_=== List(catalog)
+    }
 
-  @Test
-  def handleGetTableRequestWhenPrestoIsOnline(): Unit = {
-    executor.withResults(List(List("column1", "varchar"), List("column2", "int")))
+    "handleGetTableRequestWhenPrestoIsOnline" in {
+      executor.withResults(List(List("column1", "varchar"), List("column2", "int")))
 
-    val actual = get[Table]("api/db/presto-prod/explore/catalog/schema/table")
+      val actual = get[Table]("api/db/presto-prod/explore/catalog/schema/table")
 
-    val expected = Table("table", List(Kolumn("column1", "varchar"), Kolumn("column2", "int")))
+      val expected = Table("table", List(Kolumn("column1", "varchar"), Kolumn("column2", "int")))
 
-    assertThat(actual, Matchers.is(expected))
-  }
+      actual must_=== expected
+    }
 
-  @Test
-  def handleGetTableRequestWhenPrestoIsDown(): Unit = {
-    executor.withException(new Exception("presto is down!"))
+    "handleGetTableRequestWhenPrestoIsDown" in {
+      executor.withException(new Exception("presto is down!"))
 
-    val actual = get[Table]("api/db/presto-prod/explore/catalog/schema/table")
+      val actual = get[Table]("api/db/presto-prod/explore/catalog/schema/table")
 
-    val expected = Table("table", children = Nil)
+      val expected = Table("table", children = Nil)
 
-    assertThat(actual, Matchers.is(expected))
-  }
+      actual must_=== expected
+    }
 
-  @Test
-  def handleAutoCompleteRequestWhenPrestoIsOffline(): Unit = {
-    executor.withExceptions(new Exception("presto is down"), 100)
+    "handleAutoCompleteRequestWhenPrestoIsOffline" in {
+      executor.withExceptions(new Exception("presto is down"), 100)
 
-    val actual = get[Map[String, List[String]]]("api/db/presto-prod/autocomplete")
+      val actual = get[Map[String, List[String]]]("api/db/presto-prod/autocomplete")
 
-    assertThat(actual("catalogs").isEmpty, Matchers.is(true))
-    assertThat(actual("schemas").isEmpty, Matchers.is(true))
-    assertThat(actual("tables").isEmpty, Matchers.is(true))
-    assertThat(actual("columns").isEmpty, Matchers.is(true))
-  }
+      actual("catalogs") must beEmpty
+      actual("schemas") must beEmpty
+      actual("tables") must beEmpty
+      actual("columns") must beEmpty
+    }
 
-  @Test
-  def handleAutoCompleteRequestWhenAutocompleteStateIsEmpty(): Unit = {
-    executor
-      .withResults(List(List("catalog1"), List("catalog2")))
-      .withResults(List(List("column1"), List("column2")))
+    "handleAutoCompleteRequestWhenAutocompleteStateIsEmpty" in {
+      executor
+        .withResults(List(List("catalog1"), List("catalog2")))
+        .withResults(List(List("column1"), List("column2")))
 
-    val actual = get[Map[String, List[String]]]("api/db/presto-prod/autocomplete")
+      val actual = get[Map[String, List[String]]]("api/db/presto-prod/autocomplete")
 
-    assertThat(actual("catalogs"), Matchers.is(List("catalog1", "catalog2")))
-    assertThat(actual("columns"), Matchers.is(List("column1", "column2")))
-  }
+      actual("catalogs") must_=== List("catalog1", "catalog2")
+      actual("columns") must_=== List("column1", "column2")
+    }
 
-  @Test
-  def handleAutoCompleteRequestWhenAutocompleteStateExists(): Unit = {
-    MockBeans.refreshableAutocomplete.state = State(Map("foo" -> List("boo")), Long.MaxValue)
+    "handleAutoCompleteRequestWhenAutocompleteStateExists" in {
+      MockBeans.refreshableAutocomplete.state = State(Map("foo" -> List("boo")), Long.MaxValue)
 
-    executor.withException(new Exception("boom!"))
-    val actual = get[Map[String, List[String]]]("api/db/presto-prod/autocomplete")
+      executor.withException(new Exception("boom!"))
+      val actual = get[Map[String, List[String]]]("api/db/presto-prod/autocomplete")
 
-    assertThat(actual("foo"), Matchers.is(List("boo")))
-  }
+      actual("foo") must_=== List("boo")
+    }
 
-  @Test
-  def returnListOfSchemasOnCorrectCatalogName(): Unit = {
-    val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
-    MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
+    "returnListOfSchemasOnCorrectCatalogName" in {
+      val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
+      MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
 
-    val firstResults = get[List[Schema]]("api/db/presto-prod/explore/catalog")
-    assertThat(firstResults, Matchers.is(mock.children))
-  }
+      val firstResults = get[List[Schema]]("api/db/presto-prod/explore/catalog")
+      firstResults must_=== mock.children
+    }
 
-  @Test
-  def returnEmptyListOfSchemasOnInvalidCatalogName(): Unit = {
-    val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
-    MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
+    "returnEmptyListOfSchemasOnInvalidCatalogName" in {
+      val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
+      MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
 
-    val firstResults = get[List[Schema]]("api/db/presto-prod/explore/i-do-not-exist")
-    assertThat(firstResults, Matchers.is(List.empty[Schema]))
-  }
+      val firstResults = get[List[Schema]]("api/db/presto-prod/explore/i-do-not-exist")
+      firstResults must beEmpty
+    }
 
-  @Test
-  def returnListOfTablesOnCorrectCatalogNameAndSchemaName(): Unit = {
-    val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
-    MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
+    "returnListOfTablesOnCorrectCatalogNameAndSchemaName" in {
+      val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
+      MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
 
-    val firstResults = get[List[Table]]("api/db/presto-prod/explore/catalog/second")
-    assertThat(firstResults, Matchers.is(List(Table("first", Nil))))
-  }
+      val firstResults = get[List[Table]]("api/db/presto-prod/explore/catalog/second")
+      firstResults must_=== List(Table("first", Nil))
+    }
 
-  @Test
-  def returnEmptyListOfTablesOnInvalidCatalogNameOrSchemaName(): Unit = {
-    val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
-    MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
+    "returnEmptyListOfTablesOnInvalidCatalogNameOrSchemaName" in {
+      val mock = Catalog("catalog", children = List(Schema("first", Nil), Schema("second", List(Table("first", Nil)))))
+      MockBeans.refreshableCatalogs.state = State(List(mock), System.currentTimeMillis() + 1000 * 10)
 
-    val results = get[List[Table]]("api/db/presto-prod/explore/catalog/foo")
-    assertThat(results, Matchers.is(List.empty[Table]))
+      val results = get[List[Table]]("api/db/presto-prod/explore/catalog/foo")
+      results must beEmpty
+    }
   }
 }
 

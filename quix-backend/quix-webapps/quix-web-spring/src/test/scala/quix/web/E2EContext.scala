@@ -3,6 +3,14 @@ package quix.web
 
 import org.asynchttpclient.Dsl.asyncHttpClient
 import org.asynchttpclient.ws.{WebSocket, WebSocketListener, WebSocketUpgradeHandler}
+import org.junit.runner.RunWith
+import org.specs2.mutable.Spec
+import org.specs2.specification.BeforeAfterEach
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT
+import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.{TestContextManager, TestPropertySource}
+import org.springframework.test.context.junit4.SpringRunner
 import quix.api.v1.execute.{ExecutionEvent, StartCommand}
 import quix.core.utils.JsonOps.Implicits.global
 import quix.core.utils.StringJsonHelpersSupport
@@ -12,7 +20,20 @@ import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Promise}
 
-trait E2EContext extends StringJsonHelpersSupport {
+@RunWith(classOf[SpringRunner])
+@DirtiesContext
+@SpringBootTest(webEnvironment = DEFINED_PORT, classes = Array(classOf[SpringConfigWithTestExecutor]))
+@TestPropertySource(locations = Array("classpath:test.properties"))
+abstract class MySpecWithSpring extends Spec
+
+trait E2EContext extends MySpecWithSpring with StringJsonHelpersSupport with BeforeAfterEach {
+
+  new TestContextManager(this.getClass).prepareTestInstance(this)
+
+  def before: Any = {}
+
+  def after: Any = {}
+
   val c = asyncHttpClient()
 
   val jettyPort = "8888"
@@ -59,6 +80,18 @@ trait E2EContext extends StringJsonHelpersSupport {
     }
 
     listener
+  }
+
+  def containEvent(e: String) = {
+    val event = e
+      .replace("*", "\\*")
+      .replace("[", "\\[")
+      .replace("]", "\\]")
+      .replace("{", "\\{")
+      .replace("}", "\\}")
+      .replaceAll("query-id", """.{36,37}""")
+
+    contain(beMatching(event))
   }
 }
 

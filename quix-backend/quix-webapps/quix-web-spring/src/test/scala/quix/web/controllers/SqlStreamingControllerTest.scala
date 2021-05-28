@@ -1,88 +1,72 @@
 package quix.web.controllers
 
 import com.typesafe.scalalogging.LazyLogging
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers
-import org.junit.runner.RunWith
-import org.junit.{Before, Test}
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment.DEFINED_PORT
-import org.springframework.test.annotation.DirtiesContext
-import org.springframework.test.context.junit4.SpringRunner
-import org.springframework.test.context.{TestContextManager, TestPropertySource}
-import quix.web.{E2EContext, MockBeans, SpringConfigWithTestExecutor}
+import quix.web.{E2EContext, MockBeans}
 
-@RunWith(classOf[SpringRunner])
-@DirtiesContext
-@SpringBootTest(webEnvironment = DEFINED_PORT, classes = Array(classOf[SpringConfigWithTestExecutor]))
-@TestPropertySource(locations = Array("classpath:test.properties"))
 class SqlStreamingControllerTest extends E2EContext with LazyLogging {
-
-  new TestContextManager(this.getClass).prepareTestInstance(this)
+  sequential
 
   val executor = MockBeans.queryExecutor
 
-  @Before
-  def executeBeforeEachTest(): Unit = executor.clear
+  override def before(): Unit = executor.clear
 
-  @Test
-  def passSanity(): Unit = {
-    executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = execute("select 1", module = "presto-prod")
+  "SqlStreamingController" should {
+    "pass sanity" in {
+      executor.withResults(List(List("1")), columns = List("_col0"))
+      val listener = execute("select 1", module = "presto-prod")
 
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-start","data":{"id":"query-id"}}"""))
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-id","code":"select 1"}}"""))
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-id","percentage":0}}"""))
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"fields","data":{"id":"query-id","fields":["_col0"]}}"""))
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-id","values":["1"]}}"""))
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-id","percentage":100}}"""))
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-id","statistics":{}}}"""))
-  }
-
-  @Test
-  def handleUnknownMessage(): Unit = {
-    executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = send("ping", "presto-prod")
-
-    assertThat(listener.messagesJ, Matchers.hasItem(Matchers.containsString("Failed to handle unknown message : [ping]")))
-  }
-
-  @Test
-  def handlePingEvent(): Unit = {
-    executor.withResults(List(List("1")), columns = List("_col0"))
-    val listener = send("""{"event":"ping"}""", "presto-prod")
-
-    assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"pong","data":{}}"""))
-  }
-
-  @Test
-  def handleMultipleStatements(): Unit = {
-    executor
-      .withResults(List(List("1")), queryId = "query-1", columns = List("foo"))
-      .withResults(List(List("2")), queryId = "query-2", columns = List("boo"))
-
-    val listener = execute("select 1 as foo;\nselect 2 as boo", module = "presto-prod")
-
-    // first query
-    {
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-start","data":{"id":"query-1"}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-1","code":"select 1 as foo"}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"fields","data":{"id":"query-1","fields":["foo"]}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-1","percentage":0}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-1","values":["1"]}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-1","percentage":100}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-1","statistics":{}}}"""))
+      listener.messages must contain("""{"event":"query-start","data":{"id":"query-id"}}""")
+      listener.messages must contain("""{"event":"query-details","data":{"id":"query-id","code":"select 1"}}""")
+      listener.messages must contain("""{"event":"percentage","data":{"id":"query-id","percentage":0}}""")
+      listener.messages must contain("""{"event":"fields","data":{"id":"query-id","fields":["_col0"]}}""")
+      listener.messages must contain("""{"event":"row","data":{"id":"query-id","values":["1"]}}""")
+      listener.messages must contain("""{"event":"percentage","data":{"id":"query-id","percentage":100}}""")
+      listener.messages must contain("""{"event":"query-end","data":{"id":"query-id","statistics":{}}}""")
     }
 
-    // second query
-    {
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-start","data":{"id":"query-2"}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-details","data":{"id":"query-2","code":"select 2 as boo"}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"fields","data":{"id":"query-2","fields":["boo"]}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-2","percentage":0}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"row","data":{"id":"query-2","values":["2"]}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"percentage","data":{"id":"query-2","percentage":100}}"""))
-      assertThat(listener.messagesJ, Matchers.hasItem("""{"event":"query-end","data":{"id":"query-2","statistics":{}}}"""))
+    "handleUnknownMessage" in {
+      executor.withResults(List(List("1")), columns = List("_col0"))
+      val listener = send("ping", "presto-prod")
+
+      listener.messages must contain(contain("Failed to handle unknown message : [ping]"))
+    }
+
+    "handlePingEvent" in {
+      executor.withResults(List(List("1")), columns = List("_col0"))
+      val listener = send("""{"event":"ping"}""", "presto-prod")
+
+      listener.messages must containEvent("""{"event":"pong","data":{}}""")
+    }
+
+    "handleMultipleStatements" in {
+      executor
+        .withResults(List(List("1")), queryId = "query-1", columns = List("foo"))
+        .withResults(List(List("2")), queryId = "query-2", columns = List("boo"))
+
+      val listener = execute("select 1 as foo;\nselect 2 as boo", module = "presto-prod")
+
+      // first query
+      {
+        listener.messages must containEvent("""{"event":"query-start","data":{"id":"query-1"}}""")
+        listener.messages must containEvent("""{"event":"query-details","data":{"id":"query-1","code":"select 1 as foo"}}""")
+        listener.messages must containEvent("""{"event":"fields","data":{"id":"query-1","fields":["foo"]}}""")
+        listener.messages must containEvent("""{"event":"percentage","data":{"id":"query-1","percentage":0}}""")
+        listener.messages must containEvent("""{"event":"row","data":{"id":"query-1","values":["1"]}}""")
+        listener.messages must containEvent("""{"event":"percentage","data":{"id":"query-1","percentage":100}}""")
+        listener.messages must containEvent("""{"event":"query-end","data":{"id":"query-1","statistics":{}}}""")
+      }
+
+      // second query
+      {
+        listener.messages must containEvent("""{"event":"query-start","data":{"id":"query-2"}}""")
+        listener.messages must containEvent("""{"event":"query-details","data":{"id":"query-2","code":"select 2 as boo"}}""")
+        listener.messages must containEvent("""{"event":"fields","data":{"id":"query-2","fields":["boo"]}}""")
+        listener.messages must containEvent("""{"event":"percentage","data":{"id":"query-2","percentage":0}}""")
+        listener.messages must containEvent("""{"event":"row","data":{"id":"query-2","values":["2"]}}""")
+        listener.messages must containEvent("""{"event":"percentage","data":{"id":"query-2","percentage":100}}""")
+        listener.messages must containEvent("""{"event":"query-end","data":{"id":"query-2","statistics":{}}}""")
+      }
+
     }
 
   }

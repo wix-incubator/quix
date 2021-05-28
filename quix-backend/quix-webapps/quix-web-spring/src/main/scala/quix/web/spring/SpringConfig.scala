@@ -9,19 +9,19 @@ import com.google.auth.oauth2.ServiceAccountCredentials
 import com.google.cloud.bigquery.BigQueryOptions
 import com.typesafe.scalalogging.LazyLogging
 import monix.eval.Coeval
+import monix.execution.Scheduler
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.context.annotation.{Bean, Configuration, DependsOn}
 import org.springframework.core.env.Environment
-import quix.api.v1.execute.Batch
+import quix.api.v1.users.{DummyUsers, Users}
 import quix.api.v2.execute.ExecutionModule
-import quix.api.v1.users.DummyUsers
 import quix.athena._
 import quix.bigquery._
 import quix.bigquery.db.{BigQueryAutocomplete, BigQueryCatalogs, BigQueryTables}
 import quix.core.db.{RefreshableAutocomplete, RefreshableCatalogs, RefreshableDb}
 import quix.core.download.{DownloadConfig, QueryResultsStorage}
-import quix.core.executions.{SqlModule}
-import quix.core.history.dao.HistoryReadDao
+import quix.core.executions.SqlModule
+import quix.core.history.dao.{HistoryReadDao, HistoryWriteDao}
 import quix.core.sql.StopWordSqlSplitter
 import quix.core.utils.JsonOps
 import quix.jdbc._
@@ -30,7 +30,7 @@ import quix.presto.db.{PrestoAutocomplete, PrestoCatalogs, PrestoTables}
 import quix.presto.rest.ScalaJPrestoStateClient
 import quix.python.{PythonConfig, PythonExecutor, PythonModule}
 import quix.web.auth.{DemoUsers, JwtUsers}
-import quix.web.controllers.{DbController, DownloadController, HealthController, HistoryController}
+import quix.web.controllers._
 
 import scala.util.control.NonFatal
 
@@ -365,6 +365,22 @@ class DownloadConfiguration extends LazyLogging {
 
 @Configuration
 class Controllers extends LazyLogging {
+
+  @Bean
+  @DependsOn(Array("initKnownModules"))
+  def initSqlStreamingController(modules: Map[String, ExecutionModule],
+                                       users: Users,
+                                       downloadConfig: DownloadConfig,
+                                       queryResultsStorage: QueryResultsStorage,
+                                       historyWriteDao: HistoryWriteDao): SqlStreamingController = {
+    new SqlStreamingController(
+      modules = modules,
+      users = users,
+      downloadConfig = downloadConfig,
+      queryResultsStorage = queryResultsStorage,
+      historyWriteDao = historyWriteDao,
+      io = Scheduler.io("presto-io"))
+  }
 
   @Bean def initDbController(modules: Map[String, ExecutionModule]): DbController = {
     logger.info("event=[spring-config] bean=[DbController]")
