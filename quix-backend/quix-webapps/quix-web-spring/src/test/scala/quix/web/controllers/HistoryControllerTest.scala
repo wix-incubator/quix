@@ -6,7 +6,7 @@ import quix.web.E2EContext
 
 class HistoryControllerTest extends E2EContext with LazyLogging {
 
-  private val prod = EmbeddedMySql.create(2222, "prod-user", "prod-pass").start()
+  private val prod = EmbeddedMySql.create(4444, "prod-user", "prod-pass").start()
 
   override def before: Unit = prod.reloadSchema("aschema", classPathScript("db/001_init.sql"))
 
