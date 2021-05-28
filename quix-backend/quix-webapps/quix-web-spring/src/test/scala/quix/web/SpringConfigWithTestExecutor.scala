@@ -21,7 +21,6 @@ class SpringConfigWithTestExecutor {
     Registry.modules.toMap ++ Map(
       "presto-prod" -> new SqlModule(MockBeans.queryExecutor, Some(MockBeans.db)),
       "presto-dev" -> new SqlModule(MockBeans.queryExecutor, Some(MockBeans.db)),
-      "snake" -> new PythonModule(new PythonExecutor)
     )
   }
 }
