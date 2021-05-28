@@ -46,6 +46,7 @@ val specs2Deps = Seq(
   "org.specs2" %% "specs2-core" % "4.10.6" % "test",
   "org.specs2" %% "specs2-junit" % "4.10.6" % "test",
   "org.specs2" %% "specs2-mock" % "4.10.6" % "test",
+  "org.specs2" %% "specs2-matcher-extra" % "4.10.6" % "test"
 )
 
 lazy val quixApi = (project in file("quix-api"))
@@ -61,14 +62,17 @@ lazy val quixCore = (project in file("quix-core"))
 
     libraryDependencies += "com.github.blemale" %% "scaffeine" % "3.1.0",
 
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-    libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.10.4",
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.12.3",
+
+      // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.12.3",
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-scala
-    libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.10.4",
+    libraryDependencies += "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.12.3",
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jdk8
-    libraryDependencies += "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % "2.10.4",
+    libraryDependencies += "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % "2.12.3",
 
     // https://mvnrepository.com/artifact/io.prestosql/presto-parser
     libraryDependencies += "io.prestosql" % "presto-parser" % "329",
@@ -76,7 +80,7 @@ lazy val quixCore = (project in file("quix-core"))
     // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3
     libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.11.728",
 
-      libraryDependencies ++= loggingDeps,
+    libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
 
     // https://mvnrepository.com/artifact/com.wix/wix-embedded-mysql
@@ -162,8 +166,54 @@ lazy val quixPythonModule = (project in file("quix-modules/quix-python-module"))
     libraryDependencies += "net.sf.py4j" % "py4j" % "0.10.9.2",
   ) ++ baseSettings)
 
+lazy val quixWebSpring = (project in file("quix-webapps/quix-web-spring"))
+  .dependsOn(quixCore, quixPrestoModule, quixAthenaModule, quixPythonModule, quixBigqueryModule, quixJdbcModule)
+  .settings(Seq(
+    name := "Quix Web Spring",
+    assembly / mainClass in Compile := Some("quix.web.Server"),
+
+    publish / skip := true,
+
+    assembly / assemblyMergeStrategy := {
+      case PathList("META-INF", "spring.factories") => MergeStrategy.filterDistinctLines
+      case PathList("META-INF", _*) => MergeStrategy.discard
+      case _ => MergeStrategy.first
+    },
+
+    assembly / assemblyJarName := "quix-web-spring.jar",
+
+    libraryDependencies ++= loggingDeps,
+    libraryDependencies ++= specs2Deps,
+    libraryDependencies ++= Seq(
+      "org.springframework.boot" % "spring-boot-starter-web" % "2.5.0" exclude("org.springframework.boot", "spring-boot-starter-tomcat"),
+      "org.springframework.boot" % "spring-boot-starter-jetty" % "2.5.0",
+      "org.springframework" % "spring-websocket" % "5.3.7",
+      "org.eclipse.jetty.websocket" % "websocket-api" % "9.4.41.v20210516",
+      "org.eclipse.jetty.websocket" % "websocket-common" % "9.4.41.v20210516",
+      "org.eclipse.jetty.websocket" % "websocket-server" % "9.4.41.v20210516",
+
+      "javax.servlet" % "javax.servlet-api" % "4.0.1" % "provided",
+
+      // https://mvnrepository.com/artifact/com.pauldijou/jwt-core
+      "com.pauldijou" %% "jwt-core" % "3.0.1",
+
+      "org.springframework.boot" % "spring-boot-starter-test" % "2.5.0" % Test,
+
+      // https://mvnrepository.com/artifact/org.asynchttpclient/async-http-client
+      "org.asynchttpclient" % "async-http-client" % "2.10.4" % Test,
+
+      // https://mvnrepository.com/artifact/com.wix/wix-embedded-mysql
+      "com.wix" % "wix-embedded-mysql" % "4.6.1" % Test,
+
+      // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+      "mysql" % "mysql-connector-java" % "8.0.19" % Test,
+    )
+
+
+  ) ++ compileOptions)
+
 lazy val root = (project in file("."))
-  .aggregate(quixApi, quixCore, quixAthenaModule, quixBigqueryModule, quixJdbcModule, quixPrestoModule, quixPythonModule)
+  .aggregate(quixApi, quixCore, quixAthenaModule, quixBigqueryModule, quixJdbcModule, quixPrestoModule, quixPythonModule, quixWebSpring)
   .settings(
     crossScalaVersions := Nil,
     publish / skip := true,
