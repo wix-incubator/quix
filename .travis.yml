@@ -53,8 +53,7 @@ jobs:
         - pyenv versions
         - pyenv global 3.7.1
         - python3 -m pip install --upgrade pip
-        - sbt ++$TRAVIS_SCALA_VERSION test publishM2
-        - mvn --quiet -f quix-webapps/quix-web-spring/pom.xml test
+        - sbt ++$TRAVIS_SCALA_VERSION test
     - <<: *scala-builds
       name: "Scala 2.13"
       scala:
@@ -64,4 +63,4 @@ jobs:
         - pyenv versions
         - pyenv global 3.7.1
         - python3 -m pip install --upgrade pip
-        - sbt ++$TRAVIS_SCALA_VERSION test publishM2
+        - sbt ++$TRAVIS_SCALA_VERSION test
