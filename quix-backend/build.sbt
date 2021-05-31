@@ -37,6 +37,13 @@ lazy val baseSettings =
       licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
     )
 
+concurrentRestrictions in Global := Seq(
+  Tags.limit(Tags.CPU, 2),
+  Tags.limit(Tags.Network, 10),
+  Tags.limit(Tags.Test, 1),
+  Tags.limitAll( 15 )
+)
+
 val loggingDeps = Seq(
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.3",
   "ch.qos.logback" % "logback-classic" % "1.2.3"
