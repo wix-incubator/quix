@@ -22,6 +22,9 @@ class MysqlJdbcQueryExecutorIntegrationTest extends SpecWithJUnit with BeforeAll
     val builder = spy(new SingleBuilder)
 
     def query(sql: String) = ImmutableSubQuery(sql, User("user@quix"))
+
+    val catalogs = new JdbcCatalogs(config)
+    val tables = new JdbcTables(config)
   }
 
   def before = EmbeddedMysqlDb.reloadSchema
@@ -131,6 +134,58 @@ class MysqlJdbcQueryExecutorIntegrationTest extends SpecWithJUnit with BeforeAll
 
       // verify
       there was one(builder).errorSubQuery(anyString, any[Throwable]())
+
+      EmbeddedMysqlDb.start
+    }
+  }
+
+  "JdbcCatalogs.fast" should {
+    "return only schema names" in new ctx {
+      val db = catalogs.fast.runSyncUnsafe()
+      val catalogNames = db.map(_.name)
+      val schemaNames = db.flatMap(_.children.map(_.name))
+
+      catalogNames must contain("__root")
+      schemaNames must contain("aschema")
+    }
+  }
+
+  "JdbcCatalogs.full" should {
+    "return complete db tree" in new ctx {
+      val fullTree = catalogs.full.runSyncUnsafe()
+      val catalogNames = fullTree.map(_.name)
+      val schemaNames = fullTree.flatMap(_.children.map(_.name))
+      val tableNames = fullTree.flatMap(_.children.flatMap(_.children.map(_.name)))
+
+      catalogNames must contain("__root")
+      schemaNames must contain("aschema")
+      tableNames must contain("empty_table", "large_table", "small_table")
+    }
+  }
+
+  "JdbcTables.fast" should {
+    "return table on valid request of single column table" in new ctx {
+      val table = tables.get("__root", "aschema", "small_table").runSyncUnsafe()
+      val columns = table.children.map(_.name)
+
+      table.name must_=== "small_table"
+      columns must contain("col1")
+    }
+
+    "return table with empty columns on bad request" in new ctx {
+      val table = tables.get("foo", "bar", "baz").runSyncUnsafe()
+
+      table.name must_=== "baz"
+      table.children must beEmpty
+    }
+
+    "return all columns on valid request of wide table" in new ctx {
+      val table = tables.get("__root", "aschema", "wide_table").runSyncUnsafe()
+      val columns = table.children.map(_.name)
+
+      val expected = (1 to 10).map(i => "col" + i).toList
+
+      columns must_=== expected
     }
   }
 }
