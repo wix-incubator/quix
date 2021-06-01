@@ -56,6 +56,7 @@ export class Runner extends srv.eventEmitter.EventEmitter {
   private code = null;
   private logEvents: boolean = false;
   private keepAliveInterval;
+  private numOfRetries = 0;
 
   private readonly transformers = {
     request: request => request,
@@ -173,13 +174,14 @@ export class Runner extends srv.eventEmitter.EventEmitter {
   }
 
   protected start() {
-    this.getState()
-      .setRunningStatus(true)
-      .startDurationCount();
+    this.getState().setRunningStatus(true);
     
-    this.keepAliveInterval = inject('$interval')(() => this.getSocket().send({
-      event: 'ping'
-    }), 30 * 1000);
+    if (this.numOfRetries === 0) {
+      this.getState().startDurationCount();
+      this.keepAliveInterval = inject('$interval')(() => this.getSocket().send({
+        event: 'ping'
+      }), 30 * 1000);
+    }
   }
 
   protected finish() {
@@ -273,12 +275,31 @@ export class Runner extends srv.eventEmitter.EventEmitter {
     sendSocketData(this.socket, code, user, this.transformers, this.mode);
 
     this.socket.on('close', () => {
-      if (!this.getState().getStatus().finished) {
-        this.getScope().$apply(() => {
-          this.getEvents().apply('error', {message: 'Connection lost'}, {});
-          this.finish();
-        });
+      if (this.getState().getStatus().finished) {
+        return;
       }
+
+      const connectionId = this.getState().getId();
+
+      if (
+        this.numOfRetries < 10 &&
+        (!connectionId || (
+          this.getQueries().length === 1
+          && !this.getCurrentQuery().getResults().bufferSize()
+        ))
+      ) {
+        this.numOfRetries++;
+        this.run(code, user);
+        return;
+      }
+
+      this.getScope().$apply(() => {
+        this.getEvents().apply('error', {
+          message: this.getConnectionErrorMessage(connectionId),
+        }, {});
+
+        this.finish();
+      });
     });
 
     this.start();
@@ -294,6 +315,21 @@ export class Runner extends srv.eventEmitter.EventEmitter {
     }
 
     this.finish();
+  }
+
+  getConnectionErrorMessage(connectionId) {
+    return `Connection failed after (${this.numOfRetries}) retries, please rerun your query manually.   
+This is most likely a transient network error and not a problem with the ${inject('$filter')('biToHumanCase')(this.type)} engine.
+-------------------------------------------------------------------------------------------------
+Connection ID: ${connectionId}
+Connection start time: ${inject('$filter')('biDate')(this.getState().getTime().started, 'seconds')}
+Connection elapsed time: ${this.getState().getTime().elapsed}
+-------------------------------------------------------------------------------------------------
+${this.getCurrentQuery() ? `Query ID: ${this.getCurrentQuery().getId()}` : ''}
+${this.getCurrentQuery() ? `Query start time: ${inject('$filter')('biDate')(this.getCurrentQuery().getTime().started, 'seconds')}` : ``}
+${this.getCurrentQuery() ? `Query elapsed time: ${this.getCurrentQuery().getTime().elapsed}` : ``}
+${this.getCurrentQuery() ? `Fetched rows: ${this.getCurrentQuery().getResults().bufferSize()}` : ``}
+`
   }
 }
 
