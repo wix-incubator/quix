@@ -1,6 +1,6 @@
 {
   "name": "@wix/quix-client",
-  "version": "1.0.61",
+  "version": "1.0.62",
   "license": "MIT",
   "description": "Presto-based notebook manager",
   "author": {
