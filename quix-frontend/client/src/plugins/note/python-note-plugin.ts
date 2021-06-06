@@ -29,6 +29,7 @@ export class PythonNotePlugin extends NotePlugin {
         type="vm.type"
         runner="runner"
         download-file-name="actions.getDownloadFileName(query)"
+        table-formatter="tableFormatter()"
         on-save="events.onSave()"
         on-run="events.onRun()"
         on-editor-load="events.onEditorInstanceLoad(instance)"

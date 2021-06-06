@@ -6,6 +6,7 @@ import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
 import {IScope} from './runner-types';
 import {pluginManager} from '../../plugins';
+import {getFormatter} from './runner-results-formatter';
 
 export default (app: App, store: Store) => () => ({
   restrict: 'E',
@@ -84,6 +85,8 @@ export default (app: App, store: Store) => () => ({
             return scope.renderStats();
           }
         });
+
+      scope.tableFormatter = () => getFormatter(app, store, scope.vm.engine, scope.vm.type);  
 
       scope.renderRunner = () => {
         const html = inject('$compile')(plugin.renderRunner())(scope);
