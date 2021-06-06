@@ -21,9 +21,7 @@ const jsonFormatter = (name: string, value: any) => {
     return null;
   }
 
-  const escapedValue = utils.dom.escape(value);
-
-  return JSON.stringify(escapedValue);
+  return utils.dom.escape(JSON.stringify(value));
 }
 
 const identityFormatter = (name: string, value: any) => value;
