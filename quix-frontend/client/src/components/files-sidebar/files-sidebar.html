@@ -23,8 +23,40 @@
   </div>
 </div>
 
-<div class="bi-fade-in" ng-if="vm.state.is('Content')" data-hook="files-sidebar-content">
+<div
+  class="bi-c-h bi-s-v--x15 bi-grow bi-fade-in"
+  ng-if="vm.state.after('Result')"
+  data-hook="files-sidebar-content"
+>
+  <bi-search
+    class="bi-db-schema-content bi-dont-shrink"
+    ng-model="vm.search.text"
+    ng-change="events.onSearch(vm.search.text)"
+    placeholder="Search"
+    bi-focus
+  ></bi-search>
+
+  <div
+    class="bi-empty-state--loading bi-center bi-grow bi-fade-in"
+    ng-if="vm.state.is('SearchInitial')"
+  >
+    <div class="bi-empty-state-content">Searching...</div>
+  </div>
+
+  <div
+    class="bi-empty-state bi-s-v bi-fade-in bi-center bi-grow"
+    ng-if="vm.state.is('SearchResult')"
+  >
+    <quix-image class="bi-empty-state-image" name="no_data.svg"></quix-image>
+
+    <div class="bi-empty-state-content">
+      No notebooks that match "{{::vm.search.text}}"
+    </div>
+  </div>
+
   <bi-file-explorer
+    class="bi-scroll bi-fade-in"
+    ng-show="vm.state.is('Content')"
     ng-model="vm.state.value().tree"
     fe-options="{
       fileAlias: ['notebook'],
@@ -35,6 +67,22 @@
     on-file-click="events.onFileClick(file)"
     on-folder-click="events.onFolderClick(folder)"
     permissions="getFolderPermissions(folder)"
+  ></bi-file-explorer>
+
+  <bi-file-explorer
+    class="bi-scroll bi-fade-in"
+    ng-if="vm.state.is('SearchContent')"
+    ng-model="vm.state.value().filteredTree"
+    fe-options="{
+      fileAlias: ['notebook'],
+      folderMode: 'select',
+      expandRootFolder: true,
+      expandAllFolders: vm.state.is('SearchContent'),
+      hideEmptyFolders: vm.state.is('SearchContent'),
+    }"
+    on-file-click="events.onFileClick(file)"
+    on-folder-click="events.onFolderClick(folder)"
+    readonly="true"
   ></bi-file-explorer>
 </div>
   

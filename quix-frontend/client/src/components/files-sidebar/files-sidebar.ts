@@ -1,7 +1,7 @@
 import template from './files-sidebar.html';
 import './files-sidebar.scss';
 
-import {initNgScope} from '../../lib/core';
+import {initNgScope, inject} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
 import {FileActions, NotebookActions, IFile} from '@wix/quix-shared';
@@ -17,12 +17,16 @@ import {
   goToFile
 } from '../../services';
 import { goToNotebook } from '../../services/notebook';
+import { debounceAsync } from '../../utils';
 
 enum States {
   Initial,
   Error,
   Result,
-  Content
+  Content,
+  SearchInitial,
+  SearchResult,
+  SearchContent,
 }
 
 const listenToEvents = (scope, app: App, store: Store, fileExplorer) => {
@@ -43,7 +47,7 @@ const listenToNavChange = (scope: IScope, app: App, fileExplorer) => {
     .listen(['files', 'notebook'], 'success', ({id}: {id: string}) => {
       const file = scope.vm.state.value().files.find(f => f.id === id);
 
-     return file ? fileExplorer.setActive(file) : fileExplorer.clearActive();
+      return file ? fileExplorer.setActive(file) : fileExplorer.clearActive();
     }, scope)
     .otherwise(() => fileExplorer.clearActive());
 }
@@ -54,8 +58,21 @@ export default (app: App, store: Store) => () => ({
   scope: {},
   link: {
     async pre(scope: IScope) {
+      const search = debounceAsync((text: string, files: IFile[]) => {
+        text = text.toLowerCase();
+
+        const res = files.filter(file => {
+          return file.type === 'folder' || file.name.toLowerCase().includes(text);
+        });
+
+        return inject('$q').when(res);
+      });
+
       initNgScope(scope)
         .withVM({
+          search: {
+            text: null,
+          },
           $init() {
             this.state = new StateManager(States);
           }
@@ -74,6 +91,21 @@ export default (app: App, store: Store) => () => ({
           onNotebookAdd() {
             addNotebook(store, app, [], {addNote: true})
               .then(notebook => goToNotebook(app, notebook, {isNew: true}));
+          }, 
+          onSearch(text: string) {
+            scope.vm.state.force('SearchInitial');
+
+            search(text, scope.vm.state.value().files)(filteredFiles => {
+              if (text) {
+                scope.vm.state
+                  .set('SearchResult', true)
+                  .set('SearchContent', () => filteredFiles.filter(file => file.type !== 'folder').length > 0, {
+                    filteredTree: filteredFiles
+                  });
+              } else {
+                scope.vm.state.force('Content', true, {filteredTree: null});
+              }
+            });
           }
         });
 
