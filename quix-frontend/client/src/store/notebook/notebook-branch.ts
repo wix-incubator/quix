@@ -22,6 +22,7 @@ export interface IView {
   markedMap: Record<string, INote>;
   markedList: INote[];
   note: INote;
+  saving: boolean;
 }
 
 export default (app: App): IBranch => register => {
@@ -82,14 +83,16 @@ export default (app: App): IBranch => register => {
   const view = (state: IView = {
     markedMap: {},
     markedList: [],
-    note: null
+    note: null,
+    saving: false,
   }, action: any): IView => {
     switch (action.type) {
       case 'notebook.set':
         return {
           markedMap: {},
           markedList: [],
-          note: null
+          note: null,
+          saving: false,
         };
       case 'notebook.view.unmarkAll':
         return {
@@ -106,6 +109,8 @@ export default (app: App): IBranch => register => {
         return {...state, markedList: values<INote>(state.markedMap).filter(n => !!n)};
       case 'notebook.view.setNote':
         return {...state, note: action.note};
+      case 'notebook.view.setSaving':
+        return {...state, saving: action.saving};
       default:
     }
 

@@ -14,6 +14,7 @@ export default (app: App) => ({
   breadcrumbs: [{name: 'My notebooks'}],
   view: {
     hasChanges: false,
+    saving: false,
   },
   marked: {},
   $init() {

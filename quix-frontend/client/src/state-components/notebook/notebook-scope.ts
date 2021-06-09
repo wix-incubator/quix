@@ -7,11 +7,12 @@ export const runners = x => x;
 export const permissions = x => x;
 
 export const queue = {
-  size: (scope, value) => Reactions.setHasChanges(scope, value > 0)
+  size: (scope, value) => Reactions.setHasChanges(scope, value > 0),
 };
 
 export const view = {
   markedMap: (scope, value) => Reactions.setMarkedMap(scope, value),
   markedList: (scope, value) => Reactions.setMarkedList(scope, value),
   note: (scope, value) => Reactions.setNote(scope, value),
+  saving: (scope, value) => Reactions.setSaving(scope, value),
 };

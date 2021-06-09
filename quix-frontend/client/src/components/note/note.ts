@@ -20,6 +20,8 @@ export default (app: App, store: Store) => () => ({
     quixNoteOptions: '<',
     marked: '<',
     runner: '<',
+    hasChanges: '<',
+    saving: '<',
     onContentChange: '&',
     onNameChange: '&',
     onShare: '&',

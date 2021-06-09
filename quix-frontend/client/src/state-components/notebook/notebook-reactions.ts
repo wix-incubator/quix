@@ -34,6 +34,10 @@ export function setHasChanges(scope: IScope, hasChanges: boolean) {
   scope.vm.view.hasChanges = hasChanges;
 }
 
+export function setSaving(scope: IScope, saving: boolean) {
+  scope.vm.view.saving = saving;
+}
+
 export function setMarkedMap(scope: IScope, markedMap: Record<string, INote>) {
   scope.vm.marked.map = markedMap;
 }

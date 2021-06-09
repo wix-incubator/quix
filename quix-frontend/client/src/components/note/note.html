@@ -44,14 +44,26 @@
             <span class="bi-text--ui bi-muted">{{::note.type | biToHumanCase}}</span>
           </div>
 
-          <span
-            class="bi-panel-title bi-dont-shrink"
-            contenteditable="{{::permissions.rename}}"
-            ng-model="note.name"
-            on-change="events.onNameChange()"
-            ce-options="::{autoEdit: options.focusName}"
-            data-hook="note-name"
-          ></span>
+          <div class="bi-align bi-s-h--x3">
+            <span
+              class="bi-panel-title bi-dont-shrink"
+              contenteditable="{{::permissions.rename}}"
+              ng-model="note.name"
+              on-change="events.onNameChange()"
+              ce-options="::{autoEdit: options.focusName}"
+              data-hook="note-name"
+            ></span>
+
+            <button
+              class="bi-button bi-button--sm bi-fade-in"
+              ng-if="hasChanges && vm.isMaximized"
+              ng-click="events.onSave()"
+              ng-disabled="saving"
+            >
+              <i class="bi-icon--xs" ng-click="events.onSave()">save</i>
+              <span>Save changes</span>
+            </button>
+          </div>
         </div>
 
         <div 

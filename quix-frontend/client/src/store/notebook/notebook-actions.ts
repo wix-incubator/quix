@@ -28,3 +28,8 @@ export const toggleMark = (note: INote) => ({
 export const unmarkAll = () => ({
   type: 'notebook.view.unmarkAll'
 });
+
+export const setSaving = (saving: boolean) => ({
+  type: 'notebook.view.setSaving',
+  saving
+});

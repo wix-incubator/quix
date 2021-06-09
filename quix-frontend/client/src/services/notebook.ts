@@ -5,6 +5,7 @@ import {FileType, IFile, INotebook, INote, NotebookActions, createNotebook, Note
 import {fetchRootPath, goUp, goToFile} from './';
 import { createFileByNamePath as addFileByNamePath } from './files';
 import { pluginManager } from '../plugins';
+import { setSaving } from '../store/notebook/notebook-actions';
 
 const resolvePath = async (parentOrPath: IFile | IFilePathItem[]) => {
   const path = isArray(parentOrPath) ? parentOrPath : [...parentOrPath.path, {
@@ -110,9 +111,12 @@ export const deleteNotebook = async (store: Store, app: App, notebook: INotebook
 export const saveQueuedNotes = (store: Store) => {
   const {notes} = store.getState('notebook.queue') as {notes: Record<string, INote>};
 
-  return store.logAndDispatch(Object.keys(notes).map(id =>
+  store.dispatch(setSaving(true));
+
+  return (store.logAndDispatch(Object.keys(notes).map(id =>
     NoteActions.updateContent(id, notes[id].content, notes[id].richContent)
-  ));
+  )) as any)
+    .finally(() => store.dispatch(setSaving(false)));
 }
 
 export const hasQueuedNotes = (store: Store) => {

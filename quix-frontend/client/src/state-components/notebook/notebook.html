@@ -17,8 +17,6 @@
           readonly="!permissions.rename"
         ></bi-breadcrumbs>
       </div>
-
-      <i class="bi-action bi-icon bi-secondary" ng-if="vm.view.hasChanges" ng-click="events.onSave()">save</i>
     </div>
 
     <div class="bi-dont-shrink">
@@ -28,7 +26,7 @@
 
   <div class="bi-section-controls bi-fade-in" ng-if="(vm.state.is('Result') && permissions.edit) || vm.state.after('Result')">
     <div>
-      <div class="bi-fade-in"  ng-if="!vm.marked.enabled">
+      <div class="bi-align bi-s-h bi-fade-in" ng-if="!vm.marked.enabled">
         <button
           class="bi-button--primary"
           ng-if="vm.noteTypes.length === 1"
@@ -67,6 +65,16 @@
             >{{::type | biToHumanCase}}</li>
           </ul>
         </bi-dropdown>
+
+        <button
+          class="bi-button bi-fade-in"
+          ng-if="vm.view.hasChanges"
+          ng-click="events.onSave()"
+          ng-disabled="vm.view.saving"
+        >
+          <i class="bi-icon--sm" ng-click="events.onSave()">save</i>
+          <span>Save changes</span>
+        </button>
       </div>
 
       <div class="bi-align bi-s-h bi-fade-in" ng-if="vm.marked.enabled">
@@ -153,6 +161,8 @@
       }"
       marked="!!vm.marked.map[note.id]"
       runner="runners[note.id]"
+      has-changes="vm.view.hasChanges"
+      saving="vm.view.saving"
       on-content-change="events.onNoteContentChange(note)"
       on-name-change="events.onNoteNameChange(note)"
       on-share="events.onNoteShare(note, params)"
