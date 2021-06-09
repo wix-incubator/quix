@@ -24,7 +24,7 @@ const jsonFormatter = (name: string, value: any) => {
   return utils.dom.escape(JSON.stringify(value));
 }
 
-const identityFormatter = (name: string, value: any) => '' + value;
+const identityFormatter = (name: string, value: any) => '' + utils.dom.escape(value);
 
 const Formatters = [
   urlFormatter,
