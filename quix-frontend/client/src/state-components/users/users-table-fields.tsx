@@ -2,18 +2,14 @@ import * as React from 'react';
 import {IUser} from '@wix/quix-shared';
 import biRelativeDate from '../../../src/lib/ui/filters/relative-date';
 import { HighlightedRowConfig } from '../../lib/ui/components/table/TableRow';
+import { UserAvatarAndName } from '../../components/User/UserAvatarAndName';
 
 export const usersTableFields: HighlightedRowConfig<IUser>[] = [
   {
     name: 'name',
     title: 'User',
     filter(_, user: IUser, index) {
-      return (
-        <div className="bi-align bi-s-h">
-          <img className="quix-user-avatar" src={user.avatar} />
-          <span>{user.name}</span>
-        </div>
-      );
+      return <UserAvatarAndName user={user}></UserAvatarAndName>;
     }
   },
   {

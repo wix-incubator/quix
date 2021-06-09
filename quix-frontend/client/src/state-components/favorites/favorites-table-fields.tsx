@@ -2,6 +2,7 @@ import * as React from 'react';
 import {IFile} from '@wix/quix-shared';
 import {RowConfig} from '../../lib/ui/components/table/TableRow';
 import classNames from 'classnames';
+import { UserAvatarAndName } from '../../components/User/UserAvatarAndName';
 
 export const favoritesTableFields = (onLikeToggle): RowConfig<IFile>[] => [
   {
@@ -20,12 +21,7 @@ export const favoritesTableFields = (onLikeToggle): RowConfig<IFile>[] => [
     name: 'ownerDetails',
     title: 'User',
     filter(_, file: IFile) {
-      return (
-        <div className="bi-align bi-s-h">
-          <img className="quix-user-avatar" src={file.ownerDetails.avatar} />
-          <span>{file.ownerDetails.name}</span>
-        </div>
-      );
+      return <UserAvatarAndName user={file.ownerDetails}></UserAvatarAndName>;
     }
   },
   {
