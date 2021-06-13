@@ -3,17 +3,19 @@ import {confirm} from '../lib/ui';
 import {utils} from '../lib/core';
 
 export const confirmAction = (
-    action: 'delete',
+    action: 'delete' | 'retry',
     type: 'notebook' | 'note' | 'folder',
     context: any,
-    customText = ''
+    customText = '',
+    onConfirm: (scope: any) => any = () => {},
   ) => {
   return confirm({
-    title: `${action} ${type}`,
-    actionType: action === 'delete' ? 'destroy' : 'neutral',
-    icon: action === 'delete' ? 'report' : null,
+    title: action === 'delete' ? `${action} ${type}` : `Operation failed`,
+    actionType: {'delete': 'destroy'}[action] || 'neutral',
+    icon: {'delete': 'delete_forever', 'retry': 'report'}[action] || null,
     yes: action,
-    html: `
+    onConfirm,
+    html: action === 'delete' ? `
       <div>
         Are you sure you want to delete ${isArray(context) ? 
           `the <b>(${context.length})</b> selected ${utils.dom.escape(type)}s` 
@@ -21,7 +23,8 @@ export const confirmAction = (
 
         ${customText ? `(${utils.dom.escape(customText)})` : ''} ?
       </div>  
-    `
+    ` :
+    `${customText}`
   });
 }
 

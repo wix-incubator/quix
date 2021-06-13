@@ -2,7 +2,7 @@ import {isArray} from 'lodash';
 import {Store} from '../lib/store';
 import {App} from '../lib/app';
 import {FileType, IFile, INotebook, INote, NotebookActions, createNotebook, NoteActions, IFilePathItem, createNote} from '@wix/quix-shared';
-import {fetchRootPath, goUp, goToFile} from './';
+import {fetchRootPath, goUp, goToFile, confirmAction} from './';
 import { createFileByNamePath as addFileByNamePath } from './files';
 import { pluginManager } from '../plugins';
 import { setSaving } from '../store/notebook/notebook-actions';
@@ -48,13 +48,22 @@ export const addNote = async (
   onCreate?: (note: INote) => void,
 ): Promise<INote> => {
   const note = createNote(notebookId, {...props, type});
-
-  if (onCreate) {
-    onCreate(note);
-  }
   
-  return store.dispatchAndLog(NoteActions.addNote(note.id, note))
-    .then(() => note);
+  return store.logAndDispatch(NoteActions.addNote(note.id, note))
+    .then(() => {
+      if (onCreate) {
+        onCreate(note);
+      }
+
+      return note;
+    })
+    .catch(() => confirmAction(
+      'retry',
+      'note',
+      note,
+      'Failed to create a new note. Please try again in a few moments.',
+      () => addNote(store, notebookId, type, props, onCreate),
+    ));
 }
 
 export const addNotebookByNamePath = async (store: Store, app: App, namePath: string[]): Promise<INotebook> => {
