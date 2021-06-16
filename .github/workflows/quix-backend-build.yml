@@ -21,4 +21,4 @@ jobs:
         java-version: "adopt@1.8"
     - name: Build and Test
       working-directory: ./quix-backend
-      run: sbt ++${{matrix.scala_version}} -v -Dfile.encoding=UTF-8 +test
+      run: sbt ++${{matrix.scala_version}} -v -Dfile.encoding=UTF-8 test
