@@ -1,4 +1,4 @@
-name: CI
+name: Quix Backend Build
 on:
   pull_request:
       paths:
