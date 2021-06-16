@@ -19,7 +19,6 @@ import scalaj.http.Http
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.duration.Duration
 import scala.concurrent.{Await, Promise}
-import scala.util.Random
 
 @RunWith(classOf[SpringRunner])
 @DirtiesContext
@@ -37,9 +36,7 @@ trait E2EContext extends MySpecWithSpring with StringJsonHelpersSupport with Bef
 
   val c = asyncHttpClient()
 
-  private def randomPort = Random.nextInt(55000) + 10000
-
-  val jettyPort = randomPort.toString
+  val jettyPort = "8888"
 
   def get[T: Manifest](url: String, port: String = jettyPort): T = {
     Http(s"http://localhost:$port/" + url).asString.body.as[T]
