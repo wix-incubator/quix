@@ -1,5 +1,6 @@
 package quix.web.controllers
 
+import com.google.common.io.Resources
 import com.typesafe.scalalogging.LazyLogging
 import quix.web.E2EContext
 
@@ -7,6 +8,14 @@ class PythonStreamingControllerTest extends E2EContext with LazyLogging {
 
   "PythonStreamingController" should {
     "pass sanity" in {
+      val quix = Resources.getResource("quix.py")
+      val activator = Resources.getResource("activator.py")
+      val packages = Resources.getResource("packages.py")
+
+      println(quix)
+      println(activator)
+      println(packages)
+
       val listener = execute("print(123)", module = "snake")
 
       listener.messages must containEvent("""{"event":"start","data":{"id":"query-id","numOfQueries":1}}""")
