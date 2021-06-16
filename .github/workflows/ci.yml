@@ -1,7 +1,11 @@
 name: CI
 on:
   pull_request:
+      paths:
+      - 'quix-backend/**'
   push:
+    paths:
+    - 'quix-backend/**'
 jobs:
   scala_tests:
     runs-on: ubuntu-latest
