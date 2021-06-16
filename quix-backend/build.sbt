@@ -7,7 +7,7 @@ lazy val publishSettings = Seq(
       Some("releases" at nexus + "service/local/staging/deploy/maven2")
   },
   publishMavenStyle := true,
-  pomExtra in ThisBuild :=
+  ThisBuild / pomExtra :=
     <scm>
       <url>https://github.com/wix/quix.git</url>
       <connection>scm:git:https://github.com/wix/quix.git</connection>
@@ -37,11 +37,11 @@ lazy val baseSettings =
       licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
     )
 
-concurrentRestrictions in Global := Seq(
+Global / concurrentRestrictions := Seq(
   Tags.limit(Tags.CPU, 2),
   Tags.limit(Tags.Network, 10),
   Tags.limit(Tags.Test, 1),
-  Tags.limitAll( 15 )
+  Tags.limitAll(15)
 )
 
 val loggingDeps = Seq(
@@ -72,7 +72,7 @@ lazy val quixCore = (project in file("quix-core"))
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
     libraryDependencies += "com.fasterxml.jackson.core" % "jackson-databind" % "2.12.3",
 
-      // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
     libraryDependencies += "com.fasterxml.jackson.core" % "jackson-core" % "2.12.3",
 
     // https://mvnrepository.com/artifact/com.fasterxml.jackson.module/jackson-module-scala
@@ -177,7 +177,7 @@ lazy val quixWebSpring = (project in file("quix-webapps/quix-web-spring"))
   .dependsOn(quixCore, quixPrestoModule, quixAthenaModule, quixPythonModule, quixBigqueryModule, quixJdbcModule)
   .settings(Seq(
     name := "Quix Web Spring",
-    assembly / mainClass in Compile := Some("quix.web.Server"),
+    Compile / assembly / mainClass := Some("quix.web.Server"),
 
     publish / skip := true,
 
