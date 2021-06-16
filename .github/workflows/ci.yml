@@ -3,8 +3,11 @@ on:
   pull_request:
   push:
 jobs:
-  test:
+  scala tests:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        scala_version: ['2.12.14']
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -14,4 +17,4 @@ jobs:
         java-version: "adopt@1.8"
     - name: Build and Test
       working-directory: ./quix-backend
-      run: sbt -v -Dfile.encoding=UTF-8 +test
+      run: sbt ++${{matrix.scala_version}} -v -Dfile.encoding=UTF-8 +test
