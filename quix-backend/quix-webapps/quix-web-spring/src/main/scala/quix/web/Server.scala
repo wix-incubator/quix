@@ -8,5 +8,6 @@ object Server extends LazyLogging {
   def main(args: Array[String]): Unit = {
     logger.info("Starting Server")
     SpringApplication.run(classOf[SpringConfig], args: _*)
+    
   }
 }
