@@ -1,0 +1,24 @@
+name: Quix Backend Build
+on:
+  pull_request:
+      paths:
+      - 'quix-backend/**'
+  push:
+    paths:
+    - 'quix-backend/**'
+jobs:
+  scala_tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        scala_version: ['2.12.14', '2.13.6']
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Setup Scala
+      uses: olafurpg/setup-scala@v12
+      with:
+        java-version: "adopt@1.8"
+    - name: Build and Test
+      working-directory: ./quix-backend
+      run: sbt ++${{matrix.scala_version}} -v -Dfile.encoding=UTF-8 +test
