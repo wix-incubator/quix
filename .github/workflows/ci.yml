@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        scala_version: ['2.12.14']
+        scala_version: ['2.12.14', '2.13.6']
     steps:
     - name: Checkout
       uses: actions/checkout@v1
