@@ -1,7 +1,10 @@
 ## Installation
 
 ```bash
-$ npm install
+$ npm i
+$ cd ../shared
+$ npm i
+$ cd ../client
 ```
 
 ## Running the app

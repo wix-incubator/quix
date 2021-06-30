@@ -219,7 +219,7 @@ const Select = ({
   const inputProps = getInputProps() as {onBlur: Function; value: string};
   return (
     <div>
-      <div {...getRootProps()} className={classes.inputArea} onClick={() => inputElement.current.focus()}>
+      <div {...getRootProps()} className={classes.inputArea} onClick={() => inputElement.current.select()}>
         <Input
           {...getInputProps()}
           fullWidth={true}
