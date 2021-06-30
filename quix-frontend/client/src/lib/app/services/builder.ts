@@ -142,12 +142,12 @@ export class Builder<Config = any> extends srv.eventEmitter.EventEmitter {
     const stateParts = fullStateName.split('.');
     const stateName = last(stateParts);
     const componentName = [app.getId(), paramCase(stateParts.join('_'))].filter(x => !!x).join('-');
-    const url = config.abstract ? '' : `/${fullStateName.replace(/\./g, '/')}${paramName ? `/:${paramName}` : ''}?${Object.keys(config.url)}`;
+    const stateUrl = config.abstract ? '' : `/${fullStateName.replace(/\./g, '/')}${paramName ? `/:${paramName}` : ''}?${Object.keys(config.url)}`;
 
     this.state({
       name: fullStateName,
       abstract: config.abstract || false,
-      url,
+      url: stateUrl,
       reloadOnSearch: false,
       template: `
         <${componentName}
