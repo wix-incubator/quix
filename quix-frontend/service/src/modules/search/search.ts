@@ -6,7 +6,7 @@ import {ISearch} from './types';
 import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {convertDbNote} from '../../entities/note/dbnote.entity';
-import {INote} from '@wix/quix-shared';
+import {INote, SearchQuery} from '@wix/quix-shared';
 
 @Injectable()
 export class SearchService implements ISearch {
@@ -16,9 +16,9 @@ export class SearchService implements ISearch {
     content: string,
     total = 50,
     offset = 0,
-  ): Promise<[INote[], number]> {
+  ): Promise<[INote[], number, SearchQuery]> {
     if (!content) {
-      return [[], 0];
+      return [[], 0, {fullText: content, content: []}];
     }
 
     const searchQuery = parse(content);
@@ -54,9 +54,9 @@ export class SearchService implements ISearch {
       q = q.take(total).skip(offset).where(whereSql, whereArgs);
 
       const [notes, count] = await q.getManyAndCount();
-      return [notes.map(convertDbNote), count];
+      return [notes.map(convertDbNote), count, searchQuery];
     }
 
-    return [[], 0];
+    return [[], 0, {fullText: content, content: []}];
   }
 }

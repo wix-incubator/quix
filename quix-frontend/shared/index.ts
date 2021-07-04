@@ -8,7 +8,7 @@ export {
   createNotebook,
   createNotebookWithNote,
   notebookReducer,
-  clientNotebookReducer
+  clientNotebookReducer,
 } from './entities/notebook';
 
 export {
@@ -22,7 +22,7 @@ export {
   fileReducer,
   clientFileReducer,
   fileListReducer,
-  clientFileListReducer
+  clientFileListReducer,
 } from './entities/file';
 
 export { IFolder, createFolderPayload } from './entities/folder';
@@ -35,29 +35,41 @@ export {
   noteReducer,
   clientNoteReducer,
   noteListReducer,
-  clientNoteListReducer
+  clientNoteListReducer,
 } from './entities/note';
 
 export {
   ClientConfigHelper,
-  ComponentConfiguration
+  ComponentConfiguration,
 } from './config-helper/config-helper';
+
 export {
   ModuleEngineToSyntaxMap,
   ModuleEngineType,
   ModuleComponentType,
-  TModuleComponentType
+  TModuleComponentType,
 } from './config-helper/consts';
+
 export {
   IUser,
   createEmptyIUser,
   createUser,
   UserActionTypes,
-  UserActions
+  UserActions,
 } from './entities/user';
+
 export {
   IHistory,
   createHistory,
   HistoryActionTypes,
-  HistoryActions
+  HistoryActions,
 } from './entities/history';
+
+export {
+  SearchTypes,
+  SpecialSearchTypes,
+  SearchTextType,
+  ContentSearch,
+  SearchQuery,
+  SearchResult,
+} from './types/search-types';

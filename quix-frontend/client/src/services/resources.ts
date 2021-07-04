@@ -4,9 +4,9 @@ import {
   IFile,
   IFolder,
   INotebook,
-  INote,
+  SearchResult,
   IUser,
-  IHistory
+  IHistory,
 } from '@wix/quix-shared';
 
 export const config = new Config<{
@@ -36,17 +36,23 @@ const many = <T>(
 ): Promise<T[]> => resource('query', endpoint, params);
 
 export const users = () => many<IUser>(api`users`);
-export const history = (options) => many<IHistory>(api`history`, { offset: options.offset, limit: options.limit, user: options.user, query: options.query });
+export const history = (options) =>
+  many<IHistory>(api`history`, {
+    offset: options.offset,
+    limit: options.limit,
+    user: options.user,
+    query: options.query,
+  });
 export const files = () => many<IFile>(api`files`);
 export const folder = (id: string) => one<IFolder>(api`files/:id`, { id });
 export const notebook = (id: string) =>
   one<INotebook>(api`notebook/:id`, { id });
 export const favorites = () => many<IFile>(api`favorites`);
 export const search = (text: string, offset: number, total: number) =>
-  one<{ count: number; notes: INote[] }>(api`search/:text`, {
+  one<SearchResult>(api`search/:text`, {
     text,
     offset,
-    total
+    total,
   });
 
 export const db = (type: string) => many(api`db/:type/explore`, { type });
@@ -60,7 +66,7 @@ export const dbColumns = (
     type,
     catalog,
     schema,
-    table
+    table,
   });
 
 export const dbSearch = (type: string, q: string) =>

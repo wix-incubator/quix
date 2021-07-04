@@ -7,7 +7,7 @@ import hljs from 'highlight.js';
 import {initNgScope, inject} from '../../lib/core';
 import {Store} from '../../lib/store';
 import {App} from '../../lib/app';
-import {INote} from '@wix/quix-shared';
+import {INote, SearchResult, SearchTypes} from '@wix/quix-shared';
 import {IScope} from './search-results-types';
 import * as Resources from '../../services/resources';
 import * as AppActions from '../../store/app/app-actions';
@@ -79,15 +79,15 @@ const searchDebounce = debounce((scope: IScope, store: Store, text: string, page
   }
 
   return Resources.search(text, (page - 1) * Search.ResultsPerPage, Search.ResultsPerPage)
-    .then(({notes, count}: {notes: INote[]; count: number}) => {
+    .then(({notes, count, term}: SearchResult) => {
       if (searchId === scope.vm.currentSearch) {
         scope.vm.state
           .force('Result', true, {
             totalResults: count,
-            notes: initResults(text, notes)
+            notes: initResults(text, notes),
+            highlights: term[SearchTypes.content].map(searchObject => searchObject.text),
           })
           .set('Content', !!notes.length);
-
         initPagination(scope, scope.vm.state.value().totalResults, scope.vm.state.value().currentPage);
       }
     })
@@ -144,10 +144,9 @@ export default (app: App, store: Store) => () => ({
         }
       }, scope);
 
-
       scope.renderNoteContent = (note: INote) => ({
         html: inject('$compile')(`
-          <div ng-bind-html="html | biHighlight:vm.state.value().text"></div>
+          <div ng-bind-html="html | biHighlight:vm.state.value().highlights"></div>
         `)(assign(scope.$new(), {
           html: hljs.highlight('sql', note.content).value
         }))
