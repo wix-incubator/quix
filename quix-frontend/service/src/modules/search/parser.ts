@@ -1,9 +1,9 @@
 import {
   SearchQuery,
   SearchTypes,
-  searchTextType,
+  SearchTextType,
   SpecialSearchTypes,
-} from './types';
+} from '@wix/quix-shared';
 
 const createRegExAtBeginningOrEnd = (regex: string | RegExp): RegExp[] => {
   const source = regex instanceof RegExp ? regex.source : regex;
@@ -25,6 +25,7 @@ export const parse = (s: string): SearchQuery => {
   const [partialQuery, updatedString] = getSpecialOperators(s);
   const query: SearchQuery = {
     ...partialQuery,
+    fullText: s,
     [SearchTypes.content]: getTextFromSearchQuery(updatedString),
   };
 
@@ -75,11 +76,11 @@ const getTextFromSearchQuery = (s: string) => {
     result.push(
       match[1]
         ? {
-            type: searchTextType.WORD,
+            type: SearchTextType.WORD,
             text: match[1].replace(fullTextSearchSpecialChars, ' ').trim(),
           }
         : {
-            type: searchTextType.PHRASE,
+            type: SearchTextType.PHRASE,
             text: match[2].replace(fullTextSearchSpecialChars, ' ').trim(),
           },
     );

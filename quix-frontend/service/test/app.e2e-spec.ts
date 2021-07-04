@@ -17,7 +17,6 @@ import './custom-matchers';
 import {WsAdapter} from '@nestjs/platform-ws';
 import {serialize as serializeCookie} from 'cookie';
 import {testingDefaults} from '../src/config/env/static-settings';
-import {cons} from 'fp-ts/lib/ReadonlyArray';
 
 let envSettingsOverride: Partial<EnvSettings> = {};
 
@@ -257,6 +256,43 @@ describe('Application (e2e)', () => {
         sanitizeUserEmail(user1profile.email),
       );
       expectObject(searchResults).toNotLeakUserData(user1profile);
+    });
+  });
+
+  describe('Search', () => {
+    beforeAndAfter();
+    beforeEach(() => {
+      driver.addUser('user1', user1profile);
+    });
+
+    it('when searching notebooks, should receive the search terms back', async () => {
+      await driver.doLogin('user1');
+
+      const [{id: rootFolder}] = await driver.as('user1').get('files');
+      const [notebookId, createAction] = builder.createNotebookAction([
+        {id: rootFolder},
+      ]);
+
+      await driver.as('user1').postEvents([
+        createAction,
+        builder.createNoteAction(notebookId, {
+          content: 'some query goes here',
+          type: 'presto',
+        }),
+        builder.createNoteAction(notebookId, {
+          content: 'diffrent query goes here',
+          type: 'python',
+        }),
+      ]);
+
+      let searchResults1 = await driver
+        .as('user1')
+        .search('type:python "query goes here"');
+
+      expect(searchResults1.notes).toHaveLength(1);
+      expect(searchResults1.terms.type).toBe('python');
+      expect(searchResults1.terms.content[0].text).toBe('query goes here');
+      expect(searchResults1.terms.fullText).toBe('type:python "query goes here"');
     });
   });
 

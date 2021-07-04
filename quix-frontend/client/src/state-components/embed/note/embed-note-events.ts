@@ -1,15 +1,15 @@
 import {takeWhile} from 'lodash';
-import {utils} from '../../lib/core';
-import {Store} from '../../lib/store';
-import {toast} from '../../lib/ui';
-import {App} from '../../lib/app';
+import {utils} from '../../../lib/core';
+import {Store} from '../../../lib/store';
+import {toast} from '../../../lib/ui';
+import {App} from '../../../lib/app';
 import {INote, NotebookActions, IFile, NoteActions, INotebook, IFilePathItem} from '@wix/quix-shared';
 import {FileType} from '@wix/quix-shared/dist/entities/file';
 import {IScope} from './embed-note-types';
-import {setNotebook, setNote, queueNote, toggleMark, unmarkAll} from '../../store/notebook/notebook-actions';
-import {saveQueuedNotes, deleteNotebook, copyNotebook, goToFile, goToRoot, prompt, copyNote} from '../../services';
-import {removeRunner, addRunner} from '../../store/app/app-actions';
-import { addNote } from '../../services/notebook';
+import {setNotebook, setNote, queueNote, toggleMark, unmarkAll} from '../../../store/notebook/notebook-actions';
+import {saveQueuedNotes, deleteNotebook, copyNotebook, goToFile, goToRoot, prompt, copyNote} from '../../../services';
+import {removeRunner, addRunner} from '../../../store/app/app-actions';
+import { addNote } from '../../../services/notebook';
 
 export const onBreadcrumbClick = (scope: IScope, store: Store, app: App) => (file: IFilePathItem) => {
   const {notebook: {owner, path}} = scope.vm.state.value();

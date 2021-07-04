@@ -7,6 +7,7 @@ import {
   ParseIntPipe,
   UseInterceptors,
 } from '@nestjs/common';
+import {SearchResult} from '@wix/quix-shared';
 import {AuthGuard} from '../auth';
 import {SearchService} from '../../modules/search/search';
 import {DemoModeInterceptor} from '../../common/demo-mode-interceptor';
@@ -22,12 +23,12 @@ export class SearchController {
     @Param('term') query: string,
     @Query('offset', new ParseIntPipe()) offset: number,
     @Query('total', new ParseIntPipe()) count: number,
-  ) {
-    const [notes, totalNotesInSearch] = await this.searchService.search(
+  ): Promise<SearchResult> {
+    const [notes, totalNotesInSearch, term] = await this.searchService.search(
       query,
       count,
       offset,
     );
-    return {notes, count: totalNotesInSearch};
+    return {notes, count: totalNotesInSearch, term};
   }
 }

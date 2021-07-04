@@ -7,7 +7,7 @@
   "scripts": {
     "build:ts": "tsc -b tsconfig.build.json",
     "build": "npm run build:ts && npm run update-statics",
-    "start": "ts-node --files scripts/start.ts",
+    "start": "DB_HOST=localhost ts-node --files scripts/start.ts",
     "update-statics": "ts-node scripts/update-statics.ts",
     "start:dev": "nodemon",
     "start:debug": "nodemon --config nodemon-debug.json",

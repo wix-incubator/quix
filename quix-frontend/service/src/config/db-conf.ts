@@ -1,7 +1,7 @@
 import {ColumnOptions} from 'typeorm';
 import {getEnv} from './env/env';
 import {FileType} from '@wix/quix-shared/entities/file';
-import {ContentSearch, searchTextType} from '../modules/search/types';
+import {ContentSearch, SearchTextType} from '@wix/quix-shared';
 import {escape} from 'mysql';
 import {EntityType} from '../common/entity-type.enum';
 
@@ -68,7 +68,7 @@ const MySqlConf: DbColumnConf = {
     return `MATCH(${columnName}) AGAINST (${escape(
       contentSearchList
         .map(contentSearch =>
-          contentSearch.type === searchTextType.PHRASE
+          contentSearch.type === SearchTextType.PHRASE
             ? `"${contentSearch.text}"`
             : `${contentSearch.text}*`,
         )

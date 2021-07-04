@@ -1,5 +1,5 @@
-export { IEntity } from './entities/common/common-types';
-export { composeReducers } from './entities/common/create-reducer';
+export { IEntity } from "./entities/common/common-types";
+export { composeReducers } from "./entities/common/create-reducer";
 
 export {
   INotebook,
@@ -8,8 +8,8 @@ export {
   createNotebook,
   createNotebookWithNote,
   notebookReducer,
-  clientNotebookReducer
-} from './entities/notebook';
+  clientNotebookReducer,
+} from "./entities/notebook";
 
 export {
   IFile,
@@ -22,10 +22,10 @@ export {
   fileReducer,
   clientFileReducer,
   fileListReducer,
-  clientFileListReducer
-} from './entities/file';
+  clientFileListReducer,
+} from "./entities/file";
 
-export { IFolder, createFolderPayload } from './entities/folder';
+export { IFolder, createFolderPayload } from "./entities/folder";
 
 export {
   INote,
@@ -35,29 +35,41 @@ export {
   noteReducer,
   clientNoteReducer,
   noteListReducer,
-  clientNoteListReducer
-} from './entities/note';
+  clientNoteListReducer,
+} from "./entities/note";
 
 export {
   ClientConfigHelper,
-  ComponentConfiguration
-} from './config-helper/config-helper';
+  ComponentConfiguration,
+} from "./config-helper/config-helper";
+
 export {
   ModuleEngineToSyntaxMap,
   ModuleEngineType,
   ModuleComponentType,
-  TModuleComponentType
-} from './config-helper/consts';
+  TModuleComponentType,
+} from "./config-helper/consts";
+
 export {
   IUser,
   createEmptyIUser,
   createUser,
   UserActionTypes,
-  UserActions
-} from './entities/user';
+  UserActions,
+} from "./entities/user";
+
 export {
   IHistory,
   createHistory,
   HistoryActionTypes,
-  HistoryActions
-} from './entities/history';
+  HistoryActions,
+} from "./entities/history";
+
+export {
+  SearchTypes,
+  SpecialSearchTypes,
+  SearchTextType,
+  ContentSearch,
+  SearchQuery,
+  SearchResult,
+} from "./types/search-types";
