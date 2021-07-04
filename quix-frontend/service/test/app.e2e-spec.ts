@@ -290,9 +290,9 @@ describe('Application (e2e)', () => {
         .search('type:python "query goes here"');
 
       expect(searchResults1.notes).toHaveLength(1);
-      expect(searchResults1.terms.type).toBe('python');
-      expect(searchResults1.terms.content[0].text).toBe('query goes here');
-      expect(searchResults1.terms.fullText).toBe('type:python "query goes here"');
+      expect(searchResults1.term.type).toBe('python');
+      expect(searchResults1.term.content[0].text).toBe('query goes here');
+      expect(searchResults1.term.fullText).toBe('type:python "query goes here"');
     });
   });
 
