@@ -18,10 +18,9 @@ class SpringConfigWithTestExecutor {
   @Bean
   @Primary
   def initModules: Map[String, ExecutionModule] = {
-    Map(
+    Registry.modules.toMap ++ Map(
       "presto-prod" -> new SqlModule(MockBeans.queryExecutor, Some(MockBeans.db)),
       "presto-dev" -> new SqlModule(MockBeans.queryExecutor, Some(MockBeans.db)),
-      "snake" -> new PythonModule(new PythonExecutor)
     )
   }
 }

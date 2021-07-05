@@ -20,7 +20,7 @@ object EmbeddedMysqlDb extends LazyLogging {
 
   def reloadSchema = {
     logger.info("method=reloadSchema")
-    db.reloadSchema("aschema", classPathScript("db/001_init.sql"))
+    db.reloadSchema("aschema", classPathScript("db/001_init_jdbc_module.sql"))
   }
 
   def stop = {
@@ -31,7 +31,7 @@ object EmbeddedMysqlDb extends LazyLogging {
   def start = {
     logger.info("method=start")
     db = anEmbeddedMysql(config)
-      .addSchema("aschema", classPathScript("db/001_init.sql"))
+      .addSchema("aschema", classPathScript("db/001_init_jdbc_module.sql"))
       .start()
   }
 }

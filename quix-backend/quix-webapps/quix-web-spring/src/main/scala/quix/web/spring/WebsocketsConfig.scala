@@ -3,7 +3,6 @@ package quix.web.spring
 import java.util
 
 import com.typesafe.scalalogging.LazyLogging
-import monix.execution.Scheduler
 import org.eclipse.jetty.websocket.api.WebSocketPolicy
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Configuration
@@ -13,31 +12,14 @@ import org.springframework.web.socket.config.annotation.{EnableWebSocket, WebSoc
 import org.springframework.web.socket.server.HandshakeInterceptor
 import org.springframework.web.socket.server.jetty.JettyRequestUpgradeStrategy
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler
-import quix.api.v1.users.Users
-import quix.api.v2.execute.ExecutionModule
-import quix.core.download.{DownloadConfig, QueryResultsStorage}
-import quix.core.history.dao.HistoryWriteDao
 import quix.web.controllers.SqlStreamingController
 
 @Configuration
 @EnableWebSocket
 class WebsocketsConfig extends LazyLogging with WebSocketConfigurer {
-
-  @Autowired var users: Users = _
-  @Autowired var modules: Map[String, ExecutionModule] = _
-  @Autowired var downloadConfig: DownloadConfig = _
-  @Autowired var queryResultsStorage: QueryResultsStorage = _
-  @Autowired var historyWriteDao: HistoryWriteDao = _
+  @Autowired var sqlStreamingController: SqlStreamingController = _
 
   override def registerWebSocketHandlers(registry: WebSocketHandlerRegistry): Unit = {
-    val handler = new SqlStreamingController(
-      modules = modules,
-      users = users,
-      downloadConfig = downloadConfig,
-      queryResultsStorage = queryResultsStorage,
-      historyWriteDao = historyWriteDao,
-      io = Scheduler.io("presto-io"))
-
     val handshakeHandler = {
       val policy = WebSocketPolicy.newServerPolicy()
       policy.setIdleTimeout(10 * 60 * 1000) // 60 seconds
@@ -49,11 +31,11 @@ class WebsocketsConfig extends LazyLogging with WebSocketConfigurer {
       new DefaultHandshakeHandler(requestUpgradeStrategy)
     }
 
-    val endpoints = modules.keys.map(module => "/api/v1/execute/" + module).toList
+    val endpoints = sqlStreamingController.modules.keys.map(module => "/api/v1/execute/" + module).toList
 
     logger.info(s"event=[spring-config] bean=[registerWebSocketHandlers] endponts=[$endpoints]")
 
-    registry.addHandler(handler, endpoints: _*)
+    registry.addHandler(sqlStreamingController, endpoints: _*)
       .addInterceptors(new CookiesInterceptor)
       .setHandshakeHandler(handshakeHandler)
       .setAllowedOrigins("*")

@@ -67,7 +67,7 @@ object EmbeddedMysqlDb extends LazyLogging {
 
   def reloadSchema(): Unit = {
     logger.info("method=reloadSchema")
-    db.reloadSchema(schema, classPathScript("db/001_init.sql"))
+    db.reloadSchema(schema, classPathScript("db/001_init_executions_history.sql"))
   }
 
   def stop(): Unit = {
@@ -83,7 +83,7 @@ object EmbeddedMysqlDb extends LazyLogging {
         .withPort(port)
         .withUser(user, pass)
         .build())
-      .addSchema(schema, classPathScript("db/001_init.sql"))
+      .addSchema(schema, classPathScript("db/001_init_executions_history.sql"))
       .start()
   }
 }
