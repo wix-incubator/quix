@@ -1,11 +1,7 @@
 name: Quix Frontend Build
 on:
   pull_request:
-    paths:
-    - 'quix-frontend/**'  
   push:
-    paths:
-    - 'quix-frontend/**'
 jobs:
   node_tests:
     runs-on: ubuntu-latest
