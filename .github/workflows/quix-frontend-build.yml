@@ -13,6 +13,9 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: '14'
+    - uses: mirromutth/mysql-action@v1.1
+      with:
+        mysql database: 'quixtest'
     - run : npm ci
     - run : npm run build:ci
     - run : npm test
