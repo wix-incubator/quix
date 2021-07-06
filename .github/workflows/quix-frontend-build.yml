@@ -1,7 +1,11 @@
 name: Quix Frontend Build
 on:
   pull_request:
+    paths:
+    - 'quix-frontend/**'  
   push:
+    paths:
+    - 'quix-frontend/**'
 defaults:
   run:
     working-directory: ./quix-frontend
