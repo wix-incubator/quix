@@ -21,4 +21,7 @@ jobs:
       working-directory: ./quix-backend
       run: |
         sbt ++${{matrix.scala_version}} -v -Dfile.encoding=UTF-8 test publishM2
-        mvn --quiet -f quix-webapps/quix-web-spring/pom.xml test
+        if [[ ${{matrix.scala_version}} = '2.12.14' ]]
+        then
+          mvn --quiet -f quix-webapps/quix-web-spring/pom.xml test
+        fi
