@@ -16,6 +16,7 @@ jobs:
     - uses: samin/mysql-action@v1.3
       with:
         mysql database: 'quixtest'
+        mysql version: '5.7'
     - run : npm ci
     - run : npm run build:ci
     - run : npm test
