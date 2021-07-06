@@ -17,6 +17,8 @@ jobs:
       uses: olafurpg/setup-scala@v12
       with:
         java-version: "adopt@1.8"
+    - name: Coursier cache
+      uses: coursier/cache-action@v5
     - name: Build and Test
       working-directory: ./quix-backend
       run: |
@@ -25,3 +27,8 @@ jobs:
         then
           mvn --quiet -f quix-webapps/quix-web-spring/pom.xml test
         fi
+        rm -rf "$HOME/.ivy2/local" || true
+        find $HOME/Library/Caches/Coursier/v1        -name "ivydata-*.properties" -delete || true
+        find $HOME/.ivy2/cache                       -name "ivydata-*.properties" -delete || true
+        find $HOME/.cache/coursier/v1                -name "ivydata-*.properties" -delete || true
+        find $HOME/.sbt                              -name "*.lock"               -delete || true
