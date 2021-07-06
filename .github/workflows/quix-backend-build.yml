@@ -1,6 +1,8 @@
 name: Quix Backend Build
 on:
   pull_request:
+    paths:
+    - 'quix-backend/**'  
   push:
     paths:
     - 'quix-backend/**'
