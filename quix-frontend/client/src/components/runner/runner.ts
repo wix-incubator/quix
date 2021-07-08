@@ -65,6 +65,8 @@ export default (app: App, store: Store) => () => ({
             return scope.onEditorInstanceLoad({instance});
           },
           onRunnerInstanceLoad(instance) {
+            instance.setUser(app.getUser());
+
             return scope.onRunnerInstanceLoad({instance});
           },
           onRunnerCreated(runner) {
