@@ -21,6 +21,11 @@ You will need an `.env` file to run it. We will configure it in the next step.
 To access Quix, navigate to:  
 `http://localhost:3000`
 
+## Clone Repo
+Clone Git Repository
+```
+git clone https://github.com/wix/quix.git
+```
 ## Configuration
 Most of the configuration you'll need is done through environment variables. docker-compose can load environment-variables easily through a `.env` file.
 You should rename our [env-example](https://github.com/wix/quix/blob/master/env-example) file to `.env`, and modify it's values as needed. 
@@ -30,7 +35,7 @@ By default, Quix works with demo Presto instance that runs inside Docker Compose
 To work with your real Presto DB, change `PRESTO_API` environment variable.
 
 Note that you need to specify full URL, including protocol, port and API version:
-* PRESTO_API - `http://presto.my.domain:8181/v1`  
+* MODULES_PRESTO_API - `http://presto.my.domain:8181/v1`  
 
   If you're running Presto locally, use the following instead of `localhost`:
   * Your internal IP
