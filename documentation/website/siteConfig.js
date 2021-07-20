@@ -45,7 +45,6 @@ const siteConfig = {
     {doc: 'installation', label: 'Docs'},
     {blog: true, label: 'Blog'},
     {href: 'https://github.com/wix/quix', label: 'GitHub'},
-    // {blog: true, label: 'Blog'},
   ],
 
   // If you have users set above, you add it here:
