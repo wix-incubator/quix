@@ -21,8 +21,7 @@ You will need an `.env` file to run it. We will configure it in the next step.
 To access Quix, navigate to:  
 `http://localhost:3000`
 
-## Clone Repo
-Clone Git Repository
+## Clone repository
 ```
 git clone https://github.com/wix/quix.git
 ```
