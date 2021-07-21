@@ -27,7 +27,7 @@ export const requestCredentials = (scope, runnerInstance: RunnerComponentInstanc
     actionType: 'neutral',
     icon: 'gpp_bad',
     yes: 'Submit',
-    resolveOnEnter:true ,
+    resolveOnEnter: true,
     html: `
       <div class="bi-c-h bi-s-v--x05">
         <span class="bi-text--sm bi-muted">Please enter your password to access restricted data</span>
