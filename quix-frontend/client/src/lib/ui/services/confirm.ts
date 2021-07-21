@@ -1,16 +1,17 @@
-import {defaults, assign} from 'lodash';
-import {inject} from '../../core';
-import {default as dialog, IDialogOptions} from './dialog';
+import { defaults, assign } from 'lodash';
+import { inject } from '../../core';
+import { default as dialog, IDialogOptions } from './dialog';
 
 export interface IConfirmOptions extends IDialogOptions {
   actionType: 'create' | 'destroy' | 'neutral';
   icon?: string;
   yes?: string;
   no?: string;
+  resolveOnEnter?: boolean
 }
 
-function init(htmlOrOptions: string | IConfirmOptions , promise: any) {
-  let {scope, element} = promise;
+function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
+  let { scope, element } = promise;
   let options: Partial<IConfirmOptions>;
 
   scope = scope();
@@ -35,6 +36,13 @@ function init(htmlOrOptions: string | IConfirmOptions , promise: any) {
   scope.dialogOptions.showCloseAction = false;
   scope.dialogOptions.iconClass = options.actionType === 'destroy' ? 'bi-danger' : 'bi-primary';
 
+  if (options && options.resolveOnEnter){
+    element = element.bind("keyup", (event) => {
+      if (event.which === 13)
+        scope.dialogEvents.resolve()
+    });
+  }
+  
   element
     .addClass('bi-confirm')
     .append(inject('$compile')(`
@@ -54,11 +62,11 @@ function init(htmlOrOptions: string | IConfirmOptions , promise: any) {
           ng-disabled="form && !form.$valid"
         >{{::confirmOptions.yes}}</button>
       </dialog-footer>
-    `)(assign(scope, {confirmOptions: options})));
+    `)(assign(scope, { confirmOptions: options })));
 
   return promise;
 }
 
-export default function(htmlOrOptions: string | IConfirmOptions, scope?, locals?) {
+export default function (htmlOrOptions: string | IConfirmOptions, scope?, locals?) {
   return init(htmlOrOptions, dialog(htmlOrOptions, scope, locals));
 }
