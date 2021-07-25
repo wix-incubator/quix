@@ -1,7 +1,8 @@
-import {expect} from 'chai';
-import {Driver} from './driver';
-import {createMockNotebook, createMockNote} from '../mocks';
-import {NotebookTestkit} from '../../src/state-components/notebook/notebook-testkit';
+import { expect } from 'chai';
+import { Driver } from './driver';
+import { createMockNotebook, createMockNote } from '../mocks';
+import { NotebookTestkit } from '../../src/state-components/notebook/notebook-testkit';
+import { DialogTestkit } from '../../src/lib/ui/services/dialog-testkit';
 
 describe('Notebook ::', () => {
   let driver: Driver, testkit: NotebookTestkit;
@@ -14,14 +15,14 @@ describe('Notebook ::', () => {
   }
 
   const gotoReadonlyNotebook = async () => {
-    const notebook = createMockNotebook([createMockNote('1')], {owner: 'readonly@quix.com'});
+    const notebook = createMockNotebook([createMockNote('1')], { owner: 'readonly@quix.com' });
 
     await driver.mock.http(`/api/notebook/:id`, notebook);
     await driver.goto('/notebook/1');
   }
 
   const gotoErrorNotebook = async () => {
-    await driver.mock.http('/api/notebook/:id', [404, {message: 'Notebook not found'}]);
+    await driver.mock.http('/api/notebook/:id', [404, { message: 'Notebook not found' }]);
     await driver.goto(`/notebook/1`);
   }
 
@@ -191,22 +192,17 @@ describe('Notebook ::', () => {
       });
 
       describe('Run ::', () => {
-        it('should show confirm dialog if a user does not has permissions', async () => {
+        it.only('should show confirm dialog if a user does not has permissions', async () => {
           await gotoEditableNotebook([createMockNote('1', { content: 'do permission error' })]);
           const noteTestkit = await testkit.getNoteTestkit(1);
           const runnerTestkit = await noteTestkit.getRunnerTestkit();
-          runnerTestkit.clickRun();
-          expect(await runnerTestkit.isDialogOpen())
-        });
 
-        it('should not show confirm dialog if a user has permissions', async () => {
-          await gotoEditableNotebook();
-          const noteTestkit = await testkit.getNoteTestkit(1);
-          const runnerTestkit = await noteTestkit.getRunnerTestkit();
-          runnerTestkit.clickRun();
-          expect(!(await runnerTestkit.isDialogOpen()))
-        });
+          await runnerTestkit.clickRun();
 
+          const dialogTestkit = driver.createTestkit(DialogTestkit);
+
+          expect(await dialogTestkit.isShown()).to.be.true;
+        });
       });
     });
   });
