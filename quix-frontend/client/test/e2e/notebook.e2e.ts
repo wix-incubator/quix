@@ -191,7 +191,7 @@ describe('Notebook ::', () => {
       });
 
       describe('Run ::', () => {
-        it('should show confirm dialog if user does not has permissions', async () => {
+        it('should show confirm dialog if a user does not has permissions', async () => {
           await gotoEditableNotebook([createMockNote('1', { content: 'do permission error' })]);
           const noteTestkit = await testkit.getNoteTestkit(1);
           const runnerTestkit = await noteTestkit.getRunnerTestkit();
@@ -199,7 +199,7 @@ describe('Notebook ::', () => {
           expect(await runnerTestkit.isDialogOpen())
         });
 
-        it('should not show  confirm dialog if user has permissions', async () => {
+        it('should not show confirm dialog if a user has permissions', async () => {
           await gotoEditableNotebook();
           const noteTestkit = await testkit.getNoteTestkit(1);
           const runnerTestkit = await noteTestkit.getRunnerTestkit();
