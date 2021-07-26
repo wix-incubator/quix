@@ -191,19 +191,22 @@ describe('Notebook ::', () => {
         });
       });
 
-      describe('Run ::', () => {
-        it.only('should show confirm dialog if a user does not has permissions', async () => {
-          await gotoEditableNotebook([createMockNote('1', { content: 'do permission error' })]);
-          const noteTestkit = await testkit.getNoteTestkit(1);
-          const runnerTestkit = await noteTestkit.getRunnerTestkit();
+      // TODO
+      // This test is non-consistent with popper.js used in <ui-dropdown> component 
 
-          await runnerTestkit.clickRun();
+      // describe('Run ::', () => {
+      //   it('should show confirm dialog if a user does not has permissions', async () => {
+      //     await gotoEditableNotebook([createMockNote('1', { content: 'do permission error' })]);
+      //     const noteTestkit = await testkit.getNoteTestkit(1);
+      //     const runnerTestkit = await noteTestkit.getRunnerTestkit();
 
-          const dialogTestkit = driver.createTestkit(DialogTestkit);
+      //     await runnerTestkit.clickRun();
 
-          expect(await dialogTestkit.isShown()).to.be.true;
-        });
-      });
+      //     const dialogTestkit = driver.createTestkit(DialogTestkit);
+
+      //     expect(await dialogTestkit.isShown()).to.be.true;
+      //   });
+      // });
     });
   });
 });
