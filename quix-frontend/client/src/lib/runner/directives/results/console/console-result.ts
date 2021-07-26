@@ -1,3 +1,4 @@
+import { IScope } from './console-types';
 import template from './console-result.html';
 import './console-result.scss';
 
@@ -6,7 +7,18 @@ export default () => {
     restrict: 'E',
     template,
     scope: {
-      query: '<'
-    }
+      query: '<',
+    },
+    link: {
+      async pre(scope: IScope) {
+        scope.isTimestampVisible = (timestamp, index, isFirst, isLast) => {
+          return (
+            isFirst ||
+            isLast ||
+            scope.query.getResults().buffer[index - 1].timestamp !== timestamp
+          );
+        };
+      },
+    },
   };
 };

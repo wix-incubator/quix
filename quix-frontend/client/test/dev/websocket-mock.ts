@@ -72,6 +72,22 @@ const permissionFailEvents = [
   {event: 'end', data: {id: '274370d2-6755-4d3c-8248-b573a63523d2'}}
 ];
 
+const sqlAndJsonResultEvents = [
+  {'event':'start', 'data': { 'id': 'd5301f06-9c89-41f5-82e0-5974fb0de6fe', "numOfQueries": 1 } },
+  
+  {'event':'log', 'data': { 'id': '59ac9b05-13ec-4e48-a3c4-fbb99adad53a', 'line': "SELECT *", 'level': 'INFO' } },
+  {'event':'log', 'data': { 'id': '59ac9b05-13ec-4e48-a3c4-fbb99adad53a', 'line': "FROM WorldHistory as h", 'level': 'INFO' } },
+  {'event':'log', 'data': { 'id': '59ac9b05-13ec-4e48-a3c4-fbb99adad53a', 'line': "WHERE", 'level': 'INFO' } },
+  {'event':'log', 'data': { 'id': '59ac9b05-13ec-4e48-a3c4-fbb99adad53a', 'line': "h.year = 1984", 'level': 'INFO' } },
+  
+  {'event':'log','data':{'id':'57330e7d-af71-4424-b7da-fcd529ca80fa','line':'{"event":{','level':'INFO'}},
+  {'event':'log','data':{'id':'57330e7d-af71-4424-b7da-fcd529ca80fa','line':'"title":"Apple Macintosh Commercial",','level':'INFO'}},
+  {'event':'log','data':{'id':'57330e7d-af71-4424-b7da-fcd529ca80fa','line':'"description":"The original Apple Macintosh personal computer went on sale during January of 1984."}','level':'INFO'}},
+  {'event':'log','data':{'id':'57330e7d-af71-4424-b7da-fcd529ca80fa','line':'}','level':'INFO'}},
+  
+  {'event':'end', 'data': { 'id': 'd5301f06-9c89-41f5-82e0-5974fb0de6fe' } }
+]
+
 export const setupMockWs = (app: Application) => {
   const router = Router();
 
@@ -88,6 +104,8 @@ export const setupMockWs = (app: Application) => {
           sendEvents(ws, failEvents, timeout);
         } else if ((payload.data.code).includes('do permission error')) {
           sendEvents(ws, permissionFailEvents, timeout);
+        } else if ((payload.data.code).includes('do sql and json')) {
+          sendEvents(ws, sqlAndJsonResultEvents, timeout);
         } else {
           ws.close();
         }

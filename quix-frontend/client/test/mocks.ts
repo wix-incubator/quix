@@ -92,8 +92,14 @@ const mocks = {
           content: "do permission error"
         }),
         createMockNote(id, { id: "1006", content: 'select 1'}),
-        createMockNote(id, { id: "1007" }),
+        createMockNote(id, {
+          id: "1007",
+          name: "Runnable SQL+JSON Result (Timeout)",
+          content: "do sql and json timeout=275",
+          type: "python"
+        }),
         createMockNote(id, { id: "1008" }),
+        createMockNote(id, { id: "1009" }),
       ],
       {
         id,
