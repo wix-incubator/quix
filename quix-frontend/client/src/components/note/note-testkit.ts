@@ -1,5 +1,6 @@
 import {Testkit} from '../../../test/e2e/driver';
 import {ActionsTestkit} from '../actions/actions-testkit';
+import {RunnerTestkit} from '../runner/runner-testkit'
 
 const enum Hooks {
   Name = 'note-name',
@@ -9,6 +10,10 @@ const enum Hooks {
 export class NoteTestkit extends Testkit {
   async getActionsTestkit() {
     return new ActionsTestkit(await this.query.$('quix-actions'));
+  }
+
+  async getRunnerTestkit() {
+    return new RunnerTestkit(await this.query.$('quix-runner'));
   }
 
   async isNameFocused() {

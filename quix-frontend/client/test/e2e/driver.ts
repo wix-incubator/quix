@@ -61,12 +61,16 @@ export class Driver {
     return this;
   }
 
-  async goto(state: string) {
+  goto(state: string) {
     return this.page.goto(`${baseURL}/#${state}`);
   }
 
-  async sleep(ms: number) {
+  sleep(ms: number) {
     return this.page.waitFor(ms);
+  }
+
+  execute(fn: Function) {
+    return this.page.evaluate(fn as any);
   }
 
   createTestkit<T extends Class<any>>(TestkitCtor: T): InstanceType<T> {
@@ -216,7 +220,6 @@ export class Log {
     console.log(await this.page.evaluate(() => document.body.innerHTML));
   }
 }
-
 export class Keyboard {
   constructor (private readonly page: Page) {}
 
