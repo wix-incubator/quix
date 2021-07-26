@@ -1,32 +1,11 @@
-<div class="bi-r bi-s-h--x15">
-  <div class="bi-c cr-timestamps" >
-    <div
-    class="bi-border--top"
-    ng-if="!$first && isTimestampVisible(row.timestamp,$index,$first,$last)"
-    ng-repeat-start="row in query.getResults().buffer"
-    ></div>
-    <pre
-      class="bi-fade-in"
-      ng-class="::{
-        'bi-white': row.level === 'INFO',
-        'bi-danger': row.level === 'ERROR'
-      }"
-      ng-repeat-end
-    >
-      <span ng-if="!isTimestampVisible(row.timestamp,$index,$first,$last)" class="bar"></span> 
-      <span ng-if="isTimestampVisible(row.timestamp,$index,$first,$last)">[{{::row.timestamp}}]</span> 
-    </pre>
-  </div>
-
-  <div class="bi-border--right"></div>
-
-  <div class="bi-c">
-    <div
-      class="bi-border--top"
-      ng-if="!$first && isTimestampVisible(row.timestamp,$index,$first,$last)"
-      ng-repeat-start="row in query.getResults().buffer"
-    ></div>
-    <pre
+<div class="bi-c bi-s-h--x15"> 
+  <div ng-if="!$last && isTimestampVisible(row.timestamp,$index,$first,$last)"
+       ng-repeat-start="row in query.getResults().buffer"
+       class="cr-timestamp"
+       >
+    <span class="bi-no-select">[{{::row.timestamp}}]</span>
+  </div>   
+  <pre
       class="bi-fade-in"
       ng-class="::{
         'bi-white': row.level === 'INFO',

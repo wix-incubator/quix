@@ -15,30 +15,32 @@ bi-console-result {
   pre {
     white-space: nowrap;
     min-height: 17px;
-
-    .bar {
-      min-height: 17px;
-    }
-
-    .bar:after {
+  }
+  // TODO Move to appropriate place
+  .bi-no-select {
+    -webkit-user-select: none; /* Chrome all / Safari all */
+    -moz-user-select: none; /* Firefox all */
+    -ms-user-select: none; /* IE 10+ */
+    user-select: none; /* Likely future */
+  }
+  .cr-timestamp {
+    position: relative;
+    &::after {
       content: '';
-      position: relative;
+      width: 100%;
+      position: absolute;
+      left: 0;
+      top: 50%;
       z-index: 1;
-      top: 0;
-      bottom: 0;
-      left: 50%;
-      border-left: 1px solid $grey--500;
-      transform: translate(-50%);
-      padding: 3px;
+      border-top: 1px solid $blue--300;
     }
-  }
-
-  .bi-border--right {
-    border-color: $grey--600;
-  }
-
-  .bi-border--top {
-    margin: 8px 0;
-    border-color: $grey--600;
+    span {
+      padding: 0 5px;
+      position: relative;
+      color: $blue--300;
+      background-color: $black;
+      z-index: 2;
+      margin-left: 20px;
+    }
   }
 }
