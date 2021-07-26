@@ -38,8 +38,9 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
 
   if (options.resolveOnEnter){
     element = element.bind('keyup', (event) => {
-      if (event.which === 13)
+      if (event.which === 13){
         scope.dialogEvents.resolve();
+      }
     });
   }
 
