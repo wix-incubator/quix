@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { Driver } from './driver';
 import { createMockNotebook, createMockNote } from '../mocks';
 import { NotebookTestkit } from '../../src/state-components/notebook/notebook-testkit';
-import { DialogTestkit } from '../../src/lib/ui/services/dialog-testkit';
 
 describe('Notebook ::', () => {
   let driver: Driver, testkit: NotebookTestkit;
@@ -189,24 +188,7 @@ describe('Notebook ::', () => {
 
           expect(await actionsTestkit.isDeleteEnabled()).to.be.false;
         });
-      });
-
-      // TODO
-      // This test is non-consistent with popper.js used in <ui-dropdown> component 
-
-      // describe('Run ::', () => {
-      //   it('should show confirm dialog if a user does not has permissions', async () => {
-      //     await gotoEditableNotebook([createMockNote('1', { content: 'do permission error' })]);
-      //     const noteTestkit = await testkit.getNoteTestkit(1);
-      //     const runnerTestkit = await noteTestkit.getRunnerTestkit();
-
-      //     await runnerTestkit.clickRun();
-
-      //     const dialogTestkit = driver.createTestkit(DialogTestkit);
-
-      //     expect(await dialogTestkit.isShown()).to.be.true;
-      //   });
-      // });
+      });      
     });
   });
 });
