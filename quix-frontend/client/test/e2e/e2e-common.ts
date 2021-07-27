@@ -1,5 +1,5 @@
 import puppeteer from 'puppeteer';
-import { start } from '../dev/server';
+import {start} from '../dev/server';
 
 before(async () => {
   start('3100');

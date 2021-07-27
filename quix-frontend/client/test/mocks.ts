@@ -15,8 +15,8 @@ import {
   createFolderPayload,
 } from '@wix/quix-shared';
 import * as moment from 'moment';
-import { ServerTreeItem } from '../src/components/db-sidebar/db-sidebar-types';
-import { v4 as uuidv4 } from 'uuid';
+import {ServerTreeItem} from '../src/components/db-sidebar/db-sidebar-types';
+import {v4 as uuidv4} from 'uuid';
 
 export const MockNoteContent = {
   success: 'do success',

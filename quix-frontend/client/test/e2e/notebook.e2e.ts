@@ -1,8 +1,8 @@
-import { expect } from 'chai';
-import { Driver } from './driver';
-import { createMockNotebook, createMockNote, MockNoteContent } from '../mocks';
-import { NotebookTestkit } from '../../src/state-components/notebook/notebook-testkit';
-import { ConsoleResultTestkit } from '../../src/lib/runner/directives/results/console/console-result-testkit';
+import {expect} from 'chai';
+import {Driver} from './driver';
+import {createMockNotebook, createMockNote, MockNoteContent} from '../mocks';
+import {NotebookTestkit} from '../../src/state-components/notebook/notebook-testkit';
+import {ConsoleResultTestkit} from '../../src/lib/runner/directives/results/console/console-result-testkit';
 
 describe('Notebook ::', () => {
   let driver: Driver, testkit: NotebookTestkit;
