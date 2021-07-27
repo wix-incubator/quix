@@ -1,6 +1,6 @@
 import {IScope as ngIScope} from 'angular';
-import { RunnerQuery } from '../../..';
+import {RunnerQuery} from '../../..';
 
 export interface IScope extends ngIScope {
-  query:RunnerQuery
+  query: RunnerQuery;
 }
