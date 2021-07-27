@@ -1,6 +1,6 @@
-import { Testkit } from '../../../test/e2e/driver';
-import { ActionsTestkit } from '../actions/actions-testkit';
-import { RunnerTestkit } from '../runner/runner-testkit';
+import {Testkit} from '../../../test/e2e/driver';
+import {ActionsTestkit} from '../actions/actions-testkit';
+import {RunnerTestkit} from '../runner/runner-testkit';
 
 const enum Hooks {
   Name = 'note-name',
@@ -25,9 +25,6 @@ export class NoteTestkit extends Testkit {
   }
 
   async isNameEditable() {
-    return this.evaluate.hook(
-      Hooks.Name,
-      (el) => el.getAttribute('contenteditable') === 'true'
-    );
+    return this.evaluate.hook( Hooks.Name, el => el.getAttribute('contenteditable') === 'true');
   }
 }

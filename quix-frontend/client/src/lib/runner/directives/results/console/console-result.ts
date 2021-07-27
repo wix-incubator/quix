@@ -1,4 +1,4 @@
-import { IScope } from './console-types';
+import {IScope} from './console-types';
 import template from './console-result.html';
 import './console-result.scss';
 

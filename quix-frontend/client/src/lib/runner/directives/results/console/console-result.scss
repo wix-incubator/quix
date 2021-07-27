@@ -15,8 +15,11 @@ bi-console-result {
   pre {
     white-space: nowrap;
     min-height: 17px;
+    .console-result-value {
+      color: lighten($darker-bg, 80);
+    }
   }
-  
+
   bi-copy-to-clipboard {
     position: absolute;
     right: 0;
@@ -42,12 +45,36 @@ bi-console-result {
     }
 
     .cr-timestamp-value {
+      $gap-width: 5px;
+      
+      font-size: 0.85em;  
       padding: 0 5px;
       position: relative;
       color: lighten($darker-bg, 80);
       background-color: lighten($darker-bg, 20);
       z-index: 2;
-      margin-left: 20px;
+      margin-left: $gap-width + 15px;
+      border-radius: 3px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        width: $gap-width;
+        height: 100%;
+        background-color: $darker-bg;
+        z-index: 2;
+        left: -$gap-width;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        width: $gap-width;
+        height: 100%;
+        background-color: $darker-bg;
+        z-index: 2;
+        right: -$gap-width;
+      }
     }
   }
 }
