@@ -7,7 +7,7 @@ lazy val publishSettings = Seq(
       Some("releases" at nexus + "service/local/staging/deploy/maven2")
   },
   publishMavenStyle := true,
-  pomExtra in ThisBuild :=
+  ThisBuild / pomExtra :=
     <scm>
       <url>https://github.com/wix/quix.git</url>
       <connection>scm:git:https://github.com/wix/quix.git</connection>
@@ -76,7 +76,7 @@ lazy val quixCore = (project in file("quix-core"))
     // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3
     libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.11.728",
 
-      libraryDependencies ++= loggingDeps,
+    libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
 
     // https://mvnrepository.com/artifact/com.wix/wix-embedded-mysql

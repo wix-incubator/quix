@@ -1,15 +1,10 @@
-FROM maven:slim as maven
-
-ARG SBT_VERSION=1.4.1
+FROM maven:alpine as maven
 
 # Install sbt
 RUN \
-  curl -L -o sbt-$SBT_VERSION.deb https://dl.bintray.com/sbt/debian/sbt-$SBT_VERSION.deb && \
-  dpkg -i sbt-$SBT_VERSION.deb && \
-  rm sbt-$SBT_VERSION.deb && \
-  apt-get update && \
-  apt-get install sbt && \
-  sbt sbtVersion -Dsbt.rootdir=true;
+    curl -L --silent "https://raw.githubusercontent.com/sbt/sbt/v1.5.1/sbt" > $HOME/sbt && \
+    chmod +x $HOME/sbt && \
+    mv $HOME/sbt /usr/local/bin/sbt
 
 COPY build.sbt .
 COPY version.sbt .
