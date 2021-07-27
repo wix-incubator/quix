@@ -9,22 +9,28 @@ bi-console-result {
   font-family: 'Courier';
   font-size: 12px;
   color: $white;
-  background-color: $black;
+  background-color: $darker-bg;
   overflow-y: auto;
 
   pre {
     white-space: nowrap;
     min-height: 17px;
   }
-  // TODO Move to appropriate place
-  .bi-no-select {
-    -webkit-user-select: none; /* Chrome all / Safari all */
-    -moz-user-select: none; /* Firefox all */
-    -ms-user-select: none; /* IE 10+ */
-    user-select: none; /* Likely future */
+  
+  bi-copy-to-clipboard {
+    position: absolute;
+    right: 0;
+    top: 15;
   }
+
   .cr-timestamp {
     position: relative;
+    margin: 0 0 10px 0;
+
+    &:not(:first-child) {
+      margin: 10px 0;
+    }
+
     &::after {
       content: '';
       width: 100%;
@@ -32,13 +38,14 @@ bi-console-result {
       left: 0;
       top: 50%;
       z-index: 1;
-      border-top: 1px solid $blue--300;
+      border-top: 1px solid lighten($darker-bg, 20);
     }
-    span {
+
+    .cr-timestamp-value {
       padding: 0 5px;
       position: relative;
-      color: $blue--300;
-      background-color: $black;
+      color: lighten($darker-bg, 80);
+      background-color: lighten($darker-bg, 20);
       z-index: 2;
       margin-left: 20px;
     }

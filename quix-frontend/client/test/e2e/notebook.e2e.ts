@@ -1,7 +1,7 @@
-import {expect} from 'chai';
-import {Driver} from './driver';
-import {createMockNotebook, createMockNote} from '../mocks';
-import {NotebookTestkit} from '../../src/state-components/notebook/notebook-testkit';
+import { expect } from 'chai';
+import { Driver } from './driver';
+import { createMockNotebook, createMockNote } from '../mocks';
+import { NotebookTestkit } from '../../src/state-components/notebook/notebook-testkit';
 
 describe('Notebook ::', () => {
   let driver: Driver, testkit: NotebookTestkit;
@@ -11,19 +11,24 @@ describe('Notebook ::', () => {
 
     await driver.mock.http(`/api/notebook/:id`, notebook);
     await driver.goto('/notebook/1');
-  }
+  };
 
   const gotoReadonlyNotebook = async () => {
-    const notebook = createMockNotebook([createMockNote('1')], {owner: 'readonly@quix.com'});
+    const notebook = createMockNotebook([createMockNote('1')], {
+      owner: 'readonly@quix.com',
+    });
 
     await driver.mock.http(`/api/notebook/:id`, notebook);
     await driver.goto('/notebook/1');
-  }
+  };
 
   const gotoErrorNotebook = async () => {
-    await driver.mock.http('/api/notebook/:id', [404, {message: 'Notebook not found'}]);
+    await driver.mock.http('/api/notebook/:id', [
+      404,
+      { message: 'Notebook not found' },
+    ]);
     await driver.goto(`/notebook/1`);
-  }
+  };
 
   beforeEach(async () => {
     driver = new Driver();
@@ -187,6 +192,14 @@ describe('Notebook ::', () => {
           const actionsTestkit = await noteTestkit.getActionsTestkit();
 
           expect(await actionsTestkit.isDeleteEnabled()).to.be.false;
+        });
+      });
+      describe('Result ::', () => {
+        describe('Console ::', () => {
+          it('should merge lines with same timestamp into group', async () => {
+            
+            expect(false).to.be.true;
+          });
         });
       });
     });

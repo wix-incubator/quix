@@ -1,6 +1,6 @@
 import * as WebSocket from 'ws';
 import {Router, Application} from 'express';
-
+import {MockNoteContent} from '../mocks'
 const successEvents = [
   {event:'start',data:{id:'d85eed1e-fec8-4f1c-abba-5ab8593ea46b', 'numOfQueries':1}},
   {event:'query-start',data:{id:'20190507_155320_00041_s9xam'}},
@@ -72,18 +72,13 @@ const permissionFailEvents = [
   {event: 'end', data: {id: '274370d2-6755-4d3c-8248-b573a63523d2'}}
 ];
 
-const sqlAndJsonResultEvents = [
+const sqlResultEvents = [
   {'event':'start', 'data': { 'id': 'd5301f06-9c89-41f5-82e0-5974fb0de6fe', "numOfQueries": 1 } },
   
   {'event':'log', 'data': { 'id': '59ac9b05-13ec-4e48-a3c4-fbb99adad53a', 'line': "SELECT *", 'level': 'INFO' } },
   {'event':'log', 'data': { 'id': '59ac9b05-13ec-4e48-a3c4-fbb99adad53a', 'line': "FROM WorldHistory as h", 'level': 'INFO' } },
   {'event':'log', 'data': { 'id': '59ac9b05-13ec-4e48-a3c4-fbb99adad53a', 'line': "WHERE", 'level': 'INFO' } },
   {'event':'log', 'data': { 'id': '59ac9b05-13ec-4e48-a3c4-fbb99adad53a', 'line': "h.year = 1984", 'level': 'INFO' } },
-  
-  {'event':'log','data':{'id':'57330e7d-af71-4424-b7da-fcd529ca80fa','line':'{"event":{','level':'INFO'}},
-  {'event':'log','data':{'id':'57330e7d-af71-4424-b7da-fcd529ca80fa','line':'"title":"Apple Macintosh Commercial",','level':'INFO'}},
-  {'event':'log','data':{'id':'57330e7d-af71-4424-b7da-fcd529ca80fa','line':'"description":"The original Apple Macintosh personal computer went on sale during January of 1984."}','level':'INFO'}},
-  {'event':'log','data':{'id':'57330e7d-af71-4424-b7da-fcd529ca80fa','line':'}','level':'INFO'}},
   
   {'event':'end', 'data': { 'id': 'd5301f06-9c89-41f5-82e0-5974fb0de6fe' } }
 ]
@@ -98,14 +93,16 @@ export const setupMockWs = (app: Application) => {
       const timeout = match && match[1] ? parseInt(match[1], 10) : 0;
 
       if (payload.event === 'execute') {
-        if ((payload.data.code).includes('do success')) {
+        const code = payload.data.code;
+
+        if (code.includes(MockNoteContent.success)) {
           sendEvents(ws, successEvents, timeout);
-        } else if ((payload.data.code).includes('do error')) {
+        } else if (code.includes(MockNoteContent.error)) {
           sendEvents(ws, failEvents, timeout);
-        } else if ((payload.data.code).includes('do permission error')) {
+        } else if (code.includes(MockNoteContent.permissionError)) {
           sendEvents(ws, permissionFailEvents, timeout);
-        } else if ((payload.data.code).includes('do sql and json')) {
-          sendEvents(ws, sqlAndJsonResultEvents, timeout);
+        } else if (code.includes(MockNoteContent.sql)) {
+          sendEvents(ws, sqlResultEvents, timeout);
         } else {
           ws.close();
         }

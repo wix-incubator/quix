@@ -11,12 +11,21 @@ export default () => {
     },
     link: {
       async pre(scope: IScope) {
+        
         scope.isTimestampVisible = (timestamp, index, isFirst, isLast) => {
           return (
             isFirst ||
             isLast ||
             scope.query.getResults().buffer[index - 1].timestamp !== timestamp
           );
+        };
+
+        scope.groupText = (timestamp) => {
+          return scope.query
+            .getResults()
+            .buffer.filter(r => r.timestamp === timestamp)
+            .map(r => r.line)
+            .join('\n');
         };
       },
     },

@@ -1,19 +1,20 @@
-<div class="bi-c bi-s-h--x15"> 
-  <div ng-if="!$last && isTimestampVisible(row.timestamp,$index,$first,$last)"
-       ng-repeat-start="row in query.getResults().buffer"
-       class="cr-timestamp"
-       >
-    <span class="bi-no-select">[{{::row.timestamp}}]</span>
-  </div>   
-  <pre
-      class="bi-fade-in"
-      ng-class="::{
-        'bi-white': row.level === 'INFO',
-        'bi-danger': row.level === 'ERROR'
-      }"
-      ng-repeat-end
-    >
-      <span>{{::row.line}}</span >
-    </pre>
+<div class="bi-c bi-theme--darker"> 
+  <div 
+    ng-if="!$last && isTimestampVisible(row.timestamp,$index,$first,$last)"
+    ng-repeat-start="row in query.getResults().buffer"
+    class="cr-timestamp bi-s-v--x2"
+  >
+    <span class="bi-no-select cr-timestamp-value">{{::row.timestamp}}</span>
+    <bi-copy-to-clipboard lazy-text="groupText(row.timestamp)"></bi-copy-to-clipboard>
   </div>
+  <pre
+    class="bi-fade-in"
+    ng-class="::{
+      'bi-white': row.level === 'INFO',
+      'bi-danger': row.level === 'ERROR'
+    }"
+    ng-repeat-end
+  >
+    <span>{{::row.line}}</span>
+  </pre>
 </div>
