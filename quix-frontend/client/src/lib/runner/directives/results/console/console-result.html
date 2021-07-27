@@ -1,8 +1,9 @@
-<div class="bi-c bi-theme--darker"> 
+<div class="bi-c bi-theme--darker" data-hook="console-result"> 
   <div 
     ng-if="!$last && isTimestampVisible(row.timestamp,$index,$first,$last)"
     ng-repeat-start="row in query.getResults().buffer"
     class="cr-timestamp bi-s-v--x2"
+    data-hook="console-result-timestamp"
   >
     <span class="bi-no-select cr-timestamp-value">{{::row.timestamp}}</span>
     <bi-copy-to-clipboard lazy-text="groupText(row.timestamp)"></bi-copy-to-clipboard>
@@ -14,6 +15,7 @@
       'bi-danger': row.level === 'ERROR'
     }"
     ng-repeat-end
+    data-hook="console-result-value-row"
   >
     <span>{{::row.line}}</span>
   </pre>

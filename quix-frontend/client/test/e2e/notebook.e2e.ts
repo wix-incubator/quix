@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import { Driver } from './driver';
-import { createMockNotebook, createMockNote } from '../mocks';
+import { createMockNotebook, createMockNote, MockNoteContent } from '../mocks';
 import { NotebookTestkit } from '../../src/state-components/notebook/notebook-testkit';
+import { ConsoleResultTestkit } from '../../src/lib/runner/directives/results/console/console-result-testkit';
 
 describe('Notebook ::', () => {
   let driver: Driver, testkit: NotebookTestkit;
@@ -197,8 +198,21 @@ describe('Notebook ::', () => {
       describe('Result ::', () => {
         describe('Console ::', () => {
           it('should merge lines with same timestamp into group', async () => {
-            
-            expect(false).to.be.true;
+            await gotoEditableNotebook([
+              createMockNote('1', {
+                type: 'python',
+                content: MockNoteContent.sql,
+              }),
+            ]);
+
+            const noteTestkit = await testkit.getNoteTestkit(1);
+            const runnerTestkit = await noteTestkit.getRunnerTestkit();
+
+            await runnerTestkit.clickRun();
+
+            const consoleResultTestkit = driver.createTestkit(ConsoleResultTestkit);
+            expect(await consoleResultTestkit.getTimestampsCount()).to.equal(1);
+            expect(await consoleResultTestkit.getValueRowsCount()).to.equal(4);
           });
         });
       });

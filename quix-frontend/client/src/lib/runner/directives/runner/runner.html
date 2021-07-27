@@ -6,6 +6,7 @@
       <button
         class="br-run-toggle bi-button--secondary bi-center"
         type="button"
+        data-hook="runner-toggle-run"
         ng-class="{'bi-button--danger': vm.runner.enabled}"
         ng-click="events.onToggleRun()"
       >
