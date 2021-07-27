@@ -1,5 +1,5 @@
-import { initNgScope, inject } from '../../../core';
-import { showToast } from '../../services/toast';
+import {initNgScope, inject} from '../../../core';
+import {showToast} from '../../services/toast';
 
 import template from './copy-to-clipboard.html';
 import './copy-to-clipboard.scss';
