@@ -9,22 +9,22 @@ on:
   #  - 'quix-frontend/**'
 defaults:
   run:
-    working-directory: ./quix-frontend
+    working-directory: quix-frontend
 jobs:
-  node_tests:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-    - uses: samin/mysql-action@v1.3
-      with:
-        mysql database: 'quixtest'
-        mysql version: '5.7'
-    - run : npm ci
-    - run : npm run build:ci
-    - run : npm test
+  # node_tests:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - uses: actions/setup-node@v2
+  #     with:
+  #       node-version: '14'
+  #   - uses: samin/mysql-action@v1.3
+  #     with:
+  #       mysql database: 'quixtest'
+  #       mysql version: '5.7'
+  #   - run : npm ci
+  #   - run : npm run build:ci
+  #   - run : npm test
   publish:
     needs: node_tests
     runs-on: ubuntu-latest
