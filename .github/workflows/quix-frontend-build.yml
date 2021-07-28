@@ -4,7 +4,7 @@ on:
     paths:
     - 'quix-frontend/**'  
   push:
-    branches: ['master']
+    branches: ['master','github-actions-and-frontend-build']
     paths:
     - 'quix-frontend/**'
 defaults:
