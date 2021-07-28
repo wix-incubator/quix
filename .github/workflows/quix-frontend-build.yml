@@ -26,17 +26,23 @@ jobs:
   #   - run : npm ci
   #   - run : npm run build:ci
   #   - run : npm test
-  publish:
+  publish-npm:
     # needs: node_tests
+    name: npm-publish
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: actions/setup-node@v1
-        with:
-          node-version: 14
-      - run : npm ci
-      - run : npm run build:ci
-      - uses: JS-DevTools/npm-publish@v1
-        with:
-          token: ${{ secrets.NPM_TOKEN }}
-          dry-run: true
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Publish if version has been updated
+      uses: pascalgn/npm-publish-action@1.3.8
+      with:
+        #tag_name: "v%s"
+        #tag_message: "v%s"
+        create_tag: "false"
+        #commit_pattern: "^Release (\\S+)"
+        workspace: "./quix-frontend"
+        publish_command: "lerna"
+        publish_args: "publish from-package --no-verify-access -y --loglevel=debug"
+      env: # More info about the environment variables in the README
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Leave this as is, it's automatically generated
+        NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
