@@ -28,9 +28,10 @@ jobs:
       with:
         mysql database: 'quixtest'
         mysql version: '5.7'
-    - run : npm ci
-    - run : npm run build:ci
-    - run : npm test
+    - run: npm ci
+    - run: npm run build:ci
+    - run: npm test
+    - run: 'echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc'
     - run: "lerna publish from-package --no-verify-access -y --loglevel=debug"
       env: 
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
