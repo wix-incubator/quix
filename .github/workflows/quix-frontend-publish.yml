@@ -27,4 +27,4 @@ jobs:
     - run : npm test
     - run: "lerna publish from-package --no-verify-access -y --loglevel=debug"
       env: 
-        NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
