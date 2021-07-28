@@ -5,8 +5,8 @@ on:
     - 'quix-frontend/**'  
   push:
     branches: ['master','github-actions-and-frontend-build']
-    paths:
-    - 'quix-frontend/**'
+  #  paths:
+  #  - 'quix-frontend/**'
 defaults:
   run:
     working-directory: ./quix-frontend
@@ -25,3 +25,17 @@ jobs:
     - run : npm ci
     - run : npm run build:ci
     - run : npm test
+  publish:
+    needs: node_tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - run : npm ci
+      - run : npm run build:ci
+      - uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          dry-run: true
