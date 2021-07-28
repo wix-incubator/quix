@@ -1,10 +1,10 @@
-import {Testkit} from '../../../test/e2e/driver';
-import {ActionsTestkit} from '../actions/actions-testkit';
+import { Testkit } from '../../../test/e2e/driver';
 
 const enum Hooks {
-
+  ToggleRun = 'runner-toggle-run'
 }
-
 export class RunnerTestkit extends Testkit {
-
+  async clickRun() {
+    await this.click.hook(Hooks.ToggleRun);
+  }
 }

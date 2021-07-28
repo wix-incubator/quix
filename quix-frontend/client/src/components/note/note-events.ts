@@ -67,8 +67,6 @@ export const onEditorInstanceLoad = (scope: IScope, store: Store, app: App) => (
 
 export const onRunnerInstanceLoad = (scope: IScope, store: Store, app: App) => (runner: RunnerComponentInstance) => {
   scope.vm.runner = runner;
-
-  runner.setUser(app.getUser());
 };
 
 export const onRunnerCreated = (scope: IScope, store: Store) => (runner) => {
