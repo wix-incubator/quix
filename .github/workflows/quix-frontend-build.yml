@@ -4,7 +4,8 @@ on:
     paths:
     - 'quix-frontend/**'  
   push:
-    branches: ['master','github-actions-and-frontend-build']
+    # branches: ['master','github-actions-and-frontend-build']
+    branches: ['github-actions-and-frontend-build']
   #  paths:
   #  - 'quix-frontend/**'
 defaults:
@@ -26,7 +27,7 @@ jobs:
   #   - run : npm run build:ci
   #   - run : npm test
   publish:
-    needs: node_tests
+    # needs: node_tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
