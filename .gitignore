@@ -95,3 +95,4 @@ vpc.plan
 terraform.tfvars
 
 quix-frontend/.npmrc
+documentation/website/build/
