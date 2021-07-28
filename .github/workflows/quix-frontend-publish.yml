@@ -1,5 +1,11 @@
 name: Quix Frontend Publish
 on:
+  workflow_dispatch:
+    inputs:
+      comment:
+        description: 'Comment'     
+        required: true
+        default: 'Publish'
   pull_request:
     paths:
     - 'quix-frontend/**'  
