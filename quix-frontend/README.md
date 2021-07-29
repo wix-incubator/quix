@@ -40,5 +40,3 @@ docker stop quix-frontend && docker rm quix-frontend
 
 ### License
 MIT
-
-#### Test
