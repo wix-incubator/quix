@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Run a one-line script
-      - uses: actions/checkout@v2
-      - run: echo $GITHUB_CONTEXT
+        uses: actions/checkout@v2
+        run: echo $GITHUB_CONTEXT
         env:
           GITHUB_CONTEXT:${{ github }}
