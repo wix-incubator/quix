@@ -15,19 +15,14 @@ describe('Notebook ::', () => {
   };
 
   const gotoReadonlyNotebook = async () => {
-    const notebook = createMockNotebook([createMockNote('1')], {
-      owner: 'readonly@quix.com',
-    });
+    const notebook = createMockNotebook([createMockNote('1')], { owner: 'readonly@quix.com' });
 
     await driver.mock.http(`/api/notebook/:id`, notebook);
     await driver.goto('/notebook/1');
   };
 
   const gotoErrorNotebook = async () => {
-    await driver.mock.http('/api/notebook/:id', [
-      404,
-      { message: 'Notebook not found' },
-    ]);
+    await driver.mock.http('/api/notebook/:id', [404, { message: 'Notebook not found' }]);
     await driver.goto(`/notebook/1`);
   };
 

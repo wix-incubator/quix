@@ -36,9 +36,9 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
   scope.dialogOptions.showCloseAction = false;
   scope.dialogOptions.iconClass = options.actionType === 'destroy' ? 'bi-danger' : 'bi-primary';
 
-  if (options.resolveOnEnter){
+  if (options.resolveOnEnter) {
     element = element.bind('keyup', (event) => {
-      if (event.which === 13){
+      if (event.which === 13) {
         scope.dialogEvents.resolve();
       }
     });
