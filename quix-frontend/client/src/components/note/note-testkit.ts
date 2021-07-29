@@ -1,6 +1,6 @@
 import {Testkit} from '../../../test/e2e/driver';
 import {ActionsTestkit} from '../actions/actions-testkit';
-import {RunnerTestkit} from '../runner/runner-testkit'
+import {RunnerTestkit} from '../runner/runner-testkit';
 
 const enum Hooks {
   Name = 'note-name',

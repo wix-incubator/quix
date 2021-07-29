@@ -4,7 +4,7 @@ import {start} from '../dev/server';
 before(async () => {
   start('3100');
   global.browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'], 
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
     headless: true
   });
 });

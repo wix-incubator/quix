@@ -9,10 +9,72 @@ bi-console-result {
   font-family: 'Courier';
   font-size: 12px;
   color: $white;
-  background-color: $black;
+  background-color: $darker-bg;
   overflow-y: auto;
 
   pre {
-    white-space: pre-line;
+    white-space: nowrap;
+    min-height: 17px;
+    .console-result-value {
+      color: lighten($darker-bg, 80);
+    }
+  }
+
+  bi-copy-to-clipboard {
+    position: absolute;
+    right: 0;
+    top: 15px;
+  }
+
+  .console-result-timestamp {
+    position: relative;
+    margin: 0 0 10px 0;
+
+    &:not(:first-child) {
+      margin: 10px 0;
+    }
+
+    &::after {
+      content: '';
+      width: 100%;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      z-index: 1;
+      border-top: 1px solid lighten($darker-bg, 20);
+    }
+
+    .console-result-timestamp-value {
+      $gap-width: 5px;
+      
+      font-size: 0.85em;  
+      padding: 0 5px;
+      position: relative;
+      color: lighten($darker-bg, 80);
+      background-color: lighten($darker-bg, 20);
+      z-index: 2;
+      margin-left: $gap-width + 15px;
+      border-radius: 3px;
+
+      &::before {
+        content: '';
+        position: absolute;
+        width: $gap-width;
+        height: 100%;
+        background-color: $darker-bg;
+        z-index: 2;
+        left: -$gap-width;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        width: $gap-width;
+        height: 100%;
+        background-color: $darker-bg;
+        z-index: 2;
+        right: -$gap-width;
+      }
+    }
   }
 }

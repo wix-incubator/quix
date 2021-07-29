@@ -1,4 +1,5 @@
-name: Quix Frontend Publish
+# Build on each branch and Publish to NPM on master if version bumped
+name: Quix Frontend Build & Publish
 on:
   workflow_dispatch:
     inputs:
@@ -6,18 +7,14 @@ on:
         description: 'Comment'     
         required: true
         default: 'Publish'
-  pull_request:
-    paths:
-    - 'quix-frontend/**'  
   push:
-    branches: ['master']
     paths:
     - 'quix-frontend/**'
 defaults:
   run:
     working-directory: quix-frontend
 jobs:
-  node_tests:
+  build and test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -28,14 +25,21 @@ jobs:
         with:
           mysql database: 'quixtest'
           mysql version: '5.7'
+      
       - run: npm ci
       - run: npm run build:ci
       - run: npm test
-      - run: |
+
+      - name: Prepare Publish To NPM
+        if: github.ref == 'refs/heads/master'
+        run: |
           echo "registry=http://registry.npmjs.org/" >> .npmrc
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
         env: 
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - run: lerna publish from-package --no-verify-access -y --loglevel=debug
+      
+      - name: Publish
+        if: github.ref == 'refs/heads/master'
+        run: lerna publish from-package --no-verify-access -y --loglevel=debug
         env: 
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
