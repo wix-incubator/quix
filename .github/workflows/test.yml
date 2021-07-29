@@ -1,6 +1,9 @@
 name: TEST
 
 on:
+  push:
+    branches: ['testing-actions']
+    
   workflow_dispatch:
     inputs:
       comment:
