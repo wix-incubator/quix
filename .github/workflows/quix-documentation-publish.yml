@@ -2,8 +2,13 @@ name: Quix Documentation Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      comment:
+        description: 'Comment'     
+        required: true
+        default: 'Publish'
   push:
-    branches: ['documentation-publish-workflow']
+    branches: ['master']
     paths:
     - 'documentation/**/*.*'
 
@@ -26,3 +31,5 @@ jobs:
       with:
         target_branch: gh-pages
         build_dir: documentation/website/build/quix
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
