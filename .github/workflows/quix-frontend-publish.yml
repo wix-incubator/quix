@@ -1,5 +1,5 @@
+# Build on each branch and Publish to NPM on master if version bumped
 name: Quix Frontend Build & Publish
-description: Build on each branch and Publish to NPM on master if version bumped
 on:
   workflow_dispatch:
     inputs:
