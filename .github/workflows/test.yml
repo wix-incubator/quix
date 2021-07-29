@@ -17,7 +17,13 @@ jobs:
     steps:
       - name: Run a one-line script
         uses: actions/checkout@v2
-      - name: Print github
-        run: echo $GITHUB_CONTEXT
+
+      - name: Is Master?
+        if: github.ref == 'refs/heads/master'
+        run: echo "MASTER"
+
+      - name: Is Not Master?
         env:
-          GITHUB_CONTEXT:${{ github }}
+          BRANCH: ${{ github.ref }}
+        if: github.ref != 'refs/heads/master'
+        run: echo $BRANCH
