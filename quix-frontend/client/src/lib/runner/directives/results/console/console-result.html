@@ -1,6 +1,22 @@
-<div class="bi-c">
-  <pre ng-class="::{
-    'bi-white': row.level === 'INFO',
-    'bi-danger': row.level === 'ERROR'
-  }" ng-repeat="row in query.getResults().buffer"><span class="bi-white">[{{::row.timestamp}}]</span> {{::row.line}}</pre>
+<div class="bi-c bi-theme--darker" data-hook="console-result"> 
+  <div 
+    ng-if="!$last && isTimestampVisible(row.timestamp, $index, $first, $last)"
+    ng-repeat-start="row in query.getResults().buffer"
+    class="console-result-timestamp bi-s-v--x2"
+    data-hook="console-result-timestamp"
+  >
+    <span class="bi-no-select console-result-timestamp-value">{{::row.timestamp}}</span>
+    <bi-copy-to-clipboard lazy-text="groupTextByTimestamp(row.timestamp)"></bi-copy-to-clipboard>
+  </div>
+  <pre
+    class="bi-fade-in"
+    ng-class="::{
+      'bi-white': row.level === 'INFO',
+      'bi-danger': row.level === 'ERROR'
+    }"
+    ng-repeat-end
+    data-hook="console-result-value-row"
+  >
+    <span class="console-result-value">{{::row.line}}</span>
+  </pre>
 </div>

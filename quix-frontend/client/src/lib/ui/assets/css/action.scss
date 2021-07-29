@@ -6,6 +6,18 @@
   .bi-action {
     @include action('lighter');
   }
+
+  .bi-theme--dark {
+    .bi-action {
+      @include action('dark');
+    }
+  }
+
+  .bi-theme--darker {
+    .bi-action {
+      @include action('darker');
+    }
+  }
 }
 
 .bi-theme--light {
@@ -16,6 +28,18 @@
   .bi-theme--lighter {
     .bi-action {
       @include action('lighter');
+    }
+  }
+
+  .bi-theme--dark {
+    .bi-action {
+      @include action('dark');
+    }
+  }
+
+  .bi-theme--darker {
+    .bi-action {
+      @include action('darker');
     }
   }
 }

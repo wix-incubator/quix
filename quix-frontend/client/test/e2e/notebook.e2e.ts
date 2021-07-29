@@ -1,7 +1,8 @@
-import { expect } from 'chai';
-import { Driver } from './driver';
-import { createMockNotebook, createMockNote } from '../mocks';
-import { NotebookTestkit } from '../../src/state-components/notebook/notebook-testkit';
+import {expect} from 'chai';
+import {Driver} from './driver';
+import {createMockNotebook, createMockNote, MockNoteContent} from '../mocks';
+import {NotebookTestkit} from '../../src/state-components/notebook/notebook-testkit';
+import {ConsoleResultTestkit} from '../../src/lib/runner/directives/results/console/console-result-testkit';
 
 describe('Notebook ::', () => {
   let driver: Driver, testkit: NotebookTestkit;
@@ -11,19 +12,19 @@ describe('Notebook ::', () => {
 
     await driver.mock.http(`/api/notebook/:id`, notebook);
     await driver.goto('/notebook/1');
-  }
+  };
 
   const gotoReadonlyNotebook = async () => {
     const notebook = createMockNotebook([createMockNote('1')], { owner: 'readonly@quix.com' });
 
     await driver.mock.http(`/api/notebook/:id`, notebook);
     await driver.goto('/notebook/1');
-  }
+  };
 
   const gotoErrorNotebook = async () => {
     await driver.mock.http('/api/notebook/:id', [404, { message: 'Notebook not found' }]);
     await driver.goto(`/notebook/1`);
-  }
+  };
 
   beforeEach(async () => {
     driver = new Driver();
@@ -188,7 +189,28 @@ describe('Notebook ::', () => {
 
           expect(await actionsTestkit.isDeleteEnabled()).to.be.false;
         });
-      });      
+      });
+      describe('Result ::', () => {
+        describe('Console ::', () => {
+          it('should merge lines with same timestamp into group', async () => {
+            await gotoEditableNotebook([
+              createMockNote('1', {
+                type: 'python',
+                content: MockNoteContent.sql,
+              }),
+            ]);
+
+            const noteTestkit = await testkit.getNoteTestkit(1);
+            const runnerTestkit = await noteTestkit.getRunnerTestkit();
+
+            await runnerTestkit.clickRun();
+
+            const consoleResultTestkit = driver.createTestkit(ConsoleResultTestkit);
+            expect(await consoleResultTestkit.getTimestampsCount()).to.equal(1);
+            expect(await consoleResultTestkit.getValueRowsCount()).to.equal(4);
+          });
+        });
+      });
     });
   });
 });
