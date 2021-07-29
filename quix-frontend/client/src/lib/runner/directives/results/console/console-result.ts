@@ -11,7 +11,6 @@ export default () => {
     },
     link: {
       async pre(scope: IScope) {
-        
         scope.isTimestampVisible = (timestamp, index, isFirst, isLast) => {
           return (
             isFirst ||

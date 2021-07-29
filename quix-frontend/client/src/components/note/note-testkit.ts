@@ -25,6 +25,6 @@ export class NoteTestkit extends Testkit {
   }
 
   async isNameEditable() {
-    return this.evaluate.hook( Hooks.Name, el => el.getAttribute('contenteditable') === 'true');
+    return this.evaluate.hook(Hooks.Name, el => el.getAttribute('contenteditable') === 'true');
   }
 }

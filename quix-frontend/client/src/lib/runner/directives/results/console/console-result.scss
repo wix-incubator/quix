@@ -23,10 +23,10 @@ bi-console-result {
   bi-copy-to-clipboard {
     position: absolute;
     right: 0;
-    top: 15;
+    top: 15px;
   }
 
-  .cr-timestamp {
+  .console-result-timestamp {
     position: relative;
     margin: 0 0 10px 0;
 
@@ -44,7 +44,7 @@ bi-console-result {
       border-top: 1px solid lighten($darker-bg, 20);
     }
 
-    .cr-timestamp-value {
+    .console-result-timestamp-value {
       $gap-width: 5px;
       
       font-size: 0.85em;  
