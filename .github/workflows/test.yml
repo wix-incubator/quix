@@ -4,6 +4,11 @@ name: TEST
 
 on:
   workflow_dispatch:
+    inputs:
+      comment:
+        description: 'Comment'     
+        required: true
+        default: 'TEST'
 
 jobs:
   # This workflow contains a single job called "build"
