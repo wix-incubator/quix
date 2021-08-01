@@ -19,7 +19,7 @@ export default () => {
           );
         };
 
-        scope.groupText = (timestamp) => {
+        scope.groupTextByTimestamp = (timestamp) => {
           return scope.query
             .getResults()
             .buffer.filter(r => r.timestamp === timestamp)
