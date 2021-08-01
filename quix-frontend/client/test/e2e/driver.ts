@@ -2,6 +2,8 @@ import {Browser, Page, ElementHandle} from 'puppeteer';
 import {baseURL} from './e2e-common';
 import fetch from 'node-fetch';
 import { Class } from 'utility-types';
+//import { browser } from '../../src/external-types';
+declare var browser:any;
 
 const WAIT_TIMEOUT = 5000;
 
