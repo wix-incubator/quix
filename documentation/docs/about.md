@@ -37,4 +37,3 @@ For support please conatct us via [oss@wix.com](mailto:oss@wix.com).
 
 #### Explorer
 ![](assets/db.gif)
-
