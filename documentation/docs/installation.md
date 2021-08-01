@@ -80,4 +80,4 @@ This takes into account a `docker-compose` setup. Extrapolate as needed if you h
 3. Stop the frontend and backend services - `docker-compose stop backend frontend`.
 4. Make sure all your environment variables are exported correctly in your current shell, specifically all the `DB_*` variables.
 5. Run DB migrations: `docker-compose run --no-deps --rm frontend scripts/run_migrations.sh`.
-6. Start services again `docker-compose up -d`
+6. Start services again `docker-compose up -d`.

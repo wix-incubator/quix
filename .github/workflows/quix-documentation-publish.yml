@@ -1,5 +1,6 @@
+# This Workflow will publish Documentation on any push to master branch into 
+# the documentation folder.
 name: Quix Documentation Publish
-
 on:
   workflow_dispatch:
     inputs:
@@ -8,14 +9,13 @@ on:
         required: true
         default: 'Publish'
   push:
-    branches: ['master', 'documentation-publish-workflow']
+    branches: ['master']
     paths:
     - 'documentation/**/*.*'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
