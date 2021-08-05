@@ -60,7 +60,11 @@
         </div>
       </div>
 
-      <div class="bi-c bi-fade-in" ng-if="vm.result.current.finished">
+      <div
+        class="bi-c bi-fade-in"
+        ng-if="vm.result.current.finished"
+        title="{{vm.result.current.startTime | biDate:'MMM dd, yyyy HH:mm'}}"
+      >
         <span class="bi-text--sm">Start time</span>
         <div class="bi-align bi-s-h--x05">
           <i class="bi-icon--xs">access_time</i>
