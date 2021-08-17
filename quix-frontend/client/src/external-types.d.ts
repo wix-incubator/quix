@@ -1,16 +1,21 @@
-declare module '*.scss';
-declare module '*.json';
+//declare module '*.scss';
+//declare module '*.json';
+import 'yoshi/types';
 declare module '*.html';
 declare var browser: any;
 
-declare module NodeJS {
-  interface Global {
-    browser: any;
+declare global {
+  namespace NodeJS {
+    interface Global {
+      browser: any;
+    }
   }
 }
 
-interface DedicatedWorkerGlobalScope {}
+declare global {
+  interface Window {
+    quixConfig: any;
+  }
 
-interface Window {
-  quixConfig: any;
+  interface DedicatedWorkerGlobalScope {}
 }

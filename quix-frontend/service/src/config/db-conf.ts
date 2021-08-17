@@ -1,4 +1,4 @@
-import {ColumnOptions} from 'typeorm';
+import {ColumnOptions, PrimaryColumnOptions} from 'typeorm';
 import {getEnv} from './env/env';
 import {FileType} from '@wix/quix-shared/entities/file';
 import {ContentSearch, SearchTextType} from '@wix/quix-shared';
@@ -13,7 +13,7 @@ interface DbColumnConf {
   noteContent: ColumnOptions;
   dateUpdated: ColumnOptions;
   dateCreated: ColumnOptions;
-  idColumn: ColumnOptions;
+  idColumn: PrimaryColumnOptions;
   eventsTimestamp: ColumnOptions;
   fileTypeEnum: ColumnOptions;
   entityTypeEnum: ColumnOptions;

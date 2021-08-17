@@ -7,11 +7,14 @@
     "moduleResolution": "node",
     "target": "es5",
     "noUnusedLocals": true,
-    "lib": ["dom", "es2016"],
+    //"lib": ["dom", "es2016"],
+    "lib": ["dom", "esnext"],
+    "resolveJsonModule": true,
     "esModuleInterop": true,
     "downlevelIteration": true,
     "outDir": "./dist",
-    "jsx": "react"
+    "jsx": "react",
+    "skipLibCheck": true
   },
   "include": [
     "./test/**/*.ts",
