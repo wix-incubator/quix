@@ -5,7 +5,7 @@ bi-console-result {
   @include flex(column);
 
   height: 100%;
-  padding: 10px;
+  padding: 15px;
   font-family: 'Courier';
   font-size: 12px;
   color: $white;
@@ -15,20 +15,17 @@ bi-console-result {
   pre {
     white-space: nowrap;
     min-height: 17px;
-    .console-result-value {
-      color: lighten($darker-bg, 80);
-    }
   }
 
   bi-copy-to-clipboard {
     position: absolute;
     right: 0;
-    top: 15px;
+    top: 0;
   }
 
   .console-result-timestamp {
     position: relative;
-    margin: 0 0 10px 0;
+    margin: 0 0 12px 0;
 
     &:not(:first-child) {
       margin: 10px 0;
@@ -45,15 +42,15 @@ bi-console-result {
     }
 
     .console-result-timestamp-value {
-      $gap-width: 5px;
+      $gap-width: 10px;
       
       font-size: 0.85em;  
-      padding: 0 5px;
+      padding: 1px $gap-width;
       position: relative;
       color: lighten($darker-bg, 80);
       background-color: lighten($darker-bg, 20);
       z-index: 2;
-      margin-left: $gap-width + 15px;
+      margin-left: $gap-width + 20px;
       border-radius: 3px;
 
       &::before {
