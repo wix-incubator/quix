@@ -7,3 +7,7 @@ export interface INotebook extends IEntity {
   path: IFilePathItem[];
   isLiked: boolean;
 }
+
+export interface IDeletedNotebook extends INotebook {
+  dateDeleted: number;
+}

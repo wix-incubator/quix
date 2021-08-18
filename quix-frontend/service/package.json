@@ -22,7 +22,8 @@
     "test:e2e": "npm run test:e2e:sqlite && npm run test:e2e:mysql",
     "test:e2e:sqlite": "jest --runInBand --config ./test/jest-e2e.js",
     "test:e2e:mysql": "DB_TYPE=mysql jest --runInBand --config ./test/jest-e2e.js",
-    "fnm": "fnm exec which node | xargs -I % ln -sf % ./.fnm-node && chmod +x ./.fnm-node"
+    "fnm": "fnm exec which node | xargs -I % ln -sf % ./.fnm-node && chmod +x ./.fnm-node",
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"    
   },
   "dependencies": {
     "@nest-middlewares/helmet": "^5.1.1",

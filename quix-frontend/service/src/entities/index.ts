@@ -9,3 +9,5 @@ export {DbFavorites} from './favorites/favorites.entity';
 export {DbMetadata} from './version-metadata.entity';
 export {NotebookRepository} from './notebook/notebook.repository';
 export {DbAction} from '../modules/event-sourcing/infrastructure/action-store/entities/db-action.entity';
+export {DbDeletedNotebook} from './deleted-notebook/dbdeleted-notebook.entity';
+export {DeletedNotebookRepository} from './deleted-notebook/deleted-notebook.repository';
