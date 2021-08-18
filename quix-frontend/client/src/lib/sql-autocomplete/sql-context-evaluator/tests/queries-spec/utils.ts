@@ -1,4 +1,7 @@
 import { expect } from 'chai';
+import { ICompleterItem } from '../../../../code-editor/services/code-editor-completer';
+import { SqlAutocompleter } from '../../../sql-autocomp-adapter/sql-autocomplete-adapter';
+import { IContextEvaluator, IDbConfiguration } from '../../../sql-autocomp-adapter/types';
 import evaluateContextFromPosition from '../../position-evaluator';
 import { QueryContext } from '../../types';
 
@@ -36,5 +39,20 @@ export const runQueryTest = (
         .to.have.property('tables')
         .deep.equal(test.expected.tables);
     });
+  });
+};
+
+export const runAdapterTest = (
+  config: IDbConfiguration,
+  contextEvaluator: IContextEvaluator,
+  input: string,
+  expected?: ICompleterItem[],
+) => {
+  const adapter = new SqlAutocompleter(config, contextEvaluator);
+  const position = input.indexOf('|');
+  const query = input.replace('|', '');
+  const completers = adapter.getCompleters(query, position);
+  it(`it should return comleters = ${expected}`, () => {
+    expect(completers).to.be.deep.equal(expected)
   });
 };
