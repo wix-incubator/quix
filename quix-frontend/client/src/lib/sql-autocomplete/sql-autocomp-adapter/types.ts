@@ -19,7 +19,7 @@ export interface Catalog extends baseEntity {
   children: Schema[];
 }
 export interface IDbConfiguration {
-  getColumnList: (threePartsTableName: string) => Promise<Column[]>;
+  getColumnList: (tableName: string) => Promise<Column[]>;
   getTableList: (twoPartsSchemaName: string) => Promise<Table[]>;
   getSchemaList: (catalogName: string) => Promise<Schema[]>;
 }

@@ -25,6 +25,13 @@ export const getColumnList = async (
   return columns;
 };
 
+// export const getColumnListFromTable = async (
+//   table: string
+// ): Promise<Column[]> => {
+//   const columns = table.children;
+//   return columns;
+// };
+
 export const getTableList = async (
   twoPartsSchemaName: string
 ): Promise<Table[]> => {
@@ -59,16 +66,26 @@ export const createTestSchema = async (name: string): Promise<Schema> => {
   return tbl;
 };
 
-export const testDbConfig: IDbConfiguration = {
-  getColumnList: getColumnList,
-  getTableList: getTableList,
-  getSchemaList: getSchemaList,
-};
-
 export const createCompleterItem = (name: string, meta: string) => {
   const item: ICompleterItem = {
     value: name,
     meta: meta,
   };
   return item;
+};
+
+export const testDbConfig: IDbConfiguration = {
+  getColumnList: getColumnList,
+  getTableList: getTableList,
+  getSchemaList: getSchemaList,
+};
+
+export const testTable: Table = {
+  name: '',
+  type: 'table',
+  children: [
+    createTestColumn('col1'),
+    createTestColumn('col2'),
+    createTestColumn('col3'),
+  ],
 };
