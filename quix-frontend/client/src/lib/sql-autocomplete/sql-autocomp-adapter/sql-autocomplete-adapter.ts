@@ -1,36 +1,33 @@
 import {
-  Column,
   IAutocompleter,
   IContextEvaluator,
-  IDbConfiguration,
-  Schema,
-  Table,
 } from './types';
 import { ICompleterItem } from '../../code-editor/services/code-editor-completer';
 import { ContextType, QueryContext, TableInfo } from '../sql-context-evaluator';
+import {IDbInfoConfig} from '../db-info';
 
 export class SqlAutocompleter implements IAutocompleter {
-  private config: IDbConfiguration;
+  private config: IDbInfoConfig;
   private contextEvaluator: IContextEvaluator;
 
-  constructor(config: IDbConfiguration, contextEvaluator: IContextEvaluator) {
+  constructor(config: IDbInfoConfig, contextEvaluator: IContextEvaluator) {
     this.config = config;
     this.contextEvaluator = contextEvaluator;
   }
 
   // setters
 
-  public setConfig(config: IDbConfiguration) {
+  public setConfig(config: IDbInfoConfig) {
     this.config = config;
   }
-  public setGetColumns(getColumnList: IDbConfiguration['getColumnList']) {
-    this.config.getColumnList = getColumnList;
+  public setGetColumns(getColumns: IDbInfoConfig['getColumns']) {
+    this.config.getColumns = getColumns;
   }
-  public setGetTables(getTablesList: IDbConfiguration['getTableList']) {
-    this.config.getTableList = getTablesList;
+  public setGetTables(getTabless: IDbInfoConfig['getTables']) {
+    this.config.getTables = getTabless;
   }
-  public setGetSchema(getSchemaList: IDbConfiguration['getSchemaList']) {
-    this.config.getSchemaList = getSchemaList;
+  public setGetSchema(getSchemas: IDbInfoConfig['getSchemas']) {
+    this.config.getSchemas = getSchemas;
   }
 
   /**
@@ -58,7 +55,7 @@ export class SqlAutocompleter implements IAutocompleter {
 
       // extract all columns from table references and add them to the columns list
       tableRefs.forEach(async (tableRef) => {
-        const tableRefcolumns = await this.config.getColumnList(tableRef);
+        const tableRefcolumns = await this.config.getColumns(tableRef);
         tableRefcolumns.forEach((column) => {
           columns.push(column.name);
         });

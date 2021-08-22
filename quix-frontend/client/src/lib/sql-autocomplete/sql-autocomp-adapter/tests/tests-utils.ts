@@ -2,11 +2,11 @@ import { ICompleterItem } from '../../../code-editor/services/code-editor-comple
 import { SqlAutocompleter } from '../sql-autocomplete-adapter';
 import {
   Column,
-  IContextEvaluator,
-  IDbConfiguration,
+  IDbInfoConfig,
   Schema,
   Table,
-} from '../types';
+} from '../../db-info/';
+import {IContextEvaluator} from '../types';
 
 // export interface IDbConfiguration {
 //   getColumnList: (threePartsTableName: string) => Promise<Column[]>;
@@ -74,10 +74,10 @@ export const createCompleterItem = (name: string, meta: string) => {
   return item;
 };
 
-export const testDbConfig: IDbConfiguration = {
-  getColumnList: getColumnList,
-  getTableList: getTableList,
-  getSchemaList: getSchemaList,
+export const testDbConfig: IDbInfoConfig = {
+  getColumns: getColumnList,
+  getTables: getTableList,
+  getSchemas: getSchemaList,
 };
 
 export const testTable: Table = {
