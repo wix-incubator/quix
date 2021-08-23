@@ -1,13 +1,17 @@
-import { runAdapterTest } from '../../sql-context-evaluator/tests/queries-spec/utils';
-import { testDbConfig, testTable } from './tests-utils';
+import { runAdapterTest } from './tests-utils';
+import { testDbConfig } from './tests-utils';
 import { evaluateContextFromPosition } from '../../sql-context-evaluator';
 import { results } from './expected-results';
 
 describe('when reciving presto query and a position', () => {
-  runAdapterTest(
-    testDbConfig,
-    evaluateContextFromPosition,
-    'select | from (select col1, col2, col3 from tbl1)',
-    results.result1
-  );
+  describe('with nested query', () => {
+    describe('And cursor after select', () => {
+      runAdapterTest(
+        testDbConfig,
+        evaluateContextFromPosition,
+        'select | from (select * from prod.adi.adi_bots_black_list)',
+        results.adi_bots_black_list
+      );
+    });
+  });
 });

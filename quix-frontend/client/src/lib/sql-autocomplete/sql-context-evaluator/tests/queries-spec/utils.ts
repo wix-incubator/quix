@@ -43,17 +43,3 @@ export const runQueryTest = (
   });
 };
 
-export const runAdapterTest = (
-  config: IDbInfoConfig,
-  contextEvaluator: IContextEvaluator,
-  input: string,
-  expected?: ICompleterItem[],
-) => {
-  const adapter = new SqlAutocompleter(config, contextEvaluator);
-  const position = input.indexOf('|');
-  const query = input.replace('|', '');
-  const completers = adapter.getCompleters(query, position);
-  it(`it should return comleters = ${expected}`, () => {
-    expect(completers).to.be.deep.equal(expected)
-  });
-};

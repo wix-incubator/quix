@@ -20,8 +20,8 @@ export interface Catalog extends BaseEntity {
 }
 
 export interface IDbInfoConfig {
-  getColumns: (tableName: string) => Promise<Column[]>;
-  getTables: (schemaName: string) => Promise<Table[]>;
-  getSchemas: (catalogName: string) => Promise<Schema[]>;
-  getData?: (path:string)=> Promise<Catalog[] | Schema[] | Table[] | Column[]>
+  getColumns(tableName: string): Promise<Column[]>;
+  getTables(schemaName: string): Promise<Table[]>;
+  getSchemas(catalogName: string): Promise<Schema[]>;
+  getData?(path:string): Promise<Catalog[] | Schema[] | Table[] | Column[]>
 }

@@ -8,7 +8,7 @@ import {IDbInfoConfig} from '../db-info';
 
 export class SqlAutocompleter implements IAutocompleter {
   private config: IDbInfoConfig;
-  private contextEvaluator: IContextEvaluator;
+  private readonly contextEvaluator: IContextEvaluator;
 
   constructor(config: IDbInfoConfig, contextEvaluator: IContextEvaluator) {
     this.config = config;
@@ -62,7 +62,7 @@ export class SqlAutocompleter implements IAutocompleter {
       });
 
       const completersMemory: Set<string> = new Set();
-      let completionItem: ICompleterItem = { value: '', meta: 'column' };
+      const completionItem: ICompleterItem = { value: '', meta: 'column' };
 
       columns.forEach((column) => {
         if (!completersMemory.has(column)) {
@@ -94,7 +94,7 @@ export class SqlAutocompleter implements IAutocompleter {
     tables: TableInfo[],
     completers: ICompleterItem[]
   ) {
-    let completionItem: ICompleterItem = { value: '', meta: 'table' };
+    const completionItem: ICompleterItem = { value: '', meta: 'table' };
     tables.forEach((table) => {
       const completersMem: Set<string> = new Set();
       if (!completersMem.has(table.name)) {
@@ -120,6 +120,7 @@ export class SqlAutocompleter implements IAutocompleter {
       case 'Table':
         this.getQueryContextTables(tables, completers);
         break;
+      default:
     }
     return [...completers];
   }

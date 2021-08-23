@@ -3,10 +3,12 @@ import axios from 'axios';
 // import * as Resources from '../../../services/resources';
 
 export class DbInfoService implements IDbInfoConfig {
-  constructor(
-    private readonly type: string,
-    private readonly apiBasePath = ''
-  ) {}
+  private readonly type: string;
+  private readonly apiBasePath: string;
+  constructor(type: string, apiBasePath: string) {
+    this.type = type;
+    this.apiBasePath = apiBasePath;
+  }
 
   public async getColumns(tableName: string) {
     const path: string[] = tableName.split('.');
@@ -17,9 +19,8 @@ export class DbInfoService implements IDbInfoConfig {
         )
         .then(({ data }) => (data as Table).children)
         .catch((e) => [])) as any;
-    } else {
-      return Promise.resolve([]);
     }
+    return Promise.resolve([]);
   }
 
   public async getTables(schemaName: string) {
@@ -31,9 +32,8 @@ export class DbInfoService implements IDbInfoConfig {
         )
         .then(({ data }) => (data as Schema).children)
         .catch((e) => [])) as any;
-    } else {
-      return Promise.resolve([]);
     }
+    return Promise.resolve([]);
   }
 
   public async getSchemas(catalogName: string) {
@@ -45,9 +45,8 @@ export class DbInfoService implements IDbInfoConfig {
         )
         .then(({ data }) => (data as Schema).children)
         .catch((e) => [])) as any;
-    } else {
-      return Promise.resolve([]);
     }
+    return Promise.resolve([]);
   }
 
   public async getData(path: string) {

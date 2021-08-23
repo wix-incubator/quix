@@ -1,7 +1,4 @@
-
-export interface IContextEvaluator {
-  (input: string, position: number): any;
-}
+export type IContextEvaluator = (input: string, position: number) => any;
 
 export interface IAutocompleter {
   getCompleters(query: string, position: number): any;

@@ -1,9 +1,15 @@
-import { createCompleterItem } from './tests-utils';
+import { makeCompletionItem } from '../../../runner/services/autocomplete/autocomplete-utils';
 
 export const results = {
   result1: [
-    createCompleterItem('col1', 'column'),
-    createCompleterItem('col2', 'column'),
-    createCompleterItem('col3', 'column'),
+    makeCompletionItem('col1', 'column'),
+    makeCompletionItem('col2', 'column'),
+    makeCompletionItem('col3', 'column'),
+  ],
+
+  adi_bots_black_list: [
+    makeCompletionItem('date_updated', 'column'),
+    makeCompletionItem('reason', 'column'),
+    makeCompletionItem('uuid', 'column'),
   ],
 };
