@@ -1,10 +1,7 @@
-import {
-  IAutocompleter,
-  IContextEvaluator,
-} from './types';
+import { IAutocompleter, IContextEvaluator } from './types';
 import { ICompleterItem } from '../../code-editor/services/code-editor-completer';
 import { ContextType, QueryContext, TableInfo } from '../sql-context-evaluator';
-import {IDbInfoConfig} from '../db-info';
+import { IDbInfoConfig } from '../db-info';
 
 export class SqlAutocompleter implements IAutocompleter {
   private config: IDbInfoConfig;
@@ -46,14 +43,20 @@ export class SqlAutocompleter implements IAutocompleter {
    * @param {ICompleterItem[]} completers
    * @return {ICompleterItem[]}
    */
-  private getQueryContextColumns(
+  private async getQueryContextColumns(
     tables: TableInfo[],
     completers: ICompleterItem[]
   ) {
-    tables.forEach((table) => {
+    tables.forEach(async (table) => {
       const { name, alias, columns, tableRefs } = table;
 
-      // extract all columns from table references and add them to the columns list
+      // extract all columns from table references and add them to the columns list   
+      // for(const tableRef of tableRefs){
+      //   const tableRefcolumns = await this.config.getColumns(tableRef);
+      //   tableRefcolumns.forEach((column) => {
+      //     columns.push(column.name);
+      //   });
+      // }
       tableRefs.forEach(async (tableRef) => {
         const tableRefcolumns = await this.config.getColumns(tableRef);
         tableRefcolumns.forEach((column) => {

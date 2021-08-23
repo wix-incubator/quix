@@ -6,6 +6,7 @@ import {createMatchMask} from './autocomplete-utils';
 import {IDbInfoConfig, DbInfoService} from '../../../sql-autocomplete/db-info'
 import {evaluateContextFromPosition} from '../../../sql-autocomplete/sql-context-evaluator'
 import {SqlAutocompleter} from '../../../sql-autocomplete/sql-autocomp-adapter/sql-autocomplete-adapter'
+import { IEditSession } from 'brace';
 
 let keywords: Promise<AceCompletion[]>; 
 // let snippets: Promise<AceCompletion[]>; 
@@ -21,9 +22,11 @@ export async function setupCompleters(editorInstance: CodeEditorInstance, type: 
   const dbInfoService: IDbInfoConfig  = new DbInfoService(type, apiBasePath);
   const sqlAutocompleter = new SqlAutocompleter(dbInfoService, evaluateContextFromPosition);
 
-  editorInstance.addOnDemandCompleter(/[\w.]+/, ((prefix, session) => {
+  editorInstance.addOnDemandCompleter(/[\w.]+/, ((prefix: string, session: IEditSession) => {
     const query = session.getDocument().getAllLines().join('\n');
-    const position = 5;  // ==>  ====>>  ========>>> TODO: get position from session ???
+    const position = session.getDocument().positionToIndex(session.selection.getCursor(), 0);
+    // TODO: Check if it works and maybe think about something smarter
+    
     const contextCompletions: AceCompletion[] = sqlAutocompleter.getCompleters(query, position);
     
     return Promise.all([keywords, contextCompletions])
