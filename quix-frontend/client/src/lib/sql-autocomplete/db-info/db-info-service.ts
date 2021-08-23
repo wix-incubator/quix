@@ -5,7 +5,6 @@ import axios from 'axios';
 export class DbInfoService implements IDbInfoConfig {
   private readonly type: string;
   private readonly apiBasePath: string;
-
   constructor(type: string, apiBasePath: string) {
     this.type = type;
     this.apiBasePath = apiBasePath;
