@@ -16,6 +16,7 @@ export const runAdapterTest = (
     const completers = await sqlAutocompleterAdapter.getCompleters(query, position);
     // console.log('\ncompleters\n', completers)
     // console.log('\nexpected\n', expected)
+
     expect(completers).to.be.deep.equal(expected);
   });
 };
