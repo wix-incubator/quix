@@ -13,7 +13,6 @@ export class SqlAutocompleter implements IAutocompleter {
   }
 
   // setters
-
   public setConfig(config: IDbInfoConfig) {
     this.config = config;
   }
@@ -27,14 +26,16 @@ export class SqlAutocompleter implements IAutocompleter {
     this.config.getSchemas = getSchemas;
   }
 
+  // methods
+
   /**
    * Evaluate the context from position and suggests autocomplete
    * @param {string} query: a sql query
    * @param {number} position: the offset of the cursor
    * @returns {ICompleterItem[]}
    */
-  public getCompleters(query: string, position: number) {
-    return this.getQueryContextInfo(this.contextEvaluator(query, position));
+  public async getCompleters(query: string, position: number) {
+    return await this.getQueryContextInfo(this.contextEvaluator(query, position));
   }
 
   /**
@@ -43,30 +44,20 @@ export class SqlAutocompleter implements IAutocompleter {
    * @param {ICompleterItem[]} completers
    * @return {ICompleterItem[]}
    */
-  private async getQueryContextColumns(
-    tables: TableInfo[],
-    completers: ICompleterItem[]
-  ) {
-    tables.forEach(async (table) => {
+  private async getQueryContextColumns(tables: TableInfo[]) {
+    const completers: ICompleterItem[] = [];
+    const completersMemory: Set<string> = new Set();
+    const completionItem: ICompleterItem = { value: '', meta: 'column' };
+
+    for (const table of tables) {
       const { name, alias, columns, tableRefs } = table;
 
-      // extract all columns from table references and add them to the columns list   
-      // for(const tableRef of tableRefs){
-      //   const tableRefcolumns = await this.config.getColumns(tableRef);
-      //   tableRefcolumns.forEach((column) => {
-      //     columns.push(column.name);
-      //   });
-      // }
-      tableRefs.forEach(async (tableRef) => {
+      for (const tableRef of tableRefs) {
         const tableRefcolumns = await this.config.getColumns(tableRef);
         tableRefcolumns.forEach((column) => {
           columns.push(column.name);
         });
-      });
-
-      const completersMemory: Set<string> = new Set();
-      const completionItem: ICompleterItem = { value: '', meta: 'column' };
-
+      }
       columns.forEach((column) => {
         if (!completersMemory.has(column)) {
           completersMemory.add(column);
@@ -84,7 +75,8 @@ export class SqlAutocompleter implements IAutocompleter {
           completers.push({ ...completionItem });
         }
       });
-    });
+    }
+    return completers;
   }
 
   /**
@@ -93,10 +85,8 @@ export class SqlAutocompleter implements IAutocompleter {
    * @param {ICompleterItem[]} completers
    * @return {ICompleterItem[]}
    */
-  private getQueryContextTables(
-    tables: TableInfo[],
-    completers: ICompleterItem[]
-  ) {
+  private getQueryContextTables(tables: TableInfo[]) {
+    const completers: ICompleterItem[] = [];
     const completionItem: ICompleterItem = { value: '', meta: 'table' };
     tables.forEach((table) => {
       const completersMem: Set<string> = new Set();
@@ -106,6 +96,7 @@ export class SqlAutocompleter implements IAutocompleter {
         completers.push({ ...completionItem });
       }
     });
+    return completers;
   }
 
   /**
@@ -113,18 +104,14 @@ export class SqlAutocompleter implements IAutocompleter {
    * @param {QueryContext} queryContext
    * @return {ICompleterItem[]}
    */
-  private getQueryContextInfo(queryContext: QueryContext) {
+  private async getQueryContextInfo(queryContext: QueryContext) {
     const { contextType, tables } = queryContext;
-    const completers: ICompleterItem[] = [];
     switch (contextType) {
       case ContextType.Column:
-        this.getQueryContextColumns(tables, completers);
-        break;
-      case 'Table':
-        this.getQueryContextTables(tables, completers);
-        break;
+        return await this.getQueryContextColumns(tables);
+      case ContextType.Table:
+        return this.getQueryContextTables(tables);
       default:
     }
-    return [...completers];
   }
 }

@@ -6,35 +6,42 @@ import { evaluateContextFromPosition } from '../../sql-context-evaluator';
 import { expect } from 'chai';
 import { ICompleterItem } from '../../../code-editor/services/code-editor-completer';
 
-
-// export let dbInfoService : IDbInfoConfig;
-// export let sqlAutocompleterAdapter : SqlAutocompleter;
-
-// before(()=>{
-//     dbInfoService = new DbInfoService('trino', 'https://bo.wix.com/quix');
-//     sqlAutocompleterAdapter = new SqlAutocompleter(dbInfoService, evaluateContextFromPosition);
-// });
-
-describe.only('when reciving presto query and a position', () => {
+describe.only('when reciving presto query', () => {
   describe('with nested query', () => {
     describe('And cursor after select', () => {
-      const input =
-        'select | from (select * from prod.adi.adi_bots_black_list)';
-      const expected = results.adi_bots_black_list;
-      const dbInfoService = new DbInfoService(
-        'trino',
-        'https://bo.wix.com/quix'
+      runAdapterTest(
+        'select | from (select date_updated, reason, uuid from prod.adi.adi_bots_black_list)',
+        results.adi_bots_black_list
       );
-      const sqlAutocompleterAdapter = new SqlAutocompleter(
-        dbInfoService,
-        evaluateContextFromPosition
+      runAdapterTest(
+        'select | from (select * from prod.adi.adi_bots_black_list)',
+        results.adi_bots_black_list
       );
-      const position = input.indexOf('|');
-      const query = input.replace('|', '');
-      const completers = sqlAutocompleterAdapter.getCompleters(query, position);
-      it(`it should return comleters = ${expected}`, () => {
-        expect(completers).to.be.deep.equal(expected);
-      });
+      runAdapterTest(
+        'select | from (select * from prod.adi.adi_bots_black_list) as tbl1',
+        results.adi_bots_black_list_with_alias
+      );
+      runAdapterTest(
+        'select | from (select * from prod.adi.adi_bots_black_list) as tbl1',
+        results.adi_bots_black_list_with_alias
+      );
+    });
+  });
+
+  describe('with withTable', () => {
+    describe('And cursor after select', () => {
+      runAdapterTest(
+        'with tbl1 as (select * from prod.adi.adi_bots_black_list) select | from tbl1',
+        results.adi_bots_black_list_with_alias
+      );
+      runAdapterTest(
+        'with tbl1 as (select date_updated, reason, uuid from prod.adi.adi_bots_black_list) select | from tbl1',
+        results.adi_bots_black_list_with_alias
+      );
+      runAdapterTest(
+        'with tbl1 as (select * from prod.adi.adi_bots_black_list), tbl2 as (select uuid from tbl3) select | from tbl1, tbl2',
+        results.result2
+      );
     });
   });
 });

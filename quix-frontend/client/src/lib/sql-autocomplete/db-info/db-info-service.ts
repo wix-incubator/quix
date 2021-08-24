@@ -12,13 +12,11 @@ export class DbInfoService implements IDbInfoConfig {
 
   public async getColumns(tableName: string) {
     const [catalog, schema, table] = tableName.split('.');
-
-    return (await axios
-      .get(
-        `${this.apiBasePath}/api/db/${this.type}/explore/${catalog}/${schema}/${table}/`
-      )
-      .then(({ data }) => (data as Table).children)
-      .catch((e) => [])) as Column[];
+    const url = `${this.apiBasePath}/api/db/${this.type}/explore/${catalog}/${schema}/${table}/`;
+    return await axios
+      .get(url)
+      .then((response) => response.data.children)
+      .catch((error) => [] as Column[]);
   }
 
   public async getTables(schemaName: string) {
