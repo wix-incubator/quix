@@ -13,7 +13,7 @@ export class DbInfoService implements IDbInfoConfig {
   public async getColumns(tableName: string) {
     const [catalog, schema, table] = tableName.split('.');
     const url = `${this.apiBasePath}/api/db/${this.type}/explore/${catalog}/${schema}/${table}/`;
-    return await axios
+    return axios
       .get(url)
       .then((response) => response.data.children)
       .catch((error) => [] as Column[]);

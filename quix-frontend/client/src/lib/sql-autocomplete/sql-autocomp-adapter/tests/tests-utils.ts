@@ -14,8 +14,8 @@ export const runAdapterTest = (
   const query = input.replace('|', '');
   it(`on input ${input} it should return comleters = ${expected}`, async () => {
     const completers = await sqlAutocompleterAdapter.getCompleters(query, position);
-    console.log('\ncompleters\n', completers)
-    console.log('\nexpected\n', expected)
+    // console.log('\ncompleters\n', completers)
+    // console.log('\nexpected\n', expected)
     expect(completers).to.be.deep.equal(expected);
   });
 };

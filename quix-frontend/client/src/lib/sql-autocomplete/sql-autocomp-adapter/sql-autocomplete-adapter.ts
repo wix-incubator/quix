@@ -35,7 +35,7 @@ export class SqlAutocompleter implements IAutocompleter {
    * @returns {ICompleterItem[]}
    */
   public async getCompleters(query: string, position: number) {
-    return await this.getQueryContextInfo(this.contextEvaluator(query, position));
+    return this.getQueryContextInfo(this.contextEvaluator(query, position));
   }
 
   /**
@@ -108,7 +108,7 @@ export class SqlAutocompleter implements IAutocompleter {
     const { contextType, tables } = queryContext;
     switch (contextType) {
       case ContextType.Column:
-        return await this.getQueryContextColumns(tables);
+        return this.getQueryContextColumns(tables);
       case ContextType.Table:
         return this.getQueryContextTables(tables);
       default:
