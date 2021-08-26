@@ -1,6 +1,5 @@
-import { Column, IDbInfoConfig, Schema, Table } from './types';
+import { BaseEntity, Catalog, Column, IDbInfoConfig, Schema, Table } from './types';
 import axios from 'axios';
-// import * as Resources from '../../../services/resources';
 
 export class DbInfoService implements IDbInfoConfig {
   private readonly type: string;
@@ -25,15 +24,22 @@ export class DbInfoService implements IDbInfoConfig {
       .get(
         `${this.apiBasePath}/api/db/${this.type}/explore/${catalog}/${schema}/`
       )
-      .then(({ data }) => (data as Schema).children)
+      .then(({ data }) => data)
       .catch((e) => [])) as Table[];
   }
 
   public async getSchemas(catalogName: string) {
     return (await axios
       .get(`${this.apiBasePath}/api/db/${this.type}/explore/${catalogName}/`)
-      .then(({ data }) => (data as Schema).children)
+      .then(({ data }) => data)
       .catch((e) => [])) as Schema[];
+  }
+
+  public async getCatalogs() {
+    return (await axios
+      .get(`${this.apiBasePath}/api/db/${this.type}/explore/`)
+      .then(({ data }) => data)
+      .catch((e) => [])) as Catalog[];
   }
 
   public async getData(entityName: string) {
@@ -41,6 +47,6 @@ export class DbInfoService implements IDbInfoConfig {
     return (await axios
       .get(`${this.apiBasePath}/api/db/${this.type}/explore/${path.join('/')}/`)
       .then(({ data }) => data)
-      .catch((e) => [])) as any[];
+      .catch((e) => [])) as BaseEntity[];
   }
 }

@@ -7,6 +7,7 @@ import {
   TableType,
 } from '../sql-context-evaluator';
 import { IDbInfoConfig } from '../db-info';
+import { BaseEntity } from '../db-info/types';
 
 export class SqlAutocompleter implements IAutocompleter {
   private config: IDbInfoConfig;
@@ -128,11 +129,42 @@ export class SqlAutocompleter implements IAutocompleter {
               completersMemory.add(completerName);
             }
           });
+          break;
+        default:
       }
     }
+    
     return Array.from(completersMemory).map((column) => {
       const completer: ICompleterItem = { value: column, meta: 'column' };
       return completer;
+    });
+  }
+
+  private async getEntitiesCompletersFromDbBasedOnPrefix(prefix: string) {
+    const prefixArray = prefix.split('.') || [];
+    prefixArray.pop();
+    prefix = prefixArray.join('.');
+
+    let entities: BaseEntity[];
+
+    switch (prefixArray.length) {
+      case 0:
+        entities = await this.config.getCatalogs();
+        break;
+      case 1:
+        entities = await this.config.getSchemas(prefix);
+        break;
+      case 2:
+        entities = await this.config.getTables(prefix);
+        break;
+      default:
+    }
+
+    return entities.map((entity) => {
+      return {
+        value: `${prefix}.${entity.name}`,
+        meta: entity.type,
+      } as ICompleterItem;
     });
   }
 }

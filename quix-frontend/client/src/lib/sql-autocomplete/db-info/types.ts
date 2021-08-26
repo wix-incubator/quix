@@ -1,4 +1,4 @@
-interface BaseEntity {
+export interface BaseEntity {
   name: string;
   type: string;
 }
@@ -23,5 +23,6 @@ export interface IDbInfoConfig {
   getColumns(tableName: string): Promise<Column[]>;
   getTables(schemaName: string): Promise<Table[]>;
   getSchemas(catalogName: string): Promise<Schema[]>;
-  getData?(path:string): Promise<Catalog[] | Schema[] | Table[] | Column[]>
+  getCatalogs(): Promise<Catalog[]>;
+  getData?(path:string): Promise<BaseEntity[]>
 }
