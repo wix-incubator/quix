@@ -128,7 +128,6 @@ export class SqlAutocompleter implements IAutocompleter {
               completersMemory.add(completerName);
             }
           });
-          break;
       }
     }
     return Array.from(completersMemory).map((column) => {

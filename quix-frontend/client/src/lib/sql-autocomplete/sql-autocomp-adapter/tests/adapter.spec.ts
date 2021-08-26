@@ -6,7 +6,7 @@ import { evaluateContextFromPosition } from '../../sql-context-evaluator';
 import { expect } from 'chai';
 import { ICompleterItem } from '../../../code-editor/services/code-editor-completer';
 
-describe.only('when reciving presto query', () => {
+describe('when reciving presto query', () => {
   
   describe('with simple query', () => {
     describe('And cursor after select', () => {
