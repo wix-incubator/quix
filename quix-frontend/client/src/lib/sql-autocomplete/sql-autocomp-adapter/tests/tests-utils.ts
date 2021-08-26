@@ -11,7 +11,7 @@ export const runAdapterTest = (
   const dbInfoService = new DbInfoService('trino', 'https://bo.wix.com/quix');
   const sqlAutocompleterAdapter = new SqlAutocompleter(dbInfoService, evaluateContextFromPosition);
   const position = input.indexOf('|');
-  const query = input.replace('|', '');
+  const query = input.replace('|', ' ');
   it(`on input ${input} it should return comleters = ${expected}`, async () => {
     const completers = await sqlAutocompleterAdapter.getCompleters(query, position);
     // console.log('\ncompleters\n', completers)

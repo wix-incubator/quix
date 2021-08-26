@@ -42,7 +42,10 @@ export class SqlAutocompleter implements IAutocompleter {
    * @returns {ICompleterItem[]}
    */
   public async getCompleters(query: string, position: number) {
-    return this.getQueryContextInfo(this.contextEvaluator(query, position));
+    return this.getQueryContextInfo(
+      this.contextEvaluator(query, position),
+      this.getPrefix(query, position)
+    );
   }
 
   /**
@@ -50,13 +53,20 @@ export class SqlAutocompleter implements IAutocompleter {
    * @param {QueryContext} queryContext
    * @return {ICompleterItem[]}
    */
-  private async getQueryContextInfo(queryContext: QueryContext) {
+  private async getQueryContextInfo(
+    queryContext: QueryContext,
+    prefix: string
+  ) {
     const { contextType, tables } = queryContext;
     switch (contextType) {
       case ContextType.Column:
         return this.getQueryContextColumns(tables);
       case ContextType.Table:
-        return this.getQueryContextTables(tables);
+        const tablesCompleters = this.getQueryContextTables(tables);
+        const dbEntitiesCompleters = await this.getEntitiesCompletersFromDbBasedOnPrefix(
+          prefix
+        );
+        return [...tablesCompleters, ...dbEntitiesCompleters];
       default:
     }
   }
@@ -67,17 +77,9 @@ export class SqlAutocompleter implements IAutocompleter {
    * @return {ICompleterItem[]}
    */
   private getQueryContextTables(tables: TableInfo[]) {
-    const completers: ICompleterItem[] = [];
-    const completersMem: Set<string> = new Set();
-    const completionItem: ICompleterItem = { value: '', meta: 'table' };
-    tables.forEach((table) => {
-      if (!completersMem.has(table.name)) {
-        completersMem.add(table.name);
-        completionItem.value = table.name;
-        completers.push({ ...completionItem });
-      }
-    });
-    return completers;
+    return [...new Set(tables.map((table) => table.name))].map((completer) =>
+      this.createCompleterItem(completer, 'table')
+    );
   }
 
   /**
@@ -133,11 +135,14 @@ export class SqlAutocompleter implements IAutocompleter {
         default:
       }
     }
-    
-    return Array.from(completersMemory).map((column) => {
-      const completer: ICompleterItem = { value: column, meta: 'column' };
-      return completer;
-    });
+
+    return Array.from(completersMemory).map((column) =>
+      this.createCompleterItem(column, 'column')
+    );
+  }
+
+  private createCompleterItem(value: string, meta: string): ICompleterItem {
+    return { value, meta };
   }
 
   private async getEntitiesCompletersFromDbBasedOnPrefix(prefix: string) {
@@ -145,26 +150,24 @@ export class SqlAutocompleter implements IAutocompleter {
     prefixArray.pop();
     prefix = prefixArray.join('.');
 
-    let entities: BaseEntity[];
+    const entities: BaseEntity[] =
+      prefixArray.length === 0
+        ? await this.config.getCatalogs()
+        : prefixArray.length === 1
+        ? await this.config.getSchemas(prefix)
+        : prefixArray.length === 2
+        ? await this.config.getTables(prefix)
+        : [];
 
-    switch (prefixArray.length) {
-      case 0:
-        entities = await this.config.getCatalogs();
-        break;
-      case 1:
-        entities = await this.config.getSchemas(prefix);
-        break;
-      case 2:
-        entities = await this.config.getTables(prefix);
-        break;
-      default:
-    }
+    return entities.map((entity) =>
+      this.createCompleterItem(`${prefix}.${entity.name}`, entity.type)
+    );
+  }
 
-    return entities.map((entity) => {
-      return {
-        value: `${prefix}.${entity.name}`,
-        meta: entity.type,
-      } as ICompleterItem;
-    });
+  private getPrefix(query: string, position: number): string {
+    return query
+      .slice(0, position)
+      .split(/[ ,]+/)
+      .pop();
   }
 }

@@ -1,10 +1,5 @@
 import { runAdapterTest } from './tests-utils';
 import { results } from './expected-results';
-import { SqlAutocompleter } from '../sql-autocomplete-adapter';
-import { DbInfoService, IDbInfoConfig } from '../../db-info';
-import { evaluateContextFromPosition } from '../../sql-context-evaluator';
-import { expect } from 'chai';
-import { ICompleterItem } from '../../../code-editor/services/code-editor-completer';
 
 describe('when reciving presto query', () => {
   
