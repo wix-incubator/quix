@@ -42,6 +42,19 @@ describe.only('when reciving presto query', () => {
         'with tbl1 as (select * from prod.adi.adi_bots_black_list), tbl2 as (select uuid from tbl3) select | from tbl1, tbl2',
         results.result2
       );
+      runAdapterTest(
+        'with tbl1 as (select * from prod.adi.adi_bots_black_list), tbl2 as (select * from prod.adidas.by_creation_tri_run_date) select | from tbl1, tbl2',
+        results.result3
+      );
+
+      runAdapterTest(
+        'with tbl1 as (select * from prod.adi.adi_bots_black_list) select | from tbl1, (select * from prod.adidas.by_creation_tri_run_date) as tbl2',
+        results.result3
+      );
+      runAdapterTest(
+        'with tbl1 as (select * from prod.adi.adi_bots_black_list) select | from tbl1, (select * from prod.adidas.by_creation_tri_run_date)',
+        results.result4
+      );
     });
   });
 });

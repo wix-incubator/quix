@@ -13,6 +13,7 @@ export class SqlAutocompleter implements IAutocompleter {
   }
 
   // setters
+
   public setConfig(config: IDbInfoConfig) {
     this.config = config;
   }
@@ -39,67 +40,6 @@ export class SqlAutocompleter implements IAutocompleter {
   }
 
   /**
-   * Extract the columns from the queryContext
-   * @param {TableInfo[]} tables
-   * @param {ICompleterItem[]} completers
-   * @return {ICompleterItem[]}
-   */
-  private async getQueryContextColumns(tables: TableInfo[]) {
-    const completers: ICompleterItem[] = [];
-    const completersMemory: Set<string> = new Set();
-    const completionItem: ICompleterItem = { value: '', meta: 'column' };
-
-    for (const table of tables) {
-      const { name, alias, columns, tableRefs } = table;
-
-      for (const tableRef of tableRefs) {
-        const tableRefcolumns = await this.config.getColumns(tableRef);
-        tableRefcolumns.forEach((column) => {
-          columns.push(column.name);
-        });
-      }
-      columns.forEach((column) => {
-        if (!completersMemory.has(column)) {
-          completersMemory.add(column);
-          completionItem.value = column;
-          completers.push({ ...completionItem });
-        }
-        const completerName: string = alias
-          ? `${alias}.${column}`
-          : name
-          ? `${name}.${column}`
-          : undefined;
-        if (completerName && !completersMemory.has(completerName)) {
-          completersMemory.add(completerName);
-          completionItem.value = completerName;
-          completers.push({ ...completionItem });
-        }
-      });
-    }
-    return completers;
-  }
-
-  /**
-   * Extract the tables from the queryContext
-   * @param {TableInfo[]} tables
-   * @param {ICompleterItem[]} completers
-   * @return {ICompleterItem[]}
-   */
-  private getQueryContextTables(tables: TableInfo[]) {
-    const completers: ICompleterItem[] = [];
-    const completionItem: ICompleterItem = { value: '', meta: 'table' };
-    tables.forEach((table) => {
-      const completersMem: Set<string> = new Set();
-      if (!completersMem.has(table.name)) {
-        completersMem.add(table.name);
-        completionItem.value = table.name;
-        completers.push({ ...completionItem });
-      }
-    });
-    return completers;
-  }
-
-  /**
    * Extract the columns and tables and their metadata from the queryContext
    * @param {QueryContext} queryContext
    * @return {ICompleterItem[]}
@@ -113,5 +53,56 @@ export class SqlAutocompleter implements IAutocompleter {
         return this.getQueryContextTables(tables);
       default:
     }
+  }
+
+  /**
+   * Extract the tables from the queryContext
+   * @param {TableInfo[]} tables
+   * @return {ICompleterItem[]}
+   */
+  private getQueryContextTables(tables: TableInfo[]) {
+    const completers: ICompleterItem[] = [];
+    const completersMem: Set<string> = new Set();
+    const completionItem: ICompleterItem = { value: '', meta: 'table' };
+    tables.forEach((table) => {
+      if (!completersMem.has(table.name)) {
+        completersMem.add(table.name);
+        completionItem.value = table.name;
+        completers.push({ ...completionItem });
+      }
+    });
+    return completers;
+  }
+
+  /**
+   * Extract the columns from the queryContext
+   * @param {TableInfo[]} tables
+   * @return {ICompleterItem[]}
+   */
+  private async getQueryContextColumns(tables: TableInfo[]) {
+    const completersMemory: Set<string> = new Set();
+    for (const { name, alias, columns, tableRefs } of tables) {
+      for (const tableRef of tableRefs) {
+        const tableRefcolumns = await this.config.getColumns(tableRef);
+        tableRefcolumns.forEach((column) => {
+          columns.push(column.name);
+        });
+      }
+      columns.forEach((column) => {
+        completersMemory.add(column);
+        const completerName: string = alias
+          ? `${alias}.${column}`
+          : name
+          ? `${name}.${column}`
+          : undefined;
+        if (completerName) {
+          completersMemory.add(completerName);
+        }
+      });
+    }
+    return Array.from(completersMemory).map((column) => {
+      const completer: ICompleterItem = {value: column, meta: 'column'}
+      return completer;
+    });
   }
 }

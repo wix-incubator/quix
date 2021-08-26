@@ -30,4 +30,29 @@ export const results = {
     makeCompletionItem('tbl1.uuid', 'column'),
     makeCompletionItem('tbl2.uuid', 'column'),
   ],
+
+  result3: [
+    makeCompletionItem('date_updated', 'column'),
+    makeCompletionItem('tbl1.date_updated', 'column'),
+    makeCompletionItem('reason', 'column'),
+    makeCompletionItem('tbl1.reason', 'column'),
+    makeCompletionItem('uuid', 'column'),
+    makeCompletionItem('tbl1.uuid', 'column'),
+    makeCompletionItem('daysback', 'column'),
+    makeCompletionItem('tbl2.daysback', 'column'),
+    makeCompletionItem('tri_run_date', 'column'),
+    makeCompletionItem('tbl2.tri_run_date', 'column'),
+  ],
+  result4: [
+    makeCompletionItem('date_updated', 'column'),
+    makeCompletionItem('tbl1.date_updated', 'column'),
+    makeCompletionItem('reason', 'column'),
+    makeCompletionItem('tbl1.reason', 'column'),
+    makeCompletionItem('uuid', 'column'),
+    makeCompletionItem('tbl1.uuid', 'column'),
+    makeCompletionItem('daysback', 'column'),
+    makeCompletionItem('tri_run_date', 'column'),
+
+  ],
+
 };

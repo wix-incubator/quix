@@ -27,7 +27,7 @@ export async function setupCompleters(editorInstance: CodeEditorInstance, type: 
     const position = session.getDocument().positionToIndex(session.selection.getCursor(), 0);
     // TODO: Check if it works and maybe think about something smarter
     
-    const contextCompletions: AceCompletion[] = sqlAutocompleter.getCompleters(query, position);
+    const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompleters(query, position);
     
     return Promise.all([keywords, contextCompletions])
       .then(([keywords, contextCompletions]) => {
