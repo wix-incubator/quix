@@ -64,19 +64,7 @@ describe('Presto sql context evaluator: When receiving "WITH" query', () => {
               table3 as (SELECT * FROM table2),
               table1 as (SELECT * FROM table3)
               SELECT | FROM table1`,
-          {
-            contextType: ContextType.Column,
-            tables: [
-              {
-                type: TableType.Nested,
-                name: 'table1',
-                alias: undefined,
-                columns: [],
-                tableRefs: ['externalTable'],
-                selectAll: true,
-              },
-            ],
-          }
+          withResult[ContextType.Column].oneWithTableAndRef
         );
       });
     });

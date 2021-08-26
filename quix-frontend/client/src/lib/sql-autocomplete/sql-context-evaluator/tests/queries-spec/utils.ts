@@ -1,8 +1,4 @@
 import { expect } from 'chai';
-import { ICompleterItem } from '../../../../code-editor/services/code-editor-completer';
-import { IDbInfoConfig } from '../../../db-info';
-import { SqlAutocompleter } from '../../../sql-autocomp-adapter/sql-autocomplete-adapter';
-import { IContextEvaluator } from '../../../sql-autocomp-adapter/types';
 import evaluateContextFromPosition from '../../position-evaluator';
 import { QueryContext } from '../../types';
 
