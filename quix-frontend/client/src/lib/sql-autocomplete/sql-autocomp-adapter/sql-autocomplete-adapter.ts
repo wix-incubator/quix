@@ -1,6 +1,11 @@
 import { IAutocompleter, IContextEvaluator } from './types';
 import { ICompleterItem } from '../../code-editor/services/code-editor-completer';
-import { ContextType, QueryContext, TableInfo } from '../sql-context-evaluator';
+import {
+  ContextType,
+  QueryContext,
+  TableInfo,
+  TableType,
+} from '../sql-context-evaluator';
 import { IDbInfoConfig } from '../db-info';
 
 export class SqlAutocompleter implements IAutocompleter {
@@ -81,27 +86,53 @@ export class SqlAutocompleter implements IAutocompleter {
    */
   private async getQueryContextColumns(tables: TableInfo[]) {
     const completersMemory: Set<string> = new Set();
-    for (const { name, alias, columns, tableRefs } of tables) {
-      for (const tableRef of tableRefs) {
-        const tableRefcolumns = await this.config.getColumns(tableRef);
-        tableRefcolumns.forEach((column) => {
-          columns.push(column.name);
-        });
+    for (const { type, name, alias, columns, tableRefs } of tables) {
+      switch (type) {
+        case TableType.External:
+          const tableColumns = await this.config.getColumns(name);
+          tableColumns.forEach((column) => {
+            completersMemory.add(column.name);
+            const completerName: string = alias
+              ? `${alias}.${column.name}`
+              : name
+              ? `${name}.${column.name}`
+              : undefined;
+            if (completerName) {
+              completersMemory.add(completerName);
+            }
+          });
+          break;
+        case TableType.Nested:
+          for (const tableRef of tableRefs) {
+            const tableRefColumns = await this.config.getColumns(tableRef);
+            tableRefColumns.forEach((column) => {
+              completersMemory.add(column.name);
+              const completerName: string = alias
+                ? `${alias}.${column.name}`
+                : name
+                ? `${name}.${column.name}`
+                : undefined;
+              if (completerName) {
+                completersMemory.add(completerName);
+              }
+            });
+          }
+          columns.forEach((column) => {
+            completersMemory.add(column);
+            const completerName: string = alias
+              ? `${alias}.${column}`
+              : name
+              ? `${name}.${column}`
+              : undefined;
+            if (completerName) {
+              completersMemory.add(completerName);
+            }
+          });
+          break;
       }
-      columns.forEach((column) => {
-        completersMemory.add(column);
-        const completerName: string = alias
-          ? `${alias}.${column}`
-          : name
-          ? `${name}.${column}`
-          : undefined;
-        if (completerName) {
-          completersMemory.add(completerName);
-        }
-      });
     }
     return Array.from(completersMemory).map((column) => {
-      const completer: ICompleterItem = {value: column, meta: 'column'}
+      const completer: ICompleterItem = { value: column, meta: 'column' };
       return completer;
     });
   }

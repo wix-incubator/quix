@@ -13,6 +13,15 @@ export const results = {
     makeCompletionItem('uuid', 'column'),
   ],
 
+  adi_bots_black_list_with_name: [
+    makeCompletionItem('date_updated', 'column'),
+    makeCompletionItem('prod.adi.adi_bots_black_list.date_updated', 'column'),
+    makeCompletionItem('reason', 'column'),
+    makeCompletionItem('prod.adi.adi_bots_black_list.reason', 'column'),
+    makeCompletionItem('uuid', 'column'),
+    makeCompletionItem('prod.adi.adi_bots_black_list.uuid', 'column'),
+  ],
+
   adi_bots_black_list_with_alias: [
     makeCompletionItem('date_updated', 'column'),
     makeCompletionItem('tbl1.date_updated', 'column'),
@@ -21,6 +30,19 @@ export const results = {
     makeCompletionItem('uuid', 'column'),
     makeCompletionItem('tbl1.uuid', 'column'),
   ],
+
+  double_adi_bots_black_list_with_aliases: [
+    makeCompletionItem('date_updated', 'column'),
+    makeCompletionItem('tbl1.date_updated', 'column'),
+    makeCompletionItem('reason', 'column'),
+    makeCompletionItem('tbl1.reason', 'column'),
+    makeCompletionItem('uuid', 'column'),
+    makeCompletionItem('tbl1.uuid', 'column'),
+    makeCompletionItem('tbl2.date_updated', 'column'),
+    makeCompletionItem('tbl2.reason', 'column'),
+    makeCompletionItem('tbl2.uuid', 'column'),
+  ],
+
   result2: [
     makeCompletionItem('date_updated', 'column'),
     makeCompletionItem('tbl1.date_updated', 'column'),

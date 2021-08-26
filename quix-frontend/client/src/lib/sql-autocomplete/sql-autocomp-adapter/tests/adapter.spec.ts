@@ -7,6 +7,24 @@ import { expect } from 'chai';
 import { ICompleterItem } from '../../../code-editor/services/code-editor-completer';
 
 describe.only('when reciving presto query', () => {
+  
+  describe('with simple query', () => {
+    describe('And cursor after select', () => {
+      runAdapterTest(
+        'select | from from prod.adi.adi_bots_black_list',
+        results.adi_bots_black_list_with_name
+      );
+      runAdapterTest(
+        'select | from prod.adi.adi_bots_black_list as tbl1',
+        results.adi_bots_black_list_with_alias
+      );
+      runAdapterTest(
+        'select | from from prod.adi.adi_bots_black_list as tbl1, prod.adi.adi_bots_black_list as tbl2',
+        results.double_adi_bots_black_list_with_aliases
+      );
+    });
+  });
+
   describe('with nested query', () => {
     describe('And cursor after select', () => {
       runAdapterTest(
