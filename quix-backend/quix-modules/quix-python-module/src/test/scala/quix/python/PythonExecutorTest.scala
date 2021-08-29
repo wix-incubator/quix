@@ -71,7 +71,9 @@ class PythonExecutorTest extends SpecWithJUnit with MustMatchers {
   "use packages for installing new packages " in new ctx {
     executor.execute(script(
       code =
-        """packages.install('pipdate')
+        """
+          |packages.install('packaging')
+          |packages.install('pipdate')
           |packages.install('ujson')
           |
           |import pipdate
