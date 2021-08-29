@@ -1,6 +1,5 @@
-import { ContextType, TableType } from '../../types';
-import { BasicResultOption } from './utils';
-import { testTable } from './utils';
+import { ContextType } from '../../types';
+import { BasicResultOption, testTable } from './utils';
 
 export const basicResult: BasicResultOption = {
   [ContextType.Undefined]: {
