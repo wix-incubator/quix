@@ -1,5 +1,7 @@
 /* tslint:disable:no-bitwise */
 
+import { ICompleterItem } from '../../../code-editor/services/code-editor-completer';
+
 /**
  * create an array of bitmaps.
  *  if ((bit j of array[i]) === 1) means that the character i*31 + j should be marked in UI
@@ -13,16 +15,19 @@ export function createMatchMask(start: number, length: number): number[] {
 
   for (let i = start; i < start + length; i++) {
     const index = i % 31;
-    const offset = i - (31 * index);
+    const offset = i - 31 * index;
     res[index] = res[index] || 0;
-    res[index] = res[index] | 1 << offset;
+    res[index] = res[index] | (1 << offset);
   }
 
   return res;
 }
 
-export const makeCompletionItem = (value: string, meta: string) => {
+export const makeCompletionItem = (
+  value: string,
+  meta: string,
+): ICompleterItem => {
   // const completer = Object.create(loggerPrototype);
-  const completer = {value, meta};
+  const completer = { value, meta };
   return completer;
 };

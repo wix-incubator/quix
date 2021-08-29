@@ -1,48 +1,37 @@
 import {CodeEditorInstance} from '../../../code-editor';
 import {ICompleterItem as AceCompletion} from '../../../code-editor/services/code-editor-completer';
-import {BiSqlWebWorkerMngr} from '../../../language-parsers/sql-parser';
-import {DbInfo} from '../db/db-service';
-import {initSqlWorker} from '../workers/sql-parser-worker';
-import {createMatchMask, makeCompletionItem} from './autocomplete-utils';
+// import {BiSqlWebWorkerMngr} from '../../../language-parsers/sql-parser';
+// import {initSqlWorker} from '../workers/sql-parser-worker';
+import {createMatchMask} from './autocomplete-utils';
+import {IDbInfoConfig, DbInfoService} from '../../../sql-autocomplete/db-info'
+import {evaluateContextFromPosition} from '../../../sql-autocomplete/sql-context-evaluator'
+import {SqlAutocompleter} from '../../../sql-autocomplete/sql-autocomp-adapter/sql-autocomplete-adapter'
+import { IEditSession } from 'brace';
 
-const sqlContextGroups = ['subQueries', 'tableAlias', 'strings', 'tables', 'columns'];
+let keywords: Promise<AceCompletion[]>; 
+// let snippets: Promise<AceCompletion[]>; 
 
-let sqlParser: BiSqlWebWorkerMngr;
-let keywords: Promise<AceCompletion[]>; // All Completions
-let tables: Promise<AceCompletion[]>;
-
-async function getTablesCompletions(dbInfoService: DbInfo): Promise<AceCompletion[]> {
-  keywords = keywords || dbInfoService.fetchAllKeywords();
-  const completions = await keywords;
-  return completions.filter(completion => completion.meta === 'table');
-}
+// async function getKeywordsCompletions(dbInfoService: DbInfo): Promise<AceCompletion[]> {
+//   keywords = keywords || dbInfoService.fetchAllKeywords();
+//   const completions = await keywords;
+//   return completions.filter(completion => completion.meta === 'table');
+// }
 
 /* tslint:disable:no-shadowed-variable */
 export async function setupCompleters(editorInstance: CodeEditorInstance, type: string, apiBasePath = '') {
-  sqlParser = await initSqlWorker();
-  const dbInfoService = new DbInfo(type, apiBasePath);
+  const dbInfoService: IDbInfoConfig  = new DbInfoService(type, apiBasePath);
+  const sqlAutocompleter = new SqlAutocompleter(dbInfoService, evaluateContextFromPosition);
 
-  keywords = keywords || dbInfoService.fetchAllKeywords();
-  tables = tables || getTablesCompletions(dbInfoService);
-
-  editorInstance.addOnDemandCompleter(/[\w.]+/, ((prefix, session) => {
-    let contextCompletions: Promise<AceCompletion[]>;
-
-    if (sqlParser) {
-      const text = session.getDocument().getAllLines().join('\n');
-      contextCompletions = sqlParser.parse(text)
-        .then(parseResults =>
-          sqlContextGroups.reduce<AceCompletion[]>((sum, groupName) =>
-            sum.concat(parseResults[groupName]
-              .map(item => makeCompletionItem(item, groupName))),
-            []));
-    } else {
-      contextCompletions = Promise.resolve([]);
-    }
-
-    return Promise.all([tables, contextCompletions])
-      .then(([tableCompletions, contextCompletions]) => {
-        let all = contextCompletions.concat(tableCompletions);
+  editorInstance.addOnDemandCompleter(/[\w.]+/, ((prefix: string, session: IEditSession) => {
+    const query = session.getDocument().getAllLines().join('\n');
+    const position = session.getDocument().positionToIndex(session.selection.getCursor(), 0);
+    // TODO: Check if it works and maybe think about something smarter
+    
+    const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompleters(query, position);
+    
+    return Promise.all([keywords, contextCompletions])
+      .then(([keywords, contextCompletions]) => {
+        let all = keywords.concat(contextCompletions);
 
         if (prefix) {
           all = all.reduce((resultArr: AceCompletion[], completion) => {
