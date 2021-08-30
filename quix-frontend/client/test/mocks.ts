@@ -15,8 +15,8 @@ import {
   createFolderPayload,
 } from '@wix/quix-shared';
 import * as moment from 'moment';
-import {ServerTreeItem} from '../src/components/db-sidebar/db-sidebar-types';
-import {v4 as uuidv4} from 'uuid';
+import { ServerTreeItem } from '../src/components/db-sidebar/db-sidebar-types';
+import { v4 as uuidv4 } from 'uuid';
 
 export const MockNoteContent = {
   success: 'do success',
@@ -149,6 +149,7 @@ const mocks = {
   '/api/search/500': () => [500, { message: 'Search error' }],
   '/api/search/:text': ({ text }) => {
     const res = [createMockNote('1'), createMockNote('2'), createMockNote('3')];
+    const term = { fullText: text, content: [{ type: 1, text }] };
     res.forEach(
       (note) =>
         (note.content = `SELECT
@@ -162,7 +163,7 @@ ORDER BY 1
     );
 
     // return {notes: [], count: 0};
-    return { notes: res, count: 365 };
+    return { notes: res, count: 365, term };
   },
   // '/api/db/presto/explore': () => [500, {message: 'Failed to fetch DB tree'}],
   // '/api/db/presto/explore': () => [],
@@ -216,8 +217,35 @@ ORDER BY 1
       },
     ];
   },
-  '/api/db/:type/explore/:catalog/:schema/:table': ({ table }) => ({
-    children: [{ name: `column_of_${table}`, dataType: 'varchar' }],
+  '/api/db/:type/explore/': () => [
+    {
+      name: 'mock_catalog',
+      children: [
+        {
+          name: 'schema_1',
+          children: [
+            { name: 'table_1', children: [], type: 'table' },
+            { name: 'table_2', children: [], type: 'table' },
+          ],
+          type: 'schema',
+        },
+        {
+          name: 'schema_2',
+          children: [
+            { name: 'table_3', children: [], type: 'table' },
+            { name: 'table_4', children: [], type: 'table' },
+          ],
+          type: 'schema',
+        },
+      ],
+      type: 'catalog',
+    },
+  ],
+  '/api/db/:type/explore/:catalog/:schema/:table/': ({ table }) => ({
+    children: [
+      { name: `column_1_of_${table}`, dataType: 'varchar' },
+      { name: `column_2_of_${table}`, dataType: 'varchar' },
+    ],
   }),
   '/api/db/:type/autocomplete': () => ({
     catalogs: ['catalog', 'catalog2'],
@@ -225,6 +253,11 @@ ORDER BY 1
     tables: ['table'],
     columns: ['column'],
   }),
+  '/api/autocomplete/:type': () => [
+    { value: 'apollo', meta: 'table' },
+    { value: 'prod', meta: 'table' },
+    { value: 'wt_metasites', meta: 'table' },
+  ],
   // '/api/db/:type/search': () => [],
   '/api/db/:type/search': () => {
     const response = [];
