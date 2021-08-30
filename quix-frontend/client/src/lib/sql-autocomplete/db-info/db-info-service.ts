@@ -10,43 +10,69 @@ import axios from 'axios';
 export class DbInfoService implements IDbInfoConfig {
   private readonly type: string;
   private readonly apiBasePath: string;
+
+  private catalogs: Catalog[] = [];
+  private readonly tables: { [key: string]: Column[] } = {};
+
   constructor(type: string, apiBasePath: string) {
     this.type = type;
     this.apiBasePath = apiBasePath;
   }
 
-  public async getColumnsByTable(
+  getCatalogs = async (): Promise<Catalog[]> => {
+    if (!this.catalogs.length) {
+      const response = await axios.get(
+        `${this.apiBasePath}/api/db/${this.type}/explore/`
+      );
+
+      this.catalogs = response.data;
+    }
+
+    return this.catalogs;
+  };
+
+  getSchemasByCatalog = async (catalog: string): Promise<Schema[]> => {
+    await this.getCatalogs();
+
+    const catalogData: Catalog = this.catalogs.find(
+      (currCatalog) => currCatalog.name === catalog
+    );
+    return catalogData?.children || [];
+  };
+
+  getTablesBySchema = async (
+    catalog: string,
+    schema: string
+  ): Promise<Table[]> => {
+    const catalogSchemas: Schema[] = await this.getSchemasByCatalog(catalog);
+    const schemaData: Schema = catalogSchemas.find(
+      (catalogSchema) => catalogSchema.name === schema
+    );
+    return schemaData?.children || [];
+  };
+
+  getColumnsByTable = async (
     catalog: string,
     schema: string,
     table: string
-  ) {
-    const url = `${this.apiBasePath}/api/db/${this.type}/explore/${catalog}/${schema}/${table}/`;
-    return axios
-      .get(url)
-      .then((response) => response.data.children)
-      .catch((error) => [] as Column[]);
-  }
+  ): Promise<Column[]> => {
+    const query = `${encodeURIComponent(catalog)}/${encodeURIComponent(
+      schema
+    )}/${encodeURIComponent(table)}/`;
 
-  public async getTablesBySchema(catalog: string, schema: string) {
-    return (await axios
-      .get(
-        `${this.apiBasePath}/api/db/${this.type}/explore/${catalog}/${schema}/`
-      )
-      .then(({ data }) => data)
-      .catch((e) => [])) as Table[];
-  }
+    if (this.tables[query]) {
+      return this.tables[query];
+    }
 
-  public async getSchemasByCatalog(catalog: string) {
-    return (await axios
-      .get(`${this.apiBasePath}/api/db/${this.type}/explore/${catalog}/`)
-      .then(({ data }) => data)
-      .catch((e) => [])) as Schema[];
-  }
+    const response = await axios.get(
+      `${this.apiBasePath}/api/db/${this.type}/explore/${query}`
+    );
 
-  public async getCatalogs() {
-    return (await axios
-      .get(`${this.apiBasePath}/api/db/${this.type}/explore/`)
-      .then(({ data }) => data)
-      .catch((e) => [])) as Catalog[];
-  }
+    const tableData: Table = response.data;
+    this.tables[query] = (tableData?.children || []).map((column) => ({
+      ...column,
+    }));
+
+    return this.tables[query];
+  };
 }

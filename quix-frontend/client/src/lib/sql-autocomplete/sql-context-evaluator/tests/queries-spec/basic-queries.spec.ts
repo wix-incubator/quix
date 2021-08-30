@@ -7,7 +7,7 @@ describe('Presto sql context evaluator: When receiving a basic query', () => {
   runQueryTest(' ', basicResult[ContextType.Undefined].zeroTables);
   runQueryTest('SELECT 1', basicResult[ContextType.Undefined].zeroTables);
   runQueryTest('SE|LECT 1', basicResult[ContextType.Undefined].zeroTables);
-  runQueryTest('SELECT| 1', basicResult[ContextType.Column].zeroTables);
+  runQueryTest('SELECT| 1', basicResult[ContextType.Undefined].zeroTables);
   runQueryTest('SELECT 1|', basicResult[ContextType.Column].zeroTables);
 
   describe('and cursor after "SELECT" keyword', () => {
