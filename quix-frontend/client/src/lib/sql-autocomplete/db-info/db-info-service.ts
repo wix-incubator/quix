@@ -1,4 +1,10 @@
-import { BaseEntity, Catalog, Column, IDbInfoConfig, Schema, Table } from './types';
+import {
+  Catalog,
+  Column,
+  IDbInfoConfig,
+  Schema,
+  Table,
+} from './types';
 import axios from 'axios';
 
 export class DbInfoService implements IDbInfoConfig {
@@ -9,8 +15,11 @@ export class DbInfoService implements IDbInfoConfig {
     this.apiBasePath = apiBasePath;
   }
 
-  public async getColumns(tableName: string) {
-    const [catalog, schema, table] = tableName.split('.');
+  public async getColumnsByTable(
+    catalog: string,
+    schema: string,
+    table: string
+  ) {
     const url = `${this.apiBasePath}/api/db/${this.type}/explore/${catalog}/${schema}/${table}/`;
     return axios
       .get(url)
@@ -18,8 +27,7 @@ export class DbInfoService implements IDbInfoConfig {
       .catch((error) => [] as Column[]);
   }
 
-  public async getTables(schemaName: string) {
-    const [catalog, schema] = schemaName.split('.');
+  public async getTablesBySchema(catalog: string, schema: string) {
     return (await axios
       .get(
         `${this.apiBasePath}/api/db/${this.type}/explore/${catalog}/${schema}/`
@@ -28,9 +36,9 @@ export class DbInfoService implements IDbInfoConfig {
       .catch((e) => [])) as Table[];
   }
 
-  public async getSchemas(catalogName: string) {
+  public async getSchemasByCatalog(catalog: string) {
     return (await axios
-      .get(`${this.apiBasePath}/api/db/${this.type}/explore/${catalogName}/`)
+      .get(`${this.apiBasePath}/api/db/${this.type}/explore/${catalog}/`)
       .then(({ data }) => data)
       .catch((e) => [])) as Schema[];
   }
@@ -40,13 +48,5 @@ export class DbInfoService implements IDbInfoConfig {
       .get(`${this.apiBasePath}/api/db/${this.type}/explore/`)
       .then(({ data }) => data)
       .catch((e) => [])) as Catalog[];
-  }
-
-  public async getData(entityName: string) {
-    const path: string[] = entityName.split('.');
-    return (await axios
-      .get(`${this.apiBasePath}/api/db/${this.type}/explore/${path.join('/')}/`)
-      .then(({ data }) => data)
-      .catch((e) => [])) as BaseEntity[];
   }
 }

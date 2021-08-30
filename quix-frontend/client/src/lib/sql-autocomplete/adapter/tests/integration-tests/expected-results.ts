@@ -1,4 +1,4 @@
-import { makeCompletionItem } from '../../../runner/services/autocomplete/autocomplete-utils';
+import { makeCompletionItem } from '../../../../runner/services/autocomplete/autocomplete-utils';
 
 export const results = {
   result1: [
