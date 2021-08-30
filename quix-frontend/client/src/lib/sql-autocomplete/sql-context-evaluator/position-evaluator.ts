@@ -7,7 +7,8 @@ const evaluateContextFromPosition = (
 ): QueryContext => {
   const identifier = 'AUTOCOMPLETE_HERE';
   const query = createQueryToEvaluate(input, position, identifier);
-  return evaluateContext(query, identifier);
+  const prefix = getPrefixByPosition(input, position);
+  return {...evaluateContext(query, identifier), prefix};
 };
 
 const createQueryToEvaluate = (
@@ -16,8 +17,23 @@ const createQueryToEvaluate = (
   identifier: string
 ) => {
   return position > 0 && position < input.length + 1
-    ? input.slice(0, position) + ' ' + identifier + ' ' + input.slice(position)
+    ? removePrefix(input.slice(0, position)) + ' ' + identifier + ' ' + input.slice(position)
     : input;
 };
+
+const removePrefix = (input: string) => {
+  const parts = input.match(/([\w._]+)|([\s,()='`":;*!@#$%^&+-]+)/g);
+  if(parts[parts.length-1].match(/([\w.]+)/)){
+    parts.pop();
+  }
+  return parts.join('');
+}
+
+const getPrefixByPosition = (input: string, position: number): string => {
+  return input
+    .slice(0, position)
+    .split(/[\s,()='`":;*!@#$%^&+-]+/)
+    .pop();
+}
 
 export default evaluateContextFromPosition;
