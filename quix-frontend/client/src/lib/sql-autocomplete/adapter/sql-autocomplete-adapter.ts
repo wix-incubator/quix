@@ -10,7 +10,7 @@ import { IDbInfoConfig } from '../db-info';
 import { BaseEntity } from '../db-info/types';
 
 export class SqlAutocompleter implements IAutocompleter {
-  private config: IDbInfoConfig;
+  private readonly config: IDbInfoConfig;
 
   constructor(config: IDbInfoConfig) {
     this.config = config;
@@ -23,7 +23,7 @@ export class SqlAutocompleter implements IAutocompleter {
    * @param {QueryContext} queryContext
    * @return {ICompleterItem[]}
    */
-   public async getCompletionItemsFromQueryContext(queryContext: QueryContext) {
+  public async getCompletionItemsFromQueryContext(queryContext: QueryContext) {
     const { contextType, tables, prefix } = queryContext;
     switch (contextType) {
       case ContextType.Column:
@@ -117,7 +117,10 @@ export class SqlAutocompleter implements IAutocompleter {
         : [];
 
     return entities.map((entity) =>
-      this.createCompleterItem(`${prefix}.${entity.name}`, entity.type)
+      this.createCompleterItem(
+        entity.type !== 'catalog' ? `${prefix}.${entity.name}` : entity.name,
+        entity.type
+      )
     );
   }
 }
