@@ -27,4 +27,5 @@ export enum ContextType {
 export interface QueryContext {
   contextType: ContextType;
   tables: TableInfo[];
+  prefix?: string;
 }
