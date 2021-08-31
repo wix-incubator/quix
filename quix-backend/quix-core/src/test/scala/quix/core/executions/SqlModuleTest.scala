@@ -43,10 +43,10 @@ class SqlModuleTest extends SpecWithJUnit with MustMatchers {
 
       module.start(command, "id", user, builder).runSyncUnsafe()
 
-      consumer.payloads must contain(Log("id", """Starting iteration 1 out of 6 with params ["$START_TIME" : "2020-01-01 01:00:00","$STOP_TIME" : "2020-01-02 01:00:00"]""", "INFO"))
+      consumer.payloads must contain(Log("id", """Started iteration 1 out of 6 with params ["$START_TIME" : "2020-01-01 01:00:00","$STOP_TIME" : "2020-01-02 01:00:00"]""", "INFO"))
       consumer.payloads must contain(Log("id", """Finished iteration 1 out of 6 with params ["$START_TIME" : "2020-01-01 01:00:00","$STOP_TIME" : "2020-01-02 01:00:00"]""", "INFO"))
 
-      consumer.payloads must contain(Log("id", """Starting iteration 6 out of 6 with params ["$START_TIME" : "2020-01-06 01:00:00","$STOP_TIME" : "2020-01-07 01:00:00"]""", "INFO"))
+      consumer.payloads must contain(Log("id", """Started iteration 6 out of 6 with params ["$START_TIME" : "2020-01-06 01:00:00","$STOP_TIME" : "2020-01-07 01:00:00"]""", "INFO"))
       consumer.payloads must contain(Log("id", """Finished iteration 6 out of 6 with params ["$START_TIME" : "2020-01-06 01:00:00","$STOP_TIME" : "2020-01-07 01:00:00"]""", "INFO"))
 
       executor.queries must_=== List(
