@@ -55,7 +55,7 @@ export default class CodeEditorCompleter {
     ace.setOptions({
       enableBasicAutocompletion: this.completers,
       enableSnippets: false,
-      enableLiveAutocompletion: false
+      enableLiveAutocompletion: true
     });
 
     ace.getSession().on('change', e => {

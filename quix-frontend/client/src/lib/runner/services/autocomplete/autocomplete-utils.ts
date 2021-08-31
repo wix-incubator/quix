@@ -26,8 +26,15 @@ export function createMatchMask(start: number, length: number): number[] {
 export const makeCompletionItem = (
   value: string,
   meta: string,
+  caption?: string,
+  matchMask?: number[]
 ): ICompleterItem => {
   // const completer = Object.create(loggerPrototype);
-  const completer = { value, meta };
+  const completer = {
+    value,
+    meta,
+    ...(caption ? { caption } : {}),
+    ...(matchMask ? { matchMask } : {}),
+  };
   return completer;
 };

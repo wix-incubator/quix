@@ -15,32 +15,49 @@ import { reservedPrestoWords } from '../../../sql-autocomplete/languge/reserved-
 import { SqlAutocompleter } from '../../../sql-autocomplete/adapter/sql-autocomplete-adapter';
 import { IEditSession } from 'brace';
 
-let keywords: Promise<AceCompletion[]>;
-let snippets: Promise<AceCompletion[]>;
+let keywords: AceCompletion[];
+let snippets: AceCompletion[];
 
-async function getKeywordsCompletions(): Promise<AceCompletion[]> {
-  return reservedPrestoWords.map((keyword) =>
-    makeCompletionItem(keyword, 'keyword')
-  );
+function getKeywordsCompletions(): AceCompletion[] {
+  keywords =
+    keywords ??
+    reservedPrestoWords.map((keyword) =>
+      makeCompletionItem(keyword, 'keyword')
+    );
+  return keywords;
 }
 
-async function getSnippetsCompletions(): Promise<AceCompletion[]> {
-  return [
-    'SELECT * FROM table_name WHERE column_name > 10 ORDER BY column_name',
-  ].map((snippet) => makeCompletionItem(snippet, 'snippet'));
+function getSnippetsCompletions(): AceCompletion[] {
+  snippets =
+    snippets ??
+    [
+      [
+        'SELECT * FROM table_name WHERE column_name > 10 ORDER BY column_name',
+        'Simple Query',
+      ],
+      ['WITH table_name AS (SELECT * FROM table_name)', 'With Query'],
+    ].map(([snippet, caption]) =>
+      makeCompletionItem(
+        snippet,
+        'snippet',
+        caption !== '' ? caption : undefined
+      )
+    );
+  return snippets;
 }
 
 /* tslint:disable:no-shadowed-variable */
 export async function setupCompleters(
   editorInstance: CodeEditorInstance,
   type: string,
-  apiBasePath = ''
+  apiBasePath = '',
+  dbInfoService?: IDbInfoConfig
 ) {
-  const dbInfoService: IDbInfoConfig = new DbInfoService(type, apiBasePath);
+  dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
   const sqlAutocompleter = new SqlAutocompleter(dbInfoService);
 
-  keywords = getKeywordsCompletions();
-  snippets = getSnippetsCompletions();
+  const keywords = getKeywordsCompletions();
+  const snippets = getSnippetsCompletions();
 
   editorInstance.addOnDemandCompleter(
     /[\w.]+/,
@@ -66,16 +83,16 @@ export async function setupCompleters(
           let all = [...contextCompletions, ...keywords, ...snippets];
 
           if (prefix) {
-            const lowerCasedprefix = prefix.toLowerCase();
+            const lowerCasedPrefix = prefix.toLowerCase();
             all = all.reduce((resultArr: AceCompletion[], completion) => {
               const index = completion.value
                 .toLowerCase()
-                .indexOf(lowerCasedprefix);
+                .indexOf(lowerCasedPrefix);
 
               if (index !== -1) {
                 completion.matchMask = createMatchMask(
                   index,
-                  lowerCasedprefix.length
+                  lowerCasedPrefix.length
                 );
                 resultArr.push(completion);
               }
