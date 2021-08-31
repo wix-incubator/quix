@@ -35,11 +35,19 @@ class SqlModule(val executor: Executor,
   override def start(command: StartCommand[String], id: String, user: User, builder: Builder): Task[Unit] = {
     val query = splitter.split(command, id, user)
 
-    val execution = if (command.session.contains("loop"))
+    val execution = if (shouldBeExecutedInLoop(command))
       createLoopedExecution(builder, query, command, id, user)
     else createExecution(builder, query.subQueries)
 
     execute(query, execution, builder)
+  }
+
+  private def shouldBeExecutedInLoop(command: StartCommand[String]) = {
+    val keys = command.session.keySet
+
+    keys.contains("loop.interval") &&
+      keys.contains("loop.startTime") &&
+      keys.contains("loop.stopTime")
   }
 
   private def createExecution(builder: Builder, subQueries: Seq[SubQuery]) = {
