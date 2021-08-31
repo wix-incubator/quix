@@ -15,8 +15,8 @@ class SqlModule(val executor: Executor,
                 val db: Option[Db],
                 val splitter: SqlSplitter = PrestoLikeSplitter) extends ExecutionModule {
 
-  def getSubQueries(command: StartCommand[String], id: String, user: User, startTime: Long, stopTime: Long, interval: Duration): List[Seq[SubQuery]] = {
-    val intervals = List.range(startTime, stopTime, interval.toMillis)
+  def getSubQueries(command: StartCommand[String], id: String, user: User, startTime: Instant, stopTime: Instant, interval: Duration): List[Seq[SubQuery]] = {
+    val intervals = List.range(startTime.toEpochMilli, stopTime.toEpochMilli, interval.toMillis)
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("UTC"))
 
     val queries = intervals
@@ -57,17 +57,17 @@ class SqlModule(val executor: Executor,
     val subQueriesTask = for {
       startLoop <- Task(command
         .session.get("loop.startTime")
-        .map(_.toLong)
+        .map(Instant.parse)
         .getOrElse(throw new IllegalArgumentException("missing loop.startTime")))
 
       endLoop <- Task(command
         .session.get("loop.stopTime")
-        .map(_.toLong)
+        .map(Instant.parse)
         .getOrElse(throw new IllegalArgumentException("missing loop.stopTime")))
 
       interval <- Task(command
         .session.get("loop.interval")
-        .map(interval => Duration.parse(interval))
+        .map(Duration.parse)
         .getOrElse(throw new IllegalArgumentException("missing loop.interval")))
 
       subQueries = getSubQueries(command, id, user, startLoop, endLoop, interval)

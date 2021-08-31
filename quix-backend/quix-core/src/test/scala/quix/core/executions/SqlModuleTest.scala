@@ -23,8 +23,8 @@ class SqlModuleTest extends SpecWithJUnit with MustMatchers {
     def loop(command: StartCommand[String]): StartCommand[String] =
       command.copy(session =
         Map(
-          "loop.startTime" -> "1577840400000",
-          "loop.stopTime" -> "1578358800000",
+          "loop.startTime" -> "2020-01-01T01:00:00Z",
+          "loop.stopTime" -> "2020-01-07T01:00:00Z",
           "loop.interval" -> "P1D",
           "loop" -> "true"
         ))
