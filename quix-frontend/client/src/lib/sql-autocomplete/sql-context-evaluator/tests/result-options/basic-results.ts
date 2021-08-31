@@ -1,7 +1,7 @@
 import { ContextType } from '../../types';
-import { BasicResultOption, testTable } from './utils';
+import { BasicQueryContextOption, testTable } from './utils';
 
-export const basicResult: BasicResultOption = {
+export const basicResult: BasicQueryContextOption = {
   [ContextType.Undefined]: {
     zeroTables: {
       contextType: ContextType.Undefined,

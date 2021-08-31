@@ -1,7 +1,7 @@
 import { ContextType } from '../../types';
-import { BasicResultOption, testTable } from './utils';
+import { BasicQueryContextOption, testTable } from './utils';
 
-export const nestedResult: BasicResultOption = {
+export const nestedResult: BasicQueryContextOption = {
   [ContextType.Column]: {
     oneNested: {
       contextType: ContextType.Column,
