@@ -1,6 +1,7 @@
 import { makeCompletionItem } from '../../../../runner/services/autocomplete/autocomplete-utils';
 
 export const expectedResult = {
+  empty: [],
   twoColumns: [
     makeCompletionItem('col1', 'column'),
     makeCompletionItem('col2', 'column'),

@@ -1,8 +1,8 @@
 import { ContextType } from '../../types';
-import { BasicResultOption } from '../result-options/utils';
+import { BasicQueryContextOption } from '../result-options/utils';
 import { testTable } from './utils';
 
-export const withResult: BasicResultOption = {
+export const withResult: BasicQueryContextOption = {
   [ContextType.Column]: {
     oneWithTable: {
       contextType: ContextType.Column,

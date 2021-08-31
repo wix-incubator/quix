@@ -10,6 +10,7 @@ import {initEvents} from '../../services/scope';
 import * as Events from './note-events';
 import {RunnerQuery} from '../../lib/runner';
 import {pluginManager} from '../../plugins';
+import { hooks } from '../../hooks';
 
 export default (app: App, store: Store) => () => ({
   restrict: 'E',
@@ -32,11 +33,12 @@ export default (app: App, store: Store) => () => ({
     onRun: '&',
     onRunnerCreated: '&',
     onRunnerDestroyed: '&',
+    dbConfigFetcher: '<',
   },
   link: {
     async pre(scope: IScope) {
       const plugin = pluginManager.module('note').plugin(scope.note.type);
-    
+      scope.dbConfigFetcher = hooks.note.config.editor.dbConfigFetcher.call(app, store, plugin.getEngine());
       const conf = initNgScope(scope)
         .withOptions(
           'quixNoteOptions',

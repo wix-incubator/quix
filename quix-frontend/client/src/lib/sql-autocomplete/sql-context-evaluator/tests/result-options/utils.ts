@@ -1,7 +1,7 @@
-import { TableType, ContextType, QueryContext } from '../../types';
+import { TableType, ContextType, QueryContext, TableInfo } from '../../types';
 import { createNewTableInfoObj } from '../../utils';
 
-export type BasicResultOption = {
+export type BasicQueryContextOption = {
   [key in ContextType]?: Record<string, QueryContext>;
 };
 
