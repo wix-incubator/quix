@@ -54,7 +54,8 @@ export default () => {
       tableFormatter: '&',
       downloadFileName: '&',
       readonly: '=',
-      $state: '<'
+      $state: '<',
+      autocompleteDbFetchers: '<'
     },
 
     link: {
@@ -215,7 +216,7 @@ export default () => {
               runnerInstance.on('error', (rowNumber, msg) => editorInstance.getAnnotator().showError(rowNumber, msg));
 
               if (!scope.readonly && scope.options.useAutocomplete) {
-                setupCompleters(editorInstance, scope.type, config.get().apiBasePath).catch(console.error);
+                setupCompleters(editorInstance, scope.type, config.get().apiBasePath, scope.autocompleteDbFetchers).catch(console.error);
               }
 
               if (!scope.readonly && scope.options.showSyntaxErrors) {

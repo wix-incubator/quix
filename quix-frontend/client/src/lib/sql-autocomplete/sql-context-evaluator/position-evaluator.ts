@@ -27,7 +27,7 @@ const createQueryToEvaluate = (
 
 const removePrefix = (input: string) => {
   const parts = input.match(/([\w._]+)|([\s,()=<>'`":;*!@#$%^&+-]+)/g);
-  if (parts[parts.length - 1].match(/([\w.]+)/)) {
+  if (parts[parts.length - 1].match(/([\w._]+)/)) {
     parts.pop();
   }
   return parts.join('');
