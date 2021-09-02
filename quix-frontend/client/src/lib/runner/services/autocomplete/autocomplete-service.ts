@@ -3,10 +3,7 @@ import { ICompleterItem as AceCompletion } from '../../../code-editor/services/c
 // import {BiSqlWebWorkerMngr} from '../../../language-parsers/sql-parser';
 // import {initSqlWorker} from '../workers/sql-parser-worker';
 import { createMatchMask, makeCompletionItem } from './autocomplete-utils';
-import {
-  IDbInfoConfig,
-  DbInfoService,
-} from '../../../sql-autocomplete/db-info';
+import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
 import {
   evaluateContextFromPosition,
   QueryContext,
@@ -14,11 +11,13 @@ import {
 import { reservedPrestoWords } from '../../../sql-autocomplete/languge/reserved-words';
 import { SqlAutocompleter } from '../../../sql-autocomplete/adapter/sql-autocomplete-adapter';
 import { IEditSession } from 'brace';
+import { setupOldCompleter } from './old-autocomplete-service';
 
 let keywords: AceCompletion[];
 let snippets: AceCompletion[];
 
 function getKeywordsCompletions(): AceCompletion[] {
+  // TODO: FIND A WAY TO FETCH KEYWORDS FROM ANTLR GRAMMAR
   keywords =
     keywords ??
     reservedPrestoWords.map((keyword) =>
@@ -53,7 +52,12 @@ export async function setupCompleters(
   apiBasePath = '',
   dbInfoService?: IDbInfoConfig
 ) {
-  dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
+  if (!dbInfoService) {
+    setupOldCompleter(editorInstance, type, apiBasePath);
+    return;
+  }
+
+  //dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
   const sqlAutocompleter = new SqlAutocompleter(dbInfoService);
 
   const keywords = getKeywordsCompletions();
