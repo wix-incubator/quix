@@ -22,12 +22,9 @@ const defaultUser = 'someUser@wix.com';
 
 describe('event sourcing', () => {
   let driver: QuixEventBusDriver;
-
   let eventBus: QuixEventBus;
   let module: TestingModule;
   let mockBuilder: MockDataBuilder;
-  // let notebookRepo: Repository<DbNotebook>;
-  // let noteRepo: Repository<DbNote>;
 
   beforeAll(async () => {
     driver = await QuixEventBusDriver.create(defaultUser);

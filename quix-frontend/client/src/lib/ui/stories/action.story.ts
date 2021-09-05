@@ -1,6 +1,6 @@
 export default app => {
   app.story('UI', 'Action')
-    .section('Icon actions', `
+    .section('Icon actions', /*html*/`
       <div class="bi-column bi-space-v">
         <div class="bi-space-h--x2">
           <span class="bi-action bi-icon">save</span>
@@ -27,7 +27,7 @@ export default app => {
       </div>
       <footer>See all available icons <a class="bi-link" href="https://material.io/icons/" target="_blank">here</a></footer>
     `)
-    .section('Buttons actions', `
+    .section('Buttons actions', /*html*/`
       <div class="bi-column bi-space-v">
         <div class="bi-space-h--x2">
           <span class="bi-action--btn">default</span>
@@ -45,7 +45,7 @@ export default app => {
         </div>
       </div>
     `)
-    .section('Round actions', `
+    .section('Round actions', /*html*/`
       <div class="bi-column bi-space-v">
         <div class="bi-space-h--x2">
           <span class="bi-action--rnd bi-icon">edit</span>
@@ -61,7 +61,7 @@ export default app => {
     `);
 
   app.story('UI', 'Loader')
-    .section('Action loader', `
+    .section('Action loader', /*html*/`
     <span class="bi-action bi-icon" ng-class="{'bi-action-loader': actionClicked}" ng-click="actionClicked = !actionClicked">
       <span>cached</span>
     </span>

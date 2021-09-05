@@ -1,14 +1,14 @@
 import template from './header.html';
 import './header.scss';
-import {initNgScope} from '../../lib/core';
-import {Store} from '../../lib/store';
-import {App} from '../../lib/app';
-import {IScope} from './header-types';
-import {HeaderMenu} from '../../config';
+import { initNgScope } from '../../lib/core';
+import { Store } from '../../lib/store';
+import { App } from '../../lib/app';
+import { IScope } from './header-types';
+import { HeaderMenu } from '../../config';
 import * as AppActions from '../../store/app/app-actions';
 
 const listenToNavChange = (scope: IScope, app: App, store: Store) => {
-  const {navItems} = scope.vm;
+  const { navItems } = scope.vm;
 
   const states = navItems.reduce((res, item) => {
     return [...res, ...(item.activeStates || [item.targetState])];
@@ -44,7 +44,7 @@ export default (app: App, store: Store) => () => ({
             store.dispatch(AppActions.setInputSearchText(scope.vm.searchText || null));
           },
           onNavItemClick(item) {
-            app.go(item.targetState, {id: null});
+            app.go(item.targetState, { id: null });
           }
         });
 

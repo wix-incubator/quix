@@ -52,6 +52,7 @@ const appBuilder = create<ClientConfigHelper>(
       template:
         '<quix-files-sidebar class="bi-c-h bi-grow"></quix-files-sidebar>',
     });
+    
     plugin.menuItem({
       name: 'DB Explorer',
       icon: 'storage',

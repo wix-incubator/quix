@@ -1,6 +1,6 @@
 export default app => app
   .story('UI', 'Alert')
-    .section('Alert', `
+    .section('Alert', /*html*/`
       <div class="bi-s-v">
         <div class="bi-alert" style="width: 300px;">
           <div class="bi-alert-header">
