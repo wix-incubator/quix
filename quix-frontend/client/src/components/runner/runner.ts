@@ -42,7 +42,7 @@ export default (app: App, store: Store) => () => ({
       );
 
       if (isArray(autocompleteDbFetchers)) {
-        scope.autocompleteDbFetchers = autocompleteDbFetchers;
+        scope.autocompleteDbFetchers = autocompleteDbFetchers[0];
       }
 
       initNgScope(scope)
