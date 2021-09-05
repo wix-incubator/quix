@@ -70,5 +70,10 @@ export const HeaderMenu = scope => [
     title: 'History',
     targetState: 'history',
     activeCondition: null
+  },
+  {
+    title: 'Trash Bin',
+    targetState: 'trashBin',
+    activeCondition: null
   }
 ];

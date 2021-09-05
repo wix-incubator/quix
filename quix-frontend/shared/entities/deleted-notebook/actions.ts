@@ -1,0 +1,21 @@
+import {IDeletedNotebook} from './types';
+import {ExtractActionTypes, ExtractActions} from '../common/actions';
+
+export const DeletedNotebookActions = {
+  createDeletedNotebook: (id: string, notebook: IDeletedNotebook) => ({
+    type: 'deletedNotebook.create' as const,
+    notebook,
+    id,
+  }),
+
+  deleteDeletedNotebook: (id: string) => ({
+    type: 'deletedNotebook.delete' as const,
+    id
+  })
+
+  // todo permanentDelete, restore
+}
+
+export type DeletedNotebookActions = ExtractActions<typeof DeletedNotebookActions>
+export type DeletedNotebookActionTypes = ExtractActionTypes<typeof DeletedNotebookActions>
+export const DeletedNotebookActionTypes = ExtractActionTypes(DeletedNotebookActions);

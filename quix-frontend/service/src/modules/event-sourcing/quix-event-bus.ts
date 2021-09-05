@@ -14,6 +14,7 @@ import {FavoritesPlugin} from './plugins/favorites-plugin';
 import {IAction} from './infrastructure/types';
 import {UserPlugin} from './plugins/user-plugin';
 import {EventsPlugin} from './plugins/events-plugin';
+import { DeletedNotebookPlugin } from './plugins/deleted-notebook-plugin';
 
 @Injectable()
 export class QuixEventBus<A extends IAction = IAction> {
@@ -27,10 +28,12 @@ export class QuixEventBus<A extends IAction = IAction> {
     @Inject(FileTreePlugin) private fileTreePlugin: EventBusPlugin,
     @Inject(FavoritesPlugin) private favoritesPlugin: EventBusPlugin,
     @Inject(UserPlugin) private userPlugin: EventBusPlugin,
+    @Inject(DeletedNotebookPlugin) private deletedNotebookPlugin: EventBusPlugin,
     @Inject(EventsPlugin) private eventsPlugin: EventBusPlugin,
   ) {
     this.bus = EventBusBuilder()
       .addPlugin(this.notebookPlugin)
+      .addPlugin(this.deletedNotebookPlugin)
       .addPlugin(this.notePlugin)
       .addPlugin(this.fileTreePlugin)
       .addPlugin(this.favoritesPlugin)
@@ -77,3 +80,5 @@ export class QuixEventBus<A extends IAction = IAction> {
     return this;
   }
 }
+
+

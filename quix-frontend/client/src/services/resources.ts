@@ -7,6 +7,7 @@ import {
   SearchResult,
   IUser,
   IHistory,
+  IDeletedNotebook,
 } from '@wix/quix-shared';
 
 export const config = new Config<{
@@ -54,6 +55,10 @@ export const search = (text: string, offset: number, total: number) =>
     offset,
     total,
   });
+
+export const deletedNotebooks = () =>
+  many<IDeletedNotebook>(api`deletedNotebooks`);
+
 
 export const db = (type: string) => many(api`db/:type/explore`, { type });
 export const dbColumns = (

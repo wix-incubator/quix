@@ -1,6 +1,6 @@
-import {IFilePathItem, INotebook} from '@wix/quix-shared';
-import {IDeletedNotebook} from '@wix/quix-shared/entities/notebook/types';
-import {dbConf} from 'src/config/db-conf';
+import {IFilePathItem} from '@wix/quix-shared';
+import {IDeletedNotebook} from '@wix/quix-shared';
+import {dbConf} from '../../config/db-conf';
 import {
   Column,
   CreateDateColumn,
@@ -94,7 +94,7 @@ export const convertDbDeletedNotebook = (
   };
 };
 
-export const covertNotebookToDb = (
+export const covertDeletedNotebookToDb = (
   notebook: IDeletedNotebook,
 ): DbDeletedNotebook => {
   const {

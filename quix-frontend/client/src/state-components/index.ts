@@ -8,3 +8,4 @@ export { default as home } from './home/home';
 export { default as user } from './users/users';
 export { default as history } from './history/history';
 export { default as favorites } from './favorites/favorites';
+export { default as trashBin } from './trash-bin/trash-bin';

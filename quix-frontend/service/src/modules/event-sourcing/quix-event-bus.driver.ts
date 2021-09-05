@@ -16,6 +16,7 @@ import {
   FileTreeRepository,
   DbFavorites,
   DbUser,
+  DbDeletedNotebook,
 } from '../../entities';
 import {MockDataBuilder} from '../../../test/builder';
 import {Connection, Repository} from 'typeorm';
@@ -32,6 +33,7 @@ export class QuixEventBusDriver {
     public module: TestingModule,
     public noteRepo: Repository<DbNote>,
     public notebookRepo: Repository<DbNotebook>,
+    public deletedNotebookRepo: Repository<DbDeletedNotebook>,
     public eventsRepo: Repository<DbAction>,
     public folderRepo: Repository<DbFolder>,
     public fileTreeRepo: Repository<DbFileTreeNode>,
@@ -56,6 +58,7 @@ export class QuixEventBusDriver {
               DbFolder,
               DbNote,
               DbNotebook,
+              DbDeletedNotebook,
               DbAction,
               DbFavorites,
               DbUser,
@@ -72,6 +75,11 @@ export class QuixEventBusDriver {
     const notebookRepo: Repository<DbNotebook> = module.get(
       getRepositoryToken(DbNotebook),
     );
+    
+    const deletedNotebookRepo: Repository<DbDeletedNotebook> = module.get(
+      getRepositoryToken(DbNotebook),
+    );
+    
     const noteRepo: Repository<DbNote> = module.get(getRepositoryToken(DbNote));
     const eventsRepo: Repository<DbAction> = module.get(
       getRepositoryToken(DbAction),
@@ -94,6 +102,7 @@ export class QuixEventBusDriver {
       module,
       noteRepo,
       notebookRepo,
+      deletedNotebookRepo,
       eventsRepo,
       folderRepo,
       fileTreeRepo,

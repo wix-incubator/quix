@@ -2,7 +2,9 @@ import { Store } from '../lib/store';
 import { IEntity } from '@wix/quix-shared';
 import { default as app } from './app/app-branch';
 import { default as notebook } from './notebook/notebook-branch';
+import { default as deletedNotebooks } from './deleted-notebook/deleted-notebook-branch';
 import { default as notebookCache } from './notebook/notebook-cache';
+import { default as deletedNotebooksCache } from './deleted-notebook/deleted-notebook-cache';
 import { default as files } from './files/files-branch';
 import { default as foldersCache } from './files/files-cache';
 import { default as db } from './db/db-branch';
@@ -21,6 +23,7 @@ export const branches = {
   users,
   history,
   notebook,
+  deletedNotebooks,
   files,
   db,
   folder,
@@ -33,6 +36,7 @@ export const initCache = (store: Store) => {
     users: usersCache(store),
     history: historyCache(store),
     notebook: notebookCache(store),
+    deletedNotebooks: deletedNotebooksCache(store),
     files: foldersCache(store),
     db: dbCache(store),
     folder: folderCache(store),
@@ -64,3 +68,5 @@ export const waitForEntity = (
       scope
     );
   });
+
+

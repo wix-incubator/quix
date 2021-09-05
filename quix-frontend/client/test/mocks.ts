@@ -13,10 +13,11 @@ import {
   createFile,
   createNote,
   createFolderPayload,
+  createDeletedNotebook
 } from '@wix/quix-shared';
 import * as moment from 'moment';
-import {ServerTreeItem} from '../src/components/db-sidebar/db-sidebar-types';
-import {v4 as uuidv4} from 'uuid';
+import { ServerTreeItem } from '../src/components/db-sidebar/db-sidebar-types';
+import { v4 as uuidv4 } from 'uuid';
 
 export const MockNoteContent = {
   success: 'do success',
@@ -151,7 +152,7 @@ const mocks = {
     const res = [createMockNote('1'), createMockNote('2'), createMockNote('3')];
     res.forEach(
       (note) =>
-        (note.content = `SELECT
+      (note.content = `SELECT
     date_trunc('year', shipdate) as ${text}
     , shipmode
     , sum(quantity) quantity
@@ -249,7 +250,14 @@ ORDER BY 1
     }
     return response;
   },
+  '/api/deletedNotebooks': () => (
+    [createMockDeletedNotebook()]
+  ),
 };
+
+const createMockDeletedNotebook = () => {
+  return createDeletedNotebook();
+}
 
 let mockOverrides = {};
 
@@ -272,6 +280,8 @@ export const createMockRootFolder = (props: Partial<IFile> = {}) => {
     ...props,
   });
 };
+
+
 
 export const createMockFile = (props: Partial<IFile> = {}) => {
   return createFile([{ id: '1', name: 'My notebooks' }], {
