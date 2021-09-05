@@ -23,83 +23,65 @@ export const testTable = {
       columns: ['col1', 'col2'],
       alias: 'tblAlias1',
     }),
-    unnamedWith2Columns34AndAlias: createNewTableInfoObj({
-      type: TableType.Nested,
-      columns: ['col3', 'col4'],
-      alias: 'tblAlias1',
-    }),
-    unnamedWith2Columns56AndAlias: createNewTableInfoObj({
-      type: TableType.Nested,
-      columns: ['col5', 'col6'],
-      alias: 'tblAlias1',
-    }),
     unnamedWith2Columns12AndAlias2: createNewTableInfoObj({
       type: TableType.Nested,
       columns: ['col1', 'col2'],
       alias: 'tblAlias2',
+    }),
+    unnamedWith2Columns34AndAlias: createNewTableInfoObj({
+      type: TableType.Nested,
+      columns: ['col3', 'col4'],
+      alias: 'tblAlias1',
     }),
     unnamedWith2Columns34AndAlias2: createNewTableInfoObj({
       type: TableType.Nested,
       columns: ['col3', 'col4'],
       alias: 'tblAlias2',
     }),
-    unnamedWith1TableRefs: createNewTableInfoObj({
+    unnamedWith1TableRef1: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
+      tableRefs: ['ctl1.schm1.tblRef1'],
     }),
-    unnamedWith2TableRefs: createNewTableInfoObj({
+    unnamedWith1TableRef2: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1', 'ctl2.schm2.tbl2'],
+      tableRefs: ['ctl1.schm1.tblRef2'],
     }),
-    unnamedWith1TableRefsAnd2Columns12: createNewTableInfoObj({
+    unnamedWith1TblRef1And2Columns12: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
+      tableRefs: ['ctl1.schm1.tblRef1'],
       columns: ['col1', 'col2'],
     }),
-    unnamedWith1TableRefsAnd2Columns34: createNewTableInfoObj({
+    unnamedWith1TblRef2And2Columns12: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
-      columns: ['col3', 'col4'],
+      tableRefs: ['ctl1.schm1.tblRef2'],
+      columns: ['col1', 'col2'],
     }),
-    unnamedWith1TableRefsAnd2Columns56: createNewTableInfoObj({
+    unnamedWith2TblRefs: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
-      columns: ['col5', 'col6'],
+      tableRefs: ['ctl1.schm1.tblRef1', 'ctl2.schm2.tblRef2'],
     }),
-    unnamedWith1TableRefsAnd2Columns12AndAlias: createNewTableInfoObj({
+    unnamedWith1TblRef1And2Columns12AndAlias: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
+      tableRefs: ['ctl1.schm1.tblRef1'],
       columns: ['col1', 'col2'],
       alias: 'tblAlias1',
     }),
-    unnamedWith1TableRefsAnd2Columns34AndAlias: createNewTableInfoObj({
+    unnamedWith1TblRef2And2Columns12AndAlias: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
-      columns: ['col3', 'col4'],
+      tableRefs: ['ctl1.schm1.tblRef2'],
+      columns: ['col1', 'col2'],
       alias: 'tblAlias1',
     }),
-    unnamedWith1TableRefsAnd2Columns56AndAlias: createNewTableInfoObj({
+    unnamedWith1TblRef1And2Columns12AndAlias2: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
-      columns: ['col5', 'col6'],
-      alias: 'tblAlias1',
-    }),
-    unnamedWith1TableRefsAnd2Columns12AndAlias2: createNewTableInfoObj({
-      type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
+      tableRefs: ['ctl1.schm1.tblRef1'],
       columns: ['col1', 'col2'],
       alias: 'tblAlias2',
     }),
-    unnamedWith1TableRefsAnd2Columns34AndAlias2: createNewTableInfoObj({
+    unnamedWith1TblRef2And2Columns12AndAlias2: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
-      columns: ['col3', 'col4'],
-      alias: 'tblAlias2',
-    }),
-    unnamedWith1TableRefsAnd2Columns56AndAlias2: createNewTableInfoObj({
-      type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
-      columns: ['col5', 'col6'],
+      tableRefs: ['ctl1.schm1.tblRef2'],
+      columns: ['col1', 'col2'],
       alias: 'tblAlias2',
     }),
   },
@@ -115,69 +97,57 @@ export const testTable = {
       name: 'tblName1',
       columns: ['col3', 'col4'],
     }),
-    namedWith2Columns56: createNewTableInfoObj({
+    namedWithTblRef1: createNewTableInfoObj({
       type: TableType.Nested,
-      name: 'tblName1',
-      columns: ['col3', 'col4'],
-    }),
-    namedWithTableRef: createNewTableInfoObj({
-      type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
+      tableRefs: ['ctl1.schm1.tblRef1'],
       name: 'tblName1',
     }),
-    namedWithTableRefs: createNewTableInfoObj({
+    namedWithTblRef2: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1', 'ctl2.schm2.tbl2'],
+      tableRefs: ['ctl1.schm1.tblRef2'],
       name: 'tblName1',
     }),
-    namedWith1TableRefsAnd2Columns12: createNewTableInfoObj({
+    namedWith1TblRef1And2Columns12: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
+      tableRefs: ['ctl1.schm1.tblRef1'],
       columns: ['col1', 'col2'],
       name: 'tblName1',
     }),
-    namedWith1TableRefsAnd2Columns34: createNewTableInfoObj({
+    namedWith1TblRef2And2Columns12: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
-      columns: ['col3', 'col4'],
+      tableRefs: ['ctl1.schm1.tblRef2'],
+      columns: ['col1', 'col2'],
       name: 'tblName1',
     }),
-    namedWith1TableRefsAnd2Columns56: createNewTableInfoObj({
+    named2With1TblRef1And2Columns12: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
-      columns: ['col5', 'col6'],
-      name: 'tblName1',
-    }),
-    named2With1TableRefsAnd2Columns12: createNewTableInfoObj({
-      type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
+      tableRefs: ['ctl1.schm1.tblRef1'],
       columns: ['col1', 'col2'],
       name: 'tblName2',
     }),
-    named2With1TableRefsAnd2Columns34: createNewTableInfoObj({
+    named2With1TblRef2And2Columns12: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
-      columns: ['col3', 'col4'],
+      tableRefs: ['ctl1.schm1.tblRef2'],
+      columns: ['col1', 'col2'],
       name: 'tblName2',
     }),
-    named2With1TableRefsAnd2Columns56: createNewTableInfoObj({
+    namedWith2TblRefs: createNewTableInfoObj({
       type: TableType.Nested,
-      tableRefs: ['ctl1.schm1.tbl1'],
-      columns: ['col5', 'col6'],
-      name: 'tblName2',
+      tableRefs: ['ctl1.schm1.tblRef1', 'ctl2.schm2.tblRef2'],
+      name: 'tblName1',
     }),
   },
 
   external: {
     ext: createNewTableInfoObj({
-      name: 'ctl1.schm1.tbl1',
+      name: 'ctl1.schm1.extTbl1',
     }),
-    extwithAlias: createNewTableInfoObj({
-      name: 'ctl1.schm1.tbl1',
+    extWithAlias: createNewTableInfoObj({
+      name: 'ctl1.schm1.extTbl1',
       alias: 'tblAlias1',
     }),
-    extwithAlias2: createNewTableInfoObj({
-      name: 'ctl1.schm1.tbl1',
+    extWithAlias2: createNewTableInfoObj({
+      name: 'ctl1.schm1.extTbl1',
       alias: 'tblAlias2',
     }),
   },

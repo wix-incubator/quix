@@ -1,3 +1,4 @@
+import { BasicQueryContextOption } from '../../../../sql-context-evaluator/tests/result-options/utils';
 import {
   ContextType,
   QueryContext,
@@ -17,14 +18,8 @@ export const createQueryContextObject = (
   } as QueryContext;
 };
 
-/**
- * columns12 - [col1,col2]
- * alias - tblAlias1
- * alias2 - tblAlias1
- * Wt - withTale
- */
-const testInputQueryContext = {
-  column: {
+export const testInputQueryContext: BasicQueryContextOption = {
+  [ContextType.Column]: {
     empty: createQueryContextObject(ContextType.Column, []),
     nestedTable: createQueryContextObject(ContextType.Column, [
       testTable.nested.unnamedWith2Columns12,
@@ -68,14 +63,13 @@ const testInputQueryContext = {
       [
         testTable.nested.unnamedWith2Columns12,
         testTable.withTable.namedWith2Columns12,
-        ,
       ]
     ),
     twoTables1Nested1Wt: createQueryContextObject(ContextType.Column, [
       testTable.nested.unnamedWith2Columns12,
       testTable.withTable.namedWith2Columns34,
     ]),
-    twoTables1Wt1WithAliasSameColumns: createQueryContextObject(
+    twoTables1Wt1WithAlias1NestedSameColumns: createQueryContextObject(
       ContextType.Column,
       [
         testTable.withTable.namedWith2Columns12,
@@ -94,15 +88,7 @@ const testInputQueryContext = {
         testTable.nested.unnamedWith2Columns56,
       ]
     ),
-    threeTables1WtWith2Columns121NestedWithColumns341NestedWithColumns56AndAlias: createQueryContextObject(
-      ContextType.Column,
-      [
-        testTable.withTable.namedWith2Columns12,
-        testTable.nested.unnamedWith2Columns34,
-        testTable.nested.unnamedWith2Columns56AndAlias,
-      ]
-    ),
-    threeTables1WtWith2Columns121NestedWithColumns341NestedWithColumns34Alias: createQueryContextObject(
+    threeTables1WtWith2Columns121NestedWithColumns341NestedWithColumns34AndAlias: createQueryContextObject(
       ContextType.Column,
       [
         testTable.withTable.namedWith2Columns12,
@@ -118,13 +104,22 @@ const testInputQueryContext = {
         testTable.nested.unnamedWith2Columns34AndAlias2,
       ]
     ),
-    threeTables1Ext1WtColumns561Wt2Refs: createQueryContextObject(
+    threeTables1Ext1WtColumns121Wt2Refs: createQueryContextObject(
       ContextType.Column,
       [
-        testTable.withTable.namedWithTableRefs,
-        testTable.withTable.namedWith2Columns56,
+        testTable.withTable.namedWith2TblRefs,
+        testTable.withTable.namedWith2Columns12,
         testTable.external.ext
-    ])
+    ]),
+    threeTables2Ext1Wt1Refs2Columns: createQueryContextObject(
+      ContextType.Column,
+      [
+        testTable.withTable.named2With1TblRef1And2Columns12,
+        testTable.external.ext,
+        testTable.external.extWithAlias
+    ]),
   },
-  table: {},
-};
+  [ContextType.Table]: {
+
+  }
+}

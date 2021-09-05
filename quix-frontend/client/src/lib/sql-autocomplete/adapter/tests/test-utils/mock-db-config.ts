@@ -7,15 +7,15 @@ export class MockDbInfoService implements IDbInfoConfig {
     schema: string,
     table: string
   ) {
-    return [this.createColumn('col1'), this.createColumn('col2')];
+    return [this.createColumn(`col1_of_${table}`), this.createColumn(`col2_of_${table}`)];
   }
 
   public async getTablesBySchema(catalog: string, schema: string) {
-    return [this.createTable('tbl1'), this.createTable('tbl2')];
+    return [this.createTable(`tbl1_of_${schema}`), this.createTable(`tbl2_of_${schema}`)];
   }
 
   public async getSchemasByCatalog(catalog: string) {
-    return [this.createSchema('schm1'), this.createSchema('schm2')]
+    return [this.createSchema(`schm1_of_${catalog}`), this.createSchema(`schm2_of_${catalog}`)]
   }
   public async getCatalogs(){
     return [this.createCatalog('catalog1')]
