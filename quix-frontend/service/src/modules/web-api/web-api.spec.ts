@@ -272,23 +272,18 @@ describe('web-api module :: ', () => {
 
   describe('favorites service :: ', () => {
     it('get favorites per user', async () => {
-      const secondUser = 'secondUser@foo.com';
-      await driver.userRepo.save({
-        id: defaultUser,
-        name: 'some name',
-        avatar: 'http://url',
-        rootFolder: 'someId',
-      });
-      await driver.userRepo.save({
-        id: secondUser,
-        name: '2ndUser',
-        avatar: 'http://url',
+      const user = driver.createDefaultUser();
+      await driver.userRepo.save(user);
+      const user2 = driver.createDefaultUser({
+        id: 'secondUser@foo.com',
         rootFolder: 'someId2',
+        name: '2ndUser',
       });
+      await driver.userRepo.save(user2);
 
       const notebook = driver.createNotebook(defaultUser);
       const favorite = driver.createFavorite(
-        secondUser,
+        user2.id,
         notebook.id,
         EntityType.Notebook,
       );
@@ -297,7 +292,7 @@ describe('web-api module :: ', () => {
       await driver.favoritesRepo.save(favorite);
 
       const response = await driver.favoritesService.getFavoritesForUser(
-        secondUser,
+        user2.id,
       );
 
       expect(response).toEqual([
@@ -307,8 +302,8 @@ describe('web-api module :: ', () => {
           type: FileType.notebook,
           owner: notebook.owner,
           ownerDetails: expect.objectContaining({
-            id: defaultUser,
-            name: 'some name',
+            id: user.id,
+            name: user.name,
           }),
           isLiked: true,
           path: [],
@@ -321,12 +316,8 @@ describe('web-api module :: ', () => {
 
   describe('deleted-notebooks service :: ', () => {
     it('gets all deleted notebooks per user', async () => {
-      await driver.userRepo.save({
-        id: defaultUser,
-        name: 'some name',
-        avatar: 'http://url',
-        rootFolder: 'someId',
-      });
+      const user = driver.createDefaultUser();
+      await driver.userRepo.save(user);
 
       const deletedNotebook = driver.createDeletedNotebook(defaultUser);
       await driver.deletedNotebookRepo.save(deletedNotebook);
@@ -339,11 +330,10 @@ describe('web-api module :: ', () => {
         {
           id: deletedNotebook.id,
           name: deletedNotebook.name,
-          // type: FileType.notebook,
           owner: deletedNotebook.owner,
           ownerDetails: expect.objectContaining({
-            id: defaultUser,
-            name: 'some name',
+            id: user.id,
+            name: user.name,
           }),
           isLiked: false,
           path: [],

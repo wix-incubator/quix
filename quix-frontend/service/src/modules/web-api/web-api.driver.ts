@@ -30,6 +30,7 @@ import {FoldersService} from './folders/folders.service';
 import {NotebookService} from './notebooks/notebooks.service';
 import {WebApiModule} from './web-api.module';
 
+const defaultEntityDate = new Date('1980-05-21T01:02:03').valueOf();
 export class WebApiDriver {
   mockBuilder: MockDataBuilder;
 
@@ -153,6 +154,18 @@ export class WebApiDriver {
     );
   }
 
+  createDefaultUser(props?: Partial<DbUser> | undefined): DbUser {
+    const defaultUser = {
+      id: this.defaultUser,
+      name: 'some name',
+      avatar: 'http://test-url.quix',
+      rootFolder: 'someId',
+      dateCreated: defaultEntityDate,
+      dateUpdated: defaultEntityDate,
+    };
+    return props ? {...defaultUser, ...props} : defaultUser;
+  }
+
   createNotebook(defaultUser: string, notebookName = 'New notebook') {
     const notebook = new DbNotebook();
 
@@ -172,7 +185,7 @@ export class WebApiDriver {
     deletedNotebook.id = uuid();
     deletedNotebook.owner = defaultUser;
     deletedNotebook.name = notebookName;
-    deletedNotebook.dateDeleted = new Date('1984-12-27T01:02:03').valueOf();
+    deletedNotebook.dateDeleted = defaultEntityDate;
 
     return deletedNotebook;
   }
