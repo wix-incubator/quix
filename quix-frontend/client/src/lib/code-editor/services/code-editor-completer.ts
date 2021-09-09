@@ -1,5 +1,5 @@
-import {find, isFunction, escapeRegExp} from 'lodash';
-import {IEditSession} from 'brace';
+import { find, isFunction, escapeRegExp } from 'lodash';
+import { Editor, IEditSession } from 'brace';
 
 export type ICompleterFn = (prefix: string, session?: IEditSession) => ng.IPromise<ICompleterItem[]> | ICompleterItem[];
 const isPromise = <T>(maybePromise: T | ng.IPromise<T>): maybePromise is ng.IPromise<T> =>
@@ -51,13 +51,13 @@ function createLiveCompleter(prefix: string, fn: ICompleterFn) {
 export default class CodeEditorCompleter {
   private readonly completers = [];
 
-  constructor(ace) {
+  constructor(ace: Editor) {
     ace.setOptions({
       enableBasicAutocompletion: this.completers,
       enableSnippets: false,
-      enableLiveAutocompletion: true
+      enableLiveAutocompletion: false
     });
-
+    
     ace.getSession().on('change', e => {
       if (e.action === 'insert' && find(this.completers, {prefix: e.lines[0]})) {
         setTimeout(() => ace.commands.byName.startAutocomplete.exec(ace), 0);

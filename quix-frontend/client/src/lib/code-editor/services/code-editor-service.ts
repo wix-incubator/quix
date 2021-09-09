@@ -1,11 +1,11 @@
-import {flatten, last} from 'lodash';
+import { flatten, last } from 'lodash';
 import ace from 'brace';
-import {srv, inject} from '../../core';
-import {default as Completer} from './code-editor-completer';
-import {default as Annotator} from './code-editor-annotator';
-import {default as Selection} from './code-editor-selection';
-import {default as Shortcuts} from './code-editor-shortcuts';
-import {default as Params} from './code-editor-params';
+import { srv, inject } from '../../core';
+import { default as Completer } from './code-editor-completer';
+import { default as Annotator } from './code-editor-annotator';
+import { default as Selection } from './code-editor-selection';
+import { default as Shortcuts } from './code-editor-shortcuts';
+import { default as Params } from './code-editor-params';
 
 declare const ResizeObserver;
 
@@ -161,6 +161,12 @@ export default class CodeEditor extends srv.eventEmitter.EventEmitter {
     this.ace.setReadOnly(readonly);
     this.ace.setOption('highlightActiveLine', !readonly);
     this.ace.setOption('highlightGutterLine', !readonly);
+
+    return this;
+  }
+
+  setLiveAutocompletion(value: boolean) {
+    this.ace.setOption('enableLiveAutocompletion', value);
 
     return this;
   }

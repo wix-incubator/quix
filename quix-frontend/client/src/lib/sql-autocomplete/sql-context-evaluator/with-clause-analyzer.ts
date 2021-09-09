@@ -1,6 +1,6 @@
 import {
-  aggregateQueryAndTableInfo,
-  analyzeQuerySpecificationNode,
+  aggregateQueryDetailsAndTableInfo,
+  getQueryDetailsFromQuerySpecificationNode,
   getNextQuerySpecificationNode,
 } from './tree-analyzer';
 
@@ -15,11 +15,11 @@ export const analyzeNamedQueryNode = (namedQueryNode: any): TableInfo => {
   });
 
   if (currentTableInfo.columns.length === 0) {
-    const queryDetails: QueryDetails = analyzeQuerySpecificationNode(
+    const queryDetails: QueryDetails = getQueryDetailsFromQuerySpecificationNode(
       getNextQuerySpecificationNode(namedQueryNode)
     );
 
-    aggregateQueryAndTableInfo(queryDetails, currentTableInfo);
+    aggregateQueryDetailsAndTableInfo(queryDetails, currentTableInfo);
   }
 
   return currentTableInfo;

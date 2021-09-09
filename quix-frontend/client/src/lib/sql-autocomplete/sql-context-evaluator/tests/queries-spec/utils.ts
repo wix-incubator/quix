@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import evaluateContextFromPosition from '../../position-evaluator';
+import { evaluateContextFromPosition } from '../../position-evaluator';
 import { QueryContext } from '../../types';
 
 export interface TestCase {
@@ -38,4 +38,3 @@ export const runQueryTest = (
     });
   });
 };
-

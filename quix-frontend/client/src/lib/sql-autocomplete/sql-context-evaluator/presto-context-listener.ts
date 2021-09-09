@@ -3,30 +3,30 @@ import { ContextType } from './types';
 
 export class PrestoContextListener extends prestoLanguage.SqlBaseListener
   .SqlBaseListener {
-  private _identifier: string;
-  private _nodeFound: any;
-  private _contextType: ContextType;
-  private _insidePrestoWithFlag: boolean;
-  private readonly _withNodes: any[] = [];
+  private identifier: string;
+  private nodeFound: any;
+  private contextType: ContextType;
+  private insidePrestoWithFlag: boolean;
+  private readonly withNodes: any[] = [];
 
-  set identifier(value: string) {
-    this._identifier = value;
+  setIdentifier(value: string) {
+    this.identifier = value;
   }
 
-  get withNodes() {
-    return this._withNodes;
+  getWithNodes() {
+    return this.withNodes;
   }
 
-  get nodeFound() {
-    return this._nodeFound;
+  getNodeFound() {
+    return this.nodeFound;
   }
 
-  get contextType() {
-    return (this._nodeFound && this._contextType) ?? ContextType.Undefined;
+  getContextType() {
+    return (this.nodeFound && this.contextType) ?? ContextType.Undefined;
   }
 
-  get querySpecificationNode() {
-    let currentNode = this._nodeFound;
+  getQuerySpecificationNode() {
+    let currentNode = this.nodeFound;
     let querySpecificationNode: any;
 
     while (currentNode && !querySpecificationNode) {
@@ -49,50 +49,50 @@ export class PrestoContextListener extends prestoLanguage.SqlBaseListener
   }
 
   enterUnquotedIdentifier(ctx: any) {
-    if (ctx.getText() === this._identifier) {
-      this._nodeFound = ctx;
+    if (ctx.getText() === this.identifier) {
+      this.nodeFound = ctx;
 
-      if (this._insidePrestoWithFlag) {
-        this._withNodes.pop();
+      if (this.insidePrestoWithFlag) {
+        this.withNodes.pop();
       }
     }
   }
 
   enterColumnReference(ctx: any) {
-    if (!this._nodeFound) {
-      this._contextType = ContextType.Column;
+    if (!this.nodeFound) {
+      this.contextType = ContextType.Column;
     }
   }
 
   enterSelectSingle(ctx: any) {
-    if (!this._nodeFound) {
-      this._contextType = ContextType.Column;
+    if (!this.nodeFound) {
+      this.contextType = ContextType.Column;
     }
   }
 
   enterJoinCriteria(ctx: any) {
-    if (!this._nodeFound) {
-      this._contextType = ContextType.Column;
+    if (!this.nodeFound) {
+      this.contextType = ContextType.Column;
     }
   }
 
   enterTableName(ctx: any) {
-    if (!this._nodeFound) {
-      this._contextType = ContextType.Table;
+    if (!this.nodeFound) {
+      this.contextType = ContextType.Table;
     }
   }
 
   enterPresto_with(ctx: any) {
-    this._insidePrestoWithFlag = true;
+    this.insidePrestoWithFlag = true;
   }
 
   exitPresto_with(ctx: any) {
-    this._insidePrestoWithFlag = false;
+    this.insidePrestoWithFlag = false;
   }
 
   enterNamedQuery(ctx: any) {
-    if (this._insidePrestoWithFlag) {
-      this._withNodes.push(ctx);
+    if (this.insidePrestoWithFlag) {
+      this.withNodes.push(ctx);
     }
   }
 }

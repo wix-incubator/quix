@@ -1,7 +1,7 @@
 import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
-// import {BiSqlWebWorkerMngr} from '../../../language-parsers/sql-parser';
-// import {initSqlWorker} from '../workers/sql-parser-worker';
+// import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
+// import { initSqlWorker } from '../workers/sql-parser-worker';
 import { createMatchMask, makeCompletionItem } from './autocomplete-utils';
 import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
 import {
@@ -57,9 +57,11 @@ export async function setupCompleters(
     return;
   }
 
-  //dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
+  // dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
   const sqlAutocompleter = new SqlAutocompleter(dbInfoService);
-
+  
+  editorInstance.setLiveAutocompletion(true);
+  
   const keywords = getKeywordsCompletions();
   const snippets = getSnippetsCompletions();
 

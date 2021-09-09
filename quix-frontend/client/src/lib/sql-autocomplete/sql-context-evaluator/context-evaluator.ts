@@ -1,11 +1,14 @@
 import * as antlr4 from 'antlr4';
 import { PrestoContextListener } from './presto-context-listener';
 import { ContextType, QueryContext, TableInfo } from './types';
-import { analyzeRelation } from './tree-analyzer';
+import { getTableInfoFromRelationNode } from './tree-analyzer';
 import { analyzeNamedQueryNode } from './with-clause-analyzer';
 import { createPrestoSyntaxTree } from '../../language-parsers/sql-parser/parser';
 
-const evaluateContext = (input: string, identifier: string): QueryContext => {
+export const evaluateContext = (
+  input: string,
+  identifier: string
+): QueryContext => {
   const prestoSyntaxTree = createPrestoSyntaxTree(input);
   return getContextFromSyntaxTree(prestoSyntaxTree, identifier);
 };
@@ -15,18 +18,18 @@ const getContextFromSyntaxTree = (
   identifier: string
 ): QueryContext => {
   const prestoContextListener = new PrestoContextListener();
-  prestoContextListener.identifier = identifier;
+  prestoContextListener.setIdentifier(identifier);
   antlr4.tree.ParseTreeWalker.DEFAULT.walk(prestoContextListener, tree);
 
-  const contextType = prestoContextListener.contextType;
+  const contextType = prestoContextListener.getContextType();
 
   const queryTables: TableInfo[] =
     contextType === ContextType.Column
-      ? evaluateQueryTablesInfo(prestoContextListener.querySpecificationNode)
+      ? evaluateQueryTablesInfo(prestoContextListener.getQuerySpecificationNode())
       : [];
 
   const withTablesInfo: TableInfo[] = evaluateWithTablesInfo(
-    prestoContextListener.withNodes
+    prestoContextListener.getWithNodes()
   );
 
   const tables: TableInfo[] = mergeAndFilterResults(
@@ -46,7 +49,7 @@ const evaluateQueryTablesInfo = (querySpecificationNode: any): TableInfo[] => {
   return querySpecificationNode
     ?.relation()
     .reduce((accumulator: TableInfo[], relationNode: any) => {
-      accumulator.push(...analyzeRelation(relationNode));
+      accumulator.push(...getTableInfoFromRelationNode(relationNode));
       return accumulator;
     }, []);
 };
@@ -120,5 +123,3 @@ const replaceTableRefsAndWithTables = (
   }
   table.selectAll = table.tableRefs.length > 0;
 };
-
-export default evaluateContext;
