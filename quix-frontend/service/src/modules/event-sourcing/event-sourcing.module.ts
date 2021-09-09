@@ -39,7 +39,7 @@ import {EventsPlugin} from './plugins/events-plugin';
       DbFavorites,
       NotebookRepository,
       DbUser,
-      DeletedNotebookRepository
+      DeletedNotebookRepository,
     ]),
   ],
   controllers: [],

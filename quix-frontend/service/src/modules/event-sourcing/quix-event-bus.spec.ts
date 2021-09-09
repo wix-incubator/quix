@@ -13,8 +13,7 @@ import {range, reject, find} from 'lodash';
 import {EntityType} from '../../common/entity-type.enum';
 import {MockDataBuilder} from 'test/builder';
 import {IAction} from './infrastructure/types';
-import {UserActions} from '@wix/quix-shared';
-import {emit} from 'process';
+import {DeletedNotebookActions, UserActions} from '@wix/quix-shared';
 
 jest.setTimeout(300000);
 
@@ -32,9 +31,44 @@ describe('event sourcing', () => {
   });
 
   beforeEach(() => driver.clearDb());
-  afterAll(() => driver.clearDb());
 
+  afterAll(() => driver.clearDb());
   afterAll(() => module.close());
+
+  describe('deleted-notebooks::', () => {
+    let id: string;
+    let createDeletedNotebookAction: IAction<DeletedNotebookActions>;
+
+    beforeEach(() => {
+      [
+        id,
+        createDeletedNotebookAction,
+      ] = mockBuilder.createDeletedNotebookAction();
+    });
+
+    it('create deleted-notebook', async () => {
+      await driver.emitAsUser(eventBus, [createDeletedNotebookAction]);
+      const deletedNotebook = await driver
+        .getDeletedNotebook(id)
+        .and.expectToBeDefined();
+
+      expect(deletedNotebook.id).toBe(createDeletedNotebookAction.id);
+    });
+
+    it('delete deleted-notebook', async () => {
+      await driver.emitAsUser(eventBus, [createDeletedNotebookAction]);
+      const deletedNotebook = await driver
+        .getDeletedNotebook(id)
+        .and.expectToBeDefined();
+      expect(deletedNotebook.id).toBe(createDeletedNotebookAction.id);
+
+      await driver.emitAsUser(eventBus, [
+        DeletedNotebookActions.deleteDeletedNotebook(id),
+      ]);
+
+      await driver.getDeletedNotebook(id).and.expectToBeUndefined();
+    });
+  });
 
   describe('notebooks::', () => {
     let id: string;

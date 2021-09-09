@@ -41,12 +41,12 @@ export class QuixEventBusDriver {
     public userRepo: Repository<DbUser>,
     private conn: Connection,
     private configService: ConfigService,
-    private defaultUser: string,
+    private defaultUserId: string,
   ) {
-    this.mockBuilder = new MockDataBuilder(defaultUser);
+    this.mockBuilder = new MockDataBuilder(defaultUserId);
   }
 
-  static async create(defaultUser: string) {
+  static async create(defaultUserId: string) {
     const module = await Test.createTestingModule({
       imports: [
         ConfigModule.create(),
@@ -75,11 +75,11 @@ export class QuixEventBusDriver {
     const notebookRepo: Repository<DbNotebook> = module.get(
       getRepositoryToken(DbNotebook),
     );
-    
+
     const deletedNotebookRepo: Repository<DbDeletedNotebook> = module.get(
-      getRepositoryToken(DbNotebook),
+      getRepositoryToken(DbDeletedNotebook),
     );
-    
+
     const noteRepo: Repository<DbNote> = module.get(getRepositoryToken(DbNote));
     const eventsRepo: Repository<DbAction> = module.get(
       getRepositoryToken(DbAction),
@@ -110,7 +110,7 @@ export class QuixEventBusDriver {
       userRepo,
       conn,
       configService,
-      defaultUser,
+      defaultUserId,
     );
   }
 
@@ -145,6 +145,25 @@ export class QuixEventBusDriver {
         expectToBeUndefined: async () => {
           const notebook = await this.notebookRepo.findOne(id);
           expect(notebook).not.toBeDefined();
+          return undefined;
+        },
+      },
+    };
+  }
+
+  getDeletedNotebook(id: string) {
+    return {
+      and: {
+        expectToBeDefined: async () => {
+          const deletedNotebook = await this.deletedNotebookRepo.findOneOrFail(
+            id,
+          );
+          expect(deletedNotebook).toBeDefined();
+          return deletedNotebook;
+        },
+        expectToBeUndefined: async () => {
+          const deletedNotebook = await this.deletedNotebookRepo.findOne(id);
+          expect(deletedNotebook).not.toBeDefined();
           return undefined;
         },
       },
@@ -221,7 +240,7 @@ export class QuixEventBusDriver {
     return this.favoritesRepo.delete({});
   }
 
-  emitAsUser(eventBus: QuixEventBus, actions: any[], user = this.defaultUser) {
+  emitAsUser(eventBus: QuixEventBus, actions: any[], user = this.defaultUserId) {
     return eventBus.emit(actions.map(a => Object.assign(a, {user})));
   }
 

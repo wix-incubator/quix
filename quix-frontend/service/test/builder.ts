@@ -10,8 +10,11 @@ import {
   NoteActions,
   createNotebook,
   NotebookActions,
+  DeletedNotebookActions,
+  createDeletedNotebook,
   INotebook,
   createEmptyIUser,
+  IDeletedNotebook,
 } from '@wix/quix-shared';
 
 class BaseMockDataBuilder<S extends string | never> {
@@ -28,6 +31,21 @@ class BaseMockDataBuilder<S extends string | never> {
       ...NotebookActions.createNotebook(
         id,
         createNotebook(path as IFilePathItem[], {id}),
+      ),
+      user,
+    };
+    return [id, action] as const;
+  }
+
+  createDeletedNotebookAction(
+    path: Partial<IFilePathItem>[] = [],
+    user = this.defaultUser,
+  ) {
+    const id = uuid.v4();
+    const action = {
+      ...DeletedNotebookActions.createDeletedNotebook(
+        id,
+        createDeletedNotebook(path as IFilePathItem[], {id}),
       ),
       user,
     };

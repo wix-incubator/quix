@@ -2,9 +2,9 @@ import {IDeletedNotebook} from './types';
 import {ExtractActionTypes, ExtractActions} from '../common/actions';
 
 export const DeletedNotebookActions = {
-  createDeletedNotebook: (id: string, notebook: IDeletedNotebook) => ({
+  createDeletedNotebook: (id: string, deletedNotebook: IDeletedNotebook) => ({
     type: 'deletedNotebook.create' as const,
-    notebook,
+    deletedNotebook,
     id,
   }),
 

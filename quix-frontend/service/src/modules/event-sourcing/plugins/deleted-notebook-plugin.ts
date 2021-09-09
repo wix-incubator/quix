@@ -35,7 +35,10 @@ export class DeletedNotebookPlugin implements EventBusPlugin {
       async (action: IAction<DeletedNotebookActions>) => {
         switch (action.type) {
           case DeletedNotebookActionTypes.deleteDeletedNotebook: {
-            const deletedNotebook = await this.em.findOneOrFail(DbDeletedNotebook, action.id);
+            const deletedNotebook = await this.em.findOneOrFail(
+              DbDeletedNotebook,
+              action.id,
+            );
             assertOwner(deletedNotebook, action);
             break;
           }
@@ -55,21 +58,28 @@ export class DeletedNotebookPlugin implements EventBusPlugin {
 
   private async projectDeletedNotebook(
     action: IAction<DeletedNotebookActions>,
-    tm: EntityManager,
+    entityManager: EntityManager,
   ) {
+    console.log(action);
+    // console.log(entityManager);
+
     const dbModel =
       action.type === DeletedNotebookActionTypes.createDeletedNotebook
         ? undefined
-        : await tm.findOne(DbDeletedNotebook, action.id);
-
+        : await entityManager.findOne(DbDeletedNotebook, action.id);
+    // console.log(dbModel)
     const model = dbModel ? convertDbDeletedNotebook(dbModel) : undefined;
 
     const newModel = deletedNotebookReducer(model, action);
-
+    // console.log(model,newModel);
     if (newModel && model !== newModel) {
-      return tm.save(covertDeletedNotebookToDb(newModel), {reload: false});
-    } else if (action.type === DeletedNotebookActionTypes.deleteDeletedNotebook) {
-      await tm.delete(DbDeletedNotebook, {id: action.id});
+      return entityManager.save(covertDeletedNotebookToDb(newModel), {
+        reload: false,
+      });
+    } else if (
+      action.type === DeletedNotebookActionTypes.deleteDeletedNotebook
+    ) {
+      await entityManager.delete(DbDeletedNotebook, {id: action.id});
     }
   }
 }
