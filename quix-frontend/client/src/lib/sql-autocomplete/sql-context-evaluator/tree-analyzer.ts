@@ -1,13 +1,13 @@
 import { QueryDetails, TableInfo, TableType } from './types';
 import { createNewTableInfoObj } from './utils';
 
-export const analyzeRelation = (relationNode: any): TableInfo[] => {
+export const getTableInfoFromRelationNode = (relationNode: any): TableInfo[] => {
   if (relationNode.relation) {
     // when use 'JOIN' keyword -> analyze all relations
     return relationNode
       .relation()
       ?.reduce((accumulator: TableInfo[], subRelation: any) => {
-        return accumulator.concat(...analyzeRelation(subRelation));
+        return accumulator.concat(...getTableInfoFromRelationNode(subRelation));
       }, []);
   }
 
@@ -15,7 +15,7 @@ export const analyzeRelation = (relationNode: any): TableInfo[] => {
   const relationPrimaryNode = aliasedRelationNode.relationPrimary();
 
   if (relationPrimaryNode.relation) {
-    return analyzeRelation(relationPrimaryNode.relation());
+    return getTableInfoFromRelationNode(relationPrimaryNode.relation());
   }
 
   const currentTableInfo: TableInfo = createNewTableInfoObj({
@@ -29,16 +29,16 @@ export const analyzeRelation = (relationNode: any): TableInfo[] => {
   });
 
   if (currentTableInfo.type === TableType.Nested && relationPrimaryNode.query) {
-    const nestedQueryDetails: QueryDetails = analyzeQuerySpecificationNode(
+    const nestedQueryDetails: QueryDetails = getQueryDetailsFromQuerySpecificationNode(
       getNextQuerySpecificationNode(relationNode)
     );
-    aggregateQueryAndTableInfo(nestedQueryDetails, currentTableInfo);
+    aggregateQueryDetailsAndTableInfo(nestedQueryDetails, currentTableInfo);
   }
 
   return [currentTableInfo];
 };
 
-export const analyzeQuerySpecificationNode = (
+export const getQueryDetailsFromQuerySpecificationNode = (
   querySpecificationNode: any
 ): QueryDetails => {
   const tables: TableInfo[] = [];
@@ -59,12 +59,12 @@ export const analyzeQuerySpecificationNode = (
 
   querySpecificationNode
     ?.relation()
-    .forEach((relation: any) => tables.push(...analyzeRelation(relation)));
+    .forEach((relation: any) => tables.push(...getTableInfoFromRelationNode(relation)));
 
   return { tables, columns, selectAll };
 };
 
-export const aggregateQueryAndTableInfo = (
+export const aggregateQueryDetailsAndTableInfo = (
   queryDetails: QueryDetails,
   tableInfo: TableInfo
 ) => {

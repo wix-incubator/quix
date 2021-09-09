@@ -1,4 +1,4 @@
-import { TableType, ContextType, QueryContext, TableInfo } from '../../types';
+import { TableType, ContextType, QueryContext } from '../../types';
 import { createNewTableInfoObj } from '../../utils';
 
 export type BasicQueryContextOption = {

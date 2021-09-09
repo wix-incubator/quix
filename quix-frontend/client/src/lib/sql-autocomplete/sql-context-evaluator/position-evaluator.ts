@@ -1,7 +1,7 @@
-import evaluateContext from './context-evaluator';
+import { evaluateContext } from './context-evaluator';
 import { QueryContext } from './types';
 
-const evaluateContextFromPosition = (
+export const evaluateContextFromPosition = (
   input: string,
   position: number
 ): QueryContext => {
@@ -39,5 +39,3 @@ const getPrefixByPosition = (input: string, position: number): string => {
     .split(/[\s,()=<>'`":;*!@#$%^&+-]+/)
     .pop();
 };
-
-export default evaluateContextFromPosition;
