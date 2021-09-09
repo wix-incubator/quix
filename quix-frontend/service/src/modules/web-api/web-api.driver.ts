@@ -1,19 +1,34 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { getConnectionToken, getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
-import { FileType } from "@wix/quix-shared";
-import { EntityType } from "src/common/entity-type.enum";
-import { ConfigModule, ConfigService } from "../../config/";
-import { DbAction, DbDeletedNotebook, DbFavorites, DbFileTreeNode, DbFolder, DbNote, DbNotebook, DbUser, FileTreeRepository, NoteRepository } from "../../entities";
-import { MockDataBuilder } from "../../../test/builder";
-import { Connection, Repository } from "typeorm";
-import uuid from "uuid";
-import { AuthModuleConfiguration } from "../auth/auth.module";
-import { AuthTypes } from "../auth/types";
-import { DeletedNotebooksService } from "./deleted-notebooks/deleted-notebook.service";
-import { FavoritesService } from "./favorites/favorites.service";
-import { FoldersService } from "./folders/folders.service";
-import { NotebookService } from "./notebooks/notebooks.service";
-import { WebApiModule } from "./web-api.module";
+import {Test, TestingModule} from '@nestjs/testing';
+import {
+  getConnectionToken,
+  getRepositoryToken,
+  TypeOrmModule,
+} from '@nestjs/typeorm';
+import {FileType} from '@wix/quix-shared';
+import {EntityType} from 'src/common/entity-type.enum';
+import {ConfigModule, ConfigService} from '../../config/';
+import {
+  DbAction,
+  DbDeletedNotebook,
+  DbFavorites,
+  DbFileTreeNode,
+  DbFolder,
+  DbNote,
+  DbNotebook,
+  DbUser,
+  FileTreeRepository,
+  NoteRepository,
+} from '../../entities';
+import {MockDataBuilder} from '../../../test/builder';
+import {Connection, Repository} from 'typeorm';
+import uuid from 'uuid';
+import {AuthModuleConfiguration} from '../auth/auth.module';
+import {AuthTypes} from '../auth/types';
+import {DeletedNotebooksService} from './deleted-notebooks/deleted-notebook.service';
+import {FavoritesService} from './favorites/favorites.service';
+import {FoldersService} from './folders/folders.service';
+import {NotebookService} from './notebooks/notebooks.service';
+import {WebApiModule} from './web-api.module';
 
 export class WebApiDriver {
   mockBuilder: MockDataBuilder;
@@ -45,7 +60,6 @@ export class WebApiDriver {
   }
 
   static async create(defaultUser: string) {
-
     const module = await Test.createTestingModule({
       imports: [
         AuthModuleConfiguration.create({
@@ -77,7 +91,9 @@ export class WebApiDriver {
     const notebookRepo = module.get(getRepositoryToken(DbNotebook));
     const notebookService = module.get(NotebookService);
 
-    const deletedNotebookRepo = module.get(getRepositoryToken(DbDeletedNotebook));
+    const deletedNotebookRepo = module.get(
+      getRepositoryToken(DbDeletedNotebook),
+    );
     const deletedNotebookService = module.get(DeletedNotebooksService);
 
     const favoritesService = module.get(FavoritesService);
@@ -90,7 +106,7 @@ export class WebApiDriver {
 
     const eventsRepo = module.get(getRepositoryToken(DbAction));
     const fileTreeRepo = module.get(getRepositoryToken(FileTreeRepository));
-    
+
     const userRepo = module.get(getRepositoryToken(DbUser));
     const conn = module.get(getConnectionToken());
     const configService = module.get(ConfigService);
@@ -111,7 +127,7 @@ export class WebApiDriver {
       favoritesService,
       configService,
       conn,
-      defaultUser
+      defaultUser,
     );
   }
 
@@ -145,6 +161,20 @@ export class WebApiDriver {
     notebook.name = notebookName;
 
     return notebook;
+  }
+
+  createDeletedNotebook(
+    defaultUser: string,
+    notebookName = 'Deleted notebook',
+  ) {
+    const deletedNotebook = new DbDeletedNotebook();
+
+    deletedNotebook.id = uuid();
+    deletedNotebook.owner = defaultUser;
+    deletedNotebook.name = notebookName;
+    deletedNotebook.dateDeleted = new Date('1984-12-27T01:02:03').valueOf();
+
+    return deletedNotebook;
   }
 
   createNotebookNode(defaultUser: string, notebookName: string) {
@@ -186,11 +216,7 @@ export class WebApiDriver {
     return folderNode;
   }
 
-  createFavorite(
-    owner: string,
-    entityId: string,
-    entityType: EntityType,
-  ) {
+  createFavorite(owner: string, entityId: string, entityType: EntityType) {
     return Object.assign(new DbFavorites(), {
       entityId,
       entityType,

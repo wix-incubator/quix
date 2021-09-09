@@ -1,9 +1,9 @@
 /* tslint:disable:no-non-null-assertion */
-import { FileType } from '@wix/quix-shared';
-import { range } from 'lodash';
+import {FileType} from '@wix/quix-shared';
+import {range} from 'lodash';
 
-import { EntityType } from '../../common/entity-type.enum';
-import { WebApiDriver } from './web-api.driver';
+import {EntityType} from '../../common/entity-type.enum';
+import {WebApiDriver} from './web-api.driver';
 
 jest.setTimeout(60000);
 
@@ -16,7 +16,7 @@ describe('web-api module :: ', () => {
   });
 
   beforeEach(async () => await driver.clearDb());
-  afterAll(() => driver.module.close());
+  afterAll(async () => await driver.module.close());
 
   describe('foldersService :: ', () => {
     describe('getPathList', () => {
@@ -44,7 +44,7 @@ describe('web-api module :: ', () => {
         expect(list!.find(i => i.id === notebook.id)!).toMatchObject({
           id: notebook.id,
           name: notebookName,
-          path: [{ name: 'folderName' }],
+          path: [{name: 'folderName'}],
         });
       });
 
@@ -70,9 +70,18 @@ describe('web-api module :: ', () => {
           defaultUser,
           notebookName,
         );
-        const parentFolderNode = driver.createFolderNode(defaultUser, 'folderName');
-        const subFolderNode = driver.createFolderNode(defaultUser, 'folderName2');
-        const subSubFolderNode = driver.createFolderNode(defaultUser, 'folderName3');
+        const parentFolderNode = driver.createFolderNode(
+          defaultUser,
+          'folderName',
+        );
+        const subFolderNode = driver.createFolderNode(
+          defaultUser,
+          'folderName2',
+        );
+        const subSubFolderNode = driver.createFolderNode(
+          defaultUser,
+          'folderName3',
+        );
 
         subFolderNode.parent = parentFolderNode;
         subSubFolderNode.parent = subFolderNode;
@@ -97,7 +106,7 @@ describe('web-api module :: ', () => {
           ],
           dateCreated: expect.any(Number),
           dateUpdated: expect.any(Number),
-          ownerDetails: { id: defaultUser },
+          ownerDetails: {id: defaultUser},
           owner: defaultUser,
           type: FileType.folder,
           files: [
@@ -107,7 +116,7 @@ describe('web-api module :: ', () => {
               dateUpdated: expect.any(Number),
               type: FileType.folder,
               name: 'folderName3',
-              ownerDetails: { id: defaultUser },
+              ownerDetails: {id: defaultUser},
               owner: defaultUser,
               path: [
                 {
@@ -152,8 +161,8 @@ describe('web-api module :: ', () => {
 
       expect(response!.id).toBe(notebook.id);
       expect(response!.path).toEqual([
-        { name: 'folderName', id: folderNode.id },
-        { name: 'folderName2', id: folderNode2.id },
+        {name: 'folderName', id: folderNode.id},
+        {name: 'folderName2', id: folderNode2.id},
       ]);
     });
 
@@ -287,7 +296,9 @@ describe('web-api module :: ', () => {
       await driver.notebookRepo.save(notebook);
       await driver.favoritesRepo.save(favorite);
 
-      const response = await driver.favoritesService.getFavoritesForUser(secondUser);
+      const response = await driver.favoritesService.getFavoritesForUser(
+        secondUser,
+      );
 
       expect(response).toEqual([
         {
@@ -308,7 +319,40 @@ describe('web-api module :: ', () => {
     });
   });
 
-  describe('trash bin :: ', () => {
+  describe('deleted-notebooks service :: ', () => {
+    it('gets all deleted notebooks per user', async () => {
+      await driver.userRepo.save({
+        id: defaultUser,
+        name: 'some name',
+        avatar: 'http://url',
+        rootFolder: 'someId',
+      });
 
-  })
+      const deletedNotebook = driver.createDeletedNotebook(defaultUser);
+      await driver.deletedNotebookRepo.save(deletedNotebook);
+
+      const response = await driver.deletedNotebookService.getDeletedNotebooksForUser(
+        defaultUser,
+      );
+
+      expect(response).toEqual([
+        {
+          id: deletedNotebook.id,
+          name: deletedNotebook.name,
+          // type: FileType.notebook,
+          owner: deletedNotebook.owner,
+          ownerDetails: expect.objectContaining({
+            id: defaultUser,
+            name: 'some name',
+          }),
+          isLiked: false,
+          path: [],
+          notes: [],
+          dateCreated: deletedNotebook.dateCreated,
+          dateUpdated: deletedNotebook.dateUpdated,
+          dateDeleted: deletedNotebook.dateDeleted,
+        },
+      ]);
+    });
+  });
 });
