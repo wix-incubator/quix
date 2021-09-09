@@ -22,7 +22,7 @@ export class DbInfoService implements IDbInfoConfig {
   getCatalogs = async (): Promise<Catalog[]> => {
     if (!this.catalogs.length) {
       const response = await axios.get(
-        `${this.apiBasePath}/api/db/${this.type}/explore/`
+        `${this.apiBasePath}/api/db/${this.type}/explore`
       );
 
       this.catalogs = response.data;
@@ -57,7 +57,7 @@ export class DbInfoService implements IDbInfoConfig {
   ): Promise<Column[]> => {
     const query = `${encodeURIComponent(catalog)}/${encodeURIComponent(
       schema
-    )}/${encodeURIComponent(table)}/`;
+    )}/${encodeURIComponent(table)}`;
 
     if (this.tables[query]) {
       return this.tables[query];

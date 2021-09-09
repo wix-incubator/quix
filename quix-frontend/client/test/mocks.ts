@@ -217,35 +217,8 @@ ORDER BY 1
       },
     ];
   },
-  '/api/db/:type/explore/': () => [
-    {
-      name: 'mock_catalog',
-      children: [
-        {
-          name: 'schema_1',
-          children: [
-            { name: 'table_1', children: [], type: 'table' },
-            { name: 'table_2', children: [], type: 'table' },
-          ],
-          type: 'schema',
-        },
-        {
-          name: 'schema_2',
-          children: [
-            { name: 'table_3', children: [], type: 'table' },
-            { name: 'table_4', children: [], type: 'table' },
-          ],
-          type: 'schema',
-        },
-      ],
-      type: 'catalog',
-    },
-  ],
-  '/api/db/:type/explore/:catalog/:schema/:table/': ({ table }) => ({
-    children: [
-      { name: `column_1_of_${table}`, dataType: 'varchar' },
-      { name: `column_2_of_${table}`, dataType: 'varchar' },
-    ],
+  '/api/db/:type/explore/:catalog/:schema/:table': ({ table }) => ({
+    children: [{ name: `column_of_${table}`, dataType: 'varchar' }],
   }),
   '/api/db/:type/autocomplete': () => ({
     catalogs: ['catalog', 'catalog2'],
