@@ -1,4 +1,4 @@
-import { QueryContext } from "../sql-context-evaluator/types";
+import { QueryContext } from '../sql-context-evaluator/types';
 
 export type IContextEvaluator = (input: string, position: number) => any;
 

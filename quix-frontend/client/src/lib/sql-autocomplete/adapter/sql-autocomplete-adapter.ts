@@ -45,9 +45,9 @@ export class SqlAutocompleter implements IAutocompleter {
    * @return {ICompleterItem[]}
    */
   private getQueryContextTables(tables: TableInfo[]) {
-    return [...new Set(tables.map((table) => table.name))].map((completer) =>
-      this.createCompleterItem(completer, 'table')
-    );
+    return tables
+      .map((table) => table.name)
+      .map((completer) => this.createCompleterItem(completer, 'table'));
   }
 
   /**
@@ -58,8 +58,7 @@ export class SqlAutocompleter implements IAutocompleter {
   private async getQueryContextColumns(tables: TableInfo[]) {
     const completersMemory: Set<string> = new Set();
     for (const table of tables) {
-      const { name, alias, columns } = table;
-      await this.extractTableColumns(table);
+      const { name, alias, columns } = await this.extractTableColumns(table);
       columns.forEach((column) => {
         completersMemory.add(column);
         const completerName: string = alias
@@ -80,22 +79,24 @@ export class SqlAutocompleter implements IAutocompleter {
   /**
    * Extract the columns from the table
    * @param {TableInfo} table
-   * @return {void}
+   * @return {TableInfo}
    */
   private async extractTableColumns(table: TableInfo) {
     const { type, name, tableRefs, columns } = table;
+    const tables = [...tableRefs];
     if (type === TableType.External) {
-      tableRefs.push(name);
+      tables.push(name);
     }
-    for (const tableRef of tableRefs) {
-      const tableRefNameParts = tableRef.split('.');
+    for (const tableFullName of tables) {
+      const [catalog, schema, tableName] = tableFullName.split('.');
       const tableRefColumns = await this.config.getColumnsByTable(
-        tableRefNameParts[0],
-        tableRefNameParts[1],
-        tableRefNameParts[2]
+        catalog,
+        schema,
+        tableName
       );
       columns.push(...tableRefColumns.map((column) => column.name));
     }
+    return table;
   }
 
   private createCompleterItem(value: string, meta: string): ICompleterItem {
@@ -107,14 +108,23 @@ export class SqlAutocompleter implements IAutocompleter {
     prefixArray.pop();
     prefix = prefixArray.join('.');
 
-    const entities: BaseEntity[] =
-      prefixArray.length === 0
-        ? await this.config.getCatalogs()
-        : prefixArray.length === 1
-        ? await this.config.getSchemasByCatalog(prefix)
-        : prefixArray.length === 2
-        ? await this.config.getTablesBySchema(prefixArray[0], prefixArray[1])
-        : [];
+    let entities: BaseEntity[] = [];
+    switch (prefixArray.length) {
+      case 0:
+        entities = await this.config.getCatalogs();
+        break;
+      case 1:
+        entities = await this.config.getSchemasByCatalog(prefix);
+        break;
+      case 2:
+        entities = await this.config.getTablesBySchema(
+          prefixArray[0],
+          prefixArray[1]
+        );
+        break;
+      default:
+        entities = [];
+    }
 
     return entities.map((entity) =>
       this.createCompleterItem(
