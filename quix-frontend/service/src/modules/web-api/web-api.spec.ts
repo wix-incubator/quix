@@ -9,10 +9,10 @@ jest.setTimeout(60000);
 
 describe('web-api module :: ', () => {
   let driver: WebApiDriver;
-  const defaultUser = 'foo@wix.com';
+  const defaultUserId = 'quix-default-user@wix.com';
 
   beforeAll(async () => {
-    driver = await WebApiDriver.create(defaultUser);
+    driver = await WebApiDriver.create(defaultUserId);
   });
 
   beforeEach(async () => await driver.clearDb());
@@ -21,25 +21,21 @@ describe('web-api module :: ', () => {
   describe('foldersService :: ', () => {
     describe('getPathList', () => {
       it('get a path list with notebooks inside a folder', async () => {
-        await driver.userRepo.save({
-          id: defaultUser,
-          name: 'some name',
-          avatar: 'http://url',
-          rootFolder: 'someId',
-        });
+        const user = driver.createUser();
+        await driver.userRepo.save(user);
 
         const notebookName = 'some new notebook';
         const [notebookNode, notebook] = driver.createNotebookNode(
-          defaultUser,
           notebookName,
         );
-        const folderNode = driver.createFolderNode(defaultUser, 'folderName');
+
+        const folderNode = driver.createFolderNode('folderName');
         await driver.fileTreeRepo.save(folderNode);
         notebookNode.parent = folderNode;
 
         await driver.notebookRepo.save(notebook);
         await driver.fileTreeRepo.save(notebookNode);
-        const list = await driver.folderService.getFilesForUser(defaultUser);
+        const list = await driver.folderService.getFilesForUser(user.id);
 
         expect(list!.find(i => i.id === notebook.id)!).toMatchObject({
           id: notebook.id,
@@ -51,37 +47,26 @@ describe('web-api module :: ', () => {
       it('get a path list, multiple items in root', async () => {
         const notebookName = 'some new notebook';
         const [notebookNode, notebook] = driver.createNotebookNode(
-          defaultUser,
           notebookName,
         );
-        const folderNode = driver.createFolderNode(defaultUser, 'folderName');
+        const folderNode = driver.createFolderNode('folderName');
 
         await driver.fileTreeRepo.save(folderNode);
         await driver.notebookRepo.save(notebook);
         await driver.fileTreeRepo.save(notebookNode);
 
-        const list = await driver.folderService.getFilesForUser(defaultUser);
+        const list = await driver.folderService.getFilesForUser(defaultUserId);
         expect(list).toHaveLength(2);
       });
 
       it('get a path list, starting from a specific folder', async () => {
         const notebookName = 'some new notebook';
         const [notebookNode, notebook] = driver.createNotebookNode(
-          defaultUser,
           notebookName,
         );
-        const parentFolderNode = driver.createFolderNode(
-          defaultUser,
-          'folderName',
-        );
-        const subFolderNode = driver.createFolderNode(
-          defaultUser,
-          'folderName2',
-        );
-        const subSubFolderNode = driver.createFolderNode(
-          defaultUser,
-          'folderName3',
-        );
+        const parentFolderNode = driver.createFolderNode('folderName');
+        const subFolderNode = driver.createFolderNode('folderName2');
+        const subSubFolderNode = driver.createFolderNode('folderName3');
 
         subFolderNode.parent = parentFolderNode;
         subSubFolderNode.parent = subFolderNode;
@@ -106,8 +91,8 @@ describe('web-api module :: ', () => {
           ],
           dateCreated: expect.any(Number),
           dateUpdated: expect.any(Number),
-          ownerDetails: {id: defaultUser},
-          owner: defaultUser,
+          ownerDetails: {id: defaultUserId},
+          owner: defaultUserId,
           type: FileType.folder,
           files: [
             {
@@ -116,8 +101,8 @@ describe('web-api module :: ', () => {
               dateUpdated: expect.any(Number),
               type: FileType.folder,
               name: 'folderName3',
-              ownerDetails: {id: defaultUser},
-              owner: defaultUser,
+              ownerDetails: {id: defaultUserId},
+              owner: defaultUserId,
               path: [
                 {
                   name: 'folderName',
@@ -140,12 +125,9 @@ describe('web-api module :: ', () => {
   describe('notebook service :: ', () => {
     it('get a notebook, with valid path', async () => {
       const notebookName = 'some new notebook';
-      const [notebookNode, notebook] = driver.createNotebookNode(
-        defaultUser,
-        notebookName,
-      );
-      const folderNode = driver.createFolderNode(defaultUser, 'folderName');
-      const folderNode2 = driver.createFolderNode(defaultUser, 'folderName2');
+      const [notebookNode, notebook] = driver.createNotebookNode(notebookName);
+      const folderNode = driver.createFolderNode('folderName');
+      const folderNode2 = driver.createFolderNode('folderName2');
       folderNode2.parent = folderNode;
       await driver.fileTreeRepo.save(folderNode);
       await driver.fileTreeRepo.save(folderNode2);
@@ -155,7 +137,7 @@ describe('web-api module :: ', () => {
       await driver.fileTreeRepo.save(notebookNode);
 
       const response = await driver.notebookService.getNotebook(
-        defaultUser,
+        defaultUserId,
         notebook.id,
       );
 
@@ -168,16 +150,13 @@ describe('web-api module :: ', () => {
 
     it('get a notebook, with notes sorted in order', async () => {
       const notebookName = 'some new notebook';
-      const [notebookNode, notebook] = driver.createNotebookNode(
-        defaultUser,
-        notebookName,
-      );
+      const [notebookNode, notebook] = driver.createNotebookNode(notebookName);
 
       await driver.notebookRepo.save(notebook);
       await driver.fileTreeRepo.save(notebookNode);
 
       const notes = range(5).map(i =>
-        driver.createNote(defaultUser, `note${i}`, notebook.id),
+        driver.createNote(`note${i}`, notebook.id),
       );
       for (const note of notes) {
         await driver.noteRepo.insertNewWithRank(note);
@@ -187,7 +166,7 @@ describe('web-api module :: ', () => {
       await driver.noteRepo.reorder(notes[from], to);
 
       const response = await driver.notebookService.getNotebook(
-        defaultUser,
+        defaultUserId,
         notebook.id,
       );
       expect(response!.notes[to].name).toBe(`note${from}`);
@@ -195,12 +174,9 @@ describe('web-api module :: ', () => {
 
     it('get a notebook, with favorite indication', async () => {
       const notebookName = 'some new notebook';
-      const [notebookNode, notebook] = driver.createNotebookNode(
-        defaultUser,
-        notebookName,
-      );
+      const [notebookNode, notebook] = driver.createNotebookNode(notebookName);
       const favorite = driver.createFavorite(
-        defaultUser,
+        defaultUserId,
         notebook.id,
         EntityType.Notebook,
       );
@@ -210,7 +186,7 @@ describe('web-api module :: ', () => {
       await driver.favoritesRepo.save(favorite);
 
       const response = await driver.notebookService.getNotebook(
-        defaultUser,
+        defaultUserId,
         notebook.id,
       );
 
@@ -220,13 +196,10 @@ describe('web-api module :: ', () => {
 
     it('get a notebook, with user details', async () => {
       const notebookName = 'some new notebook';
-      const [notebookNode, notebook] = driver.createNotebookNode(
-        defaultUser,
-        notebookName,
-      );
+      const [notebookNode, notebook] = driver.createNotebookNode(notebookName);
 
       await driver.userRepo.save({
-        id: defaultUser,
+        id: defaultUserId,
         name: 'some name',
         avatar: 'http://url',
         rootFolder: 'someId',
@@ -235,13 +208,13 @@ describe('web-api module :: ', () => {
       await driver.fileTreeRepo.save(notebookNode);
 
       const response = await driver.notebookService.getNotebook(
-        defaultUser,
+        defaultUserId,
         notebook.id,
       );
 
       expect(response!.id).toBe(notebook.id);
       expect(response!.ownerDetails).toMatchObject({
-        id: defaultUser,
+        id: defaultUserId,
         name: 'some name',
         avatar: 'http://url',
       });
@@ -249,22 +222,19 @@ describe('web-api module :: ', () => {
 
     it('get a notebook, even when user does not exist', async () => {
       const notebookName = 'some new notebook';
-      const [notebookNode, notebook] = driver.createNotebookNode(
-        defaultUser,
-        notebookName,
-      );
+      const [notebookNode, notebook] = driver.createNotebookNode(notebookName);
 
       await driver.notebookRepo.save(notebook);
       await driver.fileTreeRepo.save(notebookNode);
 
       const response = await driver.notebookService.getNotebook(
-        defaultUser,
+        defaultUserId,
         notebook.id,
       );
 
       expect(response!.id).toBe(notebook.id);
       expect(response!.ownerDetails).toMatchObject({
-        id: defaultUser,
+        id: defaultUserId,
         name: '',
       });
     });
@@ -272,16 +242,17 @@ describe('web-api module :: ', () => {
 
   describe('favorites service :: ', () => {
     it('get favorites per user', async () => {
-      const user = driver.createDefaultUser();
+      const user = driver.createUser();
       await driver.userRepo.save(user);
-      const user2 = driver.createDefaultUser({
+
+      const user2 = driver.createUser({
         id: 'secondUser@foo.com',
         rootFolder: 'someId2',
         name: '2ndUser',
       });
       await driver.userRepo.save(user2);
 
-      const notebook = driver.createNotebook(defaultUser);
+      const notebook = driver.createNotebook();
       const favorite = driver.createFavorite(
         user2.id,
         notebook.id,
@@ -316,14 +287,14 @@ describe('web-api module :: ', () => {
 
   describe('deleted-notebooks service :: ', () => {
     it('gets all deleted notebooks per user', async () => {
-      const user = driver.createDefaultUser();
+      const user = driver.createUser();
       await driver.userRepo.save(user);
 
-      const deletedNotebook = driver.createDeletedNotebook(defaultUser);
+      const deletedNotebook = driver.createDeletedNotebook(defaultUserId);
       await driver.deletedNotebookRepo.save(deletedNotebook);
 
       const response = await driver.deletedNotebookService.getDeletedNotebooksForUser(
-        defaultUser,
+        defaultUserId,
       );
 
       expect(response).toEqual([

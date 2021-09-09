@@ -55,9 +55,9 @@ export class WebApiDriver {
 
     private configService: ConfigService,
     private conn: Connection,
-    private defaultUser: string,
+    private defaultUserId: string,
   ) {
-    this.mockBuilder = new MockDataBuilder(defaultUser);
+    this.mockBuilder = new MockDataBuilder(defaultUserId);
   }
 
   static async create(defaultUser: string) {
@@ -154,9 +154,9 @@ export class WebApiDriver {
     );
   }
 
-  createDefaultUser(props?: Partial<DbUser> | undefined): DbUser {
+  createUser(props?: Partial<DbUser> | undefined): DbUser {
     const defaultUser = {
-      id: this.defaultUser,
+      id: this.defaultUserId,
       name: 'some name',
       avatar: 'http://test-url.quix',
       rootFolder: 'someId',
@@ -166,45 +166,41 @@ export class WebApiDriver {
     return props ? {...defaultUser, ...props} : defaultUser;
   }
 
-  createNotebook(defaultUser: string, notebookName = 'New notebook') {
+  createNotebook(notebookName = 'New notebook') {
     const notebook = new DbNotebook();
 
     notebook.id = uuid();
-    notebook.owner = defaultUser;
+    notebook.owner = this.defaultUserId;
     notebook.name = notebookName;
 
     return notebook;
   }
 
-  createDeletedNotebook(
-    defaultUser: string,
-    notebookName = 'Deleted notebook',
-  ) {
+  createDeletedNotebook(notebookName = 'Deleted notebook') {
     const deletedNotebook = new DbDeletedNotebook();
 
     deletedNotebook.id = uuid();
-    deletedNotebook.owner = defaultUser;
+    deletedNotebook.owner = this.defaultUserId;
     deletedNotebook.name = notebookName;
     deletedNotebook.dateDeleted = defaultEntityDate;
 
     return deletedNotebook;
   }
 
-  createNotebookNode(defaultUser: string, notebookName: string) {
-    const notebook = this.createNotebook(defaultUser, notebookName);
-
+  createNotebookNode(notebookName: string) {
+    const notebook = this.createNotebook(notebookName);
     const notebookNode = new DbFileTreeNode();
     notebookNode.id = uuid();
-    notebookNode.owner = defaultUser;
+    notebookNode.owner = this.defaultUserId;
     notebookNode.notebookId = notebook.id;
     notebookNode.type = FileType.notebook;
     return [notebookNode, notebook] as const;
   }
 
-  createNote(defaultUser: string, noteName: string, notebookId: string) {
+  createNote(noteName: string, notebookId: string) {
     const note = new DbNote({
       id: uuid(),
-      owner: defaultUser,
+      owner: this.defaultUserId,
       name: noteName,
       textContent: '',
       jsonContent: undefined,
@@ -217,14 +213,14 @@ export class WebApiDriver {
     return note;
   }
 
-  createFolderNode(defaultUser: string, folderName: string) {
+  createFolderNode(folderName: string) {
     const folderNode = new DbFileTreeNode();
     folderNode.id = uuid();
-    folderNode.owner = defaultUser;
+    folderNode.owner = this.defaultUserId;
     folderNode.folder = Object.assign(new DbFolder(), {
       id: folderNode.id,
       name: folderName,
-      owner: defaultUser,
+      owner: this.defaultUserId,
     });
     return folderNode;
   }
