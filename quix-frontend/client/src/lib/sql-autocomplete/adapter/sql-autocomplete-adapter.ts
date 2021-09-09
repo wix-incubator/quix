@@ -45,9 +45,7 @@ export class SqlAutocompleter implements IAutocompleter {
    * @return {ICompleterItem[]}
    */
   private getQueryContextTables(tables: TableInfo[]) {
-    return tables
-      .map((table) => table.name)
-      .map((completer) => this.createCompleterItem(completer, 'table'));
+    return tables.map(table => this.createCompleterItem(table.name, 'table'));
   }
 
   /**
