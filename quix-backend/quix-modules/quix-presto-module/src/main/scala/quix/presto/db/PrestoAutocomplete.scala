@@ -1,11 +1,11 @@
 package quix.presto.db
 
 import monix.eval.Task
-import quix.api.v1.db.{Autocomplete, Catalog}
+import quix.api.v1.db.{Autocomplete, Catalog, Catalogs}
 import quix.api.v2.execute.Executor
 import quix.core.executions.SingleQueryExecutor
 
-class PrestoAutocomplete(val catalogs: PrestoCatalogs,
+class PrestoAutocomplete(val catalogs: Catalogs,
                          val queryExecutor: Executor)
   extends Autocomplete with SingleQueryExecutor {
 
