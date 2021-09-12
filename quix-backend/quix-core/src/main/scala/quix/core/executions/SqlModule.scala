@@ -90,11 +90,18 @@ class SqlModule(val executor: Executor,
           .map(pair => s""""${pair._1}" : "${pair._2}"""")
           .mkString("[", ",", "]")
 
-        val logOnStart = builder.log(query.id, s"Started iteration ${index + 1} out of ${subQueries.size} with params $params")
-        val logOnEnd = builder.log(query.id, s"Finished iteration ${index + 1} out of ${subQueries.size} with params $params")
+        val logOnStart = Task(builder.lastError).flatMap {
+          case None => builder.log(query.id, s"Started iteration ${index + 1} out of ${subQueries.size} with params $params")
+          case _ => Task.unit
+        }
+
+        val logOnEnd = Task(builder.lastError).flatMap {
+          case Some(error) => builder.log(query.id, s"Failed iteration ${index + 1} with [${error.getMessage}] during iteration ${index + 1} out of ${subQueries.size} with params $params")
+          case None => builder.log(query.id, s"Finished iteration ${index + 1} out of ${subQueries.size} with params $params")
+        }
 
         logOnStart *> createExecution(builder, queries) *> logOnEnd *> Task.unit
-      }
+      }.attempt
     } *> Task.unit
   }
 

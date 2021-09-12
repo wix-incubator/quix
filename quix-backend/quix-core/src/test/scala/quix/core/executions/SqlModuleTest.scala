@@ -38,7 +38,7 @@ class SqlModuleTest extends SpecWithJUnit with MustMatchers {
       consumer.payloads must contain(End("id"))
     }
 
-    "support run looper" in new ctx {
+    "support loop runner" in new ctx {
       val command = loop(StartCommand[String]("select '$START_TIME' as start, '$STOP_TIME' as stop", Map.empty))
 
       module.start(command, "id", user, builder).runSyncUnsafe()
@@ -56,6 +56,25 @@ class SqlModuleTest extends SpecWithJUnit with MustMatchers {
         "select '2020-01-04 01:00:00' as start, '2020-01-05 01:00:00' as stop",
         "select '2020-01-05 01:00:00' as start, '2020-01-06 01:00:00' as stop",
         "select '2020-01-06 01:00:00' as start, '2020-01-07 01:00:00' as stop",
+      )
+    }
+
+    "fail fast during loop runner execution" in new ctx {
+      executor.failOnExecutionNumber(2)
+
+      val command = loop(StartCommand[String]("select '$START_TIME' as start, '$STOP_TIME' as stop", Map.empty))
+
+      module.start(command, "id", user, builder).runSyncUnsafe()
+
+      consumer.payloads must contain(Log("id", """Started iteration 1 out of 6 with params ["$START_TIME" : "2020-01-01 01:00:00","$STOP_TIME" : "2020-01-02 01:00:00"]""", "INFO"))
+      consumer.payloads must contain(Log("id", """Finished iteration 1 out of 6 with params ["$START_TIME" : "2020-01-01 01:00:00","$STOP_TIME" : "2020-01-02 01:00:00"]""", "INFO"))
+      consumer.payloads must contain(Log("id", """Started iteration 2 out of 6 with params ["$START_TIME" : "2020-01-02 01:00:00","$STOP_TIME" : "2020-01-03 01:00:00"]""", "INFO"))
+      consumer.payloads must not contain Log("id", """Finished iteration 2 out of 6 with params ["$START_TIME" : "2020-01-02 01:00:00","$STOP_TIME" : "2020-01-03 01:00:00"]""", "INFO")
+      consumer.payloads must contain(Log("id", """Failed iteration 2 with [execution 2 should fail] during iteration 2 out of 6 with params ["$START_TIME" : "2020-01-02 01:00:00","$STOP_TIME" : "2020-01-03 01:00:00"]""", "INFO"))
+
+      executor.queries must_=== List(
+        "select '2020-01-01 01:00:00' as start, '2020-01-02 01:00:00' as stop",
+        "select '2020-01-02 01:00:00' as start, '2020-01-03 01:00:00' as stop"
       )
     }
   }
