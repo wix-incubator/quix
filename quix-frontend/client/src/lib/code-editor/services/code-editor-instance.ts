@@ -33,6 +33,12 @@ export default class CodeEditorInstance extends srv.eventEmitter.EventEmitter {
     return this;
   }
 
+  setLiveAutocompletion(value: boolean) {
+    this.editor.setLiveAutocompletion(value);
+    
+    return this;
+  }
+
   addShortcut(winShortcut: string, macShortcut: string, fn: Function, scope): CodeEditorInstance {
     this.editor.getShortcuts().addShortcut(winShortcut, macShortcut, fn, scope);
 
