@@ -36,7 +36,7 @@ export default (app: App, store: Store) => () => ({
   link: {
     async pre(scope: IScope) {
       const plugin = pluginManager.module('note').plugin(scope.note.type);
-    
+ 
       const conf = initNgScope(scope)
         .withOptions(
           'quixNoteOptions',

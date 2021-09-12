@@ -15,6 +15,7 @@ export const hooks = {
     config: {
       editor: {
         autoParams: new SyncWaterfallHook(['app', 'store']),
+        autocompleteDbFetchers: new SyncWaterfallHook(['app', 'store', 'engine']),
       }
     }
   },

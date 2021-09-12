@@ -89,6 +89,7 @@ export class NotePlugin extends Plugin {
         on-runner-destroyed="events.onRunnerDestroyed(runner)"
         on-params-share="events.onParamsShare(params)"
         readonly="readonly"
+        autocomplete-db-fetchers="autocompleteDbFetchers"
       >
         <controls>
           <quix-npc></quix-npc>
