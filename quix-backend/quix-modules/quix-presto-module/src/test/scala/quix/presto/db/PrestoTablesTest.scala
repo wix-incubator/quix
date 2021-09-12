@@ -12,7 +12,8 @@ class PrestoTablesTest extends SpecWithJUnit with MustMatchers {
   class ctx extends Scope {
     val executor = new TestQueryExecutor
 
-    val tables = new PrestoTables(executor, 1000)
+    val tables = new PrestoTables(executor, 1000,
+      Map(RichTable("catalog", "schema", "table") -> RichTable("sunduk", "tbl", "reg_users")))
   }
 
   "PrestoTables" should {
@@ -20,6 +21,15 @@ class PrestoTablesTest extends SpecWithJUnit with MustMatchers {
       executor.withResults(List(List("uuid", "varchar")))
 
       val table = tables.get("sunduk", "tbl", "reg_users").runSyncUnsafe()
+
+      table.name must_=== "reg_users"
+      table.children must contain(Kolumn("uuid", "varchar"))
+    }
+
+    "rewrite table result for remapped tables" in new ctx {
+      executor.withResults(List(List("uuid", "varchar")))
+
+      val table = tables.get("catalog", "schema", "table").runSyncUnsafe()
 
       table.name must_=== "reg_users"
       table.children must contain(Kolumn("uuid", "varchar"))

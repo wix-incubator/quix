@@ -12,7 +12,9 @@ class PrestoCatalogsTest extends SpecWithJUnit with MustMatchers {
   class ctx extends Scope {
     val executor = new TestQueryExecutor
 
-    val catalogs = new PrestoCatalogs(executor, Set("hidden-catalog"))
+    val catalogs = new PrestoCatalogs(executor, Set("hidden-catalog"), Map(
+      RichTable("catalog", "schema", "table") -> RichTable("test-catalog", "test-schema", "test-table")
+    ))
 
     def fastCatalogs = {
       catalogs.fast.runSyncUnsafe()

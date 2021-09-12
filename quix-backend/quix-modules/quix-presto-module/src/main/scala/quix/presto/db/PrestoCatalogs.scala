@@ -5,8 +5,11 @@ import quix.api.v1.db.{Catalog, Catalogs, Schema, Table}
 import quix.api.v2.execute.Executor
 import quix.core.executions.SingleQueryExecutor
 
+case class RichTable(catalog: String, schema: String, name: String)
+
 class PrestoCatalogs(val queryExecutor: Executor,
-                     val hiddenCatalogs: Set[String] = Set.empty)
+                     val hiddenCatalogs: Set[String] = Set.empty,
+                     val remappedTables: Map[RichTable, RichTable] = Map.empty)
   extends Catalogs with SingleQueryExecutor {
 
   override def fast: Task[List[Catalog]] = getCatalogNamesOnly
@@ -15,8 +18,6 @@ class PrestoCatalogs(val queryExecutor: Executor,
     inferCatalogsOneByOne
       .onErrorFallbackTo(getCatalogNamesOnly)
       .onErrorFallbackTo(Task.now(Nil))
-
-  case class RichTable(catalog: String, schema: String, name: String)
 
   private def inferCatalogsOneByOne = {
     for {
@@ -73,7 +74,7 @@ class PrestoCatalogs(val queryExecutor: Executor,
     for {
       tables <- executeFor(sql, mapper)
     } yield {
-      val schemas = tables.groupBy(_.schema).map {
+      val schemas = (tables ++ remappedTables.values).distinct.groupBy(_.schema).map {
         case (schema, schemaTables) =>
           val tables = schemaTables.map(table => Table(table.name, List()))
           Schema(schema, tables.sortBy(_.name))
@@ -128,7 +129,13 @@ class PrestoCatalogs(val queryExecutor: Executor,
     for {
       tables <- executeForSingleColumn(sql)
     } yield {
-      tables.sorted.map(name => Table(name, List.empty))
+
+      val relevantRemappedTables = remappedTables.values
+        .filter(table => table.catalog == catalogName && table.schema == schemaName)
+        .map(_.name)
+        .toList
+
+      (tables ++ relevantRemappedTables).distinct.sorted.map(name => Table(name, List.empty))
     }
   }
 }

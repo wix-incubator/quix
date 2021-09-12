@@ -7,10 +7,19 @@ import quix.core.executions.SingleQueryExecutor
 
 import scala.concurrent.duration._
 
-class PrestoTables(val queryExecutor: Executor, val timeout: Long)
+class PrestoTables(val queryExecutor: Executor,
+                   val timeout: Long,
+                   val remappedTables: Map[RichTable, RichTable] = Map.empty)
   extends Tables with SingleQueryExecutor {
 
-  override def get(catalog: String, schema: String, table: String): Task[Table] = {
+  override def get(catalogName: String, schemaName: String, tableName: String): Task[Table] = {
+    val richTable = RichTable(catalogName, schemaName, tableName)
+    val table = remappedTables.getOrElse(richTable, richTable)
+
+    get0(table.catalog, table.schema, table.name)
+  }
+
+  def get0(catalog: String, schema: String, table: String): Task[Table] = {
     val sql =
       s"""select column_name, type_name
          |from system.jdbc.columns
