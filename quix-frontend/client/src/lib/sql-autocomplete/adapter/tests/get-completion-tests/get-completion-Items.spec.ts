@@ -1,98 +1,98 @@
 import { testInputQueryContext } from './test-inputs/input-query-context';
 import { expectedResult } from './expected-results';
-import { runAdapterGetCompleters } from '../test-utils/tests-utils';
+import { runAdapterGetCompletersTest } from '../test-utils/tests-utils';
 import { ContextType } from '../../../sql-context-evaluator/types';
 
 describe('when reciving queryContext', () => {
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     1,
     testInputQueryContext[ContextType.Column].empty,
     expectedResult.empty
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     2,
     testInputQueryContext[ContextType.Column].nestedTable,
     expectedResult.twoColumns
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     3,
     testInputQueryContext[ContextType.Column].nestedTableWithAlias,
     expectedResult.twoColumnsWithAlias
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     4,
     testInputQueryContext[ContextType.Column].withTable,
     expectedResult.twoColumnsWithName
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     5,
     testInputQueryContext[ContextType.Column]
       .twoTables1Nested1NestedWithAliasSameColumns,
     expectedResult.twoColumnsWithAliasAfter
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     6,
     testInputQueryContext[ContextType.Column]
       .twoTables1NestedWithAlias1NestedWithAlias2SameColumns,
     expectedResult.twoColumnsWithTwoAliases
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     7,
     testInputQueryContext[ContextType.Column]
       .twoTables1NestedWithAlias1NestedWithAlias2,
     expectedResult.fourColumnsWithTwoAliases
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     8,
     testInputQueryContext[ContextType.Column].twoTables1Nested1NestedWithAlias,
     expectedResult.fourColumnsWith1Alias
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     9,
     testInputQueryContext[ContextType.Column].twoTables1Nested1WtSameColumns,
     expectedResult.twoColumnsWithNameAfter
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     10,
     testInputQueryContext[ContextType.Column].twoTables1Nested1Wt,
     expectedResult.fourColumnsWith1Name
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     11,
     testInputQueryContext[ContextType.Column]
       .twoTables1Wt1WithAlias1NestedSameColumns,
     expectedResult.twoColumnsWithNameAndAlias
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     12,
     testInputQueryContext[ContextType.Column].twoTables1Wt1NestedWithAlias,
     expectedResult.fourColumnsWithNameAndAlias
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     13,
     testInputQueryContext[ContextType.Column]
       .threeTables1WtWith2Columns2NestedWith2Columns,
     expectedResult.sixColumnsWithName1
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     14,
     testInputQueryContext[ContextType.Column]
       .threeTables1WtWith2Columns121NestedWithColumns341NestedWithColumns34AndAlias,
     expectedResult.sixColumnsWithNameAndAlias
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     15,
     testInputQueryContext[ContextType.Column]
       .threeTables1WtWith2Columns121NestedWithColumns34Alias1NestedWithColumns34Alias2,
     expectedResult.sixColumnsWithNameAnd2Alias
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     16,
     testInputQueryContext[ContextType.Column]
       .threeTables1Ext1WtColumns121Wt2Refs,
     expectedResult.tableRefsColumnsAndExtColumns
   );
-  runAdapterGetCompleters(
+  runAdapterGetCompletersTest(
     17,
     testInputQueryContext[ContextType.Column]
       .threeTables2Ext1Wt1Refs2Columns,
