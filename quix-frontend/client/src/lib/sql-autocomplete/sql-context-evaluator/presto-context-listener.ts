@@ -1,8 +1,7 @@
-import prestoLanguage from '../../language-parsers/presto-grammar';
+import { SqlBaseListener } from '../../language-parsers/presto-grammar';
 import { ContextType } from './types';
 
-export class PrestoContextListener extends prestoLanguage.SqlBaseListener
-  .SqlBaseListener {
+export class PrestoContextListener extends SqlBaseListener.SqlBaseListener {
   private identifier: string;
   private nodeFound: any;
   private contextType: ContextType;

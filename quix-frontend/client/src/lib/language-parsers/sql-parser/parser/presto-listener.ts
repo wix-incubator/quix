@@ -1,7 +1,7 @@
-import prestoLanguage from '../../presto-grammar';
-import {ContextNode, Terminal} from './types';
+import { SqlBaseListener } from '../../presto-grammar';
+import { ContextNode, Terminal } from './types';
 
-export class PrestoListener extends prestoLanguage.SqlBaseListener.SqlBaseListener {
+export class PrestoListener extends SqlBaseListener.SqlBaseListener {
   private readonly strings: Set<string> = new Set();
   private readonly tables: Set<string> = new Set();
   private readonly columns: Set<string> = new Set();
@@ -20,10 +20,10 @@ export class PrestoListener extends prestoLanguage.SqlBaseListener.SqlBaseListen
     const tables = [...this.tables];
     const tableAlias = [...this.tableAlias];
 
-    return {strings, tables, columns, subQueries, tableAlias};
+    return { strings, tables, columns, subQueries, tableAlias };
   }
 
-  enterStringLiteral(ctx: ContextNode & {children: [Terminal]}) {
+  enterStringLiteral(ctx: ContextNode & { children: [Terminal] }) {
     this.strings.add(ctx.children[0].symbol.text);
   }
 
@@ -65,5 +65,4 @@ export class PrestoListener extends prestoLanguage.SqlBaseListener.SqlBaseListen
   enterTypeConstructor(ctx: any) {
     this.strings.add(ctx.STRING().getText());
   }
-
 }
