@@ -23,6 +23,6 @@ class TestExecutor extends Executor with LazyLogging {
     Task(logger.info(s"query : ${query.text}")) *> Task(executedQueries += query) *> result
   }
 
-  def failOnExecutionNumber(executionToFailOn: Int) =
+  def failOnExecutionNumber(executionToFailOn: Int): Unit =
     this.executionToFailOn = executionToFailOn
 }
