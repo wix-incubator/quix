@@ -38,9 +38,9 @@ const useStyles = makeStyles({
   }
 );
 
-const checkIsPlainData = (data) => ['string', 'number', 'undefined'].includes(typeof data);
+const checkIsPlainData = (data) => ['string', 'number'].includes(typeof data);
 
-const getOptionLabelValue = (option, title) => checkIsPlainData(option) ? String(option) : option[title];
+const getOptionLabelValue = (option, title) => option ? checkIsPlainData(option) ? String(option) : option && option[title] : undefined;
 
 const filterEmptyLabelValue = (options) => options.filter(option => option !== '');
 

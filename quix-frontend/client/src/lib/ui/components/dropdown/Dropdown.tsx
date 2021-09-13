@@ -3,7 +3,7 @@ import Popper, {PopperPlacementType} from '@material-ui/core/Popper';
 import { Grow, Paper, ClickAwayListener, MenuList } from '@material-ui/core';
 
 interface IDropdownProps {
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   placement: PopperPlacementType;
 }
 
@@ -47,9 +47,12 @@ export const Dropdown: React.FunctionComponent<IDropdownProps> = ({
 
   return (
     <>
-      <span ref={refElement} onClick={handleClick} className="bi-align">
-        {icon}
-      </span>
+      {
+        icon &&
+          <span ref={refElement} onClick={handleClick} className="bi-align">
+            {icon}
+          </span>
+      }
       <Popper open={open} anchorEl={anchorEl} transition placement={placement}>
         {({ TransitionProps, placement: placementProp }) => (
           <Grow
