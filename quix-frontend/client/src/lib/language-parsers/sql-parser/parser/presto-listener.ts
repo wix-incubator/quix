@@ -1,7 +1,7 @@
 import { SqlBaseListener } from '../../presto-grammar';
 import { ContextNode, Terminal } from './types';
 
-export class PrestoListener extends SqlBaseListener.SqlBaseListener {
+export class PrestoListener extends SqlBaseListener {
   private readonly strings: Set<string> = new Set();
   private readonly tables: Set<string> = new Set();
   private readonly columns: Set<string> = new Set();

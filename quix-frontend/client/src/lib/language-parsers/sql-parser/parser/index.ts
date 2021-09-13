@@ -6,7 +6,7 @@ import { PrestoErrorListener } from './errors-listener';
 
 export const createParser = (input: string): any => {
   const tokens = createTokenizer(input);
-  return new SqlBaseParser.SqlBaseParser(tokens);
+  return new SqlBaseParser(tokens);
 };
 
 export const createPrestoSyntaxTree = (input: string): any => {

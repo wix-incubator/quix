@@ -6,7 +6,7 @@ import { CommonToken } from '../types/index';
 
 export const createTokenizer = (input: string) => {
   const stream = new antlr4.InputStream(input);
-  const lexer = new SqlBaseLexer.SqlBaseLexer(stream);
+  const lexer = new SqlBaseLexer(stream);
   const tokenizer = new antlr4.CommonTokenStream(lexer);
   return tokenizer;
 };
