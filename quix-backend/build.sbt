@@ -23,7 +23,7 @@ lazy val publishSettings = Seq(
 )
 
 lazy val compileOptions = Seq(
-  crossScalaVersions := Seq("2.12.13", "2.13.5"),
+  crossScalaVersions := Seq("2.12.14", "2.13.6"),
 )
 
 lazy val noPublish = Seq(publish := {}, publishLocal := {}, publishArtifact := false)
