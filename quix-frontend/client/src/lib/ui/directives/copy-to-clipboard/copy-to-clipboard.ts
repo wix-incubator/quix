@@ -26,6 +26,7 @@ export default function directive() {
               input.get(0).focus();
               (input.get(0) as any).select();
 
+              // tslint:disable-next-line:deprecation
               document.execCommand('Copy');
 
               showToast({
