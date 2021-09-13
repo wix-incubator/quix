@@ -22,20 +22,67 @@ object DbOps extends LazyLogging {
     }
   }
 
-  def search(catalogs: List[Catalog], query: String): List[Catalog] = {
-    val filtered = catalogs.map { catalog =>
-      val schemas = catalog.children
+  def search(catalogs: List[Catalog], query: String): List[Catalog] = search(catalogs, DbQuery(query))
 
-      val filtered = schemas.map { schema =>
-        val tables = schema.children
-        val filtered = tables.filter(_.name.contains(query))
+  def search(catalogs: List[Catalog], query: DbQuery): List[Catalog] = {
+    val filtered = catalogs.map {
 
-        schema.copy(children = filtered)
-      }.filter(schema => schema.children.nonEmpty || schema.name.contains(query))
+      case catalog if query.matches(catalog.name) =>
+        catalog
 
-      catalog.copy(children = filtered)
-    }.filter(catalog => catalog.children.nonEmpty || catalog.name.contains(query))
+      case catalog =>
+        val schemas = catalog.children
+
+        val filtered = schemas.map {
+          case schema if query.matches(schema.name) =>
+            schema
+
+          case schema =>
+            val tables = schema.children
+            val filtered = tables.filter(table => query.matches(table.name))
+
+            schema.copy(children = filtered)
+        }.filter(schema => schema.children.nonEmpty || query.matches(schema.name))
+
+        catalog.copy(children = filtered)
+    }.filter(catalog => catalog.children.nonEmpty || query.matches(catalog.name))
 
     filtered
   }
+}
+
+trait DbQuery {
+  def matches(name: String): Boolean
+}
+
+object DbQuery {
+  def apply(query: String): DbQuery = {
+    query match {
+
+      case null =>
+        DbQueryFalse
+
+      case query if isExactMatch(query) =>
+        new DbQueryExactMatch(query.substring(1, query.length - 1))
+
+      case _ =>
+        new DbQueryContains(query)
+    }
+  }
+
+  private def isExactMatch(query: String) = {
+    query.startsWith("\"") & query.endsWith("\"") || query.startsWith("'") & query.endsWith("'")
+  }
+}
+
+class DbQueryContains(query: String) extends DbQuery {
+  override def matches(name: String): Boolean = name.contains(query)
+}
+
+class DbQueryExactMatch(query: String) extends DbQuery {
+  override def matches(name: String): Boolean = query == name
+}
+
+object DbQueryFalse extends DbQuery {
+  override def matches(name: String): Boolean = false
 }
