@@ -1,12 +1,12 @@
 import antlr4 from 'antlr4';
-import prestoLanguage from '../../presto-grammar';
+import { SqlBaseParser } from '../../presto-grammar';
 import { createTokenizer } from '../tokenizer/index';
 import { PrestoListener } from './presto-listener';
 import { PrestoErrorListener } from './errors-listener';
 
 export const createParser = (input: string): any => {
   const tokens = createTokenizer(input);
-  return new prestoLanguage.SqlBaseParser.SqlBaseParser(tokens);
+  return new SqlBaseParser(tokens);
 };
 
 export const createPrestoSyntaxTree = (input: string): any => {

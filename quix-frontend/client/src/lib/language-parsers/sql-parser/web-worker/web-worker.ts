@@ -6,7 +6,7 @@ import {
   SqlWorkerFunctionsMap
 } from './types';
 import {getErrorsPrestoSql, parsePrestoSql} from '../parser/index';
-import {TypedWorkerFactory} from '../../web-worker-infra/web-worker';
+import {TypedWorkerFactory} from '../../../web-worker-infra/web-worker';
 import {formatSql} from '../auto-format';
 
 const functionMap: SqlWorkerFunctionsMap = {
