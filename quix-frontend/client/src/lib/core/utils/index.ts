@@ -140,7 +140,10 @@ export function copyToClipboard(text: string) {
   input.appendTo(window.document.body);
   input.get(0).focus();
   (input.get(0) as any).select();
+
+  // tslint:disable-next-line:deprecation
   document.execCommand('Copy');
+
   input.remove();
 }
 
