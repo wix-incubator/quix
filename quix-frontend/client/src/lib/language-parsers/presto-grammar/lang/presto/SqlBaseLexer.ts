@@ -1,8 +1,11 @@
 // Generated from ./lang/presto/SqlBase.g4 by ANTLR 4.7
 // jshint ignore: start
+
+// @ts-nocheck
+
 import { atn as _atn, dfa, Lexer, PredictionContextCache, Token } from 'antlr4';
 
-var serializedATN = [
+const serializedATN = [
   '\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964',
   '\u0002\u00d5\u0c4e\b\u0001\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004',
   '\u0004\t\u0004\u0004\u0005\t\u0005\u0004\u0006\t\u0006\u0004\u0007\t',
@@ -2054,9 +2057,9 @@ var serializedATN = [
   '\u0c31\u0c3b\u0c46\u0003\u0002\u0003\u0002',
 ].join('');
 
-var atn = new _atn.ATNDeserializer().deserialize(serializedATN);
+const atn = new _atn.ATNDeserializer().deserialize(serializedATN);
 
-var decisionsToDFA = atn.decisionToState.map(function(ds, index) {
+const decisionsToDFA = atn.decisionToState.map(function(ds, index) {
   return new dfa.DFA(ds, index);
 });
 

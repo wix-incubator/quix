@@ -1,10 +1,12 @@
 // Generated from ./lang/presto/SqlBase.g4 by ANTLR 4.7
 // jshint ignore: start
+
+// @ts-nocheck
+
 import { atn as _atn, dfa, PredictionContextCache, Parser, Token, ParserRuleContext, error as _error } from 'antlr4';
 import { SqlBaseListener } from './SqlBaseListener';
 import { SqlBaseVisitor } from './SqlBaseVisitor';
 
-// @ts-ignore
 var grammarFileName = "SqlBase.g4";
 
 var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
@@ -13308,7 +13310,6 @@ SqlBaseParser.prototype.type = function(_p) {
     var _parentctx = this._ctx;
     var _parentState = this.state;
     var localctx = new TypeContext(this, this._ctx, _parentState);
-    // @ts-ignore
     var _prevctx = localctx;
     var _startState = 86;
     this.enterRecursionRule(localctx, 86, SqlBaseParser.RULE_type, _p);
