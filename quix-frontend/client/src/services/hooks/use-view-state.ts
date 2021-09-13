@@ -1,5 +1,14 @@
 import { useState } from 'react';
 
+export interface ViewStateActions<S, D> {
+  get(): S;
+  set(s: S, d?: Partial<D>): void;
+  update(d: Partial<D>): void;
+  is(s: S): boolean;
+  min(s: S): boolean;
+  after(s: S): boolean;
+}
+
 export const useViewState = <S extends string, D>(
   states: S[],
   defaultData: D,
