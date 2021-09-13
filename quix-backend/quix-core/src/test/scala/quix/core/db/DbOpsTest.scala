@@ -90,6 +90,12 @@ class DbOpsTest extends SpecWithJUnit with MustMatchers  {
 
       DbOps.search(List(catalog), "foo") must contain(expected)
     }
+
+    "return complete catalog tree on top-level match" in {
+      val catalog = Catalog("c1", List(Schema("s1", List(Table("t1", Nil), Table("t2", Nil)))))
+
+      DbOps.search(List(catalog), "c1") must contain(catalog)
+    }
   }
 
 }
