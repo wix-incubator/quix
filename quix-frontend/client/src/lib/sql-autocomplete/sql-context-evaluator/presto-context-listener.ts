@@ -1,4 +1,4 @@
-import { SqlBaseListener } from '../../language-parsers/presto-grammar';
+import { SqlBaseListener, SqlBaseParser } from '../../language-parsers/presto-grammar';
 import { ContextType } from './types';
 
 export class PrestoContextListener extends SqlBaseListener {
@@ -29,19 +29,19 @@ export class PrestoContextListener extends SqlBaseListener {
     let querySpecificationNode: any;
 
     while (currentNode && !querySpecificationNode) {
-      switch (currentNode.constructor.name) {
-        case 'QuerySpecificationContext':
+      switch (currentNode.ruleIndex) {
+        case SqlBaseParser.RULE_querySpecification:
           querySpecificationNode = currentNode;
           break;
-        case 'QueryNoWithContext':
+        case SqlBaseParser.RULE_queryNoWith:
           querySpecificationNode = currentNode
             .queryTerm()
             .queryPrimary()
             .querySpecification();
           break;
         default:
+          currentNode = currentNode.parentCtx;
       }
-      currentNode = currentNode.parentCtx;
     }
 
     return querySpecificationNode;
