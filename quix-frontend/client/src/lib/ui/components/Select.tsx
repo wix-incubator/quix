@@ -40,7 +40,7 @@ const useStyles = makeStyles({
 
 const checkIsPlainData = (data) => ['string', 'number'].includes(typeof data);
 
-const getOptionLabelValue = (option, title) => option ? checkIsPlainData(option) ? String(option) : option && option[title] : undefined;
+const getOptionLabelValue = (option, title) => option ? checkIsPlainData(option) ? String(option) : option[title] : '';
 
 const filterEmptyLabelValue = (options) => options.filter(option => option !== '');
 
