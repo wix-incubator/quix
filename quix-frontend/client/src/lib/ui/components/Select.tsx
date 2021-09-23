@@ -76,6 +76,7 @@ interface ISelect {
   primaryLabel?: any,
   placeHolder?: string,
   inputDataHook?: string,
+  onInputChange?(value: string): void,
   liDataHook?: string,
   onOptionChange?(options: any): void;
   Highlighter?: React.ComponentType<HighlighterProps>;
@@ -91,6 +92,7 @@ const Select = ({
   primaryLabel,
   placeHolder = 'Enter your input',
   inputDataHook,
+  onInputChange,
   liDataHook,
   onOptionChange,
   Highlighter,
@@ -160,6 +162,7 @@ const Select = ({
     onClose: () => setOpen(false),
     onOpen: () => setOpen(true),
     getOptionLabel: (option) => getOptionLabelValue(option, title),
+    onInputChange: (e, inputValue) => onInputChange && onInputChange(inputValue),
     filterOptions: (currentOptions, state) => {
       if (state.inputValue !== '' && !isFiltering) {
         setIsFiltering(true);
