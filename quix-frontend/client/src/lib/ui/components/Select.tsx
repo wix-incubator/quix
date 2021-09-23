@@ -193,7 +193,7 @@ const Select = ({
       const newLabelIndex = stateData.options.findIndex(option => _.isEqual(option, newValue));
       const selectedOptionLabel = getOptionLabelValue(selectedOption, title);
       const optionLabel = getOptionLabelValue(stateData.options[newLabelIndex], title);
-      if (selectedOptionLabel !== optionLabel) {
+      if (selectedOptionLabel !== optionLabel || optionLabel === '') {
         if (newLabelIndex === -1 || optionLabel === primaryOptionLabel) {
           setSelectedOption(primaryLabel);
           setValue('');
