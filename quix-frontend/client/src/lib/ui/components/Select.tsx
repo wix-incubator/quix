@@ -62,22 +62,22 @@ const States = [
 ];
 
 interface PlainTypes {
-  options: number[] | string[] | Promise<string[] | number[]>,
-  title?: undefined,
+  options: number[] | string[] | Promise<string[] | number[]>;
+  title?: undefined;
 }
 
 interface ObjectTypes {
   options(): Object;
-  title: string,
+  title: string;
 }
 
 interface ISelect { 
-  defaultLabel?: any,
-  primaryLabel?: any,
+  defaultLabel?: any;
+  primaryLabel?: any;
   placeHolder?: string,
-  inputDataHook?: string,
-  onInputChange?(value: string): void,
-  liDataHook?: string,
+  inputDataHook?: string;
+  onInputChange?(value: string): void;
+  liDataHook?: string;
   onOptionChange?(options: any): void;
   Highlighter?: React.ComponentType<HighlighterProps>;
 }
@@ -116,7 +116,7 @@ const Select = ({
     if (open && viewState.get() !== 'Open' && stateData.options.length === 0 && viewState.get() !== 'Error') {
       viewState.set('Open');
     }
-  },[open]);
+  }, [open, viewState.get()]);
 
   useEffect(() => {
     if (Array.isArray(options)) {
@@ -223,7 +223,7 @@ const Select = ({
       onOptionChange && onOptionChange(selectedOption);
       setIsFiltering(false);
     }
-  },[selectedOption]);
+  }, [selectedOption]);
 
   const inputProps = getInputProps() as {onBlur: Function; value: string};
   return (
