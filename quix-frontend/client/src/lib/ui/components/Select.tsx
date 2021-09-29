@@ -122,7 +122,7 @@ const Select = ({
     if (Array.isArray(options)) {
       viewState.set('Open');
     }
-  }, Array.isArray(options) ? options : []);
+  }, [options]);
 
   useEffect(() => {
     switch (viewState.get()) {
