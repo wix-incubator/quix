@@ -119,6 +119,12 @@ const Select = ({
   },[open]);
 
   useEffect(() => {
+    if (Array.isArray(options)) {
+      viewState.set('Open');
+    }
+  }, Array.isArray(options) ? options : []);
+
+  useEffect(() => {
     switch (viewState.get()) {
       case 'FirstLoad':
         viewState.set('Initial');
