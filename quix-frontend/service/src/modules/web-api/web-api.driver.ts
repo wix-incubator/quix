@@ -29,6 +29,7 @@ import {FavoritesService} from './favorites/favorites.service';
 import {FoldersService} from './folders/folders.service';
 import {NotebookService} from './notebooks/notebooks.service';
 import {WebApiModule} from './web-api.module';
+import {EntityClassOrSchema} from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 
 const defaultEntityDate = new Date('1980-05-21T01:02:03').valueOf();
 export class WebApiDriver {
@@ -89,26 +90,28 @@ export class WebApiDriver {
       exports: [],
     }).compile();
 
-    const notebookRepo = module.get(getRepositoryToken(DbNotebook));
+    const getRepository = (entity: EntityClassOrSchema) =>
+      module.get(getRepositoryToken(entity));
+
+    const notebookRepo = getRepository(DbNotebook);
     const notebookService = module.get(NotebookService);
 
-    const deletedNotebookRepo = module.get(
-      getRepositoryToken(DbDeletedNotebook),
-    );
+    const deletedNotebookRepo = getRepository(DbDeletedNotebook);
+
     const deletedNotebookService = module.get(DeletedNotebooksService);
 
     const favoritesService = module.get(FavoritesService);
-    const favoritesRepo = module.get(getRepositoryToken(DbFavorites));
+    const favoritesRepo = getRepository(DbFavorites);
 
-    const noteRepo = module.get(getRepositoryToken(NoteRepository));
+    const noteRepo = getRepository(NoteRepository);
 
-    const folderRepo = module.get(getRepositoryToken(DbFolder));
+    const folderRepo = getRepository(DbFolder);
     const folderService = module.get(FoldersService);
 
-    const eventsRepo = module.get(getRepositoryToken(DbAction));
-    const fileTreeRepo = module.get(getRepositoryToken(FileTreeRepository));
+    const eventsRepo = getRepository(DbAction);
+    const fileTreeRepo = getRepository(FileTreeRepository);
 
-    const userRepo = module.get(getRepositoryToken(DbUser));
+    const userRepo = getRepository(DbUser);
     const conn = module.get(getConnectionToken());
     const configService = module.get(ConfigService);
 

@@ -26,6 +26,7 @@ class EventBusBuilderT {
   addPlugin(
     plugins: Dictionary<EventBusPlugin> | EventBusPlugin,
   ): EventBusBuilderT;
+
   addPlugin(name: string, registerCB: EventBusPluginFn): EventBusBuilderT;
 
   addPlugin(

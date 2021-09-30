@@ -60,7 +60,7 @@ export class DeletedNotebookPlugin implements EventBusPlugin {
     action: IAction<DeletedNotebookActions>,
     entityManager: EntityManager,
   ) {
-    console.log(action);
+    // console.log(action);
     // console.log(entityManager);
 
     const dbModel =

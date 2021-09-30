@@ -15,6 +15,7 @@ import {IAction} from './infrastructure/types';
 import {UserPlugin} from './plugins/user-plugin';
 import {EventsPlugin} from './plugins/events-plugin';
 import {DeletedNotebookPlugin} from './plugins/deleted-notebook-plugin';
+import {TrashBinPlugin} from './plugins/trash-bin-plugin';
 
 @Injectable()
 export class QuixEventBus<A extends IAction = IAction> {
@@ -30,11 +31,13 @@ export class QuixEventBus<A extends IAction = IAction> {
     @Inject(UserPlugin) private userPlugin: EventBusPlugin,
     @Inject(DeletedNotebookPlugin)
     private deletedNotebookPlugin: EventBusPlugin,
+    @Inject(TrashBinPlugin) private trashBinPlugin: EventBusPlugin,
     @Inject(EventsPlugin) private eventsPlugin: EventBusPlugin,
   ) {
     this.bus = EventBusBuilder()
       .addPlugin(this.notebookPlugin)
       .addPlugin(this.deletedNotebookPlugin)
+      .addPlugin(this.trashBinPlugin)
       .addPlugin(this.notePlugin)
       .addPlugin(this.fileTreePlugin)
       .addPlugin(this.favoritesPlugin)
@@ -62,11 +65,25 @@ export class QuixEventBus<A extends IAction = IAction> {
           .then(() => next())
           .catch(e => next(e));
       })
+      .addMiddleware(async (action, api, next) => {
+        api.hooks
+          .call(QuixHookNames.REACTION, action)
+          .then(async props => {
+            let reactions: any[];
+            [reactions] = props;
+            // TODO type check on reactions?
+            if (reactions && Array.isArray(reactions))
+              await this.emit(reactions);
+
+            next();
+          })
+          .catch(e => next(e));
+      })
       .build();
   }
 
   async emit(action: A | A[]): Promise<void> {
-    // this.logger.log(`got action ${JSON.stringify(action)}`);
+    this.logger.log(`got action ${JSON.stringify(action)}`);
     if (Array.isArray(action)) {
       for (const a of action) {
         await this.bus.emit(a);
@@ -81,4 +98,3 @@ export class QuixEventBus<A extends IAction = IAction> {
     return this;
   }
 }
-

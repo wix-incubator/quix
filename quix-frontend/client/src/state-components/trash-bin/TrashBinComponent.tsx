@@ -9,6 +9,7 @@ export interface TrashBinProps {
   deletedNotebooks: IDeletedNotebook[];
   error: { message: string };
   onPermanentlyDeleteClicked(deletedNotebook: IDeletedNotebook): void;
+  onRestoreClicked(deletedNotebook: IDeletedNotebook, folderId:string)
 }
 
 const States = [
@@ -19,7 +20,13 @@ const States = [
 ];
 
 export const TrashBin = (props: TrashBinProps) => {
-  const { deletedNotebooks: serverDeletedNotebooks, error, onPermanentlyDeleteClicked } = props
+  const { 
+    deletedNotebooks: serverDeletedNotebooks, 
+    error, 
+    onPermanentlyDeleteClicked,
+    onRestoreClicked 
+  } = props;
+
   const [stateData, viewState] = useViewState(States, {
     deletedNotebooks: [],
     size: 0,
@@ -46,8 +53,11 @@ export const TrashBin = (props: TrashBinProps) => {
 
   const renderContentState = () => (
     <Table
-      hookName="favorites"
-      columns={trashBinTableFields(onPermanentlyDeleteClicked).map(field => ({
+      hookName="deleted-notebooks"
+      columns={
+        trashBinTableFields(onPermanentlyDeleteClicked, onRestoreClicked)
+        .map(field => (
+          {
         header: field.title || field.name,
         render: row => field.filter(undefined, row),
         accessor: field.name,

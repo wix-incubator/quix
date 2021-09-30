@@ -24,6 +24,7 @@ import {EventSourcingModule} from './event-sourcing.module';
 import {DbAction} from './infrastructure/action-store/entities/db-action.entity';
 import {QuixEventBus} from './quix-event-bus';
 import {EntityType} from '../../common/entity-type.enum';
+import {EntityClassOrSchema} from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 
 export class QuixEventBusDriver {
   public mockBuilder: MockDataBuilder;
@@ -71,29 +72,24 @@ export class QuixEventBusDriver {
       exports: [],
     }).compile();
 
+    const getRepository = (entity: EntityClassOrSchema) =>
+      module.get(getRepositoryToken(entity));
+
     const eventBus: QuixEventBus = module.get(QuixEventBus);
-    const notebookRepo: Repository<DbNotebook> = module.get(
-      getRepositoryToken(DbNotebook),
-    );
+    const notebookRepo: Repository<DbNotebook> = getRepository(DbNotebook);
 
-    const deletedNotebookRepo: Repository<DbDeletedNotebook> = module.get(
-      getRepositoryToken(DbDeletedNotebook),
-    );
+    const deletedNotebookRepo: Repository<DbDeletedNotebook> =
+      getRepository(DbDeletedNotebook);
 
-    const noteRepo: Repository<DbNote> = module.get(getRepositoryToken(DbNote));
-    const eventsRepo: Repository<DbAction> = module.get(
-      getRepositoryToken(DbAction),
-    );
-    const fileTreeRepo: FileTreeRepository = module.get(
-      getRepositoryToken(FileTreeRepository),
-    );
-    const folderRepo: Repository<DbFolder> = module.get(
-      getRepositoryToken(DbFolder),
-    );
-    const favoritesRepo: Repository<DbFavorites> = module.get(
-      getRepositoryToken(DbFavorites),
-    );
-    const userRepo: Repository<DbUser> = module.get(getRepositoryToken(DbUser));
+    const noteRepo: Repository<DbNote> = getRepository(DbNote);
+    const eventsRepo: Repository<DbAction> = getRepository(DbAction);
+
+    const fileTreeRepo: FileTreeRepository = getRepository(FileTreeRepository);
+
+    const folderRepo: Repository<DbFolder> = getRepository(DbFolder);
+    const favoritesRepo: Repository<DbFavorites> = getRepository(DbFavorites);
+
+    const userRepo: Repository<DbUser> = getRepository(DbUser);
     const conn: Connection = module.get(getConnectionToken());
     const configService: ConfigService = module.get(ConfigService);
 
@@ -125,6 +121,7 @@ export class QuixEventBusDriver {
     await this.clearNotes();
     await this.clearFolders();
     await this.clearNotebooks();
+    await this.clearDeletedNotebooks();
     await this.clearFavorites();
     await this.userRepo.clear();
     await this.conn.query(
@@ -235,12 +232,19 @@ export class QuixEventBusDriver {
   async clearNotebooks() {
     return this.notebookRepo.delete({});
   }
+  async clearDeletedNotebooks() {
+    return this.deletedNotebookRepo.delete({});
+  }
 
   async clearFavorites() {
     return this.favoritesRepo.delete({});
   }
 
-  emitAsUser(eventBus: QuixEventBus, actions: any[], user = this.defaultUserId) {
+  emitAsUser(
+    eventBus: QuixEventBus,
+    actions: any[],
+    user = this.defaultUserId,
+  ) {
     return eventBus.emit(actions.map(a => Object.assign(a, {user})));
   }
 

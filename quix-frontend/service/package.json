@@ -7,6 +7,7 @@
   "scripts": {
     "build:ts": "tsc -b tsconfig.build.json",
     "build": "npm run build:ts && npm run update-statics",
+    "build:run": "npm run build && npm start",
     "start": "DB_HOST=localhost ts-node --files scripts/start.ts",
     "update-statics": "ts-node scripts/update-statics.ts",
     "start:dev": "nodemon",
@@ -19,6 +20,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:debugMysql": "DB_TYPE=mysql node --inspect-brk -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "npm run test:e2e:sqlite && npm run test:e2e:mysql",
     "test:e2e:sqlite": "jest --runInBand --config ./test/jest-e2e.js",
     "test:e2e:mysql": "DB_TYPE=mysql jest --runInBand --config ./test/jest-e2e.js",

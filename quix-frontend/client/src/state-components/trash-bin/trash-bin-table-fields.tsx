@@ -3,7 +3,7 @@ import { IDeletedNotebook } from '@wix/quix-shared';
 import { RowConfig } from '../../lib/ui/components/table/TableRow';
 import classNames from 'classnames';
 
-export const trashBinTableFields = (onPermanentlyDeleteClicked): RowConfig<IDeletedNotebook>[] => [
+export const trashBinTableFields = (onPermanentlyDeleteClicked, onRestoreClicked): RowConfig<IDeletedNotebook>[] => [
   {
     name: 'name',
     title: 'Name',
@@ -16,23 +16,25 @@ export const trashBinTableFields = (onPermanentlyDeleteClicked): RowConfig<IDele
       );
     }
   },
+  //TODO Restore
   {
-    //TODO Redo
-    name: '' as any,
+    
+
+    name: 'Delete' as any,
     title: 'Delete',
     filter(_, deletedNotebook: IDeletedNotebook) {
       return (
-        <div className="bi-justify-right">
+        <div>
           <i
             className={classNames(
               'bi-action',
-              'bi-icon--sm'
+              'bi-icon'
             )}
             onClick={e => {
               e.stopPropagation();
               onPermanentlyDeleteClicked(deletedNotebook);
             }}
-          >
+          >delete
           </i>
         </div>
       );

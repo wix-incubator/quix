@@ -24,6 +24,7 @@ import {UserPlugin} from './plugins/user-plugin';
 import {NotebookRepository} from '../../entities/notebook/notebook.repository';
 import {EventsService} from './events.service';
 import {EventsPlugin} from './plugins/events-plugin';
+import {TrashBinPlugin} from './plugins/trash-bin-plugin';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import {EventsPlugin} from './plugins/events-plugin';
     NotePlugin,
     NotebookPlugin,
     DeletedNotebookPlugin,
+    TrashBinPlugin,
     FileTreePlugin,
     FavoritesPlugin,
     UserPlugin,
