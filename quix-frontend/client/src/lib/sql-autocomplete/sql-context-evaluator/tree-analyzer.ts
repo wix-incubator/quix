@@ -1,7 +1,9 @@
 import { QueryDetails, TableInfo, TableType } from './types';
 import { createNewTableInfoObj } from './utils';
 
-export const getTableInfoFromRelationNode = (relationNode: any): TableInfo[] => {
+export const getTableInfoFromRelationNode = (
+  relationNode: any
+): TableInfo[] => {
   if (relationNode.relation) {
     // when use 'JOIN' keyword -> analyze all relations
     return relationNode
@@ -48,7 +50,7 @@ export const getQueryDetailsFromQuerySpecificationNode = (
   querySpecificationNode
     ?.selectItem()
     .forEach((selectItem: any) =>
-      selectItem.constructor.name === 'SelectAllContext'
+      selectItem.ASTERISK
         ? (selectAll = true)
         : columns.push(
             selectItem.identifier()
@@ -59,7 +61,9 @@ export const getQueryDetailsFromQuerySpecificationNode = (
 
   querySpecificationNode
     ?.relation()
-    .forEach((relation: any) => tables.push(...getTableInfoFromRelationNode(relation)));
+    .forEach((relation: any) =>
+      tables.push(...getTableInfoFromRelationNode(relation))
+    );
 
   return { tables, columns, selectAll };
 };
