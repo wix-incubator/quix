@@ -54,7 +54,7 @@ export const getQueryDetailsFromQuerySpecificationNode = (
         ? (selectAll = true)
         : columns.push(
             selectItem.identifier()
-              ? selectItem.identifier()?.getText()
+              ? selectItem.identifier().getText()
               : selectItem.getText()
           )
     );

@@ -2,7 +2,11 @@ import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
-import { createMatchMask, makeCompletionItem } from './autocomplete-utils';
+import {
+  createMatchMask,
+  getQueryAndCursorPositionFromEditor,
+  makeCompletionItem,
+} from './autocomplete-utils';
 import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
 import {
   evaluateContextFromPosition,
@@ -68,22 +72,10 @@ export async function setupCompleters(
   editorInstance.addOnDemandCompleter(
     /[\w.]+/,
     ((prefix: string, session: IEditSession) => {
-      
-      let rawQuery = session
-        .getDocument()
-        .getAllLines()
-        .join('\n');
-      const rawPosition = session
-        .getDocument()
-        .positionToIndex(session.selection.getCursor(), 0);
-
-      rawQuery =
-        rawQuery.slice(0, rawPosition) + '@REPLACE_ME@' + rawQuery.slice(rawPosition);
-
-      rawQuery = editorInstance.getParams().format(rawQuery);
-      const position = rawQuery.indexOf('@REPLACE_ME@');
-      const query = rawQuery.replace('@REPLACE_ME@', '');
-
+      const { query, position } = getQueryAndCursorPositionFromEditor(
+        editorInstance,
+        session
+      );
       const queryContext: QueryContext = evaluateContextFromPosition(
         query,
         position
