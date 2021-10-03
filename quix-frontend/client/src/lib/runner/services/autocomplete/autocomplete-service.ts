@@ -59,22 +59,30 @@ export async function setupCompleters(
 
   // dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
   const sqlAutocompleter = new SqlAutocompleter(dbInfoService);
-  
+
   editorInstance.setLiveAutocompletion(true);
-  
+
   const keywords = getKeywordsCompletions();
   const snippets = getSnippetsCompletions();
 
   editorInstance.addOnDemandCompleter(
     /[\w.]+/,
     ((prefix: string, session: IEditSession) => {
-      const query = session
+      
+      let rawQuery = session
         .getDocument()
         .getAllLines()
         .join('\n');
-      const position = session
+      const rawPosition = session
         .getDocument()
         .positionToIndex(session.selection.getCursor(), 0);
+
+      rawQuery =
+        rawQuery.slice(0, rawPosition) + '@REPLACE_ME@' + rawQuery.slice(rawPosition);
+
+      rawQuery = editorInstance.getParams().format(rawQuery);
+      const position = rawQuery.indexOf('@REPLACE_ME@');
+      const query = rawQuery.replace('@REPLACE_ME@', '');
 
       const queryContext: QueryContext = evaluateContextFromPosition(
         query,
