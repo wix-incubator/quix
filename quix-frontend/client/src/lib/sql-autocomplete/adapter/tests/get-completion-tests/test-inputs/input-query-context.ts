@@ -109,17 +109,17 @@ export const testInputQueryContext: BasicQueryContextOption = {
       [
         testTable.withTable.namedWith2TblRefs,
         testTable.withTable.namedWith2Columns12,
-        testTable.external.ext
-    ]),
+        testTable.external.ext,
+      ]
+    ),
     threeTables2Ext1Wt1Refs2Columns: createQueryContextObject(
       ContextType.Column,
       [
         testTable.withTable.named2With1TblRef1And2Columns12,
         testTable.external.ext,
-        testTable.external.extWithAlias
-    ]),
+        testTable.external.extWithAlias,
+      ]
+    ),
   },
-  [ContextType.Table]: {
-
-  }
-}
+  [ContextType.Table]: {},
+};

@@ -45,7 +45,7 @@ export class SqlAutocompleter implements IAutocompleter {
    * @return {ICompleterItem[]}
    */
   private getQueryContextTables(tables: TableInfo[]) {
-    return tables.map(table => this.createCompleterItem(table.name, 'table'));
+    return tables.map((table) => this.createCompleterItem(table.name, 'table'));
   }
 
   /**
@@ -58,16 +58,21 @@ export class SqlAutocompleter implements IAutocompleter {
     for (const table of tables) {
       const { name, alias, columns } = await this.extractTableColumns(table);
       columns.forEach((column) => {
+        column = column.split('.').pop();
         completersMemory.add(column);
-        const completerName: string = alias
-          ? `${alias}.${column}`
-          : name
-          ? `${name}.${column}`
-          : undefined;
-        if (completerName) {
-          completersMemory.add(completerName);
-        }
       });
+      if (tables.length > 1) {
+        columns.forEach((column) => {
+          const completerName: string = alias
+            ? `${alias}.${column}`
+            : name
+            ? `${name}.${column}`
+            : undefined;
+          if (completerName) {
+            completersMemory.add(completerName);
+          }
+        });
+      }
     }
     return [...completersMemory].map((completer) =>
       this.createCompleterItem(completer, 'column')
