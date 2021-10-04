@@ -1,25 +1,45 @@
-import { Catalog, Column, IDbInfoConfig, Schema, Table } from "../../../db-info/types";
+import {
+  Catalog,
+  Column,
+  IDbInfoConfig,
+  Schema,
+  Table,
+} from '../../../db-info/types';
 
 export class MockDbInfoService implements IDbInfoConfig {
-  
   public async getColumnsByTable(
     catalog: string,
     schema: string,
     table: string
   ) {
-    return [this.createColumn(`col1_of_${table}`), this.createColumn(`col2_of_${table}`)];
+    return [
+      this.createColumn(`col1_of_${table}`),
+      this.createColumn(`col2_of_${table}`),
+    ];
   }
 
   public async getTablesBySchema(catalog: string, schema: string) {
-    return [this.createTable(`tbl1_of_${schema}`), this.createTable(`tbl2_of_${schema}`)];
+    return [
+      this.createTable(`tbl1_of_${schema}`),
+      this.createTable(`tbl2_of_${schema}`),
+    ];
   }
 
   public async getSchemasByCatalog(catalog: string) {
-    return [this.createSchema(`schm1_of_${catalog}`), this.createSchema(`schm2_of_${catalog}`)]
+    return [
+      this.createSchema(`schm1_of_${catalog}`),
+      this.createSchema(`schm2_of_${catalog}`),
+    ];
   }
-  public async getCatalogs(){
-    return [this.createCatalog('catalog1')]
+
+  public async getCatalogs() {
+    return [this.createCatalog('catalog1')];
   }
+
+  public async search(type: string, prefix: string) {
+    return [];
+  }
+
   private createColumn = (name: string): Column => {
     return { name: name, type: 'column', dataType: 'varchar' } as Column;
   };
@@ -40,11 +60,11 @@ export class MockDbInfoService implements IDbInfoConfig {
     };
   };
 
-  private createCatalog = (name:string): Catalog => {
+  private createCatalog = (name: string): Catalog => {
     return {
       name: name,
       type: 'catalog',
-      children: [this.createSchema('schm1')]
-    }
-  }
+      children: [this.createSchema('schm1')],
+    };
+  };
 }

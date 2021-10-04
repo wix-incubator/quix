@@ -1,10 +1,4 @@
-import {
-  Catalog,
-  Column,
-  IDbInfoConfig,
-  Schema,
-  Table,
-} from './types';
+import { Catalog, Column, IDbInfoConfig, Schema, Table } from './types';
 import axios from 'axios';
 
 export class DbInfoService implements IDbInfoConfig {
@@ -73,5 +67,11 @@ export class DbInfoService implements IDbInfoConfig {
     }));
 
     return this.tables[query];
+  };
+
+  search = async (type: string, prefix: string): Promise<Catalog[]> => {
+    return axios
+      .get(`${this.apiBasePath}/api/db/${type}/search?q=${prefix}`)
+      .then((response) => response.data);
   };
 }

@@ -11,9 +11,13 @@ import { BaseEntity } from '../db-info/types';
 
 export class SqlAutocompleter implements IAutocompleter {
   private readonly config: IDbInfoConfig;
+  private prefix: string;
+  private lastCompleters: ICompleterItem[];
 
   constructor(config: IDbInfoConfig) {
     this.config = config;
+    this.prefix = '';
+    this.lastCompleters = [];
   }
 
   // methods
@@ -30,10 +34,18 @@ export class SqlAutocompleter implements IAutocompleter {
         return this.getQueryContextColumns(tables);
       case ContextType.Table:
         const tablesCompleters = this.getQueryContextTables(tables);
-        const dbEntitiesCompleters = await this.getEntitiesCompletersFromDbBasedOnPrefix(
-          prefix
-        );
-        return [...tablesCompleters, ...dbEntitiesCompleters];
+        if (prefix !== this.prefix) {
+          const [dbEntitiesCompleters, dbCompleters] = await Promise.all([
+            this.getEntitiesCompletersFromDbBasedOnPrefix(prefix),
+            this.searchEntitiesFromDb('trino', prefix),
+          ]);
+          this.lastCompleters = [
+            ...dbEntitiesCompleters,
+            ...dbCompleters,
+          ];
+        }
+        this.prefix = prefix;
+        return [...this.lastCompleters, ...tablesCompleters];
       default:
         return [];
     }
@@ -128,12 +140,33 @@ export class SqlAutocompleter implements IAutocompleter {
       default:
         entities = [];
     }
-
     return entities.map((entity) =>
       this.createCompleterItem(
         entity.type !== 'catalog' ? `${prefix}.${entity.name}` : entity.name,
         entity.type
       )
+    );
+  }
+
+  private async searchEntitiesFromDb(
+    type: string,
+    prefix: string
+  ): Promise<ICompleterItem[]> {
+    const response = await this.config.search(type, prefix);
+    let entityType: string;
+    const completers: Set<string> = new Set();
+    response.forEach((ctlg) => {
+      const ctlgName = ctlg.name;
+      ctlg.children.forEach((schm) => {
+        const schmName = schm.name;
+        schm.children.forEach((tbl) => {
+          entityType = tbl.type;
+          completers.add(`${ctlgName}.${schmName}.${tbl.name}`);
+        });
+      });
+    });
+    return [...completers].map((completer) =>
+      this.createCompleterItem(completer, entityType)
     );
   }
 }

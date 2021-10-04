@@ -97,4 +97,9 @@ describe('when reciving queryContext', () => {
     testInputQueryContext[ContextType.Column].threeTables2Ext1Wt1Refs2Columns,
     expectedResult.threeTbl1Wtwithcolumns12AndTblRef1Ext1ExtwithAlias
   );
+  runAdapterGetCompletersTest(
+    18,
+    testInputQueryContext[ContextType.Column].withTableWithInnerTables,
+    expectedResult.twoColumnsWithName
+  );
 });
