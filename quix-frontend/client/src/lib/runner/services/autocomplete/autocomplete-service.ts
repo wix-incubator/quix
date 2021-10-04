@@ -2,7 +2,11 @@ import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
-import { createMatchMask, makeCompletionItem } from './autocomplete-utils';
+import {
+  createMatchMask,
+  getQueryAndCursorPositionFromEditor,
+  makeCompletionItem,
+} from './autocomplete-utils';
 import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
 import {
   evaluateContextFromPosition,
@@ -59,23 +63,19 @@ export async function setupCompleters(
 
   // dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
   const sqlAutocompleter = new SqlAutocompleter(dbInfoService);
-  
+
   editorInstance.setLiveAutocompletion(true);
-  
+
   const keywords = getKeywordsCompletions();
   const snippets = getSnippetsCompletions();
 
   editorInstance.addOnDemandCompleter(
     /[\w.]+/,
     ((prefix: string, session: IEditSession) => {
-      const query = session
-        .getDocument()
-        .getAllLines()
-        .join('\n');
-      const position = session
-        .getDocument()
-        .positionToIndex(session.selection.getCursor(), 0);
-
+      const { query, position } = getQueryAndCursorPositionFromEditor(
+        editorInstance,
+        session
+      );
       const queryContext: QueryContext = evaluateContextFromPosition(
         query,
         position
