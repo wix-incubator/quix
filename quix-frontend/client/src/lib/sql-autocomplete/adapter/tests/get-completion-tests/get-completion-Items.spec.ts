@@ -94,8 +94,7 @@ describe('when reciving queryContext', () => {
   );
   runAdapterGetCompletersTest(
     17,
-    testInputQueryContext[ContextType.Column]
-      .threeTables2Ext1Wt1Refs2Columns,
+    testInputQueryContext[ContextType.Column].threeTables2Ext1Wt1Refs2Columns,
     expectedResult.threeTbl1Wtwithcolumns12AndTblRef1Ext1ExtwithAlias
   );
 });
