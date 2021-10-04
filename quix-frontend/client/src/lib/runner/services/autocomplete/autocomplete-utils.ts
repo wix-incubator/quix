@@ -1,5 +1,7 @@
 /* tslint:disable:no-bitwise */
 
+import { IEditSession } from 'brace';
+import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem } from '../../../code-editor/services/code-editor-completer';
 
 /**
@@ -37,4 +39,27 @@ export const makeCompletionItem = (
     ...(matchMask ? { matchMask } : {}),
   };
   return completer;
+};
+
+export const getQueryAndCursorPositionFromEditor = (
+  editorInstance: CodeEditorInstance,
+  session: IEditSession
+) => {
+  let query: string = session
+    .getDocument()
+    .getAllLines()
+    .join('\n');
+  let position: number = session
+    .getDocument()
+    .positionToIndex(session.selection.getCursor(), 0);
+
+  if (editorInstance.getParams().hasParams()) {
+    const tempQuery =
+      query.slice(0, position) + '@REPLACE_ME@' + query.slice(position);
+    query = editorInstance.getParams().format(tempQuery);
+    position = query.indexOf('@REPLACE_ME@');
+    query = query.replace('@REPLACE_ME@', '');
+  }
+
+  return { query, position };
 };
