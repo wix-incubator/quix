@@ -7,7 +7,7 @@ import {
   TableType,
 } from '../sql-context-evaluator';
 import { IDbInfoConfig } from '../db-info';
-import { BaseEntity } from '../db-info/types';
+import { BaseEntity, Column } from '../db-info/types';
 
 export class SqlAutocompleter implements IAutocompleter {
   private readonly config: IDbInfoConfig;
@@ -63,12 +63,19 @@ export class SqlAutocompleter implements IAutocompleter {
   /**
    * Extract the columns from the queryContext
    * @param {TableInfo[]} tables
-   * @return {ICompleterItem[]}
+   * @return {Promise<ICompleterItem[]>}
    */
   private async getQueryContextColumns(tables: TableInfo[]) {
     const completersMemory: Set<string> = new Set();
+    const tablesPromises: Promise<TableInfo>[] = [];
+
     for (const table of tables) {
-      const { name, alias, columns } = await this.extractTableColumns(table);
+      tablesPromises.push(this.extractTableColumns(table));
+    }
+    const extractedTables = await Promise.all(tablesPromises);
+
+    for (const extractedTable of extractedTables) {
+      const { name, alias, columns } = extractedTable;
       columns.forEach((column) => {
         column = column.split('.').pop();
         completersMemory.add(column);
@@ -86,6 +93,7 @@ export class SqlAutocompleter implements IAutocompleter {
         });
       }
     }
+
     return [...completersMemory].map((completer) =>
       this.createCompleterItem(completer, 'column')
     );
@@ -94,23 +102,27 @@ export class SqlAutocompleter implements IAutocompleter {
   /**
    * Extract the columns from the table
    * @param {TableInfo} table
-   * @return {TableInfo}
+   * @return {Promise<TableInfo>}
    */
   private async extractTableColumns(table: TableInfo) {
-    const { type, name, tableRefs, columns } = table;
-    const tables = [...tableRefs];
-    if (type === TableType.External) {
-      tables.push(name);
+    const tablesToExtract = [...table.tableRefs];
+    if (table.type === TableType.External) {
+      tablesToExtract.push(table.name);
     }
-    for (const tableFullName of tables) {
+
+    const columnsByTablesPromises: Promise<Column[]>[] = [];
+    for (const tableFullName of tablesToExtract) {
       const [catalog, schema, tableName] = tableFullName.split('.');
-      const tableRefColumns = await this.config.getColumnsByTable(
-        catalog,
-        schema,
-        tableName
+      columnsByTablesPromises.push(
+        this.config.getColumnsByTable(catalog, schema, tableName)
       );
-      columns.push(...tableRefColumns.map((column) => column.name));
     }
+
+    const columnsByTables = await Promise.all(columnsByTablesPromises);
+    for (const columnsByTable of columnsByTables) {
+      table.columns.push(...columnsByTable.map((column) => column.name));
+    }
+
     return table;
   }
 
