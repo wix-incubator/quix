@@ -54,41 +54,33 @@ export class SqlAutocompleter implements IAutocompleter {
    * @return {Promise<ICompleterItem[]>}
    */
   private async getQueryContextColumns(tables: TableInfo[]) {
-    const completersMemory: Set<string> = new Set();
+    const columnsNamesMemory: Set<string> = new Set();
+    const columnsWithPrefixMemory: Set<string> = new Set();
     const tablesPromises: Promise<TableInfo>[] = [];
 
     for (const table of tables) {
       tablesPromises.push(this.extractTableColumns(table));
     }
-    const extractedTables = await Promise.allSettled(tablesPromises);
+    const extractedTables = await Promise.all(tablesPromises);
 
     for (const extractedTable of extractedTables) {
-      if (extractedTable.status === 'fulfilled') {
-        const { name, alias, columns } = extractedTable.value;
-        const shortColumnsNames = columns.map((column) => {
-          const shortColumnName = column.split('.').pop();
-          completersMemory.add(shortColumnName);
-          return shortColumnName;
-        });
+      const { name, alias, columns, type } = extractedTable;
+      columns.forEach((column) => {
+        const shortColumnName = column.split('.').pop();
+        columnsNamesMemory.add(shortColumnName);
 
-        if (tables.length > 1) {
-          shortColumnsNames.forEach((column) => {
-            const completerName: string = alias
-              ? `${alias}.${column}`
-              : name
-              ? `${name}.${column}`
-              : undefined;
-            if (completerName) {
-              completersMemory.add(completerName);
-            }
-          });
+        if (alias) {
+          columnsWithPrefixMemory.add(`${alias}.${shortColumnName}`);
+        } else if (name && (tables.length > 1 || type === TableType.Nested)) {
+          columnsWithPrefixMemory.add(`${name}.${shortColumnName}`);
         }
-      }
+      });
     }
 
-    return [...completersMemory].map((completer) =>
-      this.createCompleterItem(completer, 'column')
-    );
+    return [
+      ...columnsNamesMemory,
+      ...columnsWithPrefixMemory,
+    ].map((completer) => this.createCompleterItem(completer, 'column'));
   }
 
   /**
@@ -110,13 +102,9 @@ export class SqlAutocompleter implements IAutocompleter {
       );
     }
 
-    const columnsByTables = await Promise.allSettled(columnsByTablesPromises);
+    const columnsByTables = await Promise.all(columnsByTablesPromises);
     for (const columnsByTable of columnsByTables) {
-      if (columnsByTable.status === 'fulfilled') {
-        table.columns.push(
-          ...columnsByTable.value.map((column) => column.name)
-        );
-      }
+      table.columns.push(...columnsByTable.map((column) => column.name));
     }
 
     return table;
