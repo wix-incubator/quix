@@ -60,25 +60,29 @@ export class SqlAutocompleter implements IAutocompleter {
     for (const table of tables) {
       tablesPromises.push(this.extractTableColumns(table));
     }
-    const extractedTables = await Promise.all(tablesPromises);
+    const extractedTables = await Promise.allSettled(tablesPromises);
 
     for (const extractedTable of extractedTables) {
-      const { name, alias, columns } = extractedTable;
-      columns.forEach((column) => {
-        column = column.split('.').pop();
-        completersMemory.add(column);
-      });
-      if (tables.length > 1) {
-        columns.forEach((column) => {
-          const completerName: string = alias
-            ? `${alias}.${column}`
-            : name
-            ? `${name}.${column}`
-            : undefined;
-          if (completerName) {
-            completersMemory.add(completerName);
-          }
+      if (extractedTable.status === 'fulfilled') {
+        const { name, alias, columns } = extractedTable.value;
+        const shortColumnsNames = columns.map((column) => {
+          const shortColumnName = column.split('.').pop();
+          completersMemory.add(shortColumnName);
+          return shortColumnName;
         });
+
+        if (tables.length > 1) {
+          shortColumnsNames.forEach((column) => {
+            const completerName: string = alias
+              ? `${alias}.${column}`
+              : name
+              ? `${name}.${column}`
+              : undefined;
+            if (completerName) {
+              completersMemory.add(completerName);
+            }
+          });
+        }
       }
     }
 
@@ -106,9 +110,13 @@ export class SqlAutocompleter implements IAutocompleter {
       );
     }
 
-    const columnsByTables = await Promise.all(columnsByTablesPromises);
+    const columnsByTables = await Promise.allSettled(columnsByTablesPromises);
     for (const columnsByTable of columnsByTables) {
-      table.columns.push(...columnsByTable.map((column) => column.name));
+      if (columnsByTable.status === 'fulfilled') {
+        table.columns.push(
+          ...columnsByTable.value.map((column) => column.name)
+        );
+      }
     }
 
     return table;
