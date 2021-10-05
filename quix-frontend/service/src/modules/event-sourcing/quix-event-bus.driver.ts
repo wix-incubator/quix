@@ -207,6 +207,10 @@ export class QuixEventBusDriver {
     return this.noteRepo.findOne(id);
   }
 
+  async getNotesForNotebook(notebookId: string) {
+    return this.noteRepo.find({notebookId});
+  }
+
   async getUsers() {
     return this.userRepo.find();
   }

@@ -17,6 +17,7 @@
     "test": "jest",
     "test:ci": "npm run test && npm run test:mysql && npm run test:e2e",
     "test:mysql": "DB_TYPE=mysql jest --runInBand",
+    "test:build:mysql": "npm run build && npm run test:mysql",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r ts-node/register node_modules/.bin/jest --runInBand",

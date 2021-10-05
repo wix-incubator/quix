@@ -17,9 +17,12 @@ export class v41614712161318 implements MigrationInterface {
     await queryRunner.query(
       'ALTER TABLE `folders` MODIFY COLUMN `name` varchar(512) NOT NULL',
     );
-    const metadata = new DbMetadata(QUIX_SCHEMA, CURRENT_QUIX_SCHEMA_VERSION);
     const manager = queryRunner.manager;
-    await manager.update(DbMetadata, {name: QUIX_SCHEMA}, metadata);
+    await manager.update(
+      DbMetadata,
+      {name: QUIX_SCHEMA},
+      {version: CURRENT_QUIX_SCHEMA_VERSION},
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -32,8 +35,11 @@ export class v41614712161318 implements MigrationInterface {
     await queryRunner.query(
       'ALTER TABLE `folders` MODIFY COLUMN `name` varchar(64) NOT NULL',
     );
-    const metadata = new DbMetadata(QUIX_SCHEMA, PREVIOUS_QUIX_SCHEMA);
     const manager = queryRunner.manager;
-    await manager.update(DbMetadata, {name: QUIX_SCHEMA}, metadata);
+    await manager.update(
+      DbMetadata,
+      {name: QUIX_SCHEMA},
+      {version: PREVIOUS_QUIX_SCHEMA},
+    );
   }
 }

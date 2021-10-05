@@ -141,13 +141,10 @@ export const onMarkedDelete = (scope: IScope, store: Store, app: App) => (
 ) => {
   store
     .dispatchAndLog(
-      files.map(
-        (file) =>
-          // TODO Maybe need to be something else... Check!
-          //file.type === 'folder'
-          //?
-          TrashBinActions.moveNotebookToTrashBin(file.id)
-        //: NotebookActions.deleteNotebook(file.id)
+      files.map((file) =>
+        file.type === FileType.folder
+          ? TrashBinActions.moveFolderToTrashBin(file.id)
+          : TrashBinActions.moveNotebookToTrashBin(file.id)
       )
     )
     .then(() =>

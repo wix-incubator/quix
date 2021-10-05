@@ -6,6 +6,11 @@ export const TrashBinActions = {
     id,
   }),
 
+  moveFolderToTrashBin: (id: string) => ({
+    type: 'trashBin.addFolderContent' as const,
+    id,
+  }),
+
   permanentlyDeleteNotebook: (id: string) => ({
     type: 'trashBin.deleteNotebook' as const,
     id,

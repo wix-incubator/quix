@@ -1,6 +1,11 @@
 import {Injectable} from '@nestjs/common';
 import {InjectEntityManager} from '@nestjs/typeorm';
-import {DbFavorites, DbFileTreeNode, DbNotebook} from '../../../entities';
+import {
+  DbFavorites,
+  DbFileTreeNode,
+  DbNote,
+  DbNotebook,
+} from '../../../entities';
 import {FileTreeRepository} from '../../../entities/filenode/filenode.repository';
 import {
   convertDbNotebook,
@@ -29,6 +34,7 @@ export class NotebookPlugin implements EventBusPlugin {
     const handledEvents: string[] = [
       NotebookActionTypes.createNotebook,
       NotebookActionTypes.deleteNotebook,
+      NotebookActionTypes.deleteNotebookNotes,
       NotebookActionTypes.updateName,
     ];
 
@@ -39,7 +45,8 @@ export class NotebookPlugin implements EventBusPlugin {
       async (action: IAction<NotebookActions>) => {
         switch (action.type) {
           case NotebookActionTypes.updateName:
-          case NotebookActionTypes.deleteNotebook: {
+          case NotebookActionTypes.deleteNotebook:
+          case NotebookActionTypes.deleteNotebookNotes: {
             const notebook = await this.em.findOneOrFail(DbNotebook, action.id);
             assertOwner(notebook, action);
             break;
@@ -54,6 +61,7 @@ export class NotebookPlugin implements EventBusPlugin {
       async (action: IAction<NotebookActions>) =>
         this.em.transaction(async transactionManager => {
           await this.projectNotebook(action, transactionManager);
+          await this.projectNote(action, transactionManager);
           await this.projectFileTree(action, transactionManager);
           await this.projectFavorites(action, transactionManager);
         }),
@@ -80,6 +88,18 @@ export class NotebookPlugin implements EventBusPlugin {
     }
   }
 
+  async projectNote(
+    action: IAction<NotebookActions, string>,
+    tm: EntityManager,
+  ) {
+    switch (action.type) {
+      case NotebookActionTypes.deleteNotebookNotes: {
+        const {id} = action;
+        await tm.delete(DbNote, {notebookId: id});
+      }
+    }
+  }
+
   private async projectFileTree(
     action: IAction<NotebookActions>,
     tm: EntityManager,
@@ -99,6 +119,10 @@ export class NotebookPlugin implements EventBusPlugin {
         return tm
           .getCustomRepository(FileTreeRepository)
           .save(node, {reload: false});
+      }
+      case NotebookActionTypes.deleteNotebook: {
+        const {id} = action;
+        tm.getCustomRepository(FileTreeRepository).delete({notebookId: id});
       }
     }
   }

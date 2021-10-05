@@ -107,8 +107,8 @@ export class FileTreePlugin implements EventBusPlugin {
         switch (action.type) {
           case FileActionTypes.createFile: {
             const {file} = action;
-            const parent: DbFileTreeNode | undefined = hookApi.context.get()
-              .parent;
+            const parent: DbFileTreeNode | undefined =
+              hookApi.context.get().parent;
             const folder = new DbFolder();
 
             Object.assign(folder, {

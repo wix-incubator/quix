@@ -44,7 +44,7 @@ export const deleteFolder = (store: Store, app: App, folder: IFile) => {
   const { id } = folder;
 
   return store
-    .logAndDispatch(TrashBinActions.moveNotebookToTrashBin(id))
+    .logAndDispatch(TrashBinActions.moveFolderToTrashBin(id))
     .then(() => {
       if (store.getState('folder.folder')) {
         goUp(app, folder);

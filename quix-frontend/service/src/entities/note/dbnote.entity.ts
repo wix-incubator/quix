@@ -44,7 +44,9 @@ export class DbNote {
   @CreateDateColumn(dbConf.dateCreated)
   dateCreated!: number;
 
-  @ManyToOne(type => DbNotebook, n => n.notes, {onDelete: 'CASCADE'})
+  @ManyToOne(type => DbNotebook, n => n.notes, {
+    createForeignKeyConstraints: false,
+  })
   notebook?: DbNotebook;
 
   @Column()

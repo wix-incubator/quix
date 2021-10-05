@@ -18,7 +18,7 @@ import {
   TrashBinActions,
   UserActions,
 } from '@wix/quix-shared';
-import {DbNotebook} from 'src/entities';
+import {DbNote, DbNotebook} from 'src/entities';
 
 jest.setTimeout(300000);
 
@@ -73,7 +73,7 @@ describe('event sourcing', () => {
   });
 
   describe('trash-bin::', () => {
-    it('move to trash bin', async () => {
+    it('move notebook to trash bin', async () => {
       let notebookId: string;
       let createAction: IAction<NotebookActions>;
       let notebook: DbNotebook;
@@ -91,11 +91,39 @@ describe('event sourcing', () => {
 
       await driver.getNotebook(notebookId).and.expectToBeUndefined();
       await driver.getDeletedNotebook(notebookId).and.expectToBeDefined();
-
-      // TODO: Notes Not Deleted
     });
 
-    it('restores note from trash bin', async () => {
+    it('move notebook to trash bin - do not delete notes', async () => {
+      let notebookId: string;
+      let createNotebookAction: IAction<NotebookActions>;
+      let notebook: DbNotebook;
+      let addToTrashBinAction: IAction<TrashBinActions>;
+
+      [notebookId, createNotebookAction] = mockBuilder.createNotebookAction();
+
+      await driver.emitAsUser(eventBus, [
+        createNotebookAction,
+        mockBuilder.createNoteAction(notebookId),
+        mockBuilder.createNoteAction(notebookId),
+      ]);
+
+      notebook = await driver.getNotebook(notebookId).and.expectToBeDefined();
+      let notes = await driver.getNotesForNotebook(notebookId);
+      expect(notes).toHaveLength(2);
+
+      [notebookId, addToTrashBinAction] =
+        mockBuilder.moveNotebookToTrashBinAction(undefined, notebook.id);
+
+      await driver.emitAsUser(eventBus, [addToTrashBinAction]);
+
+      await driver.getNotebook(notebookId).and.expectToBeUndefined();
+      await driver.getDeletedNotebook(notebookId).and.expectToBeDefined();
+
+      notes = await driver.getNotesForNotebook(notebookId);
+      expect(notes).toHaveLength(2);
+    });
+
+    it('restores notebook from trash bin', async () => {
       let folderId: string;
       let createFolderAction: any;
       let notebookId: string;
@@ -134,7 +162,6 @@ describe('event sourcing', () => {
     });
 
     it('permanently delete notebook :: deletes the Deleted Notebook', async () => {
-      // TODO: Maybe need to restore notebook and then delete it immediately.
       let notebookId: string;
       let createNotebookAction: IAction<NotebookActions>;
       let permanentlyDeleteTrashBinAction: IAction<TrashBinActions>;
@@ -162,40 +189,6 @@ describe('event sourcing', () => {
       await driver.getDeletedNotebook(notebookId).and.expectToBeUndefined();
       // TODO: Notes Deleted
     });
-
-    /* it('permanently delete notebook :: deletes favorites for the notebook', async () => {
-      let notebookId: string;
-      let createNotebookAction: IAction<NotebookActions>;
-      let permanentlyDeleteTrashBinAction: IAction<TrashBinActions>;
-
-      [notebookId, createNotebookAction] = mockBuilder.createNotebookAction();
-
-      let addToTrashBinAction: IAction<TrashBinActions>;
-      [notebookId, addToTrashBinAction] =
-        mockBuilder.moveNotebookToTrashBinAction(undefined, notebookId);
-
-      await driver.emitAsUser(eventBus, [
-        createNotebookAction,
-        NotebookActions.toggleIsLiked(notebookId, true),
-        addToTrashBinAction,
-      ]);
-
-      await driver
-        .getFavorite(defaultUser, notebookId, EntityType.Notebook)
-        .and.expectToBeDefined();
-
-      [notebookId, permanentlyDeleteTrashBinAction] =
-        mockBuilder.permanentlyDeleteDeletedNotebookAction(
-          undefined,
-          notebookId,
-        );
-
-      await driver.emitAsUser(eventBus, [permanentlyDeleteTrashBinAction]);
-      await driver
-        .getFavorite(defaultUser, notebookId, EntityType.Notebook)
-        .and.expectToBeUndefined();
-    });
-    */
 
     it('deletes notes of the notebook', async () => {});
     it('deletes tree_nodes for the notebook', async () => {});
@@ -257,55 +250,87 @@ describe('event sourcing', () => {
         .and.expectToBeUndefined();
     });
 
-    it('delete', async () => {
-      await eventBus.emit(createAction);
-      const notebook = await driver.getNotebook(id).and.expectToBeDefined();
+    describe('delete', () => {
+      it('delete', async () => {
+        await eventBus.emit(createAction);
+        const notebook = await driver.getNotebook(id).and.expectToBeDefined();
+        expect(notebook.id).toBe(createAction.id);
 
-      expect(notebook.id).toBe(createAction.id);
+        await eventBus.emit([
+          mockBuilder.createNoteAction(notebook.id),
+          mockBuilder.createNoteAction(notebook.id),
+        ]);
 
-      await driver.emitAsUser(eventBus, [NotebookActions.deleteNotebook(id)]);
+        await driver.emitAsUser(eventBus, [NotebookActions.deleteNotebook(id)]);
+        await driver.getNotebook(id).and.expectToBeUndefined();
 
-      await driver.getNotebook(id).and.expectToBeUndefined();
-    });
+        const notes = await driver.getNotesForNotebook(id);
+        expect(notes).toHaveLength(2);
+      });
 
-    it('delete favorite after deleting the notebook', async () => {
-      await eventBus.emit([createAction]);
+      it('delete notes', async () => {
+        await eventBus.emit(createAction);
+        const notebook = await driver.getNotebook(id).and.expectToBeDefined();
 
-      await driver.emitAsUser(eventBus, [
-        NotebookActions.toggleIsLiked(id, true),
-      ]);
+        await eventBus.emit([
+          mockBuilder.createNoteAction(notebook.id),
+          mockBuilder.createNoteAction(notebook.id),
+        ]);
 
-      await driver
-        .getFavorite(defaultUser, id, EntityType.Notebook)
-        .and.expectToBeDefined();
+        let notes = await driver.getNotesForNotebook(notebook.id);
+        expect(notes).toHaveLength(2);
 
-      await driver.emitAsUser(eventBus, [NotebookActions.deleteNotebook(id)]);
+        await driver.emitAsUser(eventBus, [
+          NotebookActions.deleteNotebookNotes(notebook.id),
+        ]);
 
-      await driver
-        .getFavorite(defaultUser, id, EntityType.Notebook)
-        .and.expectToBeUndefined();
-    });
+        await driver.getNotebook(notebook.id).and.expectToBeDefined();
 
-    it('delete only the favorite of the deleted notebook', async () => {
-      const [id1, createAction1] = mockBuilder.createNotebookAction();
-      const [id2, createAction2] = mockBuilder.createNotebookAction();
+        notes = await driver.getNotesForNotebook(id);
+        expect(notes).toHaveLength(0);
+      });
 
-      await eventBus.emit([createAction1, createAction2]);
+      it('delete favorite after deleting the notebook', async () => {
+        await eventBus.emit([createAction]);
 
-      await driver.emitAsUser(eventBus, [
-        NotebookActions.toggleIsLiked(id1, true),
-        NotebookActions.toggleIsLiked(id2, true),
-      ]);
+        await driver.emitAsUser(eventBus, [
+          NotebookActions.toggleIsLiked(id, true),
+        ]);
 
-      await driver.emitAsUser(eventBus, [NotebookActions.deleteNotebook(id1)]);
+        await driver
+          .getFavorite(defaultUser, id, EntityType.Notebook)
+          .and.expectToBeDefined();
 
-      await driver
-        .getFavorite(defaultUser, id1, EntityType.Notebook)
-        .and.expectToBeUndefined();
+        await driver.emitAsUser(eventBus, [NotebookActions.deleteNotebook(id)]);
 
-      await driver
-        .getFavorite(defaultUser, id2, EntityType.Notebook)
-        .and.expectToBeDefined();
+        await driver
+          .getFavorite(defaultUser, id, EntityType.Notebook)
+          .and.expectToBeUndefined();
+      });
+
+      it('delete only the favorite of the deleted notebook', async () => {
+        const [id1, createAction1] = mockBuilder.createNotebookAction();
+        const [id2, createAction2] = mockBuilder.createNotebookAction();
+
+        await eventBus.emit([createAction1, createAction2]);
+
+        await driver.emitAsUser(eventBus, [
+          NotebookActions.toggleIsLiked(id1, true),
+          NotebookActions.toggleIsLiked(id2, true),
+        ]);
+
+        await driver.emitAsUser(eventBus, [
+          NotebookActions.deleteNotebook(id1),
+        ]);
+
+        await driver
+          .getFavorite(defaultUser, id1, EntityType.Notebook)
+          .and.expectToBeUndefined();
+
+        await driver
+          .getFavorite(defaultUser, id2, EntityType.Notebook)
+          .and.expectToBeDefined();
+      });
     });
   });
 

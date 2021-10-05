@@ -41,7 +41,7 @@ export class DbFileTreeNode {
   @Column(dbConf.fileTypeEnum)
   type!: FileType;
 
-  @ManyToOne(type => DbFileTreeNode, {onDelete: 'CASCADE'})
+  @ManyToOne(type => DbFileTreeNode, {createForeignKeyConstraints: false})
   @JoinColumn()
   parent?: DbFileTreeNode;
 
@@ -49,7 +49,7 @@ export class DbFileTreeNode {
   parentId?: string;
 
   @OneToOne(type => DbNotebook, notebook => notebook.fileNode, {
-    onDelete: 'CASCADE',
+    createForeignKeyConstraints: false,
   })
   @JoinColumn()
   notebook?: DbNotebook;

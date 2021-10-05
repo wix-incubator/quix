@@ -25,9 +25,12 @@ export class v31614173960671 implements MigrationInterface {
       'ALTER TABLE `tree_nodes` CHANGE `date_updated` `date_updated` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)',
     );
 
-    const metadata = new DbMetadata(QUIX_SCHEMA, CURRENT_QUIX_SCHEMA_VERSION);
     const manager = queryRunner.manager;
-    await manager.update(DbMetadata, {name: QUIX_SCHEMA}, metadata);
+    await manager.update(
+      DbMetadata,
+      {name: QUIX_SCHEMA},
+      {version: CURRENT_QUIX_SCHEMA_VERSION},
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -48,8 +51,11 @@ export class v31614173960671 implements MigrationInterface {
     );
     await queryRunner.query('ALTER TABLE `notes` DROP COLUMN `rich_content`');
 
-    const metadata = new DbMetadata(QUIX_SCHEMA, PREVIOUS_QUIX_SCHEMA);
     const manager = queryRunner.manager;
-    await manager.update(DbMetadata, {name: QUIX_SCHEMA}, metadata);
+    await manager.update(
+      DbMetadata,
+      {name: QUIX_SCHEMA},
+      {version: PREVIOUS_QUIX_SCHEMA},
+    );
   }
 }
