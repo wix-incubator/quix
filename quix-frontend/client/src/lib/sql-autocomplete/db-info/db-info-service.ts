@@ -71,7 +71,7 @@ export class DbInfoService implements IDbInfoConfig {
 
   search = async (type: string, prefix: string): Promise<Catalog[]> => {
     return axios
-      .get(`${this.apiBasePath}/api/db/${type}/search?q=${prefix}`)
+      .get(`${this.apiBasePath}/api/db/${type}/search`, { params: { q: prefix } })
       .then((response) => response.data);
   };
 }

@@ -3,7 +3,7 @@ import { ICompleterItem as AceCompletion } from '../../../code-editor/services/c
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
 import { createMatchMask, makeCompletionItem } from './autocomplete-utils';
-import { DbInfoService, IDbInfoConfig } from '../../../sql-autocomplete/db-info';
+import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
 import {
   evaluateContextFromPosition,
   QueryContext,
@@ -11,7 +11,7 @@ import {
 import { reservedPrestoWords } from '../../../sql-autocomplete/languge/reserved-words';
 import { SqlAutocompleter } from '../../../sql-autocomplete/adapter/sql-autocomplete-adapter';
 import { IEditSession } from 'brace';
-// import { setupOldCompleter } from './old-autocomplete-service';
+import { setupOldCompleter } from './old-autocomplete-service';
 
 let keywords: AceCompletion[];
 let snippets: AceCompletion[];
@@ -52,12 +52,12 @@ export async function setupCompleters(
   apiBasePath = '',
   dbInfoService?: IDbInfoConfig
 ) {
-  // if (!dbInfoService) {
-  //   setupOldCompleter(editorInstance, type, apiBasePath);
-  //   return;
-  // }
+  if (!dbInfoService) {
+    setupOldCompleter(editorInstance, type, apiBasePath);
+    return;
+  }
 
-  dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
+  // dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
   const sqlAutocompleter = new SqlAutocompleter(dbInfoService);
   
   editorInstance.setLiveAutocompletion(true);
