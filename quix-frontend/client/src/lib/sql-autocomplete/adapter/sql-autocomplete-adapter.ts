@@ -54,7 +54,8 @@ export class SqlAutocompleter implements IAutocompleter {
    * @return {Promise<ICompleterItem[]>}
    */
   private async getQueryContextColumns(tables: TableInfo[]) {
-    const completersMemory: Set<string> = new Set();
+    const columnsNamesMemory: Set<string> = new Set();
+    const columnsWithPrefixMemory: Set<string> = new Set();
     const tablesPromises: Promise<TableInfo>[] = [];
 
     for (const table of tables) {
@@ -63,28 +64,23 @@ export class SqlAutocompleter implements IAutocompleter {
     const extractedTables = await Promise.all(tablesPromises);
 
     for (const extractedTable of extractedTables) {
-      const { name, alias, columns } = extractedTable;
+      const { name, alias, columns, type } = extractedTable;
       columns.forEach((column) => {
-        column = column.split('.').pop();
-        completersMemory.add(column);
+        const shortColumnName = column.split('.').pop();
+        columnsNamesMemory.add(shortColumnName);
+
+        if (alias) {
+          columnsWithPrefixMemory.add(`${alias}.${shortColumnName}`);
+        } else if (name && (tables.length > 1 || type === TableType.Nested)) {
+          columnsWithPrefixMemory.add(`${name}.${shortColumnName}`);
+        }
       });
-      if (tables.length > 1) {
-        columns.forEach((column) => {
-          const completerName: string = alias
-            ? `${alias}.${column}`
-            : name
-            ? `${name}.${column}`
-            : undefined;
-          if (completerName) {
-            completersMemory.add(completerName);
-          }
-        });
-      }
     }
 
-    return [...completersMemory].map((completer) =>
-      this.createCompleterItem(completer, 'column')
-    );
+    return [
+      ...columnsNamesMemory,
+      ...columnsWithPrefixMemory,
+    ].map((completer) => this.createCompleterItem(completer, 'column'));
   }
 
   /**

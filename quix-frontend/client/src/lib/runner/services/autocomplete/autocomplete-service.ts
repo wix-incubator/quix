@@ -17,8 +17,8 @@ import { SqlAutocompleter } from '../../../sql-autocomplete/adapter/sql-autocomp
 import { IEditSession } from 'brace';
 import { setupOldCompleter } from './old-autocomplete-service';
 
-let keywords: AceCompletion[];
-let snippets: AceCompletion[];
+let keywords: AceCompletion[] = [];
+let snippets: AceCompletion[] = [];
 
 function getKeywordsCompletions(): AceCompletion[] {
   // TODO: FIND A WAY TO FETCH KEYWORDS FROM ANTLR GRAMMAR
