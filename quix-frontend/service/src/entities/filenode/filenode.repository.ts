@@ -192,6 +192,13 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
           .from(DbFolder)
           .whereInIds(foldersToDelete)
           .execute();
+
+        await em
+          .createQueryBuilder()
+          .delete()
+          .from(DbFileTreeNode)
+          .whereInIds(foldersToDelete)
+          .execute();
       }
     });
   }

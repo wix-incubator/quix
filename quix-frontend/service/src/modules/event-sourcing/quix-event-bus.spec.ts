@@ -627,7 +627,7 @@ describe('event sourcing', () => {
       expect(list[0].folder!.name).toBe('rootFolder');
     });
 
-    it.skip('rename folder', async () => {
+    it('rename folder', async () => {
       await driver.emitAsUser(eventBus, [createRootFolderAction]);
       await driver.emitAsUser(eventBus, [
         FileActions.updateName(rootFolderId, 'a changedName'),
@@ -637,7 +637,7 @@ describe('event sourcing', () => {
       expect(list[0].folder!.name).toBe('a changedName');
     });
 
-    it.skip('a notebook inside a single folder', async () => {
+    it('a notebook inside a single folder', async () => {
       await driver.emitAsUser(eventBus, [
         createRootFolderAction,
         createNotebookAction,
@@ -650,7 +650,7 @@ describe('event sourcing', () => {
       expect(notebookTreeItem).toBeDefined();
     });
 
-    it.skip('have multiple notebooks inside a single folder', async () => {
+    it('have multiple notebooks inside a single folder', async () => {
       const [notebookId2, createNotebookAction2] =
         mockBuilder.createNotebookAction([{id: rootFolderId}]);
       await driver.emitAsUser(eventBus, [
@@ -666,7 +666,7 @@ describe('event sourcing', () => {
       expect(notebookItems).toHaveLength(2);
     });
 
-    it.skip('notebook move', async () => {
+    it('notebook move', async () => {
       const [subFolder1, createSubFolder1] = mockBuilder.createFolderAction(
         'subFolder1',
         [{id: rootFolderId}],
