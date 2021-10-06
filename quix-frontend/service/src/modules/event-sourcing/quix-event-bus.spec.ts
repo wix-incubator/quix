@@ -194,6 +194,20 @@ describe('event sourcing', () => {
           expect(folder).toBeUndefined();
         });
       });
+
+      it('deletes tree', async () => {
+        await driver.emitAsUser(eventBus, [
+          createFolderAction,
+          ...createSubFolderActions,
+          ...createNotebooksActions,
+          TrashBinActions.moveFolderToTrashBin(rootFolderId),
+        ]);
+
+        [...subFolders, ...notebooksIds].forEach(async nodeId => {
+          const node = await driver.fileTreeRepo.findOne({id: nodeId});
+          expect(node).toBeUndefined();
+        });
+      });
     });
 
     it('restores notebook from trash bin', async () => {

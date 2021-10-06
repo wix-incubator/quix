@@ -184,6 +184,13 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
             ids: notebooksToDelete.map(({id}) => id),
           })
           .execute();
+
+        await em
+          .createQueryBuilder()
+          .delete()
+          .from(DbFileTreeNode)
+          .whereInIds(notebooksToDelete)
+          .execute();
       }
       if (foldersToDelete.length) {
         await em

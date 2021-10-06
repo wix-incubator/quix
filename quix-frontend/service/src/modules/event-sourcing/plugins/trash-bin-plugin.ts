@@ -131,12 +131,13 @@ export class TrashBinPlugin implements EventBusPlugin {
 
     const folders = children.find(c => c.type === FileType.folder);
     if (folders && Array.isArray(folders)) {
-      result.concat(
+      result = [
+        ...result,
         folders.map(f => ({
           ...FileActions.deleteFile(f.id),
           user: action.user,
         })),
-      );
+      ];
     }
 
     return [
