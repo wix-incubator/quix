@@ -39,6 +39,7 @@ export class TrashBinPlugin implements EventBusPlugin {
   registerFn: EventBusPluginFn = api => {
     const handledEvents: string[] = [
       TrashBinActionTypes.moveNotebookToTrashBin,
+      TrashBinActionTypes.moveFolderToTrashBin,
       TrashBinActionTypes.restoreDeletedNotebook,
       TrashBinActionTypes.permanentlyDeleteNotebook,
     ];
