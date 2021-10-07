@@ -139,6 +139,7 @@ export const onUnmarkAll = (scope: IScope, store: Store, app: App) => () => {
 export const onMarkedDelete = (scope: IScope, store: Store, app: App) => (
   files: IFile[]
 ) => {
+  console.log(files);
   store
     .dispatchAndLog(
       files.map((file) =>

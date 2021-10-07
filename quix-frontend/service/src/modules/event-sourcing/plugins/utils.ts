@@ -49,3 +49,7 @@ export function assert<T, A extends IAction>(
     throw BadAction(action.type, error);
   }
 }
+
+export function asUser(reAction: any, action: {user: string}) {
+  return {...reAction, user: action.user};
+}

@@ -23,6 +23,7 @@ import {EntityManager, Repository} from 'typeorm';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {IAction} from '../infrastructure/types';
 import {QuixHookNames} from '../types';
+import {asUser} from './utils';
 
 @Injectable()
 export class TrashBinPlugin implements EventBusPlugin {
@@ -80,14 +81,8 @@ export class TrashBinPlugin implements EventBusPlugin {
     });
 
     return [
-      {
-        ...NotebookActions.createNotebook(notebook.id, notebook),
-        user: action.user,
-      },
-      {
-        ...DeletedNotebookActions.deleteDeletedNotebook(notebook.id),
-        user: action.user,
-      },
+      asUser(NotebookActions.createNotebook(notebook.id, notebook), action),
+      asUser(DeletedNotebookActions.deleteDeletedNotebook(notebook.id), action),
     ];
   }
 
@@ -101,17 +96,14 @@ export class TrashBinPlugin implements EventBusPlugin {
     } as IDeletedNotebook;
 
     return [
-      {
-        ...DeletedNotebookActions.createDeletedNotebook(
+      asUser(
+        DeletedNotebookActions.createDeletedNotebook(
           action.id,
           deletedNotebook,
         ),
-        user: action.user,
-      },
-      {
-        ...NotebookActions.deleteNotebook(action.id),
-        user: action.user,
-      },
+        action,
+      ),
+      asUser(NotebookActions.deleteNotebook(action.id), action),
     ];
   }
 
@@ -120,32 +112,13 @@ export class TrashBinPlugin implements EventBusPlugin {
   ): Promise<any> {
     const node = await this.fileTreeNodeRepo.findOneOrFail({id: action.id});
     const children = await this.fileTreeNodeRepo.getDeepChildren(node, this.em);
-    const notebooks = children.find(c => c.type === FileType.notebook);
-
-    let result: any[] = [];
-    if (notebooks && Array.isArray(notebooks))
-      result = notebooks.map(c => ({
-        ...TrashBinActions.moveNotebookToTrashBin(c.id),
-        user: action.user,
-      }));
-
-    const folders = children.find(c => c.type === FileType.folder);
-    if (folders && Array.isArray(folders)) {
-      result = [
-        ...result,
-        folders.map(f => ({
-          ...FileActions.deleteFile(f.id),
-          user: action.user,
-        })),
-      ];
-    }
+    const notebooks = children.filter(c => c.type === FileType.notebook);
 
     return [
-      ...result,
-      {
-        ...FileActions.deleteFile(action.id),
-        user: action.user,
-      },
+      ...notebooks.map(c =>
+        asUser(TrashBinActions.moveNotebookToTrashBin(c.id), action),
+      ),
+      asUser(FileActions.deleteFile(action.id), action),
     ];
   }
 
@@ -153,21 +126,15 @@ export class TrashBinPlugin implements EventBusPlugin {
     action: IAction<TrashBinActionTypes, string>,
   ) {
     let result: any[] = [
-      {
-        ...DeletedNotebookActions.deleteDeletedNotebook(action.id),
-        user: action.user,
-      },
-      {
-        ...NotebookActions.toggleIsLiked(action.id, false),
-        user: action.user,
-      },
+      asUser(DeletedNotebookActions.deleteDeletedNotebook(action.id), action),
+      asUser(NotebookActions.toggleIsLiked(action.id, false), action),
     ];
 
     const notes = await this.em.find(DbNote, {notebookId: action.id});
 
     result = [
       ...result,
-      ...notes.map(n => ({...NoteActions.deleteNote(n.id), user: action.user})),
+      ...notes.map(n => asUser(NoteActions.deleteNote(n.id), action)),
     ];
 
     return result;
