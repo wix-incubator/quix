@@ -7,12 +7,8 @@ import {
   TableType,
 } from '../sql-context-evaluator';
 import { IDbInfoConfig } from '../db-info';
-<<<<<<< HEAD
 import { BaseEntity, Column } from '../db-info/types';
-=======
-import { BaseEntity } from '../db-info/types';
 import { debounceAsync } from '../../../utils';
->>>>>>> 273da7d4 (autocomplete: add debaounce search)
 
 export class SqlAutocompleter implements IAutocompleter {
   private readonly config: IDbInfoConfig;
