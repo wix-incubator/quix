@@ -16,8 +16,6 @@ function on(event: string, callback: (...args: any[]) => any) {
   eventEmitter.on(event, callback, true);
 }
 
-if (typeof window !== 'undefined') {
-  window.addEventListener('biCore.injector.ready', (e: any) => use(e.detail));
-}
+window.addEventListener('biCore.injector.ready', (e: any) => use(e.detail));
 
 export const injector = { use, get, on };

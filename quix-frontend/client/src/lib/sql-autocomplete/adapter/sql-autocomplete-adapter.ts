@@ -8,15 +8,18 @@ import {
 } from '../sql-context-evaluator';
 import { IDbInfoConfig } from '../db-info';
 import { BaseEntity, Column } from '../db-info/types';
-import { debounceAsync } from '../../../utils';
+import { debounce } from 'lodash';
 
 export class SqlAutocompleter implements IAutocompleter {
   private readonly config: IDbInfoConfig;
+  private search: Function;
   private prefix: string;
   private lastCompleters: ICompleterItem[];
+  
 
   constructor(config: IDbInfoConfig) {
     this.config = config;
+    this.search = debounce(config.search, 300);
     this.prefix = '';
     this.lastCompleters = [];
   }
@@ -154,10 +157,6 @@ export class SqlAutocompleter implements IAutocompleter {
     );
   }
 
-  private search = debounceAsync((type: string, prefix: string) =>
-    this.config.search(type, prefix)
-  );
-
   private async searchEntitiesFromDb(
     type: string,
     prefix: string
@@ -165,24 +164,20 @@ export class SqlAutocompleter implements IAutocompleter {
     if (prefix) {
       let entityType: string;
       const completers: Set<string> = new Set();
-      return this.search(
-        type,
-        prefix
-      )((res) => {
-        res.forEach((ctlg) => {
-          const ctlgName = ctlg.name;
-          ctlg.children.forEach((schm) => {
-            const schmName = schm.name;
-            schm.children.forEach((tbl) => {
-              entityType = tbl.type;
-              completers.add(`${ctlgName}.${schmName}.${tbl.name}`);
-            });
+      const res = await this.search(type, prefix);
+      res.forEach((ctlg) => {
+        const ctlgName = ctlg.name;
+        ctlg.children.forEach((schm) => {
+          const schmName = schm.name;
+          schm.children.forEach((tbl) => {
+            entityType = tbl.type;
+            completers.add(`${ctlgName}.${schmName}.${tbl.name}`);
           });
         });
-        return [...completers].map((completer) =>
-          this.createCompleterItem(completer, entityType)
-        );
       });
+      return [...completers].map((completer) =>
+        this.createCompleterItem(completer, entityType)
+      );
     }
     return [];
   }
