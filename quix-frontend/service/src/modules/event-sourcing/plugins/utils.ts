@@ -50,6 +50,6 @@ export function assert<T, A extends IAction>(
   }
 }
 
-export function asUser(reAction: any, action: {user: string}) {
-  return {...reAction, user: action.user};
+export function asUser(reAction: any, action: {user: string; userId?: string}) {
+  return {...reAction, user: action.user, userId: action.userId};
 }

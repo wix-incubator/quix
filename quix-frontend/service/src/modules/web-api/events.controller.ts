@@ -11,7 +11,10 @@ import {AuthGuard} from '../auth';
 import {AnyAction} from '@wix/quix-shared/entities/common/common-types';
 import {IExternalUser, User} from '../../modules/auth';
 import {EventsService} from '../../modules/event-sourcing/events.service';
-import {IAction} from '../../modules/event-sourcing/infrastructure/types';
+import {
+  IAction,
+  IEventData,
+} from '../../modules/event-sourcing/infrastructure/types';
 import {BaseActionValidation} from '../event-sourcing/base-action-validation';
 import {QuixEventBus} from '../event-sourcing/quix-event-bus';
 
@@ -31,22 +34,17 @@ export class EventsController {
     @User() user: IExternalUser,
     @Query('sessionId') sessionId: string,
   ) {
-    if (Array.isArray(userAction)) {
-      const actions: IAction[] = userAction.map(singleAction => ({
-        ...singleAction,
-        user: user.email,
-        userId: user.id,
-        sessionId,
-      }));
-      return this.eventBus.emit(actions);
-    } else {
-      const action: IAction = {
-        ...userAction,
+    function withUserInfo(action: AnyAction): IAction<IEventData, string> {
+      return {
+        ...action,
         user: user.email,
         userId: user.id,
         sessionId,
       };
-      return this.eventBus.emit(action);
     }
+
+    return Array.isArray(userAction)
+      ? this.eventBus.emit(userAction.map(withUserInfo))
+      : this.eventBus.emit(withUserInfo(userAction));
   }
 }

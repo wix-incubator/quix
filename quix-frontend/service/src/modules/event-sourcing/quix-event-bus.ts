@@ -11,11 +11,12 @@ import {NotebookPlugin} from './plugins/notebook-plugin';
 import {NotePlugin} from './plugins/note-plugin';
 import {FileTreePlugin} from './plugins/file-tree-plugin';
 import {FavoritesPlugin} from './plugins/favorites-plugin';
-import {IAction} from './infrastructure/types';
+import {IAction, IEventData} from './infrastructure/types';
 import {UserPlugin} from './plugins/user-plugin';
 import {EventsPlugin} from './plugins/events-plugin';
 import {DeletedNotebookPlugin} from './plugins/deleted-notebook-plugin';
 import {TrashBinPlugin} from './plugins/trash-bin-plugin';
+import {EventsService} from './events.service';
 
 @Injectable()
 export class QuixEventBus<A extends IAction = IAction> {
@@ -33,6 +34,7 @@ export class QuixEventBus<A extends IAction = IAction> {
     private deletedNotebookPlugin: EventBusPlugin,
     @Inject(TrashBinPlugin) private trashBinPlugin: EventBusPlugin,
     @Inject(EventsPlugin) private eventsPlugin: EventBusPlugin,
+    @Inject(EventsService) private eventsService: EventsService,
   ) {
     this.bus = EventBusBuilder()
       .addPlugin(this.notebookPlugin)
@@ -72,8 +74,13 @@ export class QuixEventBus<A extends IAction = IAction> {
             let reactions: any[];
             [reactions] = props;
             // TODO type check on reactions?
-            if (reactions && Array.isArray(reactions))
+
+            if (reactions && Array.isArray(reactions)) {
               await this.emit(reactions);
+              reactions.map((n: IAction<IEventData, string>) => {
+                this.eventsService.logEvent(n);
+              });
+            }
 
             next();
           })

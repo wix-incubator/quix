@@ -51,18 +51,14 @@ export class TrashBinPlugin implements EventBusPlugin {
       QuixHookNames.REACTION,
       async (action: IAction<TrashBinActionTypes>) => {
         switch (action.type) {
-          case TrashBinActionTypes.moveNotebookToTrashBin: {
+          case TrashBinActionTypes.moveNotebookToTrashBin:
             return this.addNotebookReActions(action);
-          }
-          case TrashBinActionTypes.moveFolderToTrashBin: {
+          case TrashBinActionTypes.moveFolderToTrashBin:
             return this.addFolderReActions(action);
-          }
-          case TrashBinActionTypes.restoreDeletedNotebook: {
+          case TrashBinActionTypes.restoreDeletedNotebook:
             return this.restoreNotebookReActions(action);
-          }
-          case TrashBinActionTypes.permanentlyDeleteNotebook: {
+          case TrashBinActionTypes.permanentlyDeleteNotebook:
             return this.permanentlyDeleteReActions(action);
-          }
         }
       },
     );

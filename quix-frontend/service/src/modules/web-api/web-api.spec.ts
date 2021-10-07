@@ -25,9 +25,8 @@ describe('web-api module :: ', () => {
         await driver.userRepo.save(user);
 
         const notebookName = 'some new notebook';
-        const [notebookNode, notebook] = driver.createNotebookNode(
-          notebookName,
-        );
+        const [notebookNode, notebook] =
+          driver.createNotebookNode(notebookName);
 
         const folderNode = driver.createFolderNode('folderName');
         await driver.fileTreeRepo.save(folderNode);
@@ -46,9 +45,8 @@ describe('web-api module :: ', () => {
 
       it('get a path list, multiple items in root', async () => {
         const notebookName = 'some new notebook';
-        const [notebookNode, notebook] = driver.createNotebookNode(
-          notebookName,
-        );
+        const [notebookNode, notebook] =
+          driver.createNotebookNode(notebookName);
         const folderNode = driver.createFolderNode('folderName');
 
         await driver.fileTreeRepo.save(folderNode);
@@ -61,9 +59,8 @@ describe('web-api module :: ', () => {
 
       it('get a path list, starting from a specific folder', async () => {
         const notebookName = 'some new notebook';
-        const [notebookNode, notebook] = driver.createNotebookNode(
-          notebookName,
-        );
+        const [notebookNode, notebook] =
+          driver.createNotebookNode(notebookName);
         const parentFolderNode = driver.createFolderNode('folderName');
         const subFolderNode = driver.createFolderNode('folderName2');
         const subSubFolderNode = driver.createFolderNode('folderName3');
@@ -293,9 +290,10 @@ describe('web-api module :: ', () => {
       const deletedNotebook = driver.createDeletedNotebook(defaultUserId);
       await driver.deletedNotebookRepo.save(deletedNotebook);
 
-      const response = await driver.deletedNotebookService.getDeletedNotebooksForUser(
-        defaultUserId,
-      );
+      const response =
+        await driver.deletedNotebookService.getDeletedNotebooksForUser(
+          defaultUserId,
+        );
 
       expect(response).toEqual([
         {
