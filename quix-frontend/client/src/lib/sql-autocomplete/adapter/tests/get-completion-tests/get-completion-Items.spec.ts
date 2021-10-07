@@ -1,7 +1,7 @@
 import { testInputQueryContext } from './test-inputs/input-query-context';
 import { expectedResult } from './expected-results';
-import { runAdapterGetCompletersTest } from '../test-utils/tests-utils';
 import { ContextType } from '../../../sql-context-evaluator/types';
+import { runAdapterGetCompletersTest } from '../test-utils/tests-utils';
 
 describe('when reciving queryContext', () => {
   runAdapterGetCompletersTest(

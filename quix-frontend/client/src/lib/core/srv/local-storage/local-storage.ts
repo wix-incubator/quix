@@ -5,7 +5,9 @@ export class LocalStorage {
   private storage: Storage;
 
   constructor(storage?: Storage) {
-    this.storage = storage || window.localStorage;
+    if (typeof window !== 'undefined') {
+      this.storage = storage || window.localStorage;
+    }
   }
 
   static setPrefix(prefix: string) {
