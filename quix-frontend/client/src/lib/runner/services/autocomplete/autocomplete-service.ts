@@ -2,11 +2,15 @@ import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
+<<<<<<< HEAD
 import {
   createMatchMask,
   getQueryAndCursorPositionFromEditor,
   makeCompletionItem,
 } from './autocomplete-utils';
+=======
+import { createMatchMask, makeCompletionItem } from './autocomplete-utils';
+>>>>>>> b976d173 (autocomplete:minor change in search)
 import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
 import {
   evaluateContextFromPosition,
