@@ -8,11 +8,12 @@ import {
 } from '../sql-context-evaluator';
 import { IDbInfoConfig } from '../db-info';
 import { BaseEntity, Column } from '../db-info/types';
-import { debounce } from 'lodash';
+import debounce from 'debounce-async';
+
 
 export class SqlAutocompleter implements IAutocompleter {
   private readonly config: IDbInfoConfig;
-  private search: Function;
+  private readonly search: Function;
   private prefix: string;
   private lastCompleters: ICompleterItem[];
   
@@ -20,7 +21,6 @@ export class SqlAutocompleter implements IAutocompleter {
   constructor(config: IDbInfoConfig) {
     this.config = config;
     this.search = debounce(config.search, 300);
-    this.prefix = '';
     this.lastCompleters = [];
   }
 
@@ -161,7 +161,7 @@ export class SqlAutocompleter implements IAutocompleter {
     type: string,
     prefix: string
   ): Promise<ICompleterItem[]> {
-    if (prefix) {
+    if (typeof prefix !== 'undefined' && prefix.length > 1) {
       let entityType: string;
       const completers: Set<string> = new Set();
       const res = await this.search(type, prefix);
