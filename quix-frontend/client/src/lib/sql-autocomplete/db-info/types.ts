@@ -24,4 +24,5 @@ export interface IDbInfoConfig {
   getTablesBySchema(catalog: string,schema: string): Promise<Table[]>;
   getSchemasByCatalog(catalog: string): Promise<Schema[]>;
   getCatalogs(): Promise<Catalog[]>;
+  search(type: string, prefix: string): Promise<Catalog[]>;
 }
