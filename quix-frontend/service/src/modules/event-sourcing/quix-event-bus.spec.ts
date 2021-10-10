@@ -211,18 +211,18 @@ describe('event sourcing', () => {
     });
 
     it('restores notebook from trash bin', async () => {
-      let folderId: string;
+      let rootFolderId: string;
       let createFolderAction: any;
       let notebookId: string;
       let createNotebookAction: any;
 
-      [folderId, createFolderAction] = mockBuilder.createFolderAction(
+      [rootFolderId, createFolderAction] = mockBuilder.createFolderAction(
         'rootFolder',
         [],
       );
 
       [notebookId, createNotebookAction] = mockBuilder.createNotebookAction([
-        {id: folderId},
+        {id: rootFolderId},
       ]);
 
       let addToTrashBinAction: IAction<TrashBinActions>;
@@ -239,13 +239,19 @@ describe('event sourcing', () => {
       [notebookId, restoreFromTrashBinAction] =
         mockBuilder.restoreNotebookFromTrashBinAction(
           undefined,
-          folderId,
+          rootFolderId,
           notebookId,
         );
       await driver.emitAsUser(eventBus, [restoreFromTrashBinAction]);
 
       await driver.getNotebook(notebookId).and.expectToBeDefined();
       await driver.getDeletedNotebook(notebookId).and.expectToBeUndefined();
+
+      const tree = await driver.getUserFileTree(defaultUser);
+      const node = tree.find(n => n.notebookId === notebookId);
+
+      expect(node).toBeDefined();
+      expect(node?.parentId).toEqual(rootFolderId);
     });
 
     describe('permanently delete notebook', () => {

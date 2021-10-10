@@ -32,6 +32,7 @@ export class RegisterApi {
 
 export class MiddlewareApi implements IMiddlewareApi {
   private contextFactory: ContextFactory;
+  private loggedActions: IAction[] = [];
 
   constructor(
     private plugins: PluginDescriptor[],
@@ -40,6 +41,13 @@ export class MiddlewareApi implements IMiddlewareApi {
     this.contextFactory = new ContextFactory(baseContext);
   }
 
+  getLoggedActions() {
+    return [...this.loggedActions];
+  }
+
+  pushLoggedActions(actions: IAction[]) {
+    this.loggedActions.push(...actions);
+  }
   hooks = {
     call: <A extends IAction = IAction>(
       name: string,

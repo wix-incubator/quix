@@ -42,9 +42,13 @@ export class EventsController {
         sessionId,
       };
     }
-
-    return Array.isArray(userAction)
-      ? this.eventBus.emit(userAction.map(withUserInfo))
-      : this.eventBus.emit(withUserInfo(userAction));
+    const result = Array.isArray(userAction)
+      ? await this.eventBus.emit(userAction.map(withUserInfo))
+      : await this.eventBus.emit(withUserInfo(userAction));
+    return Array.isArray(result) && result.length > 0
+      ? {
+          reactions: result,
+        }
+      : {};
   }
 }

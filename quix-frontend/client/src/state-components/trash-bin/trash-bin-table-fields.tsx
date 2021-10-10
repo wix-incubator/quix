@@ -16,15 +16,23 @@ export const trashBinTableFields = (onPermanentlyDeleteClicked, onRestoreClicked
       );
     }
   },
-  //TODO Restore
   {
-    
-
-    name: 'Delete' as any,
-    title: 'Delete',
+    name: 'Actions' as any,
+    title: '',
     filter(_, deletedNotebook: IDeletedNotebook) {
       return (
         <div>
+           <i
+            className={classNames(
+              'bi-action',
+              'bi-icon'
+            )}
+            onClick={e => {
+              e.stopPropagation();
+              onRestoreClicked(deletedNotebook);
+            }}
+          >restore_from_trash
+          </i>
           <i
             className={classNames(
               'bi-action',
@@ -36,6 +44,7 @@ export const trashBinTableFields = (onPermanentlyDeleteClicked, onRestoreClicked
             }}
           >delete
           </i>
+
         </div>
       );
     }

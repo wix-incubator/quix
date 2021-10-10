@@ -16,10 +16,11 @@ import {
   DbFolder,
   DbNote,
   DbNotebook,
+  DbUser,
   FileTreeRepository,
 } from '../../../entities';
 import {convertDbNotebook} from '../../../entities/notebook/dbnotebook.entity';
-import {EntityManager, Repository} from 'typeorm';
+import {EntityManager} from 'typeorm';
 import {EventBusPlugin, EventBusPluginFn} from '../infrastructure/event-bus';
 import {IAction} from '../infrastructure/types';
 import {QuixHookNames} from '../types';
@@ -31,8 +32,6 @@ export class TrashBinPlugin implements EventBusPlugin {
 
   constructor(
     @InjectEntityManager() private em: EntityManager,
-    @InjectRepository(DbFolder)
-    private folderRepo: Repository<DbFolder>,
     @InjectRepository(FileTreeRepository)
     private fileTreeNodeRepo: FileTreeRepository,
   ) {}
@@ -72,9 +71,16 @@ export class TrashBinPlugin implements EventBusPlugin {
       action.id,
     );
 
-    const notebook = convertDbNotebook({
-      ...deletedNotebook,
+    const folder = await this.em.findOneOrFail(DbFolder, {
+      id: (action as any).folderId,
     });
+
+    const notebook = convertDbNotebook(
+      {
+        ...deletedNotebook,
+      },
+      [{id: folder.id, name: folder.name}],
+    );
 
     return [
       asUser(NotebookActions.createNotebook(notebook.id, notebook), action),

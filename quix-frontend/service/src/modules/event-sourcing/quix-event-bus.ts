@@ -73,13 +73,10 @@ export class QuixEventBus<A extends IAction = IAction> {
           .then(async props => {
             let reactions: any[];
             [reactions] = props;
-            // TODO type check on reactions?
 
-            if (reactions && Array.isArray(reactions)) {
+            if (reactions && Array.isArray(reactions) && reactions.length > 0) {
               await this.emit(reactions);
-              reactions.map((n: IAction<IEventData, string>) => {
-                this.eventsService.logEvent(n);
-              });
+              api.pushLoggedActions(reactions);
             }
 
             next();
@@ -89,13 +86,15 @@ export class QuixEventBus<A extends IAction = IAction> {
       .build();
   }
 
-  async emit(action: A | A[]): Promise<void> {
+  async emit(action: A | A[]) {
     this.logger.log(`got action ${JSON.stringify(action)}`);
     if (Array.isArray(action)) {
+      const result = [];
       for (const a of action) {
-        await this.bus.emit(a);
+        result.push(...(await this.bus.emit(a)));
       }
-      return;
+      this.logger.log(`got ReActions ${JSON.stringify(result)}`);
+      return result;
     }
     return this.bus.emit(action);
   }

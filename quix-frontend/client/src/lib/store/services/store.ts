@@ -1,17 +1,19 @@
-import {isArray, find, pull, forEach, get, assign, chain as _} from 'lodash';
-import {utils, inject} from '../../core';
-import StoreLogger, {ServerFrameworkType} from './store-logger';
+import { isArray, find, pull, forEach, get, assign, chain as _ } from 'lodash';
+import { utils, inject } from '../../core';
+import StoreLogger, { ServerFrameworkType } from './store-logger';
 import * as Redux from 'redux';
 import { uuid } from '../../core/utils';
-const {scope: scopeUtils} = utils;
+const { scope: scopeUtils } = utils;
 
-export type IBranch<T = any> = (fn: (reducer: Redux.Reducer<T>, ...middleware: Redux.Middleware[]) => void) => void;
+export type IBranch<T = any> = (
+  fn: (reducer: Redux.Reducer<T>, ...middleware: Redux.Middleware[]) => void
+) => void;
 export type ReduxStore<S> = Redux.Store<S>;
 export interface IBranches {
   [key: string]: IBranch;
 }
 
-function getLogParams({type, ...action}) {
+function getLogParams({ type, ...action }) {
   delete (action as any).$log;
   delete (action as any).$defer;
   delete (action as any).$next;
@@ -26,12 +28,18 @@ function logAction(logger, action) {
 function logBulkAction(logger, ...actions) {
   logger = logger.bulk();
 
-  actions.forEach(action => logger.add(...getLogParams(action)));
+  actions.forEach((action) => logger.add(...getLogParams(action)));
 
   return logger.log();
 }
 
-function resolveActions(action, promises = [], res = null, deferred = null, isBulk = false) {
+function resolveActions(
+  action,
+  promises = [],
+  res = null,
+  deferred = null,
+  isBulk = false
+) {
   const $q = inject('$q');
 
   deferred = deferred || $q.defer();
@@ -39,34 +47,39 @@ function resolveActions(action, promises = [], res = null, deferred = null, isBu
   res = res || (isArray(action) ? action : [action]);
 
   if (action.then) {
-    const promise = {promise: action, action: null};
+    const promise = { promise: action, action: null };
 
     promises.push(promise);
 
-    promise.promise.then(actn => {
-      promise.action = actn;
-      resolveActions(actn, promises, res, deferred, isBulk);
-    }, () => deferred.reject());
+    promise.promise.then(
+      (actn) => {
+        promise.action = actn;
+        resolveActions(actn, promises, res, deferred, isBulk);
+      },
+      () => deferred.reject()
+    );
   } else {
-    let promise = find(promises, {action});
+    let promise = find(promises, { action });
 
     if (promise) {
       pull(promises, promise);
     } else {
-      promise = {promise: action, action};
+      promise = { promise: action, action };
     }
 
     res = _(res)
-      .map(item => item === promise.promise ? promise.action : item)
+      .map((item) => (item === promise.promise ? promise.action : item))
       .flattenDeep()
       .value();
 
     if (isArray(action)) {
-      action.forEach(actn => resolveActions(actn, promises, res, deferred, isBulk));
+      action.forEach((actn) =>
+        resolveActions(actn, promises, res, deferred, isBulk)
+      );
     }
 
     if (promises.length === 0) {
-      deferred.resolve({actions: res, isBulk});
+      deferred.resolve({ actions: res, isBulk });
     }
   }
 
@@ -79,10 +92,10 @@ function logMiddleware(logger) {
    *
    * @return Promise
    */
-  return store => next => actions => {
+  return (store) => (next) => (actions) => {
     const $q = inject('$q');
 
-    const {$log, $bulk, $defer} = actions;
+    const { $log, $bulk, $defer } = actions;
     const action = actions[0];
     let res;
 
@@ -92,23 +105,39 @@ function logMiddleware(logger) {
       res = action;
     }
 
+    const handleReactions = (data: any) => {
+      if (data && data.reactions && data.reactions.length > 0) {
+        data.reactions.forEach((reaction) => {
+          store.dispatch(reaction);
+        });
+      }
+    };
+
     if ($log) {
-      res = $bulk ? logBulkAction(logger, ...actions) : logAction(logger, action);
+      res = $bulk
+        ? logBulkAction(logger, ...actions)
+        : logAction(logger, action);
 
       if ($defer && !$bulk) {
-        res.then(() => next(action));
+        res.then((data) => {
+          handleReactions(data);
+          return next(action);
+        });
       }
     }
 
-    return $q.when(res).then(() => action);
+    return $q.when(res).then((data) => {
+      handleReactions(data);
+      return action;
+    });
   };
 }
 
 function promiseMiddleware(biStore) {
-  return store => next => action => {
-    const {$log = false, $defer = false} = action;
+  return (store) => (next) => (action) => {
+    const { $log = false, $defer = false } = action;
 
-    const res = resolveActions(action).then(({actions, isBulk}) => {
+    const res = resolveActions(action).then(({ actions, isBulk }) => {
       if (!actions.length) {
         return;
       }
@@ -118,12 +147,12 @@ function promiseMiddleware(biStore) {
       actions.$bulk = isBulk;
 
       if (isBulk && !$defer) {
-        actions.forEach(actn => biStore.dispatch(actn));
+        actions.forEach((actn) => biStore.dispatch(actn));
       }
 
-      return next(actions).then(result => {
+      return next(actions).then((result) => {
         if (isBulk && $defer) {
-          actions.forEach(actn => biStore.dispatch(actn));
+          actions.forEach((actn) => biStore.dispatch(actn));
         }
 
         return result;
@@ -140,7 +169,7 @@ function promiseMiddleware(biStore) {
 
 // allow inversion of control
 function functionMiddleware(biStore) {
-  return store => next => action => {
+  return (store) => (next) => (action) => {
     if (typeof action === 'function') {
       return action(biStore)((action as any).$next);
     }
@@ -163,7 +192,7 @@ function initBranches(branches: IBranches) {
     });
   });
 
-  return {reducers, middlewares: branchMiddlewares};
+  return { reducers, middlewares: branchMiddlewares };
 }
 
 /**
@@ -174,36 +203,36 @@ function initBranches(branches: IBranches) {
  *    - array of actions or promises (nesting supported)
  *    - promise resolved with any of the above
  */
-export const dispatch = storeDispatch => (action) => {
+export const dispatch = (storeDispatch) => (action) => {
   if (!(action as any).$next) {
-    (action as any).$next = actn => dispatch(actn);
+    (action as any).$next = (actn) => dispatch(actn);
   }
 
   return storeDispatch(action);
-}
+};
 
 /**
  * Same as dispatch() but also logs the action to server
  */
-export const dispatchAndLog = storeDispatch => <T>(action: T): Promise<T> => {
+export const dispatchAndLog = (storeDispatch) => <T>(action: T): Promise<T> => {
   (action as any).$log = true;
 
   if (!(action as any).$next) {
-    (action as any).$next = actn => dispatchAndLog(storeDispatch)(actn);
+    (action as any).$next = (actn) => dispatchAndLog(storeDispatch)(actn);
   }
 
   return dispatch(storeDispatch)(action);
-}
+};
 
 /**
  * Same as dispatchAndLog() but dispatching is deferred until after logging the action to server
  */
-export const logAndDispatch = storeDispatch => <T>(action: T): Promise<T> => {
+export const logAndDispatch = (storeDispatch) => <T>(action: T): Promise<T> => {
   (action as any).$defer = true;
-  (action as any).$next = actn => logAndDispatch(storeDispatch)(actn);
+  (action as any).$next = (actn) => logAndDispatch(storeDispatch)(actn);
 
   return dispatchAndLog(storeDispatch)(action);
-}
+};
 
 export interface StoreOptions {
   logUrl?: string;
@@ -211,43 +240,54 @@ export interface StoreOptions {
 }
 const defaultStoreOptions: StoreOptions = {
   logUrl: '',
-  server: 'Scala'
-}
+  server: 'Scala',
+};
 
 export const sessionId = uuid();
 
 export class Store<S = any> {
-  private readonly store: ReduxStore<S>; logger: StoreLogger;
+  private readonly store: ReduxStore<S>;
+  logger: StoreLogger;
   private readonly options: StoreOptions;
 
   constructor(branches: IBranches, options: StoreOptions = {}) {
-    this.options = {...defaultStoreOptions, ...options};
-    const {reducers, middlewares} = initBranches(branches);
-    const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || Redux.compose;
-    
+    this.options = { ...defaultStoreOptions, ...options };
+    const { reducers, middlewares } = initBranches(branches);
+    const composeEnhancers =
+      (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || Redux.compose;
 
-    this.logger = new StoreLogger(this.options.logUrl, sessionId, this.options.server);
-    this.store = Redux.createStore(Redux.combineReducers(reducers), composeEnhancers(Redux.applyMiddleware(...[
-      functionMiddleware(this),
-      promiseMiddleware(this),
-      logMiddleware(this.logger),
-      ...middlewares
-    ])));
+    this.logger = new StoreLogger(
+      this.options.logUrl,
+      sessionId,
+      this.options.server
+    );
+    this.store = Redux.createStore(
+      Redux.combineReducers(reducers),
+      composeEnhancers(
+        Redux.applyMiddleware(
+          ...[
+            functionMiddleware(this),
+            promiseMiddleware(this),
+            logMiddleware(this.logger),
+            ...middlewares,
+          ]
+        )
+      )
+    );
 
-    this.dispatch = dispatch(this.store.dispatch)
+    this.dispatch = dispatch(this.store.dispatch);
     this.dispatchAndLog = dispatchAndLog(this.store.dispatch);
     this.logAndDispatch = logAndDispatch(this.store.dispatch);
-
   }
 
   /**
- * Dispatch an action
- *
- * @param action
- *    - single action
- *    - array of actions or promises (nesting supported)
- *    - promise resolved with any of the above
- */
+   * Dispatch an action
+   *
+   * @param action
+   *    - single action
+   *    - array of actions or promises (nesting supported)
+   *    - promise resolved with any of the above
+   */
   dispatch: ReturnType<typeof dispatch>;
 
   /**
@@ -258,7 +298,7 @@ export class Store<S = any> {
   /**
    * Same as dispatchAndLog() but dispatching is deferred until after logging the action to server
    */
-  logAndDispatch: ReturnType<typeof logAndDispatch>
+  logAndDispatch: ReturnType<typeof logAndDispatch>;
 
   /**
    * Returns store's state
@@ -312,6 +352,9 @@ export class Store<S = any> {
  *
  * @param branches  branches to init in the new store
  */
-export default function create(branches: IBranches, options?: StoreOptions): Store {
+export default function create(
+  branches: IBranches,
+  options?: StoreOptions
+): Store {
   return new Store(branches, options);
 }
