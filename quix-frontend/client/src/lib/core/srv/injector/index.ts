@@ -1,4 +1,4 @@
-import {EventEmitter} from '../event-emitter';
+import { EventEmitter } from '../event-emitter';
 
 let _injector = null;
 const eventEmitter = new EventEmitter();
@@ -18,4 +18,4 @@ function on(event: string, callback: (...args: any[]) => any) {
 
 window.addEventListener('biCore.injector.ready', (e: any) => use(e.detail));
 
-export const injector = {use, get, on};
+export const injector = { use, get, on };

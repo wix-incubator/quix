@@ -92,6 +92,11 @@ export const testTable = {
       name: 'tblName1',
       columns: ['col1', 'col2'],
     }),
+    namedWith2ColumnsWithPrefixes: createNewTableInfoObj({
+      type: TableType.Nested,
+      name: 'tblName1',
+      columns: ['innerTbl.col1', 'innerTbl.col2'],
+    }),
     namedWith2Columns34: createNewTableInfoObj({
       type: TableType.Nested,
       name: 'tblName1',
