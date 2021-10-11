@@ -6,14 +6,18 @@ import {
   TableInfo,
   TableType,
 } from '../sql-context-evaluator';
-import { IDbInfoConfig } from '../db-info';
-import { BaseEntity, Column } from '../db-info/types';
+import { IResourcesConfig, IDbInfoConfig, IDwhInfoConfig } from '../db-info';
+import { BaseEntity } from '../db-info/types';
 
 export class SqlAutocompleter implements IAutocompleter {
-  private readonly config: IDbInfoConfig;
+  private readonly dbConfig: IDbInfoConfig;
+  private readonly dwhConfig?: IDwhInfoConfig;
 
-  constructor(config: IDbInfoConfig) {
-    this.config = config;
+  constructor(config: IResourcesConfig) {
+    this.dbConfig = config.dbConfig;
+    if (config.dwhConfig) {
+      this.dwhConfig = config.dwhConfig;
+    }
   }
 
   // methods
@@ -94,19 +98,29 @@ export class SqlAutocompleter implements IAutocompleter {
       tablesToExtract.push(table.name);
     }
 
-    const columnsByTablesPromises: Promise<Column[]>[] = [];
+    const columnsByTablesPromises: Promise<BaseEntity[]>[] = [];
     for (const tableFullName of tablesToExtract) {
       const [catalog, schema, tableName] = tableFullName.split('.');
-      columnsByTablesPromises.push(
-        this.config.getColumnsByTable(catalog, schema, tableName)
-      );
-    }
+      if (tableName === undefined) {
+        const tables = (
+          await this.dwhConfig.getTablesBySchema(catalog, schema)
+        ).map((table) => table.name);
+        tables.forEach((table) =>
+          columnsByTablesPromises.push(
+            this.dwhConfig.getColumnsByTable(catalog, schema, table)
+          )
+        );
+      } else {
+        columnsByTablesPromises.push(
+          this.dbConfig.getColumnsByTable(catalog, schema, tableName)
+        );
+      }
 
-    const columnsByTables = await Promise.all(columnsByTablesPromises);
-    for (const columnsByTable of columnsByTables) {
-      table.columns.push(...columnsByTable.map((column) => column.name));
+      const columnsByTables = await Promise.all(columnsByTablesPromises);
+      for (const columnsByTable of columnsByTables) {
+        table.columns.push(...columnsByTable.map((column) => column.name));
+      }
     }
-
     return table;
   }
 
@@ -122,13 +136,13 @@ export class SqlAutocompleter implements IAutocompleter {
     let entities: BaseEntity[] = [];
     switch (prefixArray.length) {
       case 0:
-        entities = await this.config.getCatalogs();
+        entities = await this.dbConfig.getCatalogs();
         break;
       case 1:
-        entities = await this.config.getSchemasByCatalog(prefix);
+        entities = await this.dbConfig.getSchemasByCatalog(prefix);
         break;
       case 2:
-        entities = await this.config.getTablesBySchema(
+        entities = await this.dbConfig.getTablesBySchema(
           prefixArray[0],
           prefixArray[1]
         );
