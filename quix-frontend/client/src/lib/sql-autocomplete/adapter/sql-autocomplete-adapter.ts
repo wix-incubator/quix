@@ -106,8 +106,8 @@ export class SqlAutocompleter implements IAutocompleter {
         this.dwhConfig &&
         (catalog === 'wt_users' || catalog === 'wt_metasites')
       ) {
-        const schema = catalog;
-        wtColumnsByTables.push(...(await this.getDwhColumnsBySchema(schema)));
+        const schemaName = catalog;
+        wtColumnsByTables.push(...(await this.getDwhColumnsBySchema(schemaName)));
       } else {
         columnsByTablesPromises.push(
           this.dbConfig.getColumnsByTable(catalog, schema, tableName)
@@ -161,7 +161,7 @@ export class SqlAutocompleter implements IAutocompleter {
     const tables = (await this.dwhConfig.getTablesBySchema(schema)).map(
       (table) => table.name
     );
-    let columnsPromises: Promise<DwhColumn[]>[];
+    const columnsPromises: Promise<DwhColumn[]>[] = [];
     for (const table of tables) {
       columnsPromises.push(this.dwhConfig.getColumnsByTable(schema, table));
     }
