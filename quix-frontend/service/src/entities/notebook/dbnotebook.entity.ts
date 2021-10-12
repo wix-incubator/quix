@@ -44,7 +44,7 @@ export class DbNotebook {
   notes?: DbNote[];
 
   @OneToOne(type => DbFileTreeNode, node => node.notebook, {
-    createForeignKeyConstraints: false,
+    onDelete: 'CASCADE',
   })
   fileNode?: DbFileTreeNode;
 

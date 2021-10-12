@@ -43,37 +43,37 @@ export const ExamplesNotebook = {
   } as any
 };
 
-export const HeaderMenu = scope => [
-  {
-    title: 'My notebooks',
-    targetState: 'files',
-    activeStates: ['files', 'notebook'],
-    activeCondition: (app: App, store: Store, state: string, id: string) =>
-      waitForEntity(
-        scope,
-        store,
-        id,
-        state === 'files' ? 'folder' : 'notebook'
-      ).then(entity => isOwner(app, entity))
-  },
-  {
-    title: 'Favorites',
-    targetState: 'favorites',
-    activeCondition: null
-  },
-  {
-    title: 'Users',
-    targetState: 'users',
-    activeCondition: null
-  },
-  {
-    title: 'History',
-    targetState: 'history',
-    activeCondition: null
-  },
-  {
-    title: 'Trash Bin',
-    targetState: 'trashBin',
-    activeCondition: null
-  }
-];
+export const HeaderMenu = (scope) => [
+         {
+           title: 'My notebooks',
+           targetState: 'files',
+           activeStates: ['files', 'notebook'],
+           activeCondition: (
+             app: App,
+             store: Store,
+             state: string,
+             id: string
+           ) =>
+             waitForEntity(
+               scope,
+               store,
+               id,
+               state === 'files' ? 'folder' : 'notebook'
+             ).then((entity) => isOwner(app, entity)),
+         },
+         {
+           title: 'Favorites',
+           targetState: 'favorites',
+           activeCondition: null,
+         },
+         {
+           title: 'Users',
+           targetState: 'users',
+           activeCondition: null,
+         },
+         {
+           title: 'History',
+           targetState: 'history',
+           activeCondition: null,
+         },
+       ];

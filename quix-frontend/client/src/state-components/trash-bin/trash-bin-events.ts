@@ -1,17 +1,16 @@
 import { Store } from '../../lib/store';
-import { App } from '../../lib/app';
 import { IDeletedNotebook, TrashBinActions } from '@wix/quix-shared';
 import { toast } from '../../lib/ui';
 import { prompt } from '../../services/dialog';
 
-export const onPermanentlyDeleteClick = (scope, store: Store, app: App) => (
+export const onPermanentlyDeleteClick = (store: Store) => (
   deletedNotebook: IDeletedNotebook
 ) => {
   store
     .logAndDispatch(
       TrashBinActions.permanentlyDeleteNotebook(deletedNotebook.id)
     )
-    .then((action) => {
+    .then(() => {
       toast.showToast(
         {
           text: `Notebook deleted.`,
@@ -21,10 +20,16 @@ export const onPermanentlyDeleteClick = (scope, store: Store, app: App) => (
       );
     });
 };
+export const onEmptyTrashBinClicked = (scope, store: Store) => () => {
+  store.dispatchAndLog(
+    scope.deletedNotebooks.map((n) => {
+      return TrashBinActions.permanentlyDeleteNotebook(n.id);
+    })
+  );
+};
 
-export const onRestoreClick = (scope, store: Store, app: App) => (
-  deletedNotebook: IDeletedNotebook,
-  folderId: string
+export const onRestoreClick = (scope, store: Store) => (
+  deletedNotebook: IDeletedNotebook
 ) => {
   let restoreFolder = '';
   prompt(
@@ -42,10 +47,10 @@ export const onRestoreClick = (scope, store: Store, app: App) => (
     },
     scope,
     { model: { folder: null } }
-  ).then((res) => {
+  ).then(() => {
     return toast.showToast(
       {
-        text: `Restored To "${restoreFolder}."`,
+        text: `Restored to "${restoreFolder}."`,
         type: 'success',
       },
       3000

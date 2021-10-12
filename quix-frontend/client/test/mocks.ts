@@ -152,7 +152,7 @@ const mocks = {
     const res = [createMockNote('1'), createMockNote('2'), createMockNote('3')];
     res.forEach(
       (note) =>
-      (note.content = `SELECT
+        (note.content = `SELECT
     date_trunc('year', shipdate) as ${text}
     , shipmode
     , sum(quantity) quantity
@@ -250,14 +250,19 @@ ORDER BY 1
     }
     return response;
   },
-  '/api/deletedNotebooks': () => (
-    [createMockDeletedNotebook()]
-  ),
+  '/api/deletedNotebooks': () => [
+    createMockDeletedNotebook('Removed 1'),
+    createMockDeletedNotebook('Bad Queries'),
+    createMockDeletedNotebook('By Mistake'),
+    createMockDeletedNotebook('Trash'),
+  ],
 };
 
-const createMockDeletedNotebook = () => {
-  return createDeletedNotebook();
-}
+const createMockDeletedNotebook = (name?: string) => {
+  return name
+    ? { ...createDeletedNotebook(), name }
+    : createMockDeletedNotebook();
+};
 
 let mockOverrides = {};
 

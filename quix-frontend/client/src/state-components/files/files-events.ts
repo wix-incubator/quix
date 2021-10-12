@@ -137,27 +137,26 @@ export const onUnmarkAll = (scope: IScope, store: Store, app: App) => () => {
 };
 
 export const onMarkedDelete = (scope: IScope, store: Store, app: App) => (
-  files: IFile[]
-) => {
-  console.log(files);
-  store
-    .dispatchAndLog(
-      files.map((file) =>
-        file.type === FileType.folder
-          ? TrashBinActions.moveFolderToTrashBin(file.id)
-          : TrashBinActions.moveNotebookToTrashBin(file.id)
-      )
-    )
-    .then(() =>
-      toast.showToast(
-        {
-          text: `Deleted ${files.length} items`,
-          type: 'success',
-        },
-        3000
-      )
-    );
-};
+         files: IFile[]
+       ) => {
+         store
+           .dispatchAndLog(
+             files.map((file) =>
+               file.type === FileType.folder
+                 ? TrashBinActions.moveFolderToTrashBin(file.id)
+                 : TrashBinActions.moveNotebookToTrashBin(file.id)
+             )
+           )
+           .then(() =>
+             toast.showToast(
+               {
+                 text: `Deleted ${files.length} items`,
+                 type: 'success',
+               },
+               3000
+             )
+           );
+       };
 
 export const $onDestroy = (scope: IScope, store: Store, app: App) => () => {
   store.dispatch(setFolder(null));

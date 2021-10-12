@@ -51,19 +51,19 @@ export class TrashBinPlugin implements EventBusPlugin {
       async (action: IAction<TrashBinActionTypes>) => {
         switch (action.type) {
           case TrashBinActionTypes.moveNotebookToTrashBin:
-            return this.addNotebookReActions(action);
+            return this.addNotebookReactions(action);
           case TrashBinActionTypes.moveFolderToTrashBin:
-            return this.addFolderReActions(action);
+            return this.addFolderReactions(action);
           case TrashBinActionTypes.restoreDeletedNotebook:
-            return this.restoreNotebookReActions(action);
+            return this.restoreNotebookReactions(action);
           case TrashBinActionTypes.permanentlyDeleteNotebook:
-            return this.permanentlyDeleteReActions(action);
+            return this.permanentlyDeleteReactions(action);
         }
       },
     );
   };
 
-  private async restoreNotebookReActions(
+  private async restoreNotebookReactions(
     action: IAction<TrashBinActionTypes, string>,
   ) {
     const deletedNotebook = await this.em.findOneOrFail(
@@ -88,7 +88,7 @@ export class TrashBinPlugin implements EventBusPlugin {
     ];
   }
 
-  private async addNotebookReActions(
+  private async addNotebookReactions(
     action: IAction<TrashBinActionTypes, string>,
   ) {
     const notebook = await this.em.findOneOrFail(DbNotebook, action.id);
@@ -109,7 +109,7 @@ export class TrashBinPlugin implements EventBusPlugin {
     ];
   }
 
-  async addFolderReActions(
+  async addFolderReactions(
     action: IAction<TrashBinActionTypes, string>,
   ): Promise<any> {
     const node = await this.fileTreeNodeRepo.findOneOrFail({id: action.id});
@@ -124,7 +124,7 @@ export class TrashBinPlugin implements EventBusPlugin {
     ];
   }
 
-  private async permanentlyDeleteReActions(
+  private async permanentlyDeleteReactions(
     action: IAction<TrashBinActionTypes, string>,
   ) {
     let result: any[] = [

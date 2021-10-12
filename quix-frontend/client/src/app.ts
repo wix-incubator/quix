@@ -109,6 +109,15 @@ const appBuilder = create<ClientConfigHelper>(
 hooks.bootstrap.call(appBuilder);
 
 appBuilder.plugin('dummy', plugin => {
+
+  plugin.menuItem({ name: 'separator' });
+  plugin.menuItem({
+    name: 'Trash Bin',
+    icon: 'delete',
+    onToggle: (app) => {
+      app.go('trashBin');
+    },
+  });
   plugin.menuItem({name: 'separator'});
   plugin.menuItem({
     name: 'Playground',
