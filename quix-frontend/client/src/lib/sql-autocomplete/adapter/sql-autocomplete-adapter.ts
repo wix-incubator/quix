@@ -7,7 +7,7 @@ import {
   TableType,
 } from '../sql-context-evaluator';
 import { IResourcesConfig, IDbInfoConfig, IDwhInfoConfig } from '../db-info';
-import { BaseEntity } from '../db-info/types';
+import { BaseEntity, DwhColumn } from '../db-info/types';
 
 export class SqlAutocompleter implements IAutocompleter {
   private readonly dbConfig: IDbInfoConfig;
@@ -70,7 +70,7 @@ export class SqlAutocompleter implements IAutocompleter {
     for (const extractedTable of extractedTables) {
       const { name, alias, columns, type } = extractedTable;
       columns.forEach((column) => {
-        const shortColumnName = column.split('.').pop();
+        const shortColumnName = (name === 'wt_users' || 'wt_metasites') ? column.split('.').pop(): column;
         columnsNamesMemory.add(shortColumnName);
 
         if (alias) {
@@ -99,17 +99,15 @@ export class SqlAutocompleter implements IAutocompleter {
     }
 
     const columnsByTablesPromises: Promise<BaseEntity[]>[] = [];
+    const wtColumnsByTables: string[] = [];
     for (const tableFullName of tablesToExtract) {
       const [catalog, schema, tableName] = tableFullName.split('.');
-      if (tableName === undefined) {
-        const tables = (
-          await this.dwhConfig.getTablesBySchema(catalog, schema)
-        ).map((table) => table.name);
-        tables.forEach((table) =>
-          columnsByTablesPromises.push(
-            this.dwhConfig.getColumnsByTable(catalog, schema, table)
-          )
-        );
+      if (
+        this.dwhConfig &&
+        (catalog === 'wt_users' || catalog === 'wt_metasites')
+      ) {
+        const schema = catalog;
+        wtColumnsByTables.push(...(await this.getDwhColumnsBySchema(schema)));
       } else {
         columnsByTablesPromises.push(
           this.dbConfig.getColumnsByTable(catalog, schema, tableName)
@@ -118,7 +116,7 @@ export class SqlAutocompleter implements IAutocompleter {
 
       const columnsByTables = await Promise.all(columnsByTablesPromises);
       for (const columnsByTable of columnsByTables) {
-        table.columns.push(...columnsByTable.map((column) => column.name));
+        table.columns.push(...columnsByTable.map((column) => column.name), ...wtColumnsByTables);
       }
     }
     return table;
@@ -157,5 +155,26 @@ export class SqlAutocompleter implements IAutocompleter {
         entity.type
       )
     );
+  }
+
+  private async getDwhColumnsBySchema(schema: string) {
+    const tables = (await this.dwhConfig.getTablesBySchema(schema)).map(
+      (table) => table.name
+    );
+    let columnsPromises: Promise<DwhColumn[]>[];
+    for (const table of tables) {
+      columnsPromises.push(this.dwhConfig.getColumnsByTable(schema, table));
+    }
+    const allColumnsLists = await Promise.all(columnsPromises);
+    const allFlattenColumns: string[] = [];
+    for (let i = 0; i < tables.length; i++) {
+      allFlattenColumns.push(
+        ...allColumnsLists[i].map((column) => {
+          column.name = ` ${tables[i]}.${column.name}`;
+          return column.name;
+        })
+      );
+    }
+    return allFlattenColumns;
   }
 }

@@ -1,11 +1,26 @@
 import {
   Catalog,
   Column,
+  DwhColumn,
+  DwhTable,
   IDbInfoConfig,
   Schema,
   Table,
 } from './types';
 import axios from 'axios';
+import { IDwhInfoConfig } from '.';
+
+export class DwhInfoService implements IDwhInfoConfig {
+
+  getColumnsByTable = async (schema: string, table: string): Promise<DwhColumn[]> => {
+    return [];
+  }
+
+  getTablesBySchema = async (schema: string): Promise<DwhTable[]> => {
+    return [];
+  }
+  
+}
 
 export class DbInfoService implements IDbInfoConfig {
   private readonly type: string;

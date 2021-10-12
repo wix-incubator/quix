@@ -103,8 +103,8 @@ export interface IDbInfoConfig {
 }
 
 export interface IDwhInfoConfig {
-  getColumnsByTable(catalog: string,schema: string,table: string): Promise<DwhColumn[]>;
-  getTablesBySchema(catalog: string,schema: string): Promise<DwhTable[]>;
+  getColumnsByTable(schema: string,table: string): Promise<DwhColumn[]>;
+  getTablesBySchema(schema: string): Promise<DwhTable[]>;
 }
 
 export interface IResourcesConfig {
