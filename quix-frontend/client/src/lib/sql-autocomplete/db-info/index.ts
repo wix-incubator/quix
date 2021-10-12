@@ -1,4 +1,4 @@
-import { DbInfoService } from './db-info-service';
-import { IDbInfoConfig, Catalog, Schema, Table, Column } from './types';
+import { DbInfoService, DwhInfoService } from './db-info-service';
+import { IResourcesConfig, IDwhInfoConfig, IDbInfoConfig, Catalog, Schema, Table, Column, DwhTable, DwhColumn} from './types';
 
-export { DbInfoService, IDbInfoConfig, Catalog, Schema, Table, Column };
+export { DbInfoService, IDbInfoConfig, DwhInfoService, IDwhInfoConfig, IResourcesConfig, Catalog, Schema, Table, Column, DwhTable, DwhColumn};

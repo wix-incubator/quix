@@ -6,22 +6,27 @@ import {
   TableInfo,
   TableType,
 } from '../sql-context-evaluator';
-import { IDbInfoConfig } from '../db-info';
-import { BaseEntity, Column } from '../db-info/types';
+import { IResourcesConfig, IDbInfoConfig, IDwhInfoConfig } from '../db-info';
+import { BaseEntity, DwhColumn } from '../db-info/types';
 import debounce from 'debounce-async';
 
 
 export class SqlAutocompleter implements IAutocompleter {
-  private readonly config: IDbInfoConfig;
+  private readonly dbConfig: IDbInfoConfig;
+  private readonly dwhConfig?: IDwhInfoConfig;
   private readonly search: Function;
   private prefix: string;
   private lastCompleters: ICompleterItem[];
   
 
-  constructor(config: IDbInfoConfig) {
-    this.config = config;
-    this.search = debounce(config.search, 300);
+  constructor(config: IResourcesConfig) {
+    this.dbConfig = config.dbConfig;
+    this.search = debounce(config.dbConfig.search, 300);
     this.lastCompleters = [];
+    this.dbConfig = config.dbConfig;
+    if (config.dwhConfig) {
+      this.dwhConfig = config.dwhConfig;
+    }
   }
 
   // methods
@@ -79,7 +84,7 @@ export class SqlAutocompleter implements IAutocompleter {
     for (const extractedTable of extractedTables) {
       const { name, alias, columns, type } = extractedTable;
       columns.forEach((column) => {
-        const shortColumnName = column.split('.').pop();
+        const shortColumnName = (name === 'wt_users' || 'wt_metasites') ? column.split('.').pop(): column;
         columnsNamesMemory.add(shortColumnName);
 
         if (alias) {
@@ -107,19 +112,27 @@ export class SqlAutocompleter implements IAutocompleter {
       tablesToExtract.push(table.name);
     }
 
-    const columnsByTablesPromises: Promise<Column[]>[] = [];
+    const columnsByTablesPromises: Promise<BaseEntity[]>[] = [];
+    const wtColumnsByTables: string[] = [];
     for (const tableFullName of tablesToExtract) {
       const [catalog, schema, tableName] = tableFullName.split('.');
-      columnsByTablesPromises.push(
-        this.config.getColumnsByTable(catalog, schema, tableName)
-      );
-    }
+      if (
+        this.dwhConfig &&
+        (catalog === 'wt_users' || catalog === 'wt_metasites')
+      ) {
+        const schemaName = catalog;
+        wtColumnsByTables.push(...(await this.getDwhColumnsBySchema(schemaName)));
+      } else {
+        columnsByTablesPromises.push(
+          this.dbConfig.getColumnsByTable(catalog, schema, tableName)
+        );
+      }
 
-    const columnsByTables = await Promise.all(columnsByTablesPromises);
-    for (const columnsByTable of columnsByTables) {
-      table.columns.push(...columnsByTable.map((column) => column.name));
+      const columnsByTables = await Promise.all(columnsByTablesPromises);
+      for (const columnsByTable of columnsByTables) {
+        table.columns.push(...columnsByTable.map((column) => column.name), ...wtColumnsByTables);
+      }
     }
-
     return table;
   }
 
@@ -135,13 +148,13 @@ export class SqlAutocompleter implements IAutocompleter {
     let entities: BaseEntity[] = [];
     switch (prefixArray.length) {
       case 0:
-        entities = await this.config.getCatalogs();
+        entities = await this.dbConfig.getCatalogs();
         break;
       case 1:
-        entities = await this.config.getSchemasByCatalog(prefix);
+        entities = await this.dbConfig.getSchemasByCatalog(prefix);
         break;
       case 2:
-        entities = await this.config.getTablesBySchema(
+        entities = await this.dbConfig.getTablesBySchema(
           prefixArray[0],
           prefixArray[1]
         );
@@ -156,6 +169,7 @@ export class SqlAutocompleter implements IAutocompleter {
       )
     );
   }
+
 
   private async searchEntitiesFromDb(
     type: string,
@@ -181,4 +195,26 @@ export class SqlAutocompleter implements IAutocompleter {
     }
     return [];
   }
+
+  private async getDwhColumnsBySchema(schema: string) {
+    const tables = (await this.dwhConfig.getTablesBySchema(schema)).map(
+      (table) => table.name
+    );
+    const columnsPromises: Promise<DwhColumn[]>[] = [];
+    for (const table of tables) {
+      columnsPromises.push(this.dwhConfig.getColumnsByTable(schema, table));
+    }
+    const allColumnsLists = await Promise.all(columnsPromises);
+    const allFlattenColumns: string[] = [];
+    for (let i = 0; i < tables.length; i++) {
+      allFlattenColumns.push(
+        ...allColumnsLists[i].map((column) => {
+          column.name = ` ${tables[i]}.${column.name}`;
+          return column.name;
+        })
+      );
+    }
+    return allFlattenColumns;
+  }
 }
+

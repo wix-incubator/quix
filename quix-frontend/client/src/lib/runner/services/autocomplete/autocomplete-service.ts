@@ -7,7 +7,7 @@ import {
   getQueryAndCursorPositionFromEditor,
   makeCompletionItem,
 } from './autocomplete-utils';
-import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
+import { IResourcesConfig } from '../../../sql-autocomplete/db-info';
 import {
   evaluateContextFromPosition,
   QueryContext,
@@ -54,7 +54,7 @@ export async function setupCompleters(
   editorInstance: CodeEditorInstance,
   type: string,
   apiBasePath = '',
-  dbInfoService?: IDbInfoConfig
+  dbInfoService?: IResourcesConfig
 ) {
   if (!dbInfoService) {
     setupOldCompleter(editorInstance, type, apiBasePath);
@@ -70,7 +70,7 @@ export async function setupCompleters(
   const snippets = getSnippetsCompletions();
 
   editorInstance.addOnDemandCompleter(
-    /[\w.]+/,
+    /(\s)||([\w.]+)/,
     ((prefix: string, session: IEditSession) => {
       const { query, position } = getQueryAndCursorPositionFromEditor(
         editorInstance,
