@@ -60,22 +60,32 @@ export async function setupCompleters(
 
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();
-      all = all.reduce((resultArr: AceCompletion[], completion) => {
-        const index = completion.value.toLowerCase().indexOf(lowerCasedPrefix);
+      const prefixMatchIndexMap = new Map<String, Number>();
 
-        if (index !== -1) {
-          completion.matchMask = createMatchMask(
-            index,
-            lowerCasedPrefix.length
-          );
-          resultArr.push(completion);
-        }
+      all = all
+        .reduce((resultArr: AceCompletion[], completionItem) => {
+          const index = completionItem.value
+            .toLowerCase()
+            .indexOf(lowerCasedPrefix);
 
-        return resultArr;
-      }, []);
+          prefixMatchIndexMap[completionItem.value] = index;
+
+          if (index !== -1) {
+            completionItem.matchMask = createMatchMask(
+              index,
+              lowerCasedPrefix.length
+            );
+            resultArr.push(completionItem);
+          }
+
+          return resultArr;
+        }, [])
+        .sort(
+          (a, b) => prefixMatchIndexMap[a.value] - prefixMatchIndexMap[b.value]
+        );
     }
 
-    return all.sort((a, b) => a.matchMask?.length - b.matchMask?.length);
+    return all;
   };
 
   editorInstance.addOnDemandCompleter(/[\w.]+/, completerFn as any, {
