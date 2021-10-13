@@ -4,50 +4,18 @@ import { ICompleterItem as AceCompletion } from '../../../code-editor/services/c
 // import { initSqlWorker } from '../workers/sql-parser-worker';
 import {
   createMatchMask,
+  getKeywordsCompletions,
   getQueryAndCursorPositionFromEditor,
-  makeCompletionItem,
+  getSnippetsCompletions,
 } from './autocomplete-utils';
 import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
 import {
   evaluateContextFromPosition,
   QueryContext,
 } from '../../../sql-autocomplete/sql-context-evaluator';
-import { reservedPrestoWords } from '../../../sql-autocomplete/languge/reserved-words';
 import { SqlAutocompleter } from '../../../sql-autocomplete/adapter/sql-autocomplete-adapter';
 import { IEditSession } from 'brace';
 import { setupOldCompleter } from './old-autocomplete-service';
-
-let keywords: AceCompletion[] = [];
-let snippets: AceCompletion[] = [];
-
-function getKeywordsCompletions(): AceCompletion[] {
-  // TODO: FIND A WAY TO FETCH KEYWORDS FROM ANTLR GRAMMAR
-  keywords =
-    keywords ??
-    reservedPrestoWords.map((keyword) =>
-      makeCompletionItem(keyword, 'keyword')
-    );
-  return keywords;
-}
-
-function getSnippetsCompletions(): AceCompletion[] {
-  snippets =
-    snippets ??
-    [
-      [
-        'SELECT * FROM table_name WHERE column_name > 10 ORDER BY column_name',
-        'Simple Query',
-      ],
-      ['WITH table_name AS (SELECT * FROM table_name)', 'With Query'],
-    ].map(([snippet, caption]) =>
-      makeCompletionItem(
-        snippet,
-        'snippet',
-        caption !== '' ? caption : undefined
-      )
-    );
-  return snippets;
-}
 
 /* tslint:disable:no-shadowed-variable */
 export async function setupCompleters(
@@ -66,51 +34,53 @@ export async function setupCompleters(
 
   editorInstance.setLiveAutocompletion(true);
 
-  const keywords = getKeywordsCompletions();
-  const snippets = getSnippetsCompletions();
+  const keywordsCompletions = getKeywordsCompletions();
+  const snippetsCompletions = getSnippetsCompletions();
 
-  editorInstance.addOnDemandCompleter(
-    /[\w.]+/,
-    ((prefix: string, session: IEditSession) => {
-      const { query, position } = getQueryAndCursorPositionFromEditor(
-        editorInstance,
-        session
-      );
-      const queryContext: QueryContext = evaluateContextFromPosition(
-        query,
-        position
-      );
-      const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
-        queryContext
-      );
+  const completerFn = async (prefix: string, session: IEditSession) => {
+    const { query, position } = getQueryAndCursorPositionFromEditor(
+      editorInstance,
+      session
+    );
+    const queryContext: QueryContext = evaluateContextFromPosition(
+      query,
+      position
+    );
+    const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
+      queryContext
+    );
 
-      return Promise.all([keywords, snippets, contextCompletions]).then(
-        ([keywords, snippets, contextCompletions]) => {
-          let all = [...contextCompletions, ...keywords, ...snippets];
+    const [keywords, snippets, completions] = await Promise.all([
+      keywordsCompletions,
+      snippetsCompletions,
+      contextCompletions,
+    ]);
 
-          if (prefix) {
-            const lowerCasedPrefix = prefix.toLowerCase();
-            all = all.reduce((resultArr: AceCompletion[], completion) => {
-              const index = completion.value
-                .toLowerCase()
-                .indexOf(lowerCasedPrefix);
+    let all = [...completions, ...keywords, ...snippets];
 
-              if (index !== -1) {
-                completion.matchMask = createMatchMask(
-                  index,
-                  lowerCasedPrefix.length
-                );
-                resultArr.push(completion);
-              }
+    if (prefix) {
+      const lowerCasedPrefix = prefix.trim().toLowerCase();
+      all = all.reduce((resultArr: AceCompletion[], completion) => {
+        const index = completion.value.toLowerCase().indexOf(lowerCasedPrefix);
 
-              return resultArr;
-            }, []);
-          }
-
-          return all.sort((a, b) => a.matchMask?.length - b.matchMask?.length);
+        if (index !== -1) {
+          completion.matchMask = createMatchMask(
+            index,
+            lowerCasedPrefix.length
+          );
+          resultArr.push(completion);
         }
-      );
-    }) as any,
-    { acceptEmptyString: true }
-  );
+
+        return resultArr;
+      }, []);
+    }
+
+    return all.sort((a, b) => a.matchMask?.length - b.matchMask?.length);
+  };
+
+  editorInstance.addOnDemandCompleter(/[\w.]+/, completerFn as any, {
+    acceptEmptyString: true,
+  });
+
+  editorInstance.addOnDemandCompleter(/[\s]+/, completerFn as any);
 }

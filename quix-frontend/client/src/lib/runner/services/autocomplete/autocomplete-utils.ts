@@ -3,6 +3,39 @@
 import { IEditSession } from 'brace';
 import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem } from '../../../code-editor/services/code-editor-completer';
+import { reservedPrestoWords } from '../../../sql-autocomplete/languge/reserved-words';
+
+let keywords: ICompleterItem[] = [];
+let snippets: ICompleterItem[] = [];
+
+export const getKeywordsCompletions = (): ICompleterItem[] => {
+  // TODO: FIND A WAY TO FETCH KEYWORDS FROM ANTLR GRAMMAR
+  keywords =
+    keywords ??
+    reservedPrestoWords.map((keyword) =>
+      makeCompletionItem(keyword, 'keyword')
+    );
+  return keywords;
+};
+
+export const getSnippetsCompletions = (): ICompleterItem[] => {
+  snippets =
+    snippets ??
+    [
+      [
+        'SELECT * FROM table_name WHERE column_name > 10 ORDER BY column_name',
+        'Simple Query',
+      ],
+      ['WITH table_name AS (SELECT * FROM table_name)', 'With Query'],
+    ].map(([snippet, caption]) =>
+      makeCompletionItem(
+        snippet,
+        'snippet',
+        caption !== '' ? caption : undefined
+      )
+    );
+  return snippets;
+};
 
 /**
  * create an array of bitmaps.
@@ -12,7 +45,7 @@ import { ICompleterItem } from '../../../code-editor/services/code-editor-comple
  * @param {number} length
  * @returns {number[]}
  */
-export function createMatchMask(start: number, length: number): number[] {
+export const createMatchMask = (start: number, length: number): number[] => {
   const res = [];
 
   for (let i = start; i < start + length; i++) {
@@ -23,7 +56,7 @@ export function createMatchMask(start: number, length: number): number[] {
   }
 
   return res;
-}
+};
 
 export const makeCompletionItem = (
   value: string,
@@ -31,7 +64,6 @@ export const makeCompletionItem = (
   caption?: string,
   matchMask?: number[]
 ): ICompleterItem => {
-  // const completer = Object.create(loggerPrototype);
   const completer = {
     value,
     meta,
