@@ -1,4 +1,7 @@
-import { SqlBaseListener, SqlBaseParser } from '../../language-parsers/presto-grammar';
+import {
+  SqlBaseListener,
+  SqlBaseParser,
+} from '../../language-parsers/presto-grammar';
 import { ContextType } from './types';
 
 export class PrestoContextListener extends SqlBaseListener {
@@ -63,9 +66,21 @@ export class PrestoContextListener extends SqlBaseListener {
     }
   }
 
+  exitColumnReference(ctx: any) {
+    if (!this.nodeFound) {
+      this.contextType = ContextType.Undefined;
+    }
+  }
+
   enterSelectSingle(ctx: any) {
     if (!this.nodeFound) {
       this.contextType = ContextType.Column;
+    }
+  }
+
+  exitSelectSingle(ctx: any) {
+    if (!this.nodeFound) {
+      this.contextType = ContextType.Undefined;
     }
   }
 
@@ -75,9 +90,21 @@ export class PrestoContextListener extends SqlBaseListener {
     }
   }
 
+  exitJoinCriteria(ctx: any) {
+    if (!this.nodeFound) {
+      this.contextType = ContextType.Undefined;
+    }
+  }
+
   enterTableName(ctx: any) {
     if (!this.nodeFound) {
       this.contextType = ContextType.Table;
+    }
+  }
+
+  exitTableName(ctx: any) {
+    if (!this.nodeFound) {
+      this.contextType = ContextType.Undefined;
     }
   }
 
