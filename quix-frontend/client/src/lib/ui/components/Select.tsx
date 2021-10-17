@@ -80,6 +80,7 @@ interface ISelect {
   liDataHook?: string;
   onOptionChange?(options: any): void;
   Highlighter?: React.ComponentType<HighlighterProps>;
+  readonly?: boolean;
 }
 
 interface a extends ISelect, ObjectTypes {}
@@ -96,6 +97,7 @@ const Select = ({
   liDataHook,
   onOptionChange,
   Highlighter,
+  readonly,
 }: a | b) => {
 
   const classes = useStyles();
@@ -230,6 +232,7 @@ const Select = ({
     <div>
       <div {...getRootProps()} className={classes.inputArea} onClick={() => inputElement.current.select()}>
         <Input
+          disabled={readonly}
           {...getInputProps()}
           fullWidth={true}
           onKeyUp={(e) => {
@@ -245,9 +248,9 @@ const Select = ({
           }}
           disableUnderline
           inputRef={inputElement}
-          inputProps={{ style: { cursor: 'pointer'}}}
-          style={{cursor: 'pointer'}}
-          endAdornment={
+          inputProps={{ style: { cursor: readonly ? null : 'pointer' }}}
+          style={{cursor: readonly ? null : 'pointer'}}
+          endAdornment={!readonly &&
               <ExpandMoreIcon
               fontSize='small'
               />
@@ -256,7 +259,7 @@ const Select = ({
           data-hook={inputDataHook}
         />
       </div>
-      { open ?
+      { !readonly && open ?
         <List className={`${classes.list} bi-dropdown-menu`} {...getListboxProps()}>
           {{
           'Open': 
@@ -276,31 +279,31 @@ const Select = ({
           'Result': NoMatchesState(),
 
           'Content': 
-          groupedOptions.length ?
-            groupedOptions.map((option, index) => {
-              const currentOptionLabel = getOptionLabelValue(option, title);
-              const selectedOptionLabel = getOptionLabelValue(selectedOption, title);
+            groupedOptions.length ?
+              groupedOptions.map((option, index) => {
+                const currentOptionLabel = getOptionLabelValue(option, title);
+                const selectedOptionLabel = getOptionLabelValue(selectedOption, title);
 
-              let currentClassName
-              if (primaryLabel && (index === 0) && primaryOptionLabel === currentOptionLabel) {
-                currentClassName = classes.primaryOption;
-              }
-              else if (currentOptionLabel === selectedOptionLabel) {
-                currentClassName = classes.bold;
-              }
+                let currentClassName
+                if (primaryLabel && (index === 0) && primaryOptionLabel === currentOptionLabel) {
+                  currentClassName = classes.primaryOption;
+                }
+                else if (currentOptionLabel === selectedOptionLabel) {
+                  currentClassName = classes.bold;
+                }
 
-              return (
-                <ListItem {...getOptionProps({ option, index })} className={currentClassName} data-hook={liDataHook}>
-                  {isFiltering && Highlighter ?
-                    <Highlighter
-                      term={currentOptionLabel}
-                      filter={inputProps.value}
-                    /> :
-                    currentOptionLabel
-                  }
-                </ListItem>
-            )})
-            : NoMatchesState()
+                return (
+                  <ListItem {...getOptionProps({ option, index })} className={currentClassName} data-hook={liDataHook}>
+                    {isFiltering && Highlighter ?
+                      <Highlighter
+                        term={currentOptionLabel}
+                        filter={inputProps.value}
+                      /> :
+                      currentOptionLabel
+                    }
+                  </ListItem>
+              )})
+              : NoMatchesState()
         }[viewState.get()]}
         </List> : null
       }
