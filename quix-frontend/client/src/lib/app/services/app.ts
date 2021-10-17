@@ -7,7 +7,7 @@ import {Options} from '../types';
 
 export interface IMenuItem {
   name: string;
-  icon?: string;
+  icon?: string | Function;
   state?: string;
   template?: string;
   compiled?: string;

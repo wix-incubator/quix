@@ -5,10 +5,6 @@ import {IDeletedNotebook} from '@wix/quix-shared';
 import {DbUser, DbDeletedNotebook} from '../../../entities';
 import {convertDbDeletedNotebook} from '../../../entities/deleted-notebook/dbdeleted-notebook.entity';
 
-type GetDeletedNotebooksQueryReturnValue = DbDeletedNotebook & {
-  deletedNotebookOwnerDetails?: DbUser;
-};
-
 @Injectable()
 export class DeletedNotebooksService {
   constructor(
@@ -30,5 +26,9 @@ export class DeletedNotebooksService {
 
     const res = await query.getMany();
     return res.map(dn => convertDbDeletedNotebook(dn));
+  }
+
+  async getCountDeletedNotebooksForUser(user: string): Promise<number> {
+    return await this.deletedNotebooksRepo.count({owner: user});
   }
 }

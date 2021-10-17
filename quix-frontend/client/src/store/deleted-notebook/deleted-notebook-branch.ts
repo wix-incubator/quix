@@ -1,9 +1,13 @@
 import { combineReducers } from 'redux';
 import { IBranch } from '../../lib/store';
 import { App } from '../../lib/app';
-import { composeReducers, IDeletedNotebook, clientDeletedNotebookReducer } from '@wix/quix-shared';
+import {
+  composeReducers,
+  IDeletedNotebook,
+  clientDeletedNotebookReducer,
+} from '@wix/quix-shared';
 
-export default (app: App): IBranch => register => {
+export default (app: App): IBranch => (register) => {
   const deletedNotebooks = composeReducers(
     clientDeletedNotebookReducer,
     (state: IDeletedNotebook[] = [], action: any) => {
@@ -14,7 +18,8 @@ export default (app: App): IBranch => register => {
       }
 
       return state;
-    });
+    }
+  );
 
   const error = (state: any = null, action: any) => {
     switch (action.type) {
@@ -26,7 +31,7 @@ export default (app: App): IBranch => register => {
     }
 
     return state;
-  }
+  };
 
   register(combineReducers({ deletedNotebooks, error }));
 };

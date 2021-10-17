@@ -27,7 +27,9 @@ export const MockNoteContent = {
 };
 
 const mocks = {
-  '/api/user': () => createUser(),
+  '/api/user': () => {
+    return { ...createUser(), stats: { trashBinCount: trashBin.length } };
+  },
   '/api/events': () => [200],
   '/api/users': () =>
     [...Array(200).keys()].map((key) =>
@@ -250,12 +252,7 @@ ORDER BY 1
     }
     return response;
   },
-  '/api/deletedNotebooks': () => [
-    createMockDeletedNotebook('Removed 1'),
-    createMockDeletedNotebook('Bad Queries'),
-    createMockDeletedNotebook('By Mistake'),
-    createMockDeletedNotebook('Trash'),
-  ],
+  '/api/deletedNotebooks': () => [...trashBin],
 };
 
 const createMockDeletedNotebook = (name?: string) => {
@@ -263,6 +260,25 @@ const createMockDeletedNotebook = (name?: string) => {
     ? { ...createDeletedNotebook(), name }
     : createMockDeletedNotebook();
 };
+
+const trashBin = [
+  createMockDeletedNotebook('Removed 1'),
+  createMockDeletedNotebook('Bad Queries'),
+  createMockDeletedNotebook('By Mistake'),
+  createMockDeletedNotebook('Trash'),
+  createMockDeletedNotebook('Removed 1'),
+  createMockDeletedNotebook('Bad Queries'),
+  createMockDeletedNotebook('By Mistake'),
+  createMockDeletedNotebook('Trash'),
+  createMockDeletedNotebook('Removed 1'),
+  createMockDeletedNotebook('Bad Queries'),
+  createMockDeletedNotebook('By Mistake'),
+  createMockDeletedNotebook('Trash'),
+  createMockDeletedNotebook('Removed 1'),
+  createMockDeletedNotebook('Bad Queries'),
+  createMockDeletedNotebook('By Mistake'),
+  createMockDeletedNotebook('Trash'),
+];
 
 let mockOverrides = {};
 

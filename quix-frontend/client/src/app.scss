@@ -10,7 +10,7 @@ bi-app {
   $splashWidth: 150px;
   $splashHeight: 208px;
 
-  >.quix-splash {
+  > .quix-splash {
     position: absolute;
     width: $splashWidth;
     height: $splashHeight;
@@ -26,7 +26,7 @@ bi-app {
 }
 
 .quix-content {
-  box-shadow: inset 0 1px 6px rgba(0, 0, 0, .05);
+  box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.05);
 
   .bi-section {
     &.bi-theme--dark {
@@ -51,7 +51,7 @@ bi-app {
   }
 
   i {
-    transition: color, .1s;
+    transition: color, 0.1s;
     color: $grey--300 !important;
     font-size: 23px;
 
@@ -92,12 +92,12 @@ bi-app {
 .bi-table-container.bi-table--nav,
 bi-tbl.bi-table--nav {
   td {
-    [contenteditable="false"] {
+    [contenteditable='false'] {
       padding: 0 !important;
       border: 0 !important;
     }
 
-    [contenteditable="true"] {
+    [contenteditable='true'] {
       position: relative;
       top: 3px;
       padding-top: 0 !important;
@@ -122,4 +122,20 @@ bi-tbl.bi-table--nav {
 .bi-toast {
   left: 54px !important;
   bottom: 12px !important;
+}
+.trash-bin-icon {
+  position: relative;
+  .trash-bin-count {
+    position: absolute;
+    left: 17px;
+    top: 0;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    background-color: #fc4a4a;
+    color: white;
+    z-index: 2;
+    text-align: center;
+    font-size: 0.8em;
+  }
 }

@@ -106,8 +106,10 @@ function logMiddleware(logger) {
     }
 
     const handleReactions = (data: any) => {
+      console.log('handleReactions:', data);
       if (data && data.reactions && data.reactions.length > 0) {
         data.reactions.forEach((reaction) => {
+          console.log('handleReactions_dispatch:', data);
           store.dispatch(reaction);
         });
       }
@@ -119,8 +121,7 @@ function logMiddleware(logger) {
         : logAction(logger, action);
 
       if ($defer && !$bulk) {
-        res.then((data) => {
-          handleReactions(data);
+        res.then(() => {
           return next(action);
         });
       }

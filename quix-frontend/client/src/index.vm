@@ -10,11 +10,10 @@
     <link href="${clientTopology.staticsBaseUrl}app#if(!${mode.debug}).min#{end}.css" rel="stylesheet">
   </head>
   <body class="bi-c" ng-controller="app">
-    <bi-app app="app">
+    <bi-app app="app" store="store">
       <header class="bi-align bi-grow">
         <quix-header class="bi-align"><quix-header>
       </header>
-
       <div class="quix-splash bi-c bi-s-v--x3 bi-fade-in">
         <img class="quix-splash-logo" src="${clientTopology.staticsBaseUrl}assets/logo_big.png">
         <span class="bi-center bi-text--ui bi-text--large bi-muted">Loading...</span>

@@ -11,27 +11,27 @@ export const onPermanentlyDeleteClick = (store: Store) => (
       TrashBinActions.permanentlyDeleteNotebook(deletedNotebook.id)
     )
     .then(() => {
-      toast.showToast(
-        {
-          text: `Notebook deleted.`,
-          type: 'success',
-        },
-        3000
-      );
+      successToast(`Notebook deleted.`);
     });
 };
+
 export const onEmptyTrashBinClicked = (scope, store: Store) => () => {
-  store.dispatchAndLog(
-    scope.deletedNotebooks.map((n) => {
-      return TrashBinActions.permanentlyDeleteNotebook(n.id);
-    })
-  );
+  store
+    .dispatchAndLog(
+      scope.deletedNotebooks.map((n) =>
+        TrashBinActions.permanentlyDeleteNotebook(n.id)
+      )
+    )
+    .then(() => {
+      successToast(`Trash Bin is Empty.`);
+    });
 };
 
 export const onRestoreClick = (scope, store: Store) => (
   deletedNotebook: IDeletedNotebook
 ) => {
   let restoreFolder = '';
+
   prompt(
     {
       title: 'Restore notebook',
@@ -48,12 +48,17 @@ export const onRestoreClick = (scope, store: Store) => (
     scope,
     { model: { folder: null } }
   ).then(() => {
-    return toast.showToast(
-      {
-        text: `Restored to "${restoreFolder}."`,
-        type: 'success',
-      },
-      3000
-    );
+    return successToast(`Restored to "${restoreFolder}."`);
   });
 };
+
+function successToast(text: string) {
+  toast.showToast(
+    {
+      text,
+      type: 'success',
+    },
+    3000
+  );
+}
+

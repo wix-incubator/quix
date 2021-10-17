@@ -1,20 +1,26 @@
 import { isArray } from 'lodash';
 import {setupNotifications} from './bootstrap';
-import create from './lib/app';
-import {hooks} from './hooks';
+import create, { App } from './lib/app';
+import { hooks } from './hooks';
 import * as components from './components';
 import * as stateComponents from './state-components';
 import * as reactComponents from './react-components';
-import {branches, initCache} from './store';
-import {config as runnerConfig} from './lib/runner';
-import {config as resourcesConfig} from './services/resources';
-import {pluginManager} from './plugins';
-import {ClientConfigHelper, ModuleComponentType} from '@wix/quix-shared';
-import {openTempQuery} from './services';
-import {inject} from './lib/core';
-import { AUTO_PARAMS, AUTO_PARAM_DEFAULTS, AUTO_PARAM_TYPES } from './lib/code-editor/services/param-parser/param-types';
+import { branches, initCache } from './store';
+import { config as runnerConfig } from './lib/runner';
+import { config as resourcesConfig } from './services/resources';
+import { pluginManager } from './plugins';
+import { ClientConfigHelper, ModuleComponentType } from '@wix/quix-shared';
+import { openTempQuery } from './services';
+import { inject } from './lib/core';
+import {
+  AUTO_PARAMS,
+  AUTO_PARAM_DEFAULTS,
+  AUTO_PARAM_TYPES,
+} from './lib/code-editor/services/param-parser/param-types';
+import { Store } from './lib/store';
+import { setStats } from './store/app/app-actions';
 
-export {hooks} from './hooks';
+export { hooks } from './hooks';
 
 const clientConfig = ClientConfigHelper.load(window.quixConfig);
 
@@ -37,10 +43,10 @@ const appBuilder = create<ClientConfigHelper>(
     logoUrl: `${staticsBaseUrl}assets/logo_big.png`,
     apiBasePath,
   },
-  ['bi.app', 'bi.runner', 'bi.fileExplorer'],
+  ['bi.app', 'bi.runner', 'bi.fileExplorer']
 )
   .config(clientConfig)
-  .plugin('app', plugin => {
+  .plugin('app', (plugin) => {
     plugin.components(components);
     plugin.stateComponents(stateComponents);
     plugin.reactComponents(reactComponents);
@@ -52,7 +58,7 @@ const appBuilder = create<ClientConfigHelper>(
       template:
         '<quix-files-sidebar class="bi-c-h bi-grow"></quix-files-sidebar>',
     });
-    
+
     plugin.menuItem({
       name: 'DB Explorer',
       icon: 'storage',
@@ -63,7 +69,7 @@ const appBuilder = create<ClientConfigHelper>(
       const autoParams = hooks.note.config.editor.autoParams.call(app, store);
 
       if (isArray(autoParams)) {
-        autoParams.forEach(({name, type, defaultValue}) => {
+        autoParams.forEach(({ name, type, defaultValue }) => {
           AUTO_PARAMS.push(name);
           AUTO_PARAM_TYPES[name] = type;
           AUTO_PARAM_DEFAULTS[name] = defaultValue;
@@ -81,13 +87,15 @@ const appBuilder = create<ClientConfigHelper>(
 
       clientConfig
         .getModulesByComponent(ModuleComponentType.Db)
-        .forEach(({id, engine}) => {
-          pluginManager.module(ModuleComponentType.Db).plugin(id, engine, app, store);
+        .forEach(({ id, engine }) => {
+          pluginManager
+            .module(ModuleComponentType.Db)
+            .plugin(id, engine, app, store);
         });
 
       clientConfig
         .getModulesByComponent(ModuleComponentType.Note)
-        .forEach(({id, engine}) => {
+        .forEach(({ id, engine }) => {
           pluginManager
             .module(ModuleComponentType.Note)
             .plugin(id, engine, app, store);
@@ -100,25 +108,67 @@ const appBuilder = create<ClientConfigHelper>(
       initCache(store);
       setupNotifications(staticsBaseUrl);
 
-      app
-        .getModule()
-        .controller('app', ['$scope', scope => (scope.app = app)] as any);
+      app.getModule().controller('app', [
+        '$scope',
+        (scope) => {
+          scope.app = app;
+          scope.store = store;
+        },
+      ] as any);
+
+      app.getNavigator().on('ready', (user) => {
+        store.dispatch(setStats(user.getStats()));
+      });
     });
   });
 
 hooks.bootstrap.call(appBuilder);
 
-appBuilder.plugin('dummy', plugin => {
-
+appBuilder.plugin('dummy', (plugin) => {
   plugin.menuItem({ name: 'separator' });
   plugin.menuItem({
     name: 'Trash Bin',
-    icon: 'delete',
+    icon: (app: App, store: Store, scope: any) => {
+      scope = scope.$new(true);
+      store.subscribe(
+        'app.stats.trashBinCount',
+        (count) => {
+          scope.count = count;
+        },
+        scope
+      );
+
+      const trashIconHtml =
+        scope.count > 0
+          ? /*html*/ `
+        
+      <div class="trash-bin-count">{{count}}</div>
+      <i
+        class="bi-action bi-icon"
+        ng-class="{'bi-active': item === vm.menu.current}"
+        title="{{::item.name}}"
+        role="button"
+        data-hook="app-menu-{{::item.name}}"
+      >delete</i>`
+          : /*html*/ `
+    <i
+      class="bi-action bi-icon"
+      ng-class="{'bi-active': item === vm.menu.current}"
+      title="{{::item.name}}"
+      role="button"
+      data-hook="app-menu-{{::item.name}}"
+    >delete_outline</i>`;
+      return inject('$compile')(
+        /*html*/
+
+        `<div class="trash-bin-icon">${trashIconHtml}</div>`
+      )(scope);
+    },
     onToggle: (app) => {
       app.go('trashBin');
     },
   });
-  plugin.menuItem({name: 'separator'});
+  plugin.menuItem({ name: 'separator' });
   plugin.menuItem({
     name: 'Playground',
     icon: 'code',

@@ -40,24 +40,26 @@ export const trashBinTableFields = (
         return (
           <div className='bi-justify-right bi-align bi-s-h'>
             <button
-              className='bi-button--success bi-button--sm'
+              className='bi-button--success bi-button--sm bi-s-h'
               title='Restore Notebook to Folder'
               onClick={(e) => {
                 e.stopPropagation();
                 onRestoreClicked(deletedNotebook);
               }}
             >
-              Restore
+              <i className='bi-icon--sm'>replay</i>
+              <span>Restore</span>
             </button>
             <button
-              className='bi-button--danger bi-button--sm'
+              className='bi-button--danger bi-button--sm bi-s-h'
               title='Permanently Delete Notebook'
               onClick={(e) => {
                 e.stopPropagation();
                 onPermanentlyDeleteClicked(deletedNotebook);
               }}
             >
-              Delete
+              <i className='bi-icon--sm'>delete_forever</i>
+              <span>Delete</span>
             </button>
           </div>
         );

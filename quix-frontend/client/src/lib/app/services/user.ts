@@ -1,4 +1,4 @@
-import {inject} from '../../core';
+import { inject } from '../../core';
 
 export class Permission {
   private timeout;
@@ -33,7 +33,7 @@ export class Permission {
   }
 }
 
-const addPrefixSlash = (s: string) => s[0] === '/' ? s : '/' + s;
+const addPrefixSlash = (s: string) => (s[0] === '/' ? s : '/' + s);
 
 export class User {
   private email: string;
@@ -42,22 +42,31 @@ export class User {
   private loggedIn;
   private role: string;
   private id: string;
+  private stats: { trashBinCount: number };
   private readonly permission = new Permission();
 
   fetch(apiBasePath?: string) {
-    return inject('$resource')(`${apiBasePath ? addPrefixSlash(apiBasePath) : ''}/api/user`).get().$promise
-      .then(data => this.set(data.payload || data));
+    return inject('$resource')(
+      `${apiBasePath ? addPrefixSlash(apiBasePath) : ''}/api/user`
+    )
+      .get()
+      .$promise.then((data) => this.set(data.payload || data));
   }
 
-  set({email, name, avatar, role, id}: Record<string, string>) {
+  set({ email, name, avatar, role, id, stats }: Record<string, string>) {
     this.email = email;
     this.name = name;
     this.avatar = avatar;
     this.role = role || 'user';
     this.loggedIn = null;
     this.id = id;
+    this.stats = stats as any;
 
     return this;
+  }
+
+  getStats() {
+    return this.stats;
   }
 
   getEmail() {
@@ -89,6 +98,6 @@ export class User {
   }
 
   toggleLoggedIn(loggedIn) {
-    return this.loggedIn = loggedIn;
+    return (this.loggedIn = loggedIn);
   }
 }

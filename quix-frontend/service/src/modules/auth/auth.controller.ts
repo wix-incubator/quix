@@ -13,6 +13,7 @@ import {LoginService} from './login.service';
 import {IExternalUser} from './types';
 import {User} from './user-decorator';
 import {UsersService} from './users.service';
+import {DeletedNotebooksService} from '../web-api/deleted-notebooks/deleted-notebook.service';
 
 @Controller('/api/')
 export class AuthController {
@@ -20,6 +21,7 @@ export class AuthController {
   constructor(
     private readonly authService: LoginService,
     private readonly userService: UsersService,
+    private readonly deletedNotebooksService: DeletedNotebooksService,
   ) {}
 
   @Get('user')
@@ -28,7 +30,13 @@ export class AuthController {
     this.userService.doUserLogin(user).catch(e => {
       this.logger.error('error updating user', e);
     });
-    return user;
+
+    const count =
+      await this.deletedNotebooksService.getCountDeletedNotebooksForUser(
+        user.email,
+      );
+
+    return {...user, stats: {trashBinCount: count}};
   }
 
   @Get('authenticate')

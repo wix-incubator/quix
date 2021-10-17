@@ -31,22 +31,26 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
       this.states.push({
         name: 'auth',
         options: {
-          abstract: true,
-          template: '<div class="bi-c-h bi-grow" ui-view bi-state-loader></div>',
+          abstract: false,
+          template:
+            '<div class="bi-c-h bi-grow" ui-view bi-state-loader></div>',
           resolve: {
             user() {
-               return user.fetch(self.options.apiBasePath)
+              return user
+                .fetch(self.options.apiBasePath)
                 .catch(() => {
                   user.toggleLoggedIn(false);
-                  return new Promise(resolve => self.resolveLogin = resolve)
+                  return new Promise(
+                    (resolve) => (self.resolveLogin = resolve)
+                  );
                 })
                 .then((data: any) => {
-                  user.set(data.payload || data);
                   user.toggleLoggedIn(true);
+                  self.trigger('ready', user);
                 });
-            }
-          }
-        }
+            },
+          },
+        },
       });
 
       this.prefix = `auth.${this.prefix}`;
@@ -60,26 +64,37 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
         $locationProvider.hashPrefix('');
         $urlRouterProvider.otherwise(this.options.defaultUrl);
 
-        this.states.forEach(({name, options}) => {
+        this.states.forEach(({ name, options }) => {
           try {
             $stateProvider.state(name, options);
           } catch (e) {
             console.warn(e);
           }
         });
-      }]);
+      },
+    ]);
 
-    ngApp.run(['$rootScope', (scope) => {
-      scope.$on('$stateChangeStart', (e, state, params, fromState) => {
-        this.trigger('stateChangeStart', state.name, params, fromState.name);
-      });
+    ngApp.run([
+      '$rootScope',
+      (scope) => {
+        scope.$on('$stateChangeStart', (e, state, params, fromState) => {
+          this.trigger('stateChangeStart', state.name, params, fromState.name);
+        });
 
-      scope.$on('$stateChangeSuccess', (e, state, params, fromState) => {
-        this.trigger('stateChangeSuccess', state.name, params, fromState.name);
-      });
+        scope.$on('$stateChangeSuccess', (e, state, params, fromState) => {
+          this.trigger(
+            'stateChangeSuccess',
+            state.name,
+            params,
+            fromState.name
+          );
+        });
 
-      scope.$on('$viewContentLoaded', (e, viewConfig) => this.trigger('viewLoaded'));
-    }]);
+        scope.$on('$viewContentLoaded', (e, viewConfig) =>
+          this.trigger('viewLoaded')
+        );
+      },
+    ]);
 
     return this;
   }
