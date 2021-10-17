@@ -1,10 +1,10 @@
 <div class="bi-icon-with-badge">
   <div
     class="bi-icon-badge"
-    ng-class="{'bi-icon-badge-100':count>99}"
+    ng-class="{'bi-icon-badge-100': count > 99}"
     ng-if="!hide"
   >
-    {{count < 100 ? count : '99+'}}
+    {{countValue()}}
   </div>
   <ng-transclude></ng-transclude>
 </div>

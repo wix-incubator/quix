@@ -7,5 +7,10 @@ export default () => {
     template,
     transclude: true,
     scope: { count: '<', hide: '<' },
+    link(scope) {
+      scope.countValue = () => {
+        return scope.count < 100 ? scope.count : '99+';
+      };
+    },
   };
 };
