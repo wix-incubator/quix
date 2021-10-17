@@ -1,21 +1,34 @@
-<div class="bi-app-header bi-fade-in bi-theme--lighter" ng-if="vm.header.enabled">
-  <div 
+<div
+  class="bi-app-header bi-fade-in bi-theme--lighter"
+  ng-if="vm.header.enabled"
+>
+  <div
     class="bi-app-title bi-pointer"
     ng-click="events.onTitleClick()"
     role="button"
     data-hook="app-title"
   >
-    <img class="bi-app-logo" ng-if="::app.getLogoUrl()" ng-src="{{::app.getLogoUrl()}}">
+    <img
+      class="bi-app-logo"
+      ng-if="::app.getLogoUrl()"
+      ng-src="{{::app.getLogoUrl()}}"
+    />
     <span>{{::app.getTitle()}}</span>
   </div>
 
-  <div class="bi-grow bi-fade-in" ng-transclude="header" ng-if="user.isLoggedIn()"></div>
+  <div
+    class="bi-grow bi-fade-in"
+    ng-transclude="header"
+    ng-if="user.isLoggedIn()"
+  ></div>
 
   <div class="bi-fade-in" ng-if="user.isLoggedIn()">
     <div class="bi-align bi-s-h--x15">
       <bi-dropdown bd-options="::{align: 'center'}" ng-if="::vm.apps.length">
         <bi-toggle class="bi-align">
-          <i class="bi-action bi-icon" role="button" data-hook="apps-menu">apps</i>
+          <i class="bi-action bi-icon" role="button" data-hook="apps-menu"
+            >apps</i
+          >
         </bi-toggle>
 
         <ul class="bi-dropdown-menu bi-r">
@@ -28,7 +41,8 @@
             <i
               class="bi-icon bi-muted"
               ng-class="::{'bi-success': menuApp.name === app.getId()}"
-            >lens</i>
+              >lens</i
+            >
             <span>{{::menuApp.title}}</span>
           </li>
         </ul>
@@ -42,7 +56,7 @@
 </div>
 
 <div class="bi-r-h">
-  <div 
+  <div
     class="bi-app-menu bi-theme--darker bi-dont-shrink bi-fade-in"
     ng-if="vm.menu.enabled && user.isLoggedIn() && app.getMenuItems().length"
   >
@@ -55,14 +69,13 @@
           'bi-pointer': item.name !== 'separator'
         }"
         ng-click="events.onMenuItemToggle(item)"
-        ng-repeat="item in ::app.getMenuItems()"
+        ng-repeat="item in app.getMenuItems()"
         bi-html="renderMenuItem(scope, item)"
-      >
-      </li>
+      ></li>
     </ul>
   </div>
 
-  <div 
+  <div
     class="bi-app-sidebar bi-theme--dark bi-section bi-c bi-dont-shrink"
     ng-if="user.isLoggedIn() && vm.menu.current && (vm.menu.current.template || vm.menu.current.compiled)"
     bi-resizable
@@ -71,13 +84,14 @@
     <div class="bi-section-header">
       <div class="bi-section-title">{{vm.menu.current.name}}</div>
       <div class="bi-app-sidebar-toggle">
-        <i 
+        <i
           class="bi-action bi-icon"
           ng-click="events.onMenuItemToggle(vm.menu.current)"
-        >keyboard_arrow_left</i>
+          >keyboard_arrow_left</i
+        >
       </div>
     </div>
-    <div 
+    <div
       class="bi-section-content bi-c-h bi-grow"
       ng-if="vm.menu.content.enabled"
       ng-show="vm.menu.content.visible"
@@ -87,12 +101,24 @@
 
   <div class="bi-app-content bi-c-h bi-grow" ui-view>
     <div class="bi-c-h bi-center bi-align bi-grow">
-      <div class="quix-splash bi-c bi-s-v--x3" ng-if="app.getUser().isLoggedIn() === null">
-        <img class="quix-splash-logo" ng-if="::app.getLogoUrl()" ng-src="{{::app.getLogoUrl()}}">
-        <span class="bi-center bi-text--ui bi-text--large bi-muted">Signing in...</span>
+      <div
+        class="quix-splash bi-c bi-s-v--x3"
+        ng-if="app.getUser().isLoggedIn() === null"
+      >
+        <img
+          class="quix-splash-logo"
+          ng-if="::app.getLogoUrl()"
+          ng-src="{{::app.getLogoUrl()}}"
+        />
+        <span class="bi-center bi-text--ui bi-text--large bi-muted"
+          >Signing in...</span
+        >
       </div>
 
-      <bi-app-login app="app" ng-if="app.getUser().isLoggedIn() === false"></bi-app-login>
+      <bi-app-login
+        app="app"
+        ng-if="app.getUser().isLoggedIn() === false"
+      ></bi-app-login>
     </div>
   </div>
 </div>

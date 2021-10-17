@@ -123,19 +123,3 @@ bi-tbl.bi-table--nav {
   left: 54px !important;
   bottom: 12px !important;
 }
-.trash-bin-icon {
-  position: relative;
-  .trash-bin-count {
-    position: absolute;
-    left: 17px;
-    top: 0;
-    border-radius: 50%;
-    width: 15px;
-    height: 15px;
-    background-color: #fc4a4a;
-    color: white;
-    z-index: 2;
-    text-align: center;
-    font-size: 0.8em;
-  }
-}

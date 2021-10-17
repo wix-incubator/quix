@@ -13,7 +13,7 @@ import {
   createFile,
   createNote,
   createFolderPayload,
-  createDeletedNotebook
+  createDeletedNotebook,
 } from '@wix/quix-shared';
 import * as moment from 'moment';
 import { ServerTreeItem } from '../src/components/db-sidebar/db-sidebar-types';
@@ -261,24 +261,18 @@ const createMockDeletedNotebook = (name?: string) => {
     : createMockDeletedNotebook();
 };
 
-const trashBin = [
-  createMockDeletedNotebook('Removed 1'),
-  createMockDeletedNotebook('Bad Queries'),
-  createMockDeletedNotebook('By Mistake'),
-  createMockDeletedNotebook('Trash'),
-  createMockDeletedNotebook('Removed 1'),
-  createMockDeletedNotebook('Bad Queries'),
-  createMockDeletedNotebook('By Mistake'),
-  createMockDeletedNotebook('Trash'),
-  createMockDeletedNotebook('Removed 1'),
-  createMockDeletedNotebook('Bad Queries'),
-  createMockDeletedNotebook('By Mistake'),
-  createMockDeletedNotebook('Trash'),
-  createMockDeletedNotebook('Removed 1'),
-  createMockDeletedNotebook('Bad Queries'),
-  createMockDeletedNotebook('By Mistake'),
-  createMockDeletedNotebook('Trash'),
-];
+const trashBin = [];
+// We can use this loop to simulate different counts on trash bin icon badge
+for (let i = 0; i < 1; i++) {
+  trashBin.push(
+    ...[
+      createMockDeletedNotebook('Removed 1'),
+      createMockDeletedNotebook('Bad Queries'),
+      createMockDeletedNotebook('By Mistake'),
+      createMockDeletedNotebook('Trash'),
+    ]
+  );
+}
 
 let mockOverrides = {};
 
@@ -301,8 +295,6 @@ export const createMockRootFolder = (props: Partial<IFile> = {}) => {
     ...props,
   });
 };
-
-
 
 export const createMockFile = (props: Partial<IFile> = {}) => {
   return createFile([{ id: '1', name: 'My notebooks' }], {

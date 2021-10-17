@@ -10,9 +10,7 @@ export class v51634023683491 implements MigrationInterface {
     await queryRunner.query(
       `ALTER TABLE \`quix\`.\`notes\` DROP FOREIGN KEY \`FK_d84382f58ca053c3532fe78b05b\``,
     );
-    await queryRunner.query(
-      `ALTER TABLE \`quix\`.\`notes\` DROP FOREIGN KEY \`FK_d84382f58ca053c3532fe78b05b\``,
-    );
+
     await queryRunner.query(
       `CREATE TABLE \`quix\`.\`deleted_notebooks\` (\`id\` varchar(36) NOT NULL, \`name\` varchar(512) NOT NULL, \`owner\` varchar(64) NOT NULL, \`date_updated\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`date_created\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`date_deleted\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`json_content\` json NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );

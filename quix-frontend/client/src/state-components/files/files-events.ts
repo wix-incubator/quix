@@ -120,10 +120,9 @@ export const onFolderAdd = (scope: IScope, store: Store, app: App) => () => {
 
 export const onNotebookAdd = (scope: IScope, store: Store, app: App) => () => {
   const { folder } = scope.vm.state.value();
-
-  addNotebook(store, app, folder, { addNote: true }).then((notebook) =>
-    goToNotebook(app, notebook, { isNew: true })
-  );
+  addNotebook(store, app, folder, { addNote: true }).then((notebook) => {
+    return goToNotebook(app, notebook, { isNew: true });
+  });
 };
 
 export const onMarkToggle = (scope: IScope, store: Store, app: App) => (
@@ -137,26 +136,26 @@ export const onUnmarkAll = (scope: IScope, store: Store, app: App) => () => {
 };
 
 export const onMarkedDelete = (scope: IScope, store: Store, app: App) => (
-         files: IFile[]
-       ) => {
-         store
-           .dispatchAndLog(
-             files.map((file) =>
-               file.type === FileType.folder
-                 ? TrashBinActions.moveFolderToTrashBin(file.id)
-                 : TrashBinActions.moveNotebookToTrashBin(file.id)
-             )
-           )
-           .then(() =>
-             toast.showToast(
-               {
-                 text: `Deleted ${files.length} items`,
-                 type: 'success',
-               },
-               3000
-             )
-           );
-       };
+  files: IFile[]
+) => {
+  store
+    .dispatchAndLog(
+      files.map((file) =>
+        file.type === FileType.folder
+          ? TrashBinActions.moveFolderToTrashBin(file.id)
+          : TrashBinActions.moveNotebookToTrashBin(file.id)
+      )
+    )
+    .then(() =>
+      toast.showToast(
+        {
+          text: `Deleted ${files.length} items`,
+          type: 'success',
+        },
+        3000
+      )
+    );
+};
 
 export const $onDestroy = (scope: IScope, store: Store, app: App) => () => {
   store.dispatch(setFolder(null));

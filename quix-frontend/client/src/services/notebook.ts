@@ -44,6 +44,7 @@ export const addNotebook = async (
     ...props,
     owner: app.getUser().getEmail(),
   });
+
   const actions: any[] = [
     NotebookActions.createNotebook(notebook.id, notebook),
   ];
@@ -60,7 +61,7 @@ export const addNotebook = async (
     actions.push(NoteActions.addNote(note.id, note));
   }
 
-  return store.dispatchAndLog(actions).then(() => notebook);
+  return store.logAndDispatch(actions).then(() => notebook);
 };
 
 export const addNote = async (

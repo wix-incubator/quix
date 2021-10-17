@@ -71,11 +71,12 @@ export class QuixEventBus<A extends IAction = IAction> {
         api.hooks
           .call(QuixHookNames.REACTION, action)
           .then(async props => {
-            let reactions: any[];
-            [reactions] = props;
+            let [reactions] = props;
 
             if (reactions && Array.isArray(reactions) && reactions.length > 0) {
+              reactions = reactions.map(r => ({...r, syncClients: false}));
               await this.emit(reactions);
+
               api.pushLoggedActions(reactions);
             }
 

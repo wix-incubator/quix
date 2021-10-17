@@ -1,0 +1,29 @@
+@import '../../assets/css/def/defaults.def';
+@import '../../assets/css/def/colors.def';
+
+.bi-icon-with-badge {
+  position: relative;
+  .bi-icon-badge {
+    background-color: #fc4a4a;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    position: absolute;
+    line-height: 1;
+    font-weight: 500;
+    font-size: 0.55rem;
+    min-width: 12px;
+    height: 12px;
+    border-radius: 7px;
+    padding: 0 3px;
+    z-index: 1;
+    top: 1;
+    right: 0;
+  }
+  .bi-icon-badge-100 {
+    font-size: 0.45rem;
+    right: -3px;
+  }
+}

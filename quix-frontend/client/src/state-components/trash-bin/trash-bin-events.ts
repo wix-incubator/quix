@@ -37,7 +37,13 @@ export const onRestoreClick = (scope, store: Store) => (
       title: 'Restore notebook',
       subTitle: 'Choose destination folder',
       yes: 'restore',
-      content: `<quix-destination-picker ng-model="model.folder" context="folder" required></quix-destination-picker>`,
+      disableByDefault: true,
+      content: /*html*/ `
+      <quix-destination-picker 
+        ng-model="model.folder" 
+        context="folder" 
+        required></quix-destination-picker>`,
+
       onConfirm: ({ model: { folder } }) => {
         restoreFolder = folder.name;
         return store.logAndDispatch(
@@ -61,4 +67,3 @@ function successToast(text: string) {
     3000
   );
 }
-

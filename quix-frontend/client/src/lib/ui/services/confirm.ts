@@ -7,7 +7,8 @@ export interface IConfirmOptions extends IDialogOptions {
   icon?: string;
   yes?: string;
   no?: string;
-  resolveOnEnter?: boolean
+  resolveOnEnter?: boolean;
+  disableByDefault?: boolean;
 }
 
 function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
@@ -21,20 +22,22 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
     options = {
       actionType: 'neutral',
       yes: element.attr('yes'),
-      no: element.attr('no')
+      no: element.attr('no'),
     };
   } else {
     options = htmlOrOptions;
+    scope.disableByDefault = options.disableByDefault;
   }
 
   options = defaults({}, options, {
     actionType: 'neutral',
     yes: 'yes',
-    no: 'cancel'
+    no: 'cancel',
   });
 
   scope.dialogOptions.showCloseAction = false;
-  scope.dialogOptions.iconClass = options.actionType === 'destroy' ? 'bi-danger' : 'bi-primary';
+  scope.dialogOptions.iconClass =
+    options.actionType === 'destroy' ? 'bi-danger' : 'bi-primary';
 
   if (options.resolveOnEnter) {
     element = element.bind('keyup', (event) => {
@@ -44,9 +47,8 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
     });
   }
 
-  element
-    .addClass('bi-confirm')
-    .append(inject('$compile')(`
+  element.addClass('bi-confirm').append(
+    inject('$compile')(`
       <dialog-footer class="bi-justify-right bi-space-h">
         <button 
           class="bi-button"
@@ -60,14 +62,19 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
             neutral: 'bi-button--primary'
           }[confirmOptions.actionType]"
           ng-click="dialogEvents.resolve()"
-          ng-disabled="form && !form.$valid"
+          ng-disabled="form && (!form.$valid || (form.$pristine && disableByDefault))"
         >{{::confirmOptions.yes}}</button>
       </dialog-footer>
-    `)(assign(scope, { confirmOptions: options })));
+    `)(assign(scope, { confirmOptions: options }))
+  );
 
   return promise;
 }
 
-export default function (htmlOrOptions: string | IConfirmOptions, scope?, locals?) {
+export default function(
+  htmlOrOptions: string | IConfirmOptions,
+  scope?,
+  locals?
+) {
   return init(htmlOrOptions, dialog(htmlOrOptions, scope, locals));
 }

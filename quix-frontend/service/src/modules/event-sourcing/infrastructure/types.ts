@@ -17,5 +17,6 @@ interface ServerFields {
 export type IAction<T = IEventData, N extends string = string> = BaseAction & {
   type: N;
   ethereal?: boolean;
+  syncClients?: boolean;
 } & T &
   ServerFields;

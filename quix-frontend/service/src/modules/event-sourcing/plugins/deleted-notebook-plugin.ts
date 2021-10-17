@@ -60,18 +60,13 @@ export class DeletedNotebookPlugin implements EventBusPlugin {
     action: IAction<DeletedNotebookActions>,
     entityManager: EntityManager,
   ) {
-    // console.log(action);
-    // console.log(entityManager);
-
     const dbModel =
       action.type === DeletedNotebookActionTypes.createDeletedNotebook
         ? undefined
         : await entityManager.findOne(DbDeletedNotebook, action.id);
-    // console.log(dbModel)
     const model = dbModel ? convertDbDeletedNotebook(dbModel) : undefined;
 
     const newModel = deletedNotebookReducer(model, action);
-    // console.log(model,newModel);
     if (newModel && model !== newModel) {
       return entityManager.save(covertDeletedNotebookToDb(newModel), {
         reload: false,

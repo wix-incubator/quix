@@ -12,7 +12,7 @@ export class EventsPlugin implements EventBusPlugin {
 
   registerFn: EventBusPluginFn = api => {
     api.hooks.listen(QuixHookNames.PROJECTION, async (action: IAction) => {
-      if (!action.ethereal) {
+      if (!action.ethereal && action.syncClients !== false) {
         this.eventsService.logEvent(action);
       }
     });

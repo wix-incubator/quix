@@ -1,5 +1,5 @@
 import { isArray } from 'lodash';
-import {setupNotifications} from './bootstrap';
+import { setupNotifications } from './bootstrap';
 import create, { App } from './lib/app';
 import { hooks } from './hooks';
 import * as components from './components';
@@ -138,31 +138,18 @@ appBuilder.plugin('dummy', (plugin) => {
         scope
       );
 
-      const trashIconHtml =
-        scope.count > 0
-          ? /*html*/ `
-        
-      <div class="trash-bin-count">{{count}}</div>
-      <i
-        class="bi-action bi-icon"
-        ng-class="{'bi-active': item === vm.menu.current}"
-        title="{{::item.name}}"
-        role="button"
-        data-hook="app-menu-{{::item.name}}"
-      >delete</i>`
-          : /*html*/ `
-    <i
-      class="bi-action bi-icon"
-      ng-class="{'bi-active': item === vm.menu.current}"
-      title="{{::item.name}}"
-      role="button"
-      data-hook="app-menu-{{::item.name}}"
-    >delete_outline</i>`;
-      return inject('$compile')(
-        /*html*/
+      const trashIconHtml = /*html*/ `
+       <bi-icon-with-badge count="count"  hide="count <= 0">
+         <i class="bi-action bi-icon"
+            ng-class="{'bi-active': item === vm.menu.current}"
+            title="{{::item.name}}"
+            role="button"
+            data-hook="app-menu-{{::item.name}}">
+          {{ count > 0 ? 'delete' : 'delete_outline' }}
+        </i>
+       </bi-icon-with-badge>`;
 
-        `<div class="trash-bin-icon">${trashIconHtml}</div>`
-      )(scope);
+      return inject('$compile')(trashIconHtml)(scope);
     },
     onToggle: (app) => {
       app.go('trashBin');
