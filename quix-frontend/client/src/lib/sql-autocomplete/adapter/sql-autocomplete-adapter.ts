@@ -74,7 +74,10 @@ export class SqlAutocompleter implements IAutocompleter {
     for (const extractedTable of extractedTables) {
       const { name, alias, columns, type } = extractedTable;
       columns.forEach((column) => {
-        const shortColumnName = column.split('.').pop();
+        const shortColumnName = column
+          .split('.')
+          .pop()
+          .replace('@WT_COLUMN@', '.');
         columnsNamesMemory.add(shortColumnName);
 
         if (alias) {
@@ -146,7 +149,9 @@ export class SqlAutocompleter implements IAutocompleter {
     }
     return entities.map((entity) =>
       this.createCompleterItem(
-        entity.type !== 'catalog' ? `${prefix}.${entity.name}` : entity.name,
+        entity.type === 'schema' || entity.type === 'column'
+          ? `${prefix}.${entity.name}`
+          : entity.name,
         entity.type
       )
     );
