@@ -8,9 +8,7 @@ export default () => {
     transclude: true,
     scope: { count: '<', hide: '<' },
     link(scope) {
-      scope.countValue = () => {
-        return scope.count < 100 ? scope.count : '99+';
-      };
+      scope.countValue = () => (scope.count < 100 ? scope.count : '99+');
     },
   };
 };

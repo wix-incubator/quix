@@ -47,7 +47,7 @@ export const trashBinTableFields = (
                 onRestoreClicked(deletedNotebook);
               }}
             >
-              <i className='bi-icon--sm'>replay</i>
+              <i className='bi-icon--xs'>replay</i>
               <span>Restore</span>
             </button>
             <button
@@ -58,7 +58,7 @@ export const trashBinTableFields = (
                 onPermanentlyDeleteClicked(deletedNotebook);
               }}
             >
-              <i className='bi-icon--sm'>delete_forever</i>
+              <i className='bi-icon--xs'>delete_forever</i>
               <span>Delete</span>
             </button>
           </div>

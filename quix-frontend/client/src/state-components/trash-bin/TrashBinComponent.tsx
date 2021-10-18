@@ -83,12 +83,15 @@ export const TrashBin = (props: TrashBinProps) => {
       </div>
       {viewState.get() === 'Content' && (
         <div className='bi-section-controls bi-fade-in'>
-          <button
-            className='bi-button--danger'
-            onClick={onEmptyTrashBinClicked}
-          >
-            Empty Trash Bin
-          </button>
+          <div>
+            <button
+              className='bi-button--danger'
+              onClick={onEmptyTrashBinClicked}
+            >
+              <i className="bi-icon--sm">delete_sweep</i>
+              <span>Empty Trash Bin</span>
+            </button>
+          </div>
         </div>
       )}
       <div className='bi-section-content bi-c-h bi-s-v--x15'>

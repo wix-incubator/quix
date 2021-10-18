@@ -1,30 +1,30 @@
 import { Store } from '../../lib/store';
 import { IDeletedNotebook, TrashBinActions } from '@wix/quix-shared';
 import { toast } from '../../lib/ui';
-import { prompt } from '../../services/dialog';
+import { confirmAction, prompt } from '../../services/dialog';
 
 export const onPermanentlyDeleteClick = (store: Store) => (
   deletedNotebook: IDeletedNotebook
 ) => {
-  store
-    .logAndDispatch(
-      TrashBinActions.permanentlyDeleteNotebook(deletedNotebook.id)
-    )
-    .then(() => {
-      successToast(`Notebook deleted.`);
-    });
+  confirmAction('delete', 'notebook', deletedNotebook, '', () => {
+    store
+      .logAndDispatch(
+        TrashBinActions.permanentlyDeleteNotebook(deletedNotebook.id)
+      )
+      .then(() => successToast(`"${deletedNotebook.name}" Notebook deleted.`));
+  });
 };
 
 export const onEmptyTrashBinClicked = (scope, store: Store) => () => {
-  store
-    .dispatchAndLog(
-      scope.deletedNotebooks.map((n) =>
-        TrashBinActions.permanentlyDeleteNotebook(n.id)
+  confirmAction('delete', 'notebook', scope.deletedNotebooks, '', () => {
+    store
+      .dispatchAndLog(
+        scope.deletedNotebooks.map((n) =>
+          TrashBinActions.permanentlyDeleteNotebook(n.id)
+        )
       )
-    )
-    .then(() => {
-      successToast(`Trash Bin is Empty.`);
-    });
+      .then(() => successToast(`Trash Bin is Empty.`));
+  });
 };
 
 export const onRestoreClick = (scope, store: Store) => (
@@ -37,13 +37,12 @@ export const onRestoreClick = (scope, store: Store) => (
       title: 'Restore notebook',
       subTitle: 'Choose destination folder',
       yes: 'restore',
-      disableByDefault: true,
       content: /*html*/ `
       <quix-destination-picker 
         ng-model="model.folder" 
         context="folder" 
-        required></quix-destination-picker>`,
-
+        required="true"
+      ></quix-destination-picker>`,
       onConfirm: ({ model: { folder } }) => {
         restoreFolder = folder.name;
         return store.logAndDispatch(
@@ -53,9 +52,7 @@ export const onRestoreClick = (scope, store: Store) => (
     },
     scope,
     { model: { folder: null } }
-  ).then(() => {
-    return successToast(`Restored to "${restoreFolder}."`);
-  });
+  ).then(() => successToast(`Restored to "${restoreFolder}."`));
 };
 
 function successToast(text: string) {

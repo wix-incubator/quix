@@ -3,6 +3,7 @@
 
 .bi-badge {
   @include badge();
+  color: $grey--900;
 }
 
 .bi-badge--primary {

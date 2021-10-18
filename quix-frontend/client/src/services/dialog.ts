@@ -42,14 +42,12 @@ export const prompt = (
     title,
     subTitle,
     yes,
-    disableByDefault,
     content,
     onConfirm,
   }: {
     title: string;
     subTitle?: string;
     yes: string;
-    disableByDefault?: boolean;
     content: string;
     onConfirm?(scope: any): any;
   },
@@ -62,7 +60,6 @@ export const prompt = (
       subTitle,
       actionType: 'neutral',
       yes,
-      disableByDefault,
       html: `<form name="form">${content}</form>`,
       onConfirm,
     },

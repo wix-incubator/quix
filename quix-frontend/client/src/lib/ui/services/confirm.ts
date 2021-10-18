@@ -8,7 +8,6 @@ export interface IConfirmOptions extends IDialogOptions {
   yes?: string;
   no?: string;
   resolveOnEnter?: boolean;
-  disableByDefault?: boolean;
 }
 
 function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
@@ -26,7 +25,6 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
     };
   } else {
     options = htmlOrOptions;
-    scope.disableByDefault = options.disableByDefault;
   }
 
   options = defaults({}, options, {
@@ -62,7 +60,7 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
             neutral: 'bi-button--primary'
           }[confirmOptions.actionType]"
           ng-click="dialogEvents.resolve()"
-          ng-disabled="form && (!form.$valid || (form.$pristine && disableByDefault))"
+          ng-disabled="form && !form.$valid"
         >{{::confirmOptions.yes}}</button>
       </dialog-footer>
     `)(assign(scope, { confirmOptions: options }))
