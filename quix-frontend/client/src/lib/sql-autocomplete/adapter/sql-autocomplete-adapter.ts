@@ -8,19 +8,14 @@ import {
 } from '../sql-context-evaluator';
 import { IDbInfoConfig } from '../db-info';
 import { BaseEntity, Column } from '../db-info/types';
-import debounce from 'debounce-async';
-
 
 export class SqlAutocompleter implements IAutocompleter {
   private readonly config: IDbInfoConfig;
-  private readonly search: Function;
   private prefix: string;
   private lastCompleters: ICompleterItem[];
-  
 
   constructor(config: IDbInfoConfig) {
     this.config = config;
-    this.search = debounce(config.search, 300);
     this.lastCompleters = [];
   }
 
@@ -41,7 +36,7 @@ export class SqlAutocompleter implements IAutocompleter {
         if (prefix !== this.prefix) {
           const [dbEntitiesCompleters, dbCompleters] = await Promise.all([
             this.getEntitiesCompletersFromDbBasedOnPrefix(prefix),
-            this.searchEntitiesFromDb('trino', prefix),
+            this.searchEntitiesFromDb(prefix),
           ]);
           this.lastCompleters = [...dbEntitiesCompleters, ...dbCompleters];
         }
@@ -158,27 +153,40 @@ export class SqlAutocompleter implements IAutocompleter {
   }
 
   private async searchEntitiesFromDb(
-    type: string,
     prefix: string
   ): Promise<ICompleterItem[]> {
-    if (typeof prefix !== 'undefined' && prefix.length > 1) {
-      let entityType: string;
-      const completers: Set<string> = new Set();
-      const res = await this.search(type, prefix);
-      res.forEach((ctlg) => {
-        const ctlgName = ctlg.name;
-        ctlg.children.forEach((schm) => {
-          const schmName = schm.name;
-          schm.children.forEach((tbl) => {
-            entityType = tbl.type;
-            completers.add(`${ctlgName}.${schmName}.${tbl.name}`);
+    const allCompleters = [];
+
+    if (prefix?.length > 1) {
+      const schemaCompleters: Set<string> = new Set();
+      const tableCompleters: Set<string> = new Set();
+
+      const dbTree = await this.config.getCatalogs();
+
+      dbTree.forEach((catalog) => {
+        catalog.children.forEach((schema) => {
+          if (schema.name.indexOf(prefix) !== -1) {
+            schemaCompleters.add(`${catalog.name}.${schema.name}`);
+          }
+
+          schema.children.forEach((table) => {
+            if (table.name.indexOf(prefix) !== -1) {
+              tableCompleters.add(
+                `${catalog.name}.${schema.name}.${table.name}`
+              );
+            }
           });
         });
       });
-      return [...completers].map((completer) =>
-        this.createCompleterItem(completer, entityType)
+
+      [...schemaCompleters].forEach((completer) =>
+        allCompleters.push(this.createCompleterItem(completer, 'schema'))
+      );
+      [...tableCompleters].forEach((completer) =>
+        allCompleters.push(this.createCompleterItem(completer, 'table'))
       );
     }
-    return [];
+
+    return allCompleters;
   }
 }
