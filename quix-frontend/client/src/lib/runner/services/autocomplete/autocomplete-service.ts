@@ -4,9 +4,9 @@ import { ICompleterItem as AceCompletion } from '../../../code-editor/services/c
 // import { initSqlWorker } from '../workers/sql-parser-worker';
 import {
   createMatchMask,
+  findAllIndexOf,
   getKeywordsCompletions,
   getQueryAndCursorPositionFromEditor,
-  getSnippetsCompletions,
 } from './autocomplete-utils';
 import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
 import {
@@ -35,7 +35,6 @@ export async function setupCompleters(
   editorInstance.setLiveAutocompletion(true);
 
   const keywordsCompletions = getKeywordsCompletions();
-  const snippetsCompletions = getSnippetsCompletions();
 
   const completerFn = async (prefix: string, session: IEditSession) => {
     const { query, position } = getQueryAndCursorPositionFromEditor(
@@ -50,39 +49,30 @@ export async function setupCompleters(
       queryContext
     );
 
-    const [keywords, snippets, completions] = await Promise.all([
+    const [keywords, completions] = await Promise.all([
       keywordsCompletions,
-      snippetsCompletions,
       contextCompletions,
     ]);
 
-    let all = [...completions, ...keywords, ...snippets];
+    let all = [...completions, ...keywords];
 
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();
-      const prefixMatchIndexMap = new Map<String, Number>();
 
-      all = all
-        .reduce((resultArr: AceCompletion[], completionItem) => {
-          const index = completionItem.value
-            .toLowerCase()
-            .indexOf(lowerCasedPrefix);
+      all = all.reduce((resultArr: AceCompletion[], completionItem) => {
+        const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
 
-          prefixMatchIndexMap[completionItem.value] = index;
+        if (indexes.length > 0) {
+          completionItem.matchMask = createMatchMask(
+            indexes,
+            lowerCasedPrefix.length
+          );
+          completionItem.score = 10000 - indexes[0];
+          resultArr.push(completionItem);
+        }
 
-          if (index !== -1) {
-            completionItem.matchMask = createMatchMask(
-              index,
-              lowerCasedPrefix.length
-            );
-            resultArr.push(completionItem);
-          }
-
-          return resultArr;
-        }, [])
-        .sort(
-          (a, b) => prefixMatchIndexMap[a.value] - prefixMatchIndexMap[b.value]
-        );
+        return resultArr;
+      }, []);
     }
 
     return all;

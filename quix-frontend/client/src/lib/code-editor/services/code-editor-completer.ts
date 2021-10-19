@@ -10,7 +10,9 @@ export interface ICompleterItem {
   meta: string;
   caption?: string;
   matchMask?: number[];
+  score?: number
 }
+
 export interface IAceCompleter {
   identifierRegexps: RegExp[];
   getCompletions(editor, session: IEditSession, pos, prefix: string, callback): void;

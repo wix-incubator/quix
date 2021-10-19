@@ -6,7 +6,6 @@ import { ICompleterItem } from '../../../code-editor/services/code-editor-comple
 import { reservedPrestoWords } from '../../../sql-autocomplete/languge/reserved-words';
 
 let keywords: ICompleterItem[] = [];
-let snippets: ICompleterItem[] = [];
 
 export const getKeywordsCompletions = (): ICompleterItem[] => {
   // TODO: FIND A WAY TO FETCH KEYWORDS FROM ANTLR GRAMMAR
@@ -18,42 +17,29 @@ export const getKeywordsCompletions = (): ICompleterItem[] => {
   return keywords;
 };
 
-export const getSnippetsCompletions = (): ICompleterItem[] => {
-  snippets =
-    snippets ??
-    [
-      [
-        'SELECT * FROM table_name WHERE column_name > 10 ORDER BY column_name',
-        'Simple Query',
-      ],
-      ['WITH table_name AS (SELECT * FROM table_name)', 'With Query'],
-    ].map(([snippet, caption]) =>
-      makeCompletionItem(
-        snippet,
-        'snippet',
-        caption !== '' ? caption : undefined
-      )
-    );
-  return snippets;
-};
-
 /**
  * create an array of bitmaps.
  *  if ((bit j of array[i]) === 1) means that the character i*31 + j should be marked in UI
  *
- * @param {number} start
+ * @param {number | number[]} start
  * @param {number} length
  * @returns {number[]}
  */
-export const createMatchMask = (start: number, length: number): number[] => {
+export const createMatchMask = (
+  start: number | number[],
+  length: number
+): number[] => {
   const res = [];
 
-  for (let i = start; i < start + length; i++) {
-    const index = i % 31;
-    const offset = i - 31 * index;
-    res[index] = res[index] || 0;
-    res[index] = res[index] | (1 << offset);
-  }
+  start = Array.isArray(start) ? start : [start];
+  start.forEach((startElement) => {
+    for (let i = startElement; i < startElement + length; i++) {
+      const index = i % 31;
+      const offset = i - 31 * index;
+      res[index] = res[index] || 0;
+      res[index] = res[index] | (1 << offset);
+    }
+  });
 
   return res;
 };
@@ -62,14 +48,17 @@ export const makeCompletionItem = (
   value: string,
   meta: string,
   caption?: string,
-  matchMask?: number[]
+  matchMask?: number[],
+  score?: number
 ): ICompleterItem => {
   const completer = {
     value,
     meta,
     ...(caption ? { caption } : {}),
     ...(matchMask ? { matchMask } : {}),
+    ...(score ? { score } : {}),
   };
+
   return completer;
 };
 
@@ -94,4 +83,21 @@ export const getQueryAndCursorPositionFromEditor = (
   }
 
   return { query, position };
+};
+
+export const findAllIndexOf = (haystack: string, needle: string) => {
+  const indexes: number[] = [];
+  haystack = haystack.toLowerCase();
+  needle = needle.toLowerCase();
+
+  let index = 0;
+  while (index !== -1) {
+    index = haystack.indexOf(needle, index);
+    if (index !== -1) {
+      indexes.push(index);
+      index++;
+    }
+  }
+
+  return indexes;
 };
