@@ -29,8 +29,7 @@ export class EventBus {
   constructor(
     middlewaresUnsorted: EventBusMiddlewareDescriptor[],
     private plugins: PluginDescriptor[],
-    // *TODO Remove Before Release
-    private timeout = 400000, // private timeout = 4000,
+    private timeout = 4000,
   ) {
     this.middlewares = middlewaresUnsorted.sort(
       (m1, m2) => m1.priority - m2.priority,
