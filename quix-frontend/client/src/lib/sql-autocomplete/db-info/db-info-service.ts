@@ -13,7 +13,7 @@ export class DbInfoService implements IDbInfoConfig {
     this.apiBasePath = apiBasePath;
   }
 
-  getCatalogs = async (): Promise<Catalog[]> => {
+  preFetch = async () => {
     if (!this.catalogs.length) {
       const response = await axios.get(
         `${this.apiBasePath}/api/db/${this.type}/explore`
@@ -21,7 +21,10 @@ export class DbInfoService implements IDbInfoConfig {
 
       this.catalogs = response.data;
     }
+  };
 
+  getCatalogs = async (): Promise<Catalog[]> => {
+    await this.preFetch();
     return this.catalogs;
   };
 
@@ -71,7 +74,9 @@ export class DbInfoService implements IDbInfoConfig {
 
   search = async (type: string, prefix: string): Promise<Catalog[]> => {
     return axios
-      .get(`${this.apiBasePath}/api/db/${type}/search`, { params: { q: prefix } })
+      .get(`${this.apiBasePath}/api/db/${type}/search`, {
+        params: { q: prefix },
+      })
       .then((response) => response.data);
   };
 }
