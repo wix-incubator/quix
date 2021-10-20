@@ -27,7 +27,7 @@ export class DbInfoService implements IDbInfoConfig {
 
   getSchemasByCatalog = async (catalog: string): Promise<Schema[]> => {
     const catalogs: Catalog[] = await this.getCatalogs();
-    const catalogData: Catalog = catalogs.find(
+    const catalogData: Catalog | undefined = catalogs.find(
       (currCatalog) => currCatalog.name === catalog
     );
     return catalogData?.children || [];
@@ -38,7 +38,7 @@ export class DbInfoService implements IDbInfoConfig {
     schema: string
   ): Promise<Table[]> => {
     const catalogSchemas: Schema[] = await this.getSchemasByCatalog(catalog);
-    const schemaData: Schema = catalogSchemas.find(
+    const schemaData: Schema | undefined = catalogSchemas.find(
       (catalogSchema) => catalogSchema.name === schema
     );
     return schemaData?.children || [];
