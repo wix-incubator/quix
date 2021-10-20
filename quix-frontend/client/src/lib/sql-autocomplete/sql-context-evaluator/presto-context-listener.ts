@@ -9,6 +9,7 @@ export class PrestoContextListener extends SqlBaseListener {
   private nodeFound: any;
   private contextType: ContextType;
   private insidePrestoWithFlag: boolean;
+  private missingJoin: boolean = false;
   private readonly withNodes: any[] = [];
 
   setIdentifier(value: string) {
@@ -96,8 +97,19 @@ export class PrestoContextListener extends SqlBaseListener {
     }
   }
 
-  enterTableName(ctx: any) {
+  enterJoinType(ctx: any) {
     if (!this.nodeFound) {
+      this.missingJoin =
+        ctx.parentCtx.children.find(
+          (child) =>
+            child.getText().indexOf('missing') !== -1 &&
+            child.symbol.type === SqlBaseParser.JOIN
+        ) !== undefined;
+    }
+  }
+
+  enterTableName(ctx: any) {
+    if (!this.nodeFound && !this.missingJoin) {
       this.contextType = ContextType.Table;
     }
   }
