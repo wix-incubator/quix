@@ -16,6 +16,7 @@ export class SqlAutocompleter implements IAutocompleter {
 
   constructor(config: IDbInfoConfig) {
     this.config = config;
+    this.config.preFetch();
     this.lastCompleters = [];
   }
 
