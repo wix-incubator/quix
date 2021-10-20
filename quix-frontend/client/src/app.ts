@@ -139,14 +139,18 @@ appBuilder.plugin('dummy', (plugin) => {
       );
 
       const trashIconHtml = /*html*/ `
-       <bi-icon-with-badge count="count"  hide="count <= 0">
-         <i class="bi-action bi-icon"
-            ng-class="{'bi-active': item === vm.menu.current}"
+       <bi-icon-with-badge count="count"  
+                           hide="count <= 0"
+                           class="bi-action"
+                           ng-class="{'bi-active': item === vm.menu.current}"
+                           >
+         <i class="bi-icon"
             title="{{::item.name}}"
             role="button"
-            data-hook="app-menu-{{::item.name}}">
-          {{ count > 0 ? 'delete' : 'delete_outline' }}
-        </i>
+            data-hook="app-menu-{{::item.name}}"
+          >
+            {{ count > 0 ? 'delete' : 'delete_outline' }}
+          </i>
        </bi-icon-with-badge>`;
 
       return inject('$compile')(trashIconHtml)(scope);
