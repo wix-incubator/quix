@@ -7,6 +7,11 @@ import {
 } from '../../../db-info/types';
 
 export class MockDbInfoService implements IDbInfoConfig {
+  
+  preFetch() {
+    return;
+  }
+
   public async getColumnsByTable(
     catalog: string,
     schema: string,
