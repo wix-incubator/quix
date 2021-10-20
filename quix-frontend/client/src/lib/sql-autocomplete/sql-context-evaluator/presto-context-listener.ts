@@ -101,8 +101,11 @@ export class PrestoContextListener extends SqlBaseListener {
     if (!this.nodeFound) {
       this.missingJoin =
         ctx.parentCtx.children.find(
-          (child) =>
-            child.getText().indexOf('missing') !== -1 &&
+          (child: any) =>
+            child
+              .getText()
+              .toLowerCase()
+              .indexOf('missing') !== -1 &&
             child.symbol.type === SqlBaseParser.JOIN
         ) !== undefined;
     }
@@ -118,6 +121,8 @@ export class PrestoContextListener extends SqlBaseListener {
     if (!this.nodeFound) {
       this.contextType = ContextType.Undefined;
     }
+
+    this.missingJoin = false;
   }
 
   enterPresto_with(ctx: any) {
