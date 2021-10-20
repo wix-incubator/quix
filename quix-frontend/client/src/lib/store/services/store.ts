@@ -2,7 +2,7 @@ import { isArray, find, pull, forEach, get, assign, chain as _ } from 'lodash';
 import { utils, inject } from '../../core';
 import StoreLogger, { ServerFrameworkType } from './store-logger';
 import * as Redux from 'redux';
-import { uuid } from '../../core/utils';
+import { lodash, uuid } from '../../core/utils';
 const { scope: scopeUtils } = utils;
 
 export type IBranch<T = any> = (
@@ -34,8 +34,8 @@ function logBulkAction(logger, ...actions) {
 }
 
 const handleReactions = (store: Store, data: any) => {
-  if (data && data.reactions && data.reactions.length > 0) {
-    data.reactions.forEach((reaction) => {
+  if (data && data.reactions && lodash.isArray(data.reactions)) {
+    data.reactions.forEach((reaction: any) => {
       store.dispatch(reaction);
     });
   }

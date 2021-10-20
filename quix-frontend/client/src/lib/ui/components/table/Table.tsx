@@ -12,7 +12,7 @@ export interface TableProps {
     className: string;
   }[];
   data: any[];
-  onRowClicked(row: any): void;
+  onRowClicked?(row: any): void;
   getChunk?(): void;
   isChunking?: boolean;
 }

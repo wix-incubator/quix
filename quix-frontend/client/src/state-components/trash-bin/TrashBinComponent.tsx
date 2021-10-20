@@ -63,9 +63,6 @@ export const TrashBin = (props: TrashBinProps) => {
         className: field.className,
       }))}
       data={stateData.deletedNotebooks}
-      onRowClicked={(row) => {
-        
-      }}
     />
   );
 
