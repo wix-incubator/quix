@@ -33,6 +33,14 @@ function logBulkAction(logger, ...actions) {
   return logger.log();
 }
 
+const handleReactions = (store: Store, data: any) => {
+  if (data && data.reactions && data.reactions.length > 0) {
+    data.reactions.forEach((reaction) => {
+      store.dispatch(reaction);
+    });
+  }
+};
+
 function resolveActions(
   action,
   promises = [],
@@ -97,21 +105,7 @@ function logMiddleware(logger) {
 
     const { $log, $bulk, $defer } = actions;
     const action = actions[0];
-    let res;
-
-    if (!$bulk && !$defer) {
-      res = next(action);
-    } else {
-      res = action;
-    }
-
-    const handleReactions = (data: any) => {
-      if (data && data.reactions && data.reactions.length > 0) {
-        data.reactions.forEach((reaction) => {
-          store.dispatch(reaction);
-        });
-      }
-    };
+    let res = !$bulk && !$defer ? next(action) : action;
 
     if ($log) {
       res = $bulk
@@ -119,14 +113,12 @@ function logMiddleware(logger) {
         : logAction(logger, action);
 
       if ($defer && !$bulk) {
-        res.then(() => {
-          return next(action);
-        });
+        res.then(() => next(action));
       }
     }
 
     return $q.when(res).then((data) => {
-      handleReactions(data);
+      handleReactions(store, data);
       return action;
     });
   };

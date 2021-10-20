@@ -21,7 +21,7 @@ const States = ['Initial', 'Error', 'Empty', 'Content'];
 
 export const TrashBin = (props: TrashBinProps) => {
   const {
-    deletedNotebooks: serverDeletedNotebooks,
+    deletedNotebooks,
     error,
     onPermanentlyDeleteClicked,
     onRestoreClicked,
@@ -42,13 +42,13 @@ export const TrashBin = (props: TrashBinProps) => {
   }, [error]);
 
   useEffect(() => {
-    if (!error && serverDeletedNotebooks?.length >= 0) {
-      viewState.set(serverDeletedNotebooks?.length ? 'Content' : 'Empty', {
-        deletedNotebooks: serverDeletedNotebooks || [],
-        size: serverDeletedNotebooks.length || 0,
+    if (!error && deletedNotebooks?.length >= 0) {
+      viewState.set(deletedNotebooks?.length ? 'Content' : 'Empty', {
+        deletedNotebooks: deletedNotebooks || [],
+        size: deletedNotebooks.length || 0,
       });
     }
-  }, [serverDeletedNotebooks]);
+  }, [deletedNotebooks]);
 
   const renderContentState = () => (
     <Table
@@ -74,9 +74,9 @@ export const TrashBin = (props: TrashBinProps) => {
       <div className='bi-section-header'>
         <div className='bi-section-title'>
           <span>
-            Trash Bin{' '}
+            Trash Bin
             {viewState.min('Empty') && (
-              <span className='bi-fade-in'>({stateData.size})</span>
+              <span className='bi-fade-in'>{' '}({stateData.size})</span>
             )}
           </span>
         </div>

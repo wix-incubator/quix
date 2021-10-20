@@ -1,12 +1,12 @@
-import {IModule} from 'angular';
-import {inject, srv} from '../../core';
-import {User} from './user';
-import {Options} from '../types';
+import { IModule } from 'angular';
+import { inject, srv } from '../../core';
+import { User } from './user';
+import { Options } from '../types';
 
 const EVENT_MAP = {
   start: 'stateChangeStart',
   success: 'stateChangeSuccess',
-  visible: 'viewLoaded'
+  visible: 'viewLoaded',
 };
 
 export type TEventType = 'start' | 'success' | 'visible';
@@ -31,7 +31,7 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
       this.states.push({
         name: 'auth',
         options: {
-          abstract: false,
+          abstract: true,
           template:
             '<div class="bi-c-h bi-grow" ui-view bi-state-loader></div>',
           resolve: {
@@ -110,10 +110,17 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
   }
 
   state(name, options) {
-    this.states.push({name: `${this.prefix}${name ? `.${name}` : ''}`, options});
+    this.states.push({
+      name: `${this.prefix}${name ? `.${name}` : ''}`,
+      options,
+    });
   }
 
-  go(state: string, params?: Object, options: {reload: boolean | string} = {reload: false}): PromiseLike<any> {
+  go(
+    state: string,
+    params?: Object,
+    options: { reload: boolean | string } = { reload: false }
+  ): PromiseLike<any> {
     if (typeof options.reload === 'string') {
       options.reload = `${this.prefix}.${options.reload}`;
     }
@@ -124,51 +131,77 @@ export default class Navigator extends srv.eventEmitter.EventEmitter {
   getUrl(state?: string, params?: Object): string {
     state = state || inject('$state').current.name;
 
-    return `${document.location.protocol}//${document.location.host}${document.location.pathname}${inject('$state').href(state, params, {relative: true, inherit: false})}`;
+    return `${document.location.protocol}//${document.location.host}${
+      document.location.pathname
+    }${inject('$state').href(state, params, {
+      relative: true,
+      inherit: false,
+    })}`;
   }
 
   goHome() {
     return inject('$state').go(`${this.prefix}.${this.options.homeState}`);
   }
 
-  listen(state: string | string[], type: TEventType, fn: INavigatorCallback, scope?) {
+  listen(
+    state: string | string[],
+    type: TEventType,
+    fn: INavigatorCallback,
+    scope?
+  ) {
     const states = typeof state === 'string' ? [state] : state || [];
     const eventName = EVENT_MAP[type];
     let otherwise: INavigatorCallback = null;
 
-    this.on(eventName, (stateName = '', params = {}) => {
-      stateName = stateName.replace(`${this.getStatePrefix()}.`, '');
-      if (states.some(s => stateName.indexOf(s) >= 0)) {
-        fn(params, stateName);
-      } else if (otherwise) {
-        otherwise(params, stateName);
-      }
-    }, true, scope);
+    this.on(
+      eventName,
+      (stateName = '', params = {}) => {
+        stateName = stateName.replace(`${this.getStatePrefix()}.`, '');
+        if (states.some((s) => stateName.indexOf(s) >= 0)) {
+          fn(params, stateName);
+        } else if (otherwise) {
+          otherwise(params, stateName);
+        }
+      },
+      true,
+      scope
+    );
 
     return {
       otherwise(f: INavigatorCallback) {
         otherwise = f;
-      }
+      },
     };
   }
 
-  listenFrom(state: string | string[], type: TEventType, fn: Function, invoke = false, scope?) {
+  listenFrom(
+    state: string | string[],
+    type: TEventType,
+    fn: Function,
+    invoke = false,
+    scope?
+  ) {
     const states = typeof state === 'string' ? [state] : state || [];
     const eventName = EVENT_MAP[type];
     let otherwise = null;
 
-    this.on(eventName, (_, __, stateName) => {
-      if (states.some(s => stateName.indexOf(s) >= 0)) {
-        fn();
-      } else if (otherwise) {
-        otherwise();
-      }
-    }, invoke, scope);
+    this.on(
+      eventName,
+      (_, __, stateName) => {
+        if (states.some((s) => stateName.indexOf(s) >= 0)) {
+          fn();
+        } else if (otherwise) {
+          otherwise();
+        }
+      },
+      invoke,
+      scope
+    );
 
     return {
       otherwise(f: Function) {
         otherwise = f;
-      }
+      },
     };
   }
 

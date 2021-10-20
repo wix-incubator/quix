@@ -77,7 +77,7 @@ export const onDelete = (scope: IScope, store: Store, app: App) => (
   deleteNotebook(store, app, notebook).then(() =>
     toast.showToast(
       {
-        text: `Deleted notebook "${notebook.name}"`,
+        text: `"${notebook.name}" moved to Trash`,
         type: 'success',
       },
       3000

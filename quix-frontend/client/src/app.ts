@@ -149,7 +149,7 @@ appBuilder.plugin('dummy', (plugin) => {
             role="button"
             data-hook="app-menu-{{::item.name}}"
           >
-            {{ count > 0 ? 'delete' : 'delete_outline' }}
+          {{ count > 0 ? 'delete' : 'delete_outline' }}
           </i>
        </bi-icon-with-badge>`;
 

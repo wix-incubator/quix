@@ -11,7 +11,7 @@ export const onPermanentlyDeleteClick = (store: Store) => (
       .logAndDispatch(
         TrashBinActions.permanentlyDeleteNotebook(deletedNotebook.id)
       )
-      .then(() => successToast(`"${deletedNotebook.name}" Notebook deleted.`));
+      .then(() => successToast(`Deleted notebook "${deletedNotebook.name}".`));
   });
 };
 
@@ -23,7 +23,7 @@ export const onEmptyTrashBinClicked = (scope, store: Store) => () => {
           TrashBinActions.permanentlyDeleteNotebook(n.id)
         )
       )
-      .then(() => successToast(`Trash Bin is Empty.`));
+      .then(() => successToast(`Trash Bin is empty.`));
   });
 };
 
@@ -52,7 +52,9 @@ export const onRestoreClick = (scope, store: Store) => (
     },
     scope,
     { model: { folder: null } }
-  ).then(() => successToast(`Restored to "${restoreFolder}."`));
+  ).then(() =>
+    successToast(`"${deletedNotebook.name}" Restored to "${restoreFolder}."`)
+  );
 };
 
 function successToast(text: string) {
