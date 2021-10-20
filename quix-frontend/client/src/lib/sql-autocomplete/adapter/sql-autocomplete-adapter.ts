@@ -74,7 +74,7 @@ export class SqlAutocompleter implements IAutocompleter {
     for (const extractedTable of extractedTables) {
       const { name, alias, columns, type } = extractedTable;
       columns.forEach((column) => {
-        const shortColumnName = column.split('.').pop();
+        const shortColumnName = column.split('.').pop().replace('@WT_COLUMN@', '.');
         columnsNamesMemory.add(shortColumnName);
 
         if (alias) {
