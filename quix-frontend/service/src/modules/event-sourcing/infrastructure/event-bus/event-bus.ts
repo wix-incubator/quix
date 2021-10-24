@@ -48,7 +48,7 @@ export class EventBus {
 
     let cachedAction = action;
 
-    const next = (i: number, previousApi?: MiddlewareApi) => {
+    const next = (i: number) => {
       return (nextAction?: A | Error) => {
         if (nextAction instanceof Error) {
           reject(nextAction);
