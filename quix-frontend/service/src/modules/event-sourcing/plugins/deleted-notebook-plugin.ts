@@ -42,7 +42,6 @@ export class DeletedNotebookPlugin implements EventBusPlugin {
             assertOwner(deletedNotebook, action);
             break;
           }
-          case DeletedNotebookActionTypes.createDeletedNotebook:
         }
       },
     );
