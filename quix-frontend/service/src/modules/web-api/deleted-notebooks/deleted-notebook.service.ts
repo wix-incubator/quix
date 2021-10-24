@@ -22,7 +22,7 @@ export class DeletedNotebooksService {
         'dn.owner = user.id',
       )
       .where('dn.owner = :user', {user})
-      .orderBy({'dn.date_deleted': 'ASC'});
+      .orderBy({'dn.name': 'ASC'});
 
     const res = await query.getMany();
     return res.map(dn => convertDbDeletedNotebook(dn));
