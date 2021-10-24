@@ -12,6 +12,11 @@ describe('Presto sql context evaluator: When receiving a nested query', () => {
       );
 
       runQueryTest(
+        'SELECT | FROM (SELECT C.a, D.b FROM A as C, B as D)',
+        nestedResult[ContextType.Column].oneNested
+      );
+
+      runQueryTest(
         'SELECT | FROM (SELECT a, b FROM A, B) tbl1',
         nestedResult[ContextType.Column].oneNestedWithAlias
       );
@@ -112,6 +117,16 @@ describe('Presto sql context evaluator: When receiving a nested query', () => {
     describe('and the cursor is outside both nested query after "SELECT" keyword', () => {
       runQueryTest(
         'SELECT | FROM (SELECT * FROM (SELECT count(c) a, b FROM A, B))',
+        nestedResult[ContextType.Column].oneNested
+      );
+
+      runQueryTest(
+        'SELECT | FROM (SELECT * FROM (SELECT foo.a, bar.b FROM foo, bar))',
+        nestedResult[ContextType.Column].oneNested
+      );
+
+      runQueryTest(
+        'SELECT | FROM (SELECT * FROM (SELECT A.a, D.b FROM A, B as D))',
         nestedResult[ContextType.Column].oneNested
       );
 
