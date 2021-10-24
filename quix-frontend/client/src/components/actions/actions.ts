@@ -57,7 +57,6 @@ export default (app: App, store: Store) => () => ({
             if (!scope.options.confirmOnDelete) {
               fn();
             } else {
-              console.log(scope.type);
               confirmAction(
                 isTrashable(scope) ? 'trash' : 'delete',
                 scope.type,
