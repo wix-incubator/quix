@@ -16,6 +16,7 @@ export class SqlAutocompleter implements IAutocompleter {
 
   constructor(config: IDbInfoConfig) {
     this.config = config;
+    this.config.preFetch();
     this.lastCompleters = [];
   }
 
@@ -74,10 +75,8 @@ export class SqlAutocompleter implements IAutocompleter {
     for (const extractedTable of extractedTables) {
       const { name, alias, columns, type } = extractedTable;
       columns.forEach((column) => {
-        const shortColumnName = column
-          .split('.')
-          .pop()
-          .replace('@WT_COLUMN@', '.');
+
+        const shortColumnName = column.split('.').pop().replace('@WT_COLUMN@', '.');
         columnsNamesMemory.add(shortColumnName);
 
         if (alias) {
