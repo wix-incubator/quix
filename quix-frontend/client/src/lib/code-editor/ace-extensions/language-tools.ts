@@ -1510,7 +1510,7 @@ export const setupLanguageTools = (ace) => {
         "Ctrl-Down|Ctrl-End": function (editor) {editor.completer.goTo("end");},
 
         "Esc": function (editor) {editor.completer.detach();},
-        "Return": function (editor) {return editor.completer.insertMatch();},
+        // "Return": function (editor) {return editor.completer.insertMatch();},
         "Shift-Return": function (editor) {editor.completer.insertMatch(null, {deleteSuffix: true});},
         "Tab": function (editor) {
           var result = editor.completer.insertMatch();
