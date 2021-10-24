@@ -3,7 +3,7 @@ import { inject } from '../../core';
 import { default as dialog, IDialogOptions } from './dialog';
 
 export interface IConfirmOptions extends IDialogOptions {
-  actionType: 'create' | 'destroy' | 'neutral';
+  actionType: 'create' | 'destroy' | 'trash' | 'neutral';
   icon?: string;
   yes?: string;
   no?: string;
@@ -35,7 +35,9 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
 
   scope.dialogOptions.showCloseAction = false;
   scope.dialogOptions.iconClass =
-    options.actionType === 'destroy' ? 'bi-danger' : 'bi-primary';
+    options.actionType === 'destroy' || options.actionType === 'trash'
+      ? 'bi-danger'
+      : 'bi-primary';
 
   if (options.resolveOnEnter) {
     element = element.bind('keyup', (event) => {
@@ -56,6 +58,7 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
         <button
           ng-class="::{
             destroy: 'bi-button--danger',
+            trash: 'bi-button--danger',
             create: 'bi-button--success',
             neutral: 'bi-button--primary'
           }[confirmOptions.actionType]"

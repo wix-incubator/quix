@@ -43,7 +43,7 @@ export default (app: App): IBranch<IApp> => (register) => {
     state: IApp = {
       runners: {},
       import: {},
-      stats: { trashBinCount: -1 },
+      stats: { trashBinCount: 0 },
     },
     action
   ): IApp => {

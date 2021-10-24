@@ -7,7 +7,7 @@
   "scripts": {
     "build:ts": "tsc -b tsconfig.build.json",
     "build": "npm run build:ts && npm run update-statics",
-    "build:run": "npm run build && npm start",
+    "build:start": "npm run build && npm start",
     "start": "DB_HOST=localhost ts-node --files scripts/start.ts",
     "update-statics": "ts-node scripts/update-statics.ts",
     "start:dev": "nodemon",
@@ -21,12 +21,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:debugMysql": "DB_TYPE=mysql node --inspect-brk -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:debug:mysql": "DB_TYPE=mysql node --inspect-brk -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "npm run test:e2e:sqlite && npm run test:e2e:mysql",
     "test:e2e:sqlite": "jest --runInBand --config ./test/jest-e2e.js",
     "test:e2e:mysql": "DB_TYPE=mysql jest --runInBand --config ./test/jest-e2e.js",
     "fnm": "fnm exec which node | xargs -I % ln -sf % ./.fnm-node && chmod +x ./.fnm-node",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
+    "link:shared" : "cd ../shared && npm link && cd ../service && npm link @wix/quix-shared"
   },
   "dependencies": {
     "@nest-middlewares/helmet": "^5.1.1",
@@ -56,7 +56,7 @@
     "tapable": "^1.1.1",
     "ts-node": "^7.0.1",
     "tsconfig-paths": "^3.8.0",
-    "typeorm": "^0.2.37",
+    "typeorm": "^0.2.31",
     "typescript": "^4.0.0",
     "uuid": "^3.3.2",
     "velocity": "^0.7.2",
