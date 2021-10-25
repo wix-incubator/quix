@@ -112,11 +112,6 @@ export class QuixEventBusDriver {
 
   async clearDb() {
     const dbType = this.configService.getDbType();
-    await this.conn.query(
-      dbType === 'mysql'
-        ? 'SET FOREIGN_KEY_CHECKS = 0'
-        : 'PRAGMA foreign_keys = OFF',
-    );
     await this.clearEvents();
     await this.clearNotes();
     await this.clearFolders();
@@ -124,11 +119,6 @@ export class QuixEventBusDriver {
     await this.clearDeletedNotebooks();
     await this.clearFavorites();
     await this.userRepo.clear();
-    await this.conn.query(
-      dbType === 'mysql'
-        ? 'SET FOREIGN_KEY_CHECKS = 1'
-        : 'PRAGMA foreign_keys = ON',
-    );
   }
 
   getNotebook(id: string) {

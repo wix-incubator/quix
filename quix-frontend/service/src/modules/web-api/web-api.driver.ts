@@ -137,11 +137,6 @@ export class WebApiDriver {
 
   async clearDb() {
     const dbType = this.configService.getDbType();
-    await this.conn.query(
-      dbType === 'mysql'
-        ? 'SET FOREIGN_KEY_CHECKS=0'
-        : 'PRAGMA foreign_keys = OFF',
-    );
     await this.eventsRepo.delete({});
     await this.noteRepo.delete({});
     await this.folderRepo.delete({});
@@ -150,11 +145,6 @@ export class WebApiDriver {
     await this.fileTreeRepo.clear();
     await this.favoritesRepo.clear();
     await this.userRepo.clear();
-    await this.conn.query(
-      dbType === 'mysql'
-        ? 'SET FOREIGN_KEY_CHECKS=1'
-        : 'PRAGMA foreign_keys = ON',
-    );
   }
 
   createUser(props?: Partial<DbUser> | undefined): DbUser {

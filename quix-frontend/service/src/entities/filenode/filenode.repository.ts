@@ -3,7 +3,6 @@ import {
   Repository,
   SaveOptions,
   DeepPartial,
-  Entity,
   EntityManager,
 } from 'typeorm';
 import {DbFileTreeNode} from './filenode.entity';
@@ -184,13 +183,6 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
             ids: notebooksToDelete.map(({id}) => id),
           })
           .execute();
-
-        await em
-          .createQueryBuilder()
-          .delete()
-          .from(DbFileTreeNode)
-          .whereInIds(notebooksToDelete)
-          .execute();
       }
 
       if (foldersToDelete.length) {
@@ -198,13 +190,6 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
           .createQueryBuilder()
           .delete()
           .from(DbFolder)
-          .whereInIds(foldersToDelete)
-          .execute();
-
-        await em
-          .createQueryBuilder()
-          .delete()
-          .from(DbFileTreeNode)
           .whereInIds(foldersToDelete)
           .execute();
       }

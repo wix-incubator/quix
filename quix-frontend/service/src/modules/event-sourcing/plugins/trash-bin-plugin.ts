@@ -127,7 +127,7 @@ export class TrashBinPlugin implements EventBusPlugin {
     const children = await this.fileTreeNodeRepo.getDeepChildren(node, this.em);
     const notebooks = children
       .filter(c => c.type === FileType.notebook)
-      .map(async n => this.addNotebook(n.id, action.user, action.userId));
+      .map(n => this.addNotebook(n.id, action.user, action.userId));
 
     const actions: any[] = [];
 

@@ -120,10 +120,6 @@ export class NotebookPlugin implements EventBusPlugin {
           .getCustomRepository(FileTreeRepository)
           .save(node, {reload: false});
       }
-      case NotebookActionTypes.deleteNotebook: {
-        const {id} = action;
-        tm.getCustomRepository(FileTreeRepository).delete({notebookId: id});
-      }
     }
   }
 
