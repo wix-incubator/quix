@@ -2,7 +2,7 @@ import { isArray, find, pull, forEach, get, assign, chain as _ } from 'lodash';
 import { utils, inject } from '../../core';
 import StoreLogger, { ServerFrameworkType } from './store-logger';
 import * as Redux from 'redux';
-import { lodash, uuid } from '../../core/utils';
+import { uuid } from '../../core/utils';
 const { scope: scopeUtils } = utils;
 
 export type IBranch<T = any> = (
@@ -33,12 +33,8 @@ function logBulkAction(logger, ...actions) {
   return logger.log();
 }
 
-const handleReactions = (store: Store, data: any) => {
-  if (data && data.reactions && lodash.isArray(data.reactions)) {
-    data.reactions.forEach((reaction: any) => {
-      store.dispatch(reaction);
-    });
-  }
+const handleReactions = (store: Store, reactions: any[]) => {
+  reactions.forEach((reaction: any) => store.dispatch(reaction));
 };
 
 function resolveActions(
@@ -118,7 +114,10 @@ function logMiddleware(logger) {
     }
 
     return $q.when(res).then((data) => {
-      handleReactions(store, data);
+      if (data && data.reactions) {
+        handleReactions(store, data.reactions);
+      }
+
       return action;
     });
   };
