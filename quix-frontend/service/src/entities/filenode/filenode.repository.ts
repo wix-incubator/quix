@@ -192,6 +192,7 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
           .whereInIds(notebooksToDelete)
           .execute();
       }
+
       if (foldersToDelete.length) {
         await em
           .createQueryBuilder()

@@ -8,7 +8,6 @@ import {
   IDeletedNotebook,
   NoteActions,
   NotebookActions,
-  TrashBinActions,
   TrashBinActionTypes,
 } from '@wix/quix-shared';
 import {
@@ -16,7 +15,6 @@ import {
   DbFolder,
   DbNote,
   DbNotebook,
-  DbUser,
   FileTreeRepository,
 } from '../../../entities';
 import {convertDbNotebook} from '../../../entities/notebook/dbnotebook.entity';
@@ -99,7 +97,7 @@ export class TrashBinPlugin implements EventBusPlugin {
   private async addNotebookReactions(
     action: IAction<TrashBinActionTypes, string>,
   ) {
-    return await this.addNotebook(action.id, action.user, action.userId);
+    return this.addNotebook(action.id, action.user, action.userId);
   }
 
   private async addNotebook(notebookId: string, user: string, userId?: string) {
@@ -127,18 +125,15 @@ export class TrashBinPlugin implements EventBusPlugin {
   ): Promise<any> {
     const node = await this.fileTreeNodeRepo.findOneOrFail({id: action.id});
     const children = await this.fileTreeNodeRepo.getDeepChildren(node, this.em);
-    const notebooks = children.filter(c => c.type === FileType.notebook);
-
-    const addDeletedNotebooks = await Promise.all(
-      notebooks.map(
-        async n => await this.addNotebook(n.id, action.user, action.userId),
-      ),
-    );
+    const notebooks = children
+      .filter(c => c.type === FileType.notebook)
+      .map(async n => this.addNotebook(n.id, action.user, action.userId));
 
     const actions: any[] = [];
-    addDeletedNotebooks.forEach(a => {
+
+    for await (const a of notebooks) {
       actions.push(...a);
-    });
+    }
 
     return [
       ...actions,

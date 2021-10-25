@@ -168,7 +168,7 @@ describe('event sourcing', () => {
         }
       });
 
-      it('moves all child notebooks to trash bin', async () => {
+      it('moves all child notebooks to Trash Bin', async () => {
         await driver.emitAsUser(eventBus, [
           createFolderAction,
           ...createSubFolderActions,
@@ -210,7 +210,7 @@ describe('event sourcing', () => {
       });
     });
 
-    it('restores notebook from trash bin', async () => {
+    it('restores notebook from Trash Bin', async () => {
       let rootFolderId: string;
       let createFolderAction: any;
       let notebookId: string;
