@@ -30,9 +30,6 @@ export const testInputQueryContext: BasicQueryContextOption = {
     withTable: createQueryContextObject(ContextType.Column, [
       testTable.withTable.namedWith2Columns12,
     ]),
-    withTableWithInnerTables: createQueryContextObject(ContextType.Column, [
-      testTable.withTable.namedWith2ColumnsWithPrefixes,
-    ]),
     twoTables1Nested1NestedWithAliasSameColumns: createQueryContextObject(
       ContextType.Column,
       [

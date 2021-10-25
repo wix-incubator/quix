@@ -48,6 +48,14 @@ export const getQueryDetailsFromQuerySpecificationNode = (
   let selectAll: boolean = false;
 
   querySpecificationNode
+    ?.relation()
+    .forEach((relation: any) =>
+      tables.push(...getTableInfoFromRelationNode(relation))
+    );
+
+  const prefixToReplace = createRegexNameFilter(tables);
+
+  querySpecificationNode
     ?.selectItem()
     .forEach((selectItem: any) =>
       selectItem.ASTERISK
@@ -55,17 +63,25 @@ export const getQueryDetailsFromQuerySpecificationNode = (
         : columns.push(
             selectItem.identifier()
               ? selectItem.identifier().getText()
-              : selectItem.getText()
+              : selectItem.getText().replace(prefixToReplace, '')
           )
     );
 
-  querySpecificationNode
-    ?.relation()
-    .forEach((relation: any) =>
-      tables.push(...getTableInfoFromRelationNode(relation))
-    );
-
   return { tables, columns, selectAll };
+};
+
+const createRegexNameFilter = (tables: TableInfo[]) => {
+  const tablesNames = tables.reduce((names, table) => {
+    const name = table.alias || table.name;
+    if (name) {
+      names.push(name);
+    }
+    return names;
+  }, []);
+
+  return tablesNames.length > 0
+    ? new RegExp(`^(${tablesNames.join('|')})\\.`, 'g')
+    : undefined;
 };
 
 export const aggregateQueryDetailsAndTableInfo = (
