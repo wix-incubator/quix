@@ -10,6 +10,7 @@ export class PrestoContextListener extends SqlBaseListener {
   private contextType: ContextType;
   private insidePrestoWithFlag: boolean;
   private missingJoin: boolean = false;
+  private missingBy: boolean = false;
   private readonly withNodes: any[] = [];
 
   setIdentifier(value: string) {
@@ -62,7 +63,7 @@ export class PrestoContextListener extends SqlBaseListener {
   }
 
   enterColumnReference(ctx: any) {
-    if (!this.nodeFound) {
+    if (!this.nodeFound && !this.missingBy) {
       this.contextType = ContextType.Column;
     }
   }
@@ -71,6 +72,8 @@ export class PrestoContextListener extends SqlBaseListener {
     if (!this.nodeFound) {
       this.contextType = ContextType.Undefined;
     }
+
+    this.missingBy = false;
   }
 
   enterSelectSingle(ctx: any) {
@@ -99,15 +102,28 @@ export class PrestoContextListener extends SqlBaseListener {
 
   enterJoinType(ctx: any) {
     if (!this.nodeFound) {
-      this.missingJoin =
-        ctx.parentCtx.children.find(
-          (child: any) =>
-            child
-              .getText()
-              .toLowerCase()
-              .indexOf('missing') !== -1 &&
-            child.symbol.type === SqlBaseParser.JOIN
-        ) !== undefined;
+      this.missingJoin = this.missingChildrenExists(
+        ctx.parentCtx,
+        SqlBaseParser.JOIN
+      );
+    }
+  }
+
+  enterGroupBy(ctx: any) {
+    if (!this.nodeFound) {
+      this.missingBy = this.missingChildrenExists(
+        ctx.parentCtx,
+        SqlBaseParser.BY
+      );
+    }
+  }
+
+  enterSortItem(ctx: any) {
+    if (!this.nodeFound) {
+      this.missingBy = this.missingChildrenExists(
+        ctx.parentCtx,
+        SqlBaseParser.BY
+      );
     }
   }
 
@@ -137,5 +153,17 @@ export class PrestoContextListener extends SqlBaseListener {
     if (this.insidePrestoWithFlag) {
       this.withNodes.push(ctx);
     }
+  }
+
+  missingChildrenExists(ctx: any, symbolType: any) {
+    return (
+      ctx.children.find(
+        (child: any) =>
+          child
+            .getText()
+            .toLowerCase()
+            .indexOf('missing') !== -1 && child.symbol.type === symbolType
+      ) !== undefined
+    );
   }
 }
