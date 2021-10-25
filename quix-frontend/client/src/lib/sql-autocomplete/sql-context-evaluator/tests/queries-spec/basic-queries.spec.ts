@@ -57,6 +57,14 @@ describe('Presto sql context evaluator: When receiving a basic query', () => {
       'SELECT foo, bar FROM table1, table2 as tbl2 GROUP BY |',
       basicResult[ContextType.Column].twoExternalTablesAndAlias
     );
+    runQueryTest(
+      'SELECT foo, bar FROM table1, table2 as tbl2 GROUP |',
+      basicResult[ContextType.Undefined].zeroTables
+    );
+    runQueryTest(
+      'SELECT foo, bar FROM table1, table2 as tbl2 GROUP B|',
+      basicResult[ContextType.Undefined].zeroTables
+    );
   });
 
   describe('and cursor after "ORDER BY" keyword', () => {
@@ -71,6 +79,14 @@ describe('Presto sql context evaluator: When receiving a basic query', () => {
     runQueryTest(
       'SELECT foo, bar FROM table1, table2 as tbl2 ORDER BY |',
       basicResult[ContextType.Column].twoExternalTablesAndAlias
+    );
+    runQueryTest(
+      'SELECT foo, bar FROM table1, table2 as tbl2 ORDER |',
+      basicResult[ContextType.Undefined].zeroTables
+    );
+    runQueryTest(
+      'SELECT foo, bar FROM table1, table2 as tbl2 ORDER B|',
+      basicResult[ContextType.Undefined].zeroTables
     );
   });
 
