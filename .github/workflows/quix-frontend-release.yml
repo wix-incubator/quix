@@ -1,4 +1,4 @@
-name: Frontend - Publish release to DockerHub
+name: Quix Frontend Release DockerHub
 
 on:
   workflow_dispatch:
