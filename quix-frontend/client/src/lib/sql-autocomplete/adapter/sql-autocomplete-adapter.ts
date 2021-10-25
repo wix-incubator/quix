@@ -147,7 +147,7 @@ export class SqlAutocompleter implements IAutocompleter {
     }
     return entities.map((entity) =>
       this.createCompleterItem(
-        entity.type === 'schema' || entity.type === 'column'
+        ['schema', 'table', 'column'].includes(entity.type)
           ? `${prefix}.${entity.name}`
           : entity.name,
         entity.type
