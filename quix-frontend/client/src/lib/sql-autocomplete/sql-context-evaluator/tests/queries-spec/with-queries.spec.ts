@@ -18,6 +18,16 @@ describe('Presto sql context evaluator: When receiving "WITH" query', () => {
       );
 
       runQueryTest(
+        'WITH table1 as (SELECT users.foo1, users.bar1 FROM users) SELECT | FROM table1',
+        withResult[ContextType.Column].oneWithTable
+      );
+
+      runQueryTest(
+        'WITH table1 as (SELECT tblOne.foo1, tblTwo.bar1 FROM tblOne, tblTwo) SELECT | FROM table1',
+        withResult[ContextType.Column].oneWithTable
+      );
+
+      runQueryTest(
         'WITH table1 as (SELECT foo1, bar1 FROM users) SELECT | FROM table1 as tbl1',
         withResult[ContextType.Column].oneWithTableAliased
       );
@@ -35,6 +45,13 @@ describe('Presto sql context evaluator: When receiving "WITH" query', () => {
       runQueryTest(
         `WITH table1 as (SELECT foo1, bar1 FROM users),
                   table2 as (SELECT foo2, bar2 FROM products)
+              SELECT | FROM table1, table2`,
+        withResult[ContextType.Column].twoWithTables
+      );
+
+      runQueryTest(
+        `WITH table1 as (SELECT foo1, fo.bar1 FROM users as fo),
+                  table2 as (SELECT products.foo2, st.bar2 FROM products, stores as st)
               SELECT | FROM table1, table2`,
         withResult[ContextType.Column].twoWithTables
       );
