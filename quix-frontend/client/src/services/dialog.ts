@@ -15,7 +15,7 @@ function confirmActionTitle(action: string, type: string): string {
     case 'delete':
       return `${action} ${type}`;
     case 'trash':
-      return `Move ${type} to Trash`;
+      return `Move ${type} to Trash Bin`;
     default:
       return `Operation failed`;
   }
@@ -53,7 +53,7 @@ function confirmHtml(
     case 'trash':
       return `
       <div>
-        ${areYouSure} to Trash
+        ${areYouSure} to Trash Bin
         ${custom} ?
       </div>`;
     default:

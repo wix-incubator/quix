@@ -67,7 +67,7 @@ describe('event sourcing', () => {
   });
 
   describe('trash-bin::', () => {
-    describe('move notebook to trash bin', () => {
+    describe('move notebook to Trash Bin', () => {
       let notebookId: string;
       let rootFolderId: string;
       let createRootFolderAction: any;
