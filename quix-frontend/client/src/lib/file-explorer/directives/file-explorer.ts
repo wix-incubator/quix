@@ -82,7 +82,7 @@ function initScope(scope, controller: Controller, depth: number, mode: Mode) {
 
         const action = folder.isEmpty() ? 'delete' : 'trash';
 
-        return confirmAction(action, 'folder', folder.getName()).then(after);
+        return confirmAction(action, 'folder', folder).then(after);
       },
       onFolderRename(folder: Folder) {
         scope.vm.folder.toggleEdit(folder, true);
