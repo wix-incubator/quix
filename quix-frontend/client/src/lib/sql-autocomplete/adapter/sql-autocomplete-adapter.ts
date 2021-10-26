@@ -75,13 +75,12 @@ export class SqlAutocompleter implements IAutocompleter {
     for (const extractedTable of extractedTables) {
       const { name, alias, columns, type } = extractedTable;
       columns.forEach((column) => {
-        const shortColumnName = column.replace('@WT_COLUMN@', '.');
-        columnsNamesMemory.add(shortColumnName);
+        columnsNamesMemory.add(column);
 
         if (alias) {
-          columnsWithPrefixMemory.add(`${alias}.${shortColumnName}`);
+          columnsWithPrefixMemory.add(`${alias}.${column}`);
         } else if (name && (tables.length > 1 || type === TableType.Nested)) {
-          columnsWithPrefixMemory.add(`${name}.${shortColumnName}`);
+          columnsWithPrefixMemory.add(`${name}.${column}`);
         }
       });
     }
@@ -147,7 +146,7 @@ export class SqlAutocompleter implements IAutocompleter {
     }
     return entities.map((entity) =>
       this.createCompleterItem(
-        entity.type === 'schema' || entity.type === 'column'
+        ['schema', 'table', 'column'].includes(entity.type)
           ? `${prefix}.${entity.name}`
           : entity.name,
         entity.type
