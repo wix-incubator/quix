@@ -10,9 +10,15 @@ import {
   NoteActions,
   createNotebook,
   NotebookActions,
+  DeletedNotebookActions,
+  createDeletedNotebook,
   INotebook,
   createEmptyIUser,
+  IDeletedNotebook,
+  TrashBinActionTypes,
+  TrashBinActions,
 } from '@wix/quix-shared';
+import {string} from 'fp-ts';
 
 class BaseMockDataBuilder<S extends string | never> {
   constructor(protected defaultUser: S) {}
@@ -30,6 +36,57 @@ class BaseMockDataBuilder<S extends string | never> {
         createNotebook(path as IFilePathItem[], {id}),
       ),
       user,
+    };
+    return [id, action] as const;
+  }
+
+  createDeletedNotebookAction(
+    path: Partial<IFilePathItem>[] = [],
+    user = this.defaultUser,
+  ) {
+    const id = uuid.v4();
+    const action = {
+      ...DeletedNotebookActions.createDeletedNotebook(
+        id,
+        createDeletedNotebook(path as IFilePathItem[], {id}),
+      ),
+      user,
+    };
+    return [id, action] as const;
+  }
+
+  permanentlyDeleteDeletedNotebookAction(
+    user = this.defaultUser,
+    notebookId?: string,
+  ) {
+    notebookId = notebookId || uuid.v4();
+    const action = {
+      ...TrashBinActions.permanentlyDeleteNotebook(notebookId),
+      user,
+    };
+    return [notebookId, action] as const;
+  }
+
+  moveNotebookToTrashBinAction(user = this.defaultUser, notebookId?: string) {
+    const id = notebookId || uuid.v4();
+    const action = {
+      ...TrashBinActions.moveNotebookToTrashBin(id),
+      user,
+      ethereal: true,
+    };
+    return [id, action] as const;
+  }
+
+  restoreNotebookFromTrashBinAction(
+    user = this.defaultUser,
+    restoreFolderId: string,
+    notebookId?: string,
+  ) {
+    const id = notebookId || uuid.v4();
+    const action = {
+      ...TrashBinActions.restoreDeletedNotebook(id, restoreFolderId),
+      user,
+      ethereal: true,
     };
     return [id, action] as const;
   }

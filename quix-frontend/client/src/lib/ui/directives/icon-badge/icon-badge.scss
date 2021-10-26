@@ -1,0 +1,10 @@
+@import '../../assets/css/def/defaults.def';
+@import '../../assets/css/def/colors.def';
+
+.bi-icon-with-badge {
+  position: relative;
+  .bi-icon-badge-wide {
+    font-size: 0.45rem;
+    right: -3px;
+  }
+}

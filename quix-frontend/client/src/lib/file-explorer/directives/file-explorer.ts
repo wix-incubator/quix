@@ -1,9 +1,9 @@
-import {assign, isArray} from 'lodash';
-import {createNgModel, initNgScope, inject, utils} from '../../core';
-import {confirm, toast} from '../../ui';
-import {IItemDef} from '../services';
-import {File, Folder} from '../services/file-explorer-models';
-import {treeToDef, defToTree, addFile} from '../services/file-explorer-tools';
+import { assign, isArray } from 'lodash';
+import { createNgModel, initNgScope, inject } from '../../core';
+import { toast } from '../../ui';
+import { IItemDef } from '../services';
+import { File, Folder } from '../services/file-explorer-models';
+import { treeToDef, defToTree, addFile } from '../services/file-explorer-tools';
 import Controller from '../services/file-explorer-controller';
 import VM from './file-explorer-vm';
 
@@ -11,97 +11,99 @@ import templateDynamic from './file-explorer-dynamic.html';
 import templateStatic from './file-explorer-static.html';
 
 import './file-explorer.scss';
+import { confirmAction } from '../../../services/dialog';
 
 type Mode = 'static' | 'dynamic';
 
-const confirmAction = (action: 'delete', context: 'folder', name: string) => {
-  return confirm({
-    title: `${action} ${context}`,
-    actionType: action === 'delete' ? 'destroy' : 'neutral',
-    yes: action,
-    icon: 'report',
-    html: `<div>Are you sure you want to delete the ${utils.dom.escape(context)} <b>"${utils.dom.escape(name)}"</b> ?</div>`
-  });
-}
-
 function directive(mode: Mode, params) {
-  return assign({
-    template: mode === 'dynamic' ? templateDynamic : templateStatic,
-    restrict: 'E'
-  }, params);
+  return assign(
+    {
+      template: mode === 'dynamic' ? templateDynamic : templateStatic,
+      restrict: 'E',
+    },
+    params
+  );
 }
 
 function initScope(scope, controller: Controller, depth: number, mode: Mode) {
   scope.depth = depth;
   scope.renderFolder = (s) => controller.renderFolder(s);
   scope.renderFile = (s) => controller.renderFile(s);
-  scope.renderFolderIcon = (folder) => controller.renderFolderIcon(scope, folder);
+  scope.renderFolderIcon = (folder) =>
+    controller.renderFolderIcon(scope, folder);
   scope.renderFileIcon = (file) => controller.renderFileIcon(scope, file);
   scope.renderMenu = (s, folder) => controller.renderMenu(s, folder);
 
   const helper = initNgScope(scope)
     .readonly(scope.readonly)
-    .withOptions('feOptions', {
-      fileAlias: 'file',
-      orderBy: 'name', // name|dateCreated|dateUpdated
-      orderReversed: false,
-      expandRootFolder: false,
-      expandAllFolders: false,
-      hideEmptyFolders: false,
-      folderMode: 'expand', // expand|select 
-      draggable: false
-    }, ({orderBy, orderReversed, fileAlias}) => {
-      scope.options.fileAlias = isArray(fileAlias) ? fileAlias : [fileAlias];
-      scope.vm.order.setField(orderBy, orderReversed);
-    })
+    .withOptions(
+      'feOptions',
+      {
+        fileAlias: 'file',
+        orderBy: 'name', // name|dateCreated|dateUpdated
+        orderReversed: false,
+        expandRootFolder: false,
+        expandAllFolders: false,
+        hideEmptyFolders: false,
+        folderMode: 'expand', // expand|select
+        draggable: false,
+      },
+      ({ orderBy, orderReversed, fileAlias }) => {
+        scope.options.fileAlias = isArray(fileAlias) ? fileAlias : [fileAlias];
+        scope.vm.order.setField(orderBy, orderReversed);
+      }
+    )
     .withVM(VM)
     .withEditableEvents({
       onFileCreate(type = scope.options.fileAlias[0], folder?: Folder) {
-        const file = (folder || scope.model).toggleOpen(true).createFile(`New ${type}`, type);
+        const file = (folder || scope.model)
+          .toggleOpen(true)
+          .createFile(`New ${type}`, type);
         controller.syncItem(file, 'fileCreated', type);
       },
       onFolderDelete(folder: Folder) {
-        const fn = () => {
+        const after = () => {
           folder.destroy();
 
           if (folder.getParent().isEmpty()) {
             folder.getParent().toggleOpen(false);
           }
-  
+
           controller.syncItem(folder, 'folderDeleted');
 
-          toast.showToast({
-            text: `Deleted folder "${folder.getName()}"`,
-            type: 'success'
-          }, 3000);
+          toast.showToast(
+            {
+              text: `Deleted folder "${folder.getName()}"`,
+              type: 'success',
+            },
+            3000
+          );
         };
 
-        if (folder.isEmpty()) {
-          fn();
-        } else {
-          confirmAction('delete', 'folder', folder.getName()).then(fn);
-        }
+        const action = folder.isEmpty() ? 'delete' : 'trash';
+
+        return confirmAction(action, 'folder', folder.getName()).then(after);
       },
       onFolderRename(folder: Folder) {
         scope.vm.folder.toggleEdit(folder, true);
       },
       onFolderRenamed(folder: Folder) {
         controller.syncItem(folder, 'folderRenamed');
-      }
+      },
     })
     .withEvents({
       onItemDrop(_, __, folder: Folder) {
-        const {item}: {item: File | Folder} =  scope.vm.dropped;
+        const { item }: { item: File | Folder } = scope.vm.dropped;
 
         if (item instanceof File && !folder.getFileById(item.getId())) {
           item.moveTo(folder);
           controller.syncItem(item, 'fileMoved');
         } else if (
-          item instanceof Folder
-          && folder.getId() !== item.getId()
-          && !folder.getFolderById(item.getId())
-          && !folder.getParentById(item.getId())
-          && folder.getDepth() + item.getLength() <= 3
+          item instanceof Folder &&
+          folder.getId() !== item.getId() &&
+          !folder.getFolderById(item.getId()) &&
+          !folder.getParentById(item.getId()) &&
+          folder.getDepth() + item.getLength() <= 3
         ) {
           item.moveTo(folder);
           controller.syncItem(item, 'folderMoved');
@@ -124,8 +126,8 @@ function initScope(scope, controller: Controller, depth: number, mode: Mode) {
           folder.setLimit(20);
 
           if (folder.isLazy()) {
-            controller.fetchLazyFolder(folder).then(items => {
-              items.forEach(item => addFile(folder, item));
+            controller.fetchLazyFolder(folder).then((items) => {
+              items.forEach((item) => addFile(folder, item));
               folder.setLazy(false);
 
               inject('$timeout')(() => folder.setLimit(null), 100);
@@ -150,24 +152,22 @@ function initScope(scope, controller: Controller, depth: number, mode: Mode) {
           scope.vm.folder.setCurrent(null);
           controller.clickFile(file);
         }
-      }
+      },
     });
 
-    if (depth < 2) {
-      helper.withEditableEvents({
-        onFolderCreate(folder?: Folder) {
-          folder = (folder || scope.model).toggleOpen(true);
+  if (depth < 2) {
+    helper.withEditableEvents({
+      onFolderCreate(folder?: Folder) {
+        folder = (folder || scope.model).toggleOpen(true);
 
-          inject('$timeout')(() => {
-            folder = folder
-              .createFolder('New folder')
-              .toggleEdit(true);
+        inject('$timeout')(() => {
+          folder = folder.createFolder('New folder').toggleEdit(true);
 
-            controller.syncItem(folder, 'folderCreated');
-          });
-        }
-      });
-    }
+          controller.syncItem(folder, 'folderCreated');
+        });
+      },
+    });
+  }
 }
 
 const fileExplorerInnerBuilder = (mode: Mode) => () => {
@@ -176,27 +176,31 @@ const fileExplorerInnerBuilder = (mode: Mode) => () => {
     scope: {
       model: '=',
       feOptions: '<',
-      readonly: '='
+      readonly: '=',
     },
 
     link: {
       pre: (scope, element, attrs, controller) => {
-        scope.$watch('model', model => scope.vm.init({
-          controller,
-          item: scope.model,
-          options: scope.options
-        }));
+        scope.$watch('model', (model) =>
+          scope.vm.init({
+            controller,
+            item: scope.model,
+            options: scope.options,
+          })
+        );
 
         initScope(
           scope,
           controller,
-          element.parents(`bi-file-explorer-inner${mode === 'static' ? '-static' : ''}`).length as number + 1,
+          (element.parents(
+            `bi-file-explorer-inner${mode === 'static' ? '-static' : ''}`
+          ).length as number) + 1,
           mode
         );
-      }
-    }
+      },
+    },
   });
-}
+};
 
 const fileExplorerBuilder = (mode: Mode) => () => {
   return directive(mode, {
@@ -204,7 +208,7 @@ const fileExplorerBuilder = (mode: Mode) => () => {
     transclude: {
       folderIcon: '?folderIcon',
       fileIcon: '?fileIcon',
-      menu: '?menu'
+      menu: '?menu',
     },
     controller: ['$scope', '$element', '$transclude', Controller],
     scope: {
@@ -215,10 +219,15 @@ const fileExplorerBuilder = (mode: Mode) => () => {
       onLoad: '&',
       permissions: '&',
       emptyText: '@',
-      readonly: '='
+      readonly: '=',
     },
     link: {
-      pre: (scope, element, attrs, [ngModel, controller]: [ng.INgModelController, Controller]) => {
+      pre: (
+        scope,
+        element,
+        attrs,
+        [ngModel, controller]: [ng.INgModelController, Controller]
+      ) => {
         createNgModel(scope, ngModel)
           .formatWith((model: IItemDef[]) => defToTree(model, scope.options))
           .parseWith((model: Folder) => treeToDef(model))
@@ -227,25 +236,28 @@ const fileExplorerBuilder = (mode: Mode) => () => {
               controller,
               item: model,
               options: scope.options,
-              isRoot: true
+              isRoot: true,
             });
           })
           .then(() => {
-            if (scope.options.expandRootFolder && scope.model.getFolders().length === 1) {
+            if (
+              scope.options.expandRootFolder &&
+              scope.model.getFolders().length === 1
+            ) {
               scope.model.getFolders()[0].toggleOpen(true);
             }
 
-            scope.onLoad({fileExplorer: controller.getInstance()});
+            scope.onLoad({ fileExplorer: controller.getInstance() });
           })
           .feedBack(false);
 
         initScope(scope, controller, 0, mode);
 
         element.addClass(`fe-folder-mode-${scope.options.folderMode}`);
-      }
-    }
+      },
+    },
   });
-}
+};
 
 export const fileExplorer = fileExplorerBuilder('dynamic');
 export const fileExplorerStatic = fileExplorerBuilder('static');

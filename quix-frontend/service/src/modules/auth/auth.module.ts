@@ -1,8 +1,13 @@
 import {DynamicModule, Module} from '@nestjs/common';
 import {JwtModule, JwtService} from '@nestjs/jwt';
 import {TypeOrmModule} from '@nestjs/typeorm';
-import {DbUser} from '../../entities';
+import {
+  DbDeletedNotebook,
+  DbUser,
+  DeletedNotebookRepository,
+} from '../../entities';
 import {EventSourcingModule} from '../../modules/event-sourcing/event-sourcing.module';
+import {DeletedNotebooksService} from '../web-api/deleted-notebooks/deleted-notebook.service';
 import {AuthController} from './auth.controller';
 import {
   CustomLoginService,
@@ -49,7 +54,7 @@ export class AuthModuleConfiguration {
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([DbUser]),
+    TypeOrmModule.forFeature([DbUser, DbDeletedNotebook]),
     EventSourcingModule,
     AuthModuleConfiguration,
     JwtModule.registerAsync({
@@ -75,7 +80,7 @@ export class AuthModuleConfiguration {
     }),
   ],
   controllers: [AuthController],
-  providers: [UsersService],
+  providers: [UsersService, DeletedNotebooksService],
   exports: [UsersService],
 })
 export class AuthModule {

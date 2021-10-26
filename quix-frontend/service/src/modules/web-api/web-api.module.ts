@@ -7,6 +7,7 @@ import {
   DbNotebook,
   FileTreeRepository,
   NoteRepository,
+  DbDeletedNotebook,
   DbUser,
   DbFavorites,
 } from '../../entities';
@@ -23,9 +24,12 @@ import {SearchModule} from '../../modules/search/search.module';
 import {UserListController} from './user-list.controller';
 import {FavoritesService} from './favorites/favorites.service';
 import {FavoritesController} from './favorites/favorites.controller';
+import {DeletedNotebooksController} from './deleted-notebooks/deleted-notebook.controller';
 import {EventsGateway} from './events.gateway';
-import { AutocompleteService } from './autocomplete/autocomplete.service';
-import { AutocompleteController } from './autocomplete/autocomplete.controller';
+import {AutocompleteService} from './autocomplete/autocomplete.service';
+import {AutocompleteController} from './autocomplete/autocomplete.controller';
+import {DeletedNotebooksService} from './deleted-notebooks/deleted-notebook.service';
+import { QuixEventBus } from '../event-sourcing/quix-event-bus';
 
 @Module({
   imports: [
@@ -37,6 +41,7 @@ import { AutocompleteController } from './autocomplete/autocomplete.controller';
       DbAction,
       FileTreeRepository,
       NoteRepository,
+      DbDeletedNotebook,
       DbUser,
       DbFavorites,
     ]),
@@ -51,9 +56,17 @@ import { AutocompleteController } from './autocomplete/autocomplete.controller';
     SearchController,
     UserListController,
     FavoritesController,
+    DeletedNotebooksController,
     AutocompleteController,
   ],
-  providers: [NotebookService, FoldersService, FavoritesService, EventsGateway, AutocompleteService],
+  providers: [
+    NotebookService,
+    FoldersService,
+    FavoritesService,
+    EventsGateway,
+    AutocompleteService,
+    DeletedNotebooksService,
+  ],
   exports: [],
 })
 export class WebApiModule {}

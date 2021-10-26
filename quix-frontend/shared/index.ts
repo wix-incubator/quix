@@ -12,6 +12,17 @@ export {
 } from './entities/notebook';
 
 export {
+  IDeletedNotebook,
+  DeletedNotebookActions,
+  DeletedNotebookActionTypes,
+  deletedNotebookReducer,
+  clientDeletedNotebookReducer,
+  createDeletedNotebook,
+} from './entities/deleted-notebook';
+
+export { TrashBinActionTypes, TrashBinActions } from './entities/trash-bin';
+
+export {
   IFile,
   IFilePathItem,
   FileType,

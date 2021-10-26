@@ -13,6 +13,7 @@ import {
   createFile,
   createNote,
   createFolderPayload,
+  createDeletedNotebook,
 } from '@wix/quix-shared';
 import * as moment from 'moment';
 import { ServerTreeItem } from '../src/components/db-sidebar/db-sidebar-types';
@@ -26,7 +27,9 @@ export const MockNoteContent = {
 };
 
 const mocks = {
-  '/api/user': () => createUser(),
+  '/api/user': () => {
+    return { ...createUser(), stats: { trashBinCount: trashBin.length } };
+  },
   '/api/events': () => [200],
   '/api/users': () =>
     [...Array(200).keys()].map((key) =>
@@ -255,7 +258,27 @@ ORDER BY 1
     }
     return response;
   },
+  '/api/deletedNotebooks': () => [...trashBin],
 };
+
+const createMockDeletedNotebook = (name?: string) => {
+  return name
+    ? { ...createDeletedNotebook(), name }
+    : createMockDeletedNotebook();
+};
+
+const trashBin = [];
+// We can use this loop to simulate different counts on trash bin icon badge
+for (let i = 0; i < 1; i++) {
+  trashBin.push(
+    ...[
+      createMockDeletedNotebook('Removed 1'),
+      createMockDeletedNotebook('Bad Queries'),
+      createMockDeletedNotebook('By Mistake'),
+      createMockDeletedNotebook('Trash'),
+    ]
+  );
+}
 
 let mockOverrides = {};
 

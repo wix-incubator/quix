@@ -1,14 +1,21 @@
 @import './colors.def';
 
 %badge {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  line-height: 18px;
-  font-size: 11px;
   text-align: center;
   color: $white;
-  border-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  position: absolute;
+  font-weight: 600;
+  font-size: 9px;
+  min-width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  z-index: 1;
+  right: 0;
+  padding: 0 3px;
 }
 
 @mixin badge($color: $grey--400) {

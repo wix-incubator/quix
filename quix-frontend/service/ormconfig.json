@@ -5,10 +5,10 @@
   "username": "root",
   "password": "",
   "database": "quix",
-  "entities": ["src/**/*.entity{.ts,.js}"],
-  "migrations": ["./migrations/*.ts"],
+  "entities": ["./src/**/*.entity{.ts,.js}"],
+  "migrations": ["./src/migrations/*.ts"],
   "synchronize": false,
   "cli": {
-    "migrationsDir": "./migrations"
+    "migrationsDir": "./src/migrations"
   }
 }

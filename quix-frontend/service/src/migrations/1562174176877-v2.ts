@@ -20,10 +20,12 @@ export class v21562174176877 implements MigrationInterface {
     await queryRunner.query(
       'ALTER TABLE `users` DROP primary key, ADD primary key(`id`)',
     );
-
-    const metadata = new DbMetadata(QUIX_SCHEMA, CURRENT_QUIX_SCHEMA_VERSION);
     const manager = queryRunner.manager;
-    await manager.update(DbMetadata, {name: QUIX_SCHEMA}, metadata);
+    await manager.update(
+      DbMetadata,
+      {name: QUIX_SCHEMA},
+      {version: CURRENT_QUIX_SCHEMA_VERSION},
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {
@@ -36,8 +38,12 @@ export class v21562174176877 implements MigrationInterface {
     );
     await queryRunner.query('ALTER TABLE `users` DROP COLUMN `date_created`');
     await queryRunner.query('ALTER TABLE `users` DROP COLUMN `date_updated`');
-    const metadata = new DbMetadata(QUIX_SCHEMA, PREVIOUS_QUIX_SCHEMA);
+
     const manager = queryRunner.manager;
-    await manager.update(DbMetadata, {name: QUIX_SCHEMA}, metadata);
+    await manager.update(
+      DbMetadata,
+      {name: QUIX_SCHEMA},
+      {version: PREVIOUS_QUIX_SCHEMA},
+    );
   }
 }

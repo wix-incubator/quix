@@ -3,7 +3,6 @@ import {
   Repository,
   SaveOptions,
   DeepPartial,
-  Entity,
   EntityManager,
 } from 'typeorm';
 import {DbFileTreeNode} from './filenode.entity';
@@ -185,6 +184,7 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
           })
           .execute();
       }
+
       if (foldersToDelete.length) {
         await em
           .createQueryBuilder()

@@ -1,6 +1,6 @@
 import {ConnectionOptions} from 'typeorm';
 import {EnvSettings} from './env';
-import {isJestTest, isTsNode} from './utils';
+import {isTsNode} from './utils';
 
 type ClassConstructor = new (...args: any[]) => any;
 
@@ -14,8 +14,6 @@ export const createInMemConf = (
     entities,
     logger: 'advanced-console',
     logging: settings.DbDebug,
-    // autoSave: true,
-    // location: './sqlite.db',
   };
 };
 

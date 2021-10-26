@@ -16,6 +16,7 @@ import {
   FileTreeRepository,
   DbFavorites,
   DbUser,
+  DbDeletedNotebook,
 } from '../../entities';
 import {MockDataBuilder} from '../../../test/builder';
 import {Connection, Repository} from 'typeorm';
@@ -23,6 +24,7 @@ import {EventSourcingModule} from './event-sourcing.module';
 import {DbAction} from './infrastructure/action-store/entities/db-action.entity';
 import {QuixEventBus} from './quix-event-bus';
 import {EntityType} from '../../common/entity-type.enum';
+import {EntityClassOrSchema} from '@nestjs/typeorm/dist/interfaces/entity-class-or-schema.type';
 
 export class QuixEventBusDriver {
   public mockBuilder: MockDataBuilder;
@@ -32,6 +34,7 @@ export class QuixEventBusDriver {
     public module: TestingModule,
     public noteRepo: Repository<DbNote>,
     public notebookRepo: Repository<DbNotebook>,
+    public deletedNotebookRepo: Repository<DbDeletedNotebook>,
     public eventsRepo: Repository<DbAction>,
     public folderRepo: Repository<DbFolder>,
     public fileTreeRepo: Repository<DbFileTreeNode>,
@@ -39,12 +42,12 @@ export class QuixEventBusDriver {
     public userRepo: Repository<DbUser>,
     private conn: Connection,
     private configService: ConfigService,
-    private defaultUser: string,
+    private defaultUserId: string,
   ) {
-    this.mockBuilder = new MockDataBuilder(defaultUser);
+    this.mockBuilder = new MockDataBuilder(defaultUserId);
   }
 
-  static async create(defaultUser: string) {
+  static async create(defaultUserId: string) {
     const module = await Test.createTestingModule({
       imports: [
         ConfigModule.create(),
@@ -56,6 +59,7 @@ export class QuixEventBusDriver {
               DbFolder,
               DbNote,
               DbNotebook,
+              DbDeletedNotebook,
               DbAction,
               DbFavorites,
               DbUser,
@@ -68,24 +72,24 @@ export class QuixEventBusDriver {
       exports: [],
     }).compile();
 
+    const getRepository = (entity: EntityClassOrSchema) =>
+      module.get(getRepositoryToken(entity));
+
     const eventBus: QuixEventBus = module.get(QuixEventBus);
-    const notebookRepo: Repository<DbNotebook> = module.get(
-      getRepositoryToken(DbNotebook),
-    );
-    const noteRepo: Repository<DbNote> = module.get(getRepositoryToken(DbNote));
-    const eventsRepo: Repository<DbAction> = module.get(
-      getRepositoryToken(DbAction),
-    );
-    const fileTreeRepo: FileTreeRepository = module.get(
-      getRepositoryToken(FileTreeRepository),
-    );
-    const folderRepo: Repository<DbFolder> = module.get(
-      getRepositoryToken(DbFolder),
-    );
-    const favoritesRepo: Repository<DbFavorites> = module.get(
-      getRepositoryToken(DbFavorites),
-    );
-    const userRepo: Repository<DbUser> = module.get(getRepositoryToken(DbUser));
+    const notebookRepo: Repository<DbNotebook> = getRepository(DbNotebook);
+
+    const deletedNotebookRepo: Repository<DbDeletedNotebook> =
+      getRepository(DbDeletedNotebook);
+
+    const noteRepo: Repository<DbNote> = getRepository(DbNote);
+    const eventsRepo: Repository<DbAction> = getRepository(DbAction);
+
+    const fileTreeRepo: FileTreeRepository = getRepository(FileTreeRepository);
+
+    const folderRepo: Repository<DbFolder> = getRepository(DbFolder);
+    const favoritesRepo: Repository<DbFavorites> = getRepository(DbFavorites);
+
+    const userRepo: Repository<DbUser> = getRepository(DbUser);
     const conn: Connection = module.get(getConnectionToken());
     const configService: ConfigService = module.get(ConfigService);
 
@@ -94,6 +98,7 @@ export class QuixEventBusDriver {
       module,
       noteRepo,
       notebookRepo,
+      deletedNotebookRepo,
       eventsRepo,
       folderRepo,
       fileTreeRepo,
@@ -101,28 +106,19 @@ export class QuixEventBusDriver {
       userRepo,
       conn,
       configService,
-      defaultUser,
+      defaultUserId,
     );
   }
 
   async clearDb() {
     const dbType = this.configService.getDbType();
-    await this.conn.query(
-      dbType === 'mysql'
-        ? 'SET FOREIGN_KEY_CHECKS = 0'
-        : 'PRAGMA foreign_keys = OFF',
-    );
     await this.clearEvents();
     await this.clearNotes();
     await this.clearFolders();
     await this.clearNotebooks();
+    await this.clearDeletedNotebooks();
     await this.clearFavorites();
     await this.userRepo.clear();
-    await this.conn.query(
-      dbType === 'mysql'
-        ? 'SET FOREIGN_KEY_CHECKS = 1'
-        : 'PRAGMA foreign_keys = ON',
-    );
   }
 
   getNotebook(id: string) {
@@ -136,6 +132,25 @@ export class QuixEventBusDriver {
         expectToBeUndefined: async () => {
           const notebook = await this.notebookRepo.findOne(id);
           expect(notebook).not.toBeDefined();
+          return undefined;
+        },
+      },
+    };
+  }
+
+  getDeletedNotebook(id: string) {
+    return {
+      and: {
+        expectToBeDefined: async () => {
+          const deletedNotebook = await this.deletedNotebookRepo.findOneOrFail(
+            id,
+          );
+          expect(deletedNotebook).toBeDefined();
+          return deletedNotebook;
+        },
+        expectToBeUndefined: async () => {
+          const deletedNotebook = await this.deletedNotebookRepo.findOne(id);
+          expect(deletedNotebook).not.toBeDefined();
           return undefined;
         },
       },
@@ -182,6 +197,10 @@ export class QuixEventBusDriver {
     return this.noteRepo.findOne(id);
   }
 
+  async getNotesForNotebook(notebookId: string) {
+    return this.noteRepo.find({notebookId});
+  }
+
   async getUsers() {
     return this.userRepo.find();
   }
@@ -207,12 +226,19 @@ export class QuixEventBusDriver {
   async clearNotebooks() {
     return this.notebookRepo.delete({});
   }
+  async clearDeletedNotebooks() {
+    return this.deletedNotebookRepo.delete({});
+  }
 
   async clearFavorites() {
     return this.favoritesRepo.delete({});
   }
 
-  emitAsUser(eventBus: QuixEventBus, actions: any[], user = this.defaultUser) {
+  emitAsUser(
+    eventBus: QuixEventBus,
+    actions: any[],
+    user = this.defaultUserId,
+  ) {
     return eventBus.emit(actions.map(a => Object.assign(a, {user})));
   }
 

@@ -32,6 +32,7 @@ const user1profile: IExternalUser = {
   id: '111111111',
   name: 'Testing User',
 };
+
 const user2profile: IExternalUser = {
   email: 'secondUser@quix.com',
   id: '222222222',
@@ -63,7 +64,7 @@ describe('Application (e2e)', () => {
       const conn: Connection = moduleFixture.get(getConnectionToken());
       if (configService.getDbType() === 'mysql') {
         await conn.dropDatabase();
-        await conn.runMigrations();
+        await conn.synchronize();
       } else {
         await conn.dropDatabase();
         await conn.synchronize();

@@ -13,6 +13,7 @@ import {
   DbUser,
   DbFavorites,
   DbMetadata,
+  DbDeletedNotebook,
 } from './entities';
 import {DbAction} from './modules/event-sourcing/infrastructure/action-store/entities/db-action.entity';
 import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
@@ -27,6 +28,7 @@ import {ProxyDbApiBackend} from './modules/proxy-backend/proxy-backend.module';
           DbFolder,
           DbNote,
           DbNotebook,
+          DbDeletedNotebook,
           DbAction,
           DbUser,
           DbFavorites,

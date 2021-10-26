@@ -40,6 +40,7 @@ export class EventBus {
   emit<A extends IAction = IAction>(action: A) {
     const {promise, reject, resolve} = defer();
     const context: any = {};
+    const loggedEvents: IAction[] = [];
 
     const waitForResolution = setTimeout(() => {
       reject(new Error('Event Bus: timeout'));
@@ -67,7 +68,10 @@ export class EventBus {
           const middleware = this.middlewares[i];
           try {
             const api = new MiddlewareApi(this.plugins, context);
-            middleware.fn(cachedAction, api, next(i + 1) as EventBusNextFn);
+            middleware.fn(cachedAction, api, (...args) => {
+              loggedEvents.push(...api.getLoggedActions());
+              return next(i + 1)(...(args as any));
+            });
           } catch (e) {
             reject(e);
             clearTimeout(waitForResolution);
@@ -80,6 +84,8 @@ export class EventBus {
 
     return promise.then((finalAction: A) => {
       this.emitter.emit(finalAction.type, finalAction);
+
+      return loggedEvents;
     });
   }
 

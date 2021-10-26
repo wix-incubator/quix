@@ -3,11 +3,11 @@ import { inject } from '../../core';
 import { default as dialog, IDialogOptions } from './dialog';
 
 export interface IConfirmOptions extends IDialogOptions {
-  actionType: 'create' | 'destroy' | 'neutral';
+  actionType: 'create' | 'destroy' | 'trash' | 'neutral';
   icon?: string;
   yes?: string;
   no?: string;
-  resolveOnEnter?: boolean
+  resolveOnEnter?: boolean;
 }
 
 function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
@@ -21,7 +21,7 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
     options = {
       actionType: 'neutral',
       yes: element.attr('yes'),
-      no: element.attr('no')
+      no: element.attr('no'),
     };
   } else {
     options = htmlOrOptions;
@@ -30,11 +30,14 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
   options = defaults({}, options, {
     actionType: 'neutral',
     yes: 'yes',
-    no: 'cancel'
+    no: 'cancel',
   });
 
   scope.dialogOptions.showCloseAction = false;
-  scope.dialogOptions.iconClass = options.actionType === 'destroy' ? 'bi-danger' : 'bi-primary';
+  scope.dialogOptions.iconClass =
+    options.actionType === 'destroy' || options.actionType === 'trash'
+      ? 'bi-danger'
+      : 'bi-primary';
 
   if (options.resolveOnEnter) {
     element = element.bind('keyup', (event) => {
@@ -44,9 +47,8 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
     });
   }
 
-  element
-    .addClass('bi-confirm')
-    .append(inject('$compile')(`
+  element.addClass('bi-confirm').append(
+    inject('$compile')(`
       <dialog-footer class="bi-justify-right bi-space-h">
         <button 
           class="bi-button"
@@ -56,6 +58,7 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
         <button
           ng-class="::{
             destroy: 'bi-button--danger',
+            trash: 'bi-button--danger',
             create: 'bi-button--success',
             neutral: 'bi-button--primary'
           }[confirmOptions.actionType]"
@@ -63,11 +66,16 @@ function init(htmlOrOptions: string | IConfirmOptions, promise: any) {
           ng-disabled="form && !form.$valid"
         >{{::confirmOptions.yes}}</button>
       </dialog-footer>
-    `)(assign(scope, { confirmOptions: options })));
+    `)(assign(scope, { confirmOptions: options }))
+  );
 
   return promise;
 }
 
-export default function (htmlOrOptions: string | IConfirmOptions, scope?, locals?) {
+export default function(
+  htmlOrOptions: string | IConfirmOptions,
+  scope?,
+  locals?
+) {
   return init(htmlOrOptions, dialog(htmlOrOptions, scope, locals));
 }

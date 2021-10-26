@@ -45,3 +45,8 @@ export const removeRunner = (id: string, origin: 'user' | 'machine' = 'machine')
   id,
   origin
 });
+
+export const setStats = (stats: { trashBinCount: number }) => ({
+  type: 'app.setStats',
+  stats,
+});

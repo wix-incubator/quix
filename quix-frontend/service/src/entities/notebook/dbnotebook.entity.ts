@@ -38,7 +38,9 @@ export class DbNotebook {
   @Column({...dbConf.json, name: 'json_content'})
   jsonContent: any;
 
-  @OneToMany(type => DbNote, n => n.notebook, {onDelete: 'CASCADE'})
+  @OneToMany(type => DbNote, n => n.notebook, {
+    createForeignKeyConstraints: false,
+  })
   notes?: DbNote[];
 
   @OneToOne(type => DbFileTreeNode, node => node.notebook, {

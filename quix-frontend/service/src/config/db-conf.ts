@@ -1,4 +1,4 @@
-import {ColumnOptions} from 'typeorm';
+import {ColumnOptions, PrimaryColumnOptions} from 'typeorm';
 import {getEnv} from './env/env';
 import {FileType} from '@wix/quix-shared/entities/file';
 import {ContentSearch, SearchTextType} from '@wix/quix-shared';
@@ -13,7 +13,8 @@ interface DbColumnConf {
   noteContent: ColumnOptions;
   dateUpdated: ColumnOptions;
   dateCreated: ColumnOptions;
-  idColumn: ColumnOptions;
+  dateDeleted: ColumnOptions;
+  idColumn: PrimaryColumnOptions;
   eventsTimestamp: ColumnOptions;
   fileTypeEnum: ColumnOptions;
   entityTypeEnum: ColumnOptions;
@@ -45,6 +46,14 @@ const MySqlConf: DbColumnConf = {
     },
     readonly: true,
     name: 'date_created',
+  },
+  dateDeleted: {
+    transformer: {
+      from: (d?: Date) => d && d.valueOf(),
+      to: (v?: number) => (v !== undefined ? new Date(v) : undefined),
+    },
+    readonly: true,
+    name: 'date_deleted',
   },
   eventsTimestamp: {
     type: 'timestamp',
@@ -84,6 +93,7 @@ const SqliteConf: DbColumnConf = {
   noteContent: {type: 'text', nullable: true},
   dateUpdated: {
     type: 'integer',
+    name: 'date_updated',
     transformer: {
       from: (d: number) => {
         const date = new Date(d);
@@ -101,6 +111,25 @@ const SqliteConf: DbColumnConf = {
   },
   dateCreated: {
     type: 'integer',
+    name: 'date_created',
+    transformer: {
+      from: (d: number) => {
+        const date = new Date(d);
+        return Date.UTC(
+          date.getUTCFullYear(),
+          date.getUTCMonth(),
+          date.getUTCDate(),
+          date.getUTCHours(),
+          date.getUTCMinutes(),
+          date.getUTCSeconds(),
+        ).valueOf();
+      },
+      to: (v?: number) => v,
+    },
+  },
+  dateDeleted: {
+    type: 'integer',
+    name: 'date_deleted',
     transformer: {
       from: (d: number) => {
         const date = new Date(d);

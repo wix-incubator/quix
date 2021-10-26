@@ -1,6 +1,6 @@
 {
   "name": "@wix/quix-shared",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "license": "MIT",
   "description": "Presto-based notebook manager",
   "author": {
@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.11",
-    "tslib": "^2.1.0",
+    "tslib": "^2.3.0",
     "uuid": "^3.3.2"
   },
   "jest": {
