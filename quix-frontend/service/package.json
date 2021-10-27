@@ -39,7 +39,7 @@
     "@nestjs/websockets": "^7.0.0",
     "@types/node-fetch": "^2.5.0",
     "@types/ws": "^6.0.4",
-    "@wix/quix-shared": "^1.0.7",
+    "@wix/quix-shared": "^1.0.14",
     "axios": "^0.21.0",
     "cookie": "^0.4.1",
     "cookie-parser": "^1.4.4",
