@@ -72,7 +72,7 @@ export const confirmAction = (
     title: confirmActionTitle(action, type),
     actionType: { delete: 'destroy' }[action] || 'neutral',
     icon: { delete: 'delete_forever', retry: 'report' }[action] || null,
-    yes: action,
+    yes: action === 'trash' ? 'move to trash bin' : action,
 
     onConfirm,
     html: confirmHtml(action, context, type, customText),
