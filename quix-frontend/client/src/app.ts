@@ -145,9 +145,9 @@ appBuilder.plugin('dummy', (plugin) => {
                            ng-class="{'bi-active': item === vm.menu.current}"
                            >
          <i class="bi-icon"
-            title="{{::item.name}}"
+            title="Trash Bin"
             role="button"
-            data-hook="app-menu-{{::item.name}}"
+            data-hook="app-menu-trash-bin"
           >
           {{ count > 0 ? 'delete' : 'delete_outline' }}
           </i>

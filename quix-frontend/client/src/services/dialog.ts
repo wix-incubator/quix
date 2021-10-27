@@ -3,6 +3,7 @@ import { confirm } from '../lib/ui';
 import { utils } from '../lib/core';
 
 function contextText(context: any, type: string) {
+  console.log(context);
   return isArray(context)
     ? `the <b>(${context.length})</b> selected ${utils.dom.escape(type)}s`
     : `the ${utils.dom.escape(type)} <b>"${utils.dom.escape(
