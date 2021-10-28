@@ -23,7 +23,7 @@ export const onEmptyTrashBinClicked = (scope, store: Store) => () => {
           TrashBinActions.permanentlyDeleteNotebook(n.id)
         )
       )
-      .then(() => successToast(`Trash Bin is empty.`));
+      .then(() => successToast(`Trash Bin is empty`));
   });
 };
 
