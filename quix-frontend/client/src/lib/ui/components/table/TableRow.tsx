@@ -27,15 +27,15 @@ export interface TableRowProps {
   row: any;
 }
 
-export const TableRow = ({
-  row,
-  onRowClicked,
-  columns,
-}: TableRowProps) => {
+export const TableRow = ({ row, onRowClicked, columns }: TableRowProps) => {
   return (
     <tr
-      onClick={() => onRowClicked(row)}
-      data-hook="table-row"
+      onClick={() => {
+        if (typeof onRowClicked === 'function') {
+          return onRowClicked(row);
+        }
+      }}
+      data-hook='table-row'
     >
       {columns.map((column, index) => {
         return (

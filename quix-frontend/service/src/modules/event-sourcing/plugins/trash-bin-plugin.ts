@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Inject, Injectable} from '@nestjs/common';
 import {InjectEntityManager, InjectRepository} from '@nestjs/typeorm';
 
 import {
@@ -73,11 +73,14 @@ export class TrashBinPlugin implements EventBusPlugin {
       id: (action as any).folderId,
     });
 
+    const folderNode = await this.fileTreeNodeRepo.findOneOrFail(folder.id);
+    const path = folderNode.mpath.split('.').map(n => ({id: n, name: ''}));
+
     const notebook = convertDbNotebook(
       {
         ...deletedNotebook,
       },
-      [{id: folder.id, name: folder.name}],
+      path,
     );
 
     return [

@@ -142,7 +142,6 @@ appBuilder.plugin('dummy', (plugin) => {
        <bi-icon-with-badge count="count"  
                            hide="count <= 0"
                            class="bi-action"
-                           ng-class="{'bi-active': item === vm.menu.current}"
                            >
          <i class="bi-icon"
             title="Trash Bin"
@@ -159,7 +158,6 @@ appBuilder.plugin('dummy', (plugin) => {
       app.go('trashBin');
     },
   });
-  plugin.menuItem({ name: 'separator' });
   plugin.menuItem({
     name: 'Playground',
     icon: 'code',
