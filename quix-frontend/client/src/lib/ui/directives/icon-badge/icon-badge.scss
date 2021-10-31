@@ -3,8 +3,14 @@
 
 .bi-icon-with-badge {
   position: relative;
+
   .bi-icon-badge-wide {
     font-size: 0.45rem;
     right: -3px;
+  }
+
+  ng-transclude {
+    display: block;
+    line-height: 0;
   }
 }
