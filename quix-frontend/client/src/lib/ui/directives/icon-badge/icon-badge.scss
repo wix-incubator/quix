@@ -9,6 +9,13 @@
     right: -3px;
   }
 
+  .bi-badge {
+    position: absolute;
+    z-index: 1;
+    right: 0;
+    padding: 0 3px;
+  }
+
   ng-transclude {
     display: block;
     line-height: 0;

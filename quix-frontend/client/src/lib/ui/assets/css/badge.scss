@@ -21,3 +21,9 @@
 .bi-badge--danger {
   @include badge($danger);
 }
+
+.bi-badge--sm {
+  @include badge();
+  @include badge-size(14px, 9px);
+  border-radius: 7px;
+}
