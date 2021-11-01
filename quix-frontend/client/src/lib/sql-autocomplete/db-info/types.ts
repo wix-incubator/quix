@@ -19,11 +19,25 @@ export interface Catalog extends BaseEntity {
   children: Schema[];
 }
 
+export interface CacheProps {
+  catalogs: Catalog[];
+  tables: { [key: string]: Column[] };
+}
+
 export interface IDbInfoConfig {
-  getColumnsByTable(catalog: string,schema: string,table: string): Promise<Column[]>;
-  getTablesBySchema(catalog: string,schema: string): Promise<Table[]>;
-  getSchemasByCatalog(catalog: string): Promise<Schema[]>;
-  getCatalogs(): Promise<Catalog[]>;
-  search(type: string, prefix: string): Promise<Catalog[]>;
-  preFetch(): any;
+  getColumnsByTable(
+    catalog: string,
+    schema: string,
+    table: string,
+    type?: string
+  ): Promise<Column[]>;
+  getTablesBySchema(
+    catalog: string,
+    schema: string,
+    type?: string
+  ): Promise<Table[]>;
+  getSchemasByCatalog(catalog: string, type?: string): Promise<Schema[]>;
+  getCatalogs(type?: string): Promise<Catalog[]>;
+  search(prefix: string, type?: string): Promise<Catalog[]>;
+  preFetch(type?: string): any;
 }
