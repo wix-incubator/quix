@@ -10,14 +10,14 @@ import { IDbInfoConfig } from '../db-info';
 import { BaseEntity, Column } from '../db-info/types';
 
 export class SqlAutocompleter implements IAutocompleter {
-  private readonly config: IDbInfoConfig;
   private prefix: string;
-  private lastCompleters: ICompleterItem[];
+  private lastCompleters: ICompleterItem[] = [];
 
-  constructor(config: IDbInfoConfig) {
-    this.config = config;
-    this.config.preFetch();
-    this.lastCompleters = [];
+  constructor(
+    private readonly config: IDbInfoConfig,
+    private readonly type?: string
+  ) {
+    this.config.preFetch(this.type);
   }
 
   // methods
@@ -106,7 +106,7 @@ export class SqlAutocompleter implements IAutocompleter {
     for (const tableFullName of tablesToExtract) {
       const [catalog, schema, tableName] = tableFullName.split('.');
       columnsByTablesPromises.push(
-        this.config.getColumnsByTable(catalog, schema, tableName)
+        this.config.getColumnsByTable(catalog, schema, tableName, this.type)
       );
     }
 
@@ -130,15 +130,16 @@ export class SqlAutocompleter implements IAutocompleter {
     let entities: BaseEntity[] = [];
     switch (prefixArray.length) {
       case 0:
-        entities = await this.config.getCatalogs();
+        entities = await this.config.getCatalogs(this.type);
         break;
       case 1:
-        entities = await this.config.getSchemasByCatalog(prefix);
+        entities = await this.config.getSchemasByCatalog(prefix, this.type);
         break;
       case 2:
         entities = await this.config.getTablesBySchema(
           prefixArray[0],
-          prefixArray[1]
+          prefixArray[1],
+          this.type
         );
         break;
       default:
@@ -146,9 +147,7 @@ export class SqlAutocompleter implements IAutocompleter {
     }
     return entities.map((entity) =>
       this.createCompleterItem(
-        ['schema', 'table', 'column'].includes(entity.type)
-          ? `${prefix}.${entity.name}`
-          : entity.name,
+        prefix ? `${prefix}.${entity.name}` : entity.name,
         entity.type
       )
     );
@@ -163,7 +162,7 @@ export class SqlAutocompleter implements IAutocompleter {
       const schemaCompleters: Set<string> = new Set();
       const tableCompleters: Set<string> = new Set();
 
-      const dbTree = await this.config.getCatalogs();
+      const dbTree = await this.config.getCatalogs(this.type);
 
       dbTree.forEach((catalog) => {
         catalog.children.forEach((schema) => {

@@ -30,7 +30,7 @@ export async function setupCompleters(
   }
 
   // dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
-  const sqlAutocompleter = new SqlAutocompleter(dbInfoService);
+  const sqlAutocompleter = new SqlAutocompleter(dbInfoService, type);
 
   editorInstance.setLiveAutocompletion(true);
 
