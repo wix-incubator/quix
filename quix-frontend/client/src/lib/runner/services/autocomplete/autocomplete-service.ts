@@ -54,7 +54,7 @@ export async function setupCompleters(
       contextCompletions,
     ]);
 
-    let all = [...completions, ...keywords];
+    let all = completions.length === 0 ? keywords : completions;
 
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();

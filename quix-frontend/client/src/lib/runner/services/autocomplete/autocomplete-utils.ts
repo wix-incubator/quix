@@ -5,7 +5,7 @@ import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem } from '../../../code-editor/services/code-editor-completer';
 import { reservedPrestoWords } from '../../../sql-autocomplete/languge/reserved-words';
 
-let keywords: ICompleterItem[] = [];
+let keywords: ICompleterItem[];
 
 export const getKeywordsCompletions = (): ICompleterItem[] => {
   // TODO: FIND A WAY TO FETCH KEYWORDS FROM ANTLR GRAMMAR
