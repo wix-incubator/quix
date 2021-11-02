@@ -93,6 +93,7 @@
       ng-class="{'bi-active': query.getId() === vm.result.current.getId()}"
       ng-repeat="query in runner.getQueries()"
       ng-click="events.onSelectQuery(query)"
+      title="{{::query.getTitle()}}"
     >{{::query.getTitle()}}</div>
   </div>
 
