@@ -73,6 +73,8 @@ export async function setupCompleters(
 
         return resultArr;
       }, []);
+    } else {
+      all.sort((a, b) => a.value.localeCompare(b.value));
     }
 
     return all;
