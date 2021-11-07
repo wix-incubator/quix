@@ -55,12 +55,6 @@ export async function setupCompleters(
     ]);
 
     let all = completions.length === 0 ? keywords : completions;
-    all.sort((a, b) => {
-      if ( a.value.toLowerCase() < b.value.toLowerCase()){
-        return -1;
-      }
-      return 1
-    });
 
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();
@@ -79,6 +73,13 @@ export async function setupCompleters(
 
         return resultArr;
       }, []);
+    } else {
+      all.sort((a, b) => {
+        if ( a.value.toLowerCase() < b.value.toLowerCase()){
+          return -1;
+        }
+        return 1
+      });
     }
 
     return all;
