@@ -74,12 +74,9 @@ export async function setupCompleters(
         return resultArr;
       }, []);
     } else {
-      all.sort((a, b) => {
-        if ( a.value.toLowerCase() < b.value.toLowerCase()){
-          return -1;
-        }
-        return 1
-      });
+      all.sort((a, b) =>
+        a.value.toLowerCase().localeCompare(b.value.toLowerCase())
+      );
     }
 
     return all;
