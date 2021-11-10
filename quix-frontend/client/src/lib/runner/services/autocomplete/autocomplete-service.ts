@@ -55,7 +55,10 @@ export async function setupCompleters(
       contextCompletions,
     ]);
 
-    let all = queryContext.contextType === ContextType.Undefined ? keywords : completions;
+    let all =
+      queryContext.contextType === ContextType.Undefined
+        ? keywords
+        : completions;
 
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();
@@ -74,11 +77,9 @@ export async function setupCompleters(
 
         return resultArr;
       }, []);
-    } else {
-      all.sort((a, b) => a.value.localeCompare(b.value));
     }
 
-    return all;
+    return all.sort((a, b) => a.value.localeCompare(b.value));
   };
 
   editorInstance.addOnDemandCompleter(/[\w.]+/, completerFn as any, {
