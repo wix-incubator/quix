@@ -10,6 +10,7 @@ import {
 } from './autocomplete-utils';
 import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
 import {
+  ContextType,
   evaluateContextFromPosition,
   QueryContext,
 } from '../../../sql-autocomplete/sql-context-evaluator';
@@ -54,7 +55,10 @@ export async function setupCompleters(
       contextCompletions,
     ]);
 
-    let all = completions.length === 0 ? keywords : completions;
+    let all =
+      queryContext.contextType === ContextType.Undefined
+        ? keywords
+        : completions;
 
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();
@@ -73,11 +77,9 @@ export async function setupCompleters(
 
         return resultArr;
       }, []);
-    } else {
-      all.sort((a, b) => a.value.localeCompare(b.value));
     }
 
-    return all;
+    return all.sort((a, b) => a.value.localeCompare(b.value));
   };
 
   editorInstance.addOnDemandCompleter(/[\w.]+/, completerFn as any, {
