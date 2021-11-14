@@ -55,7 +55,7 @@ export async function setupCompleters(
       contextCompletions,
     ]);
 
-    const simpleSortFunction = (a: AceCompletion, b: AceCompletion) =>
+    const sortByValueLexicographicOrder = (a: AceCompletion, b: AceCompletion) =>
       a.value.localeCompare(b.value);
 
     let all =
@@ -63,8 +63,8 @@ export async function setupCompleters(
         ? keywords
         : queryContext.contextType === ContextType.Undefined
         ? [
-            ...completions.sort(simpleSortFunction),
-            ...keywords.sort(simpleSortFunction),
+            ...completions.sort(sortByValueLexicographicOrder),
+            ...keywords.sort(sortByValueLexicographicOrder),
           ]
         : completions;
 
@@ -89,12 +89,12 @@ export async function setupCompleters(
 
     return queryContext.contextType === ContextType.Undefined
       ? all
-      : all.sort(simpleSortFunction);
+      : all.sort(sortByValueLexicographicOrder);
   };
 
   editorInstance.addOnDemandCompleter(/[\w.]+/, completerFn as any, {
     acceptEmptyString: true,
   });
 
-  editorInstance.addOnDemandCompleter(/[\s]+/, completerFn as any);
+  // editorInstance.addOnDemandCompleter(/[\s]+/, completerFn as any);
 }
