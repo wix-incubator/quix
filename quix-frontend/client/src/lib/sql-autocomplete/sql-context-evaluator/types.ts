@@ -21,6 +21,7 @@ export interface TableInfo {
 export enum ContextType {
   Table = 'Table',
   Column = 'Column',
+  Keywords = 'Keywords',
   Undefined = 'Undefined',
 }
 

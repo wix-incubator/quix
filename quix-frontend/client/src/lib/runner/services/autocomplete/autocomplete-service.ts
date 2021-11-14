@@ -55,9 +55,17 @@ export async function setupCompleters(
       contextCompletions,
     ]);
 
+    const simpleSortFunction = (a: AceCompletion, b: AceCompletion) =>
+      a.value.localeCompare(b.value);
+
     let all =
-      queryContext.contextType === ContextType.Undefined
+      queryContext.contextType === ContextType.Keywords
         ? keywords
+        : queryContext.contextType === ContextType.Undefined
+        ? [
+            ...completions.sort(simpleSortFunction),
+            ...keywords.sort(simpleSortFunction),
+          ]
         : completions;
 
     if (prefix) {
@@ -79,7 +87,9 @@ export async function setupCompleters(
       }, []);
     }
 
-    return all.sort((a, b) => a.value.localeCompare(b.value));
+    return queryContext.contextType === ContextType.Undefined
+      ? all
+      : all.sort(simpleSortFunction);
   };
 
   editorInstance.addOnDemandCompleter(/[\w.]+/, completerFn as any, {

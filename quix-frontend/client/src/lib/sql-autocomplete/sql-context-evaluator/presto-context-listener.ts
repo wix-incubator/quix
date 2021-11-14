@@ -26,7 +26,7 @@ export class PrestoContextListener extends SqlBaseListener {
   }
 
   getContextType() {
-    return (this.nodeFound && this.contextType) ?? ContextType.Undefined;
+    return (this.nodeFound && this.contextType) ?? ContextType.Keywords;
   }
 
   getQuerySpecificationNode() {
@@ -70,7 +70,7 @@ export class PrestoContextListener extends SqlBaseListener {
 
   exitColumnReference(ctx: any) {
     if (!this.nodeFound) {
-      this.contextType = ContextType.Undefined;
+      this.contextType = ContextType.Keywords;
     }
 
     this.missingBy = false;
@@ -84,7 +84,7 @@ export class PrestoContextListener extends SqlBaseListener {
 
   exitSelectSingle(ctx: any) {
     if (!this.nodeFound) {
-      this.contextType = ContextType.Undefined;
+      this.contextType = ContextType.Keywords;
     }
   }
 
@@ -96,7 +96,7 @@ export class PrestoContextListener extends SqlBaseListener {
 
   exitJoinCriteria(ctx: any) {
     if (!this.nodeFound) {
-      this.contextType = ContextType.Undefined;
+      this.contextType = ContextType.Keywords;
     }
   }
 
@@ -135,7 +135,7 @@ export class PrestoContextListener extends SqlBaseListener {
 
   exitTableName(ctx: any) {
     if (!this.nodeFound) {
-      this.contextType = ContextType.Undefined;
+      this.contextType = ContextType.Keywords;
     }
 
     this.missingJoin = false;
