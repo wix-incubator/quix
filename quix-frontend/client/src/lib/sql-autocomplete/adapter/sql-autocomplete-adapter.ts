@@ -33,6 +33,7 @@ export class SqlAutocompleter implements IAutocompleter {
       case ContextType.Column:
         return this.getQueryContextColumns(tables);
       case ContextType.Table:
+      case ContextType.Undefined:
         const tablesCompleters = this.getQueryContextTables(tables);
         if (prefix !== this.prefix) {
           const [dbEntitiesCompleters, dbCompleters] = await Promise.all([

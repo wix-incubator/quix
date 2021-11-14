@@ -2,9 +2,9 @@ import { ContextType } from '../../types';
 import { BasicQueryContextOption, testTable } from './utils';
 
 export const basicResult: BasicQueryContextOption = {
-  [ContextType.Undefined]: {
+  [ContextType.Keywords]: {
     zeroTables: {
-      contextType: ContextType.Undefined,
+      contextType: ContextType.Keywords,
       tables: [],
     },
   },

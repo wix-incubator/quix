@@ -101,31 +101,31 @@ describe('Presto sql context evaluator: When receiving "JOIN" query', () => {
       `SELECT table1.a, table1.b
         FROM table1
         INNER |`,
-      basicResult[ContextType.Undefined].zeroTables
+      basicResult[ContextType.Keywords].zeroTables
     );
     runQueryTest(
       `SELECT table1.a, table1.b
         FROM table1
         LEFT |`,
-      basicResult[ContextType.Undefined].zeroTables
+      basicResult[ContextType.Keywords].zeroTables
     );
     runQueryTest(
       `SELECT table1.a, table1.b
         FROM table1
         RIGHT |`,
-      basicResult[ContextType.Undefined].zeroTables
+      basicResult[ContextType.Keywords].zeroTables
     );
     runQueryTest(
       `SELECT table1.a, table1.b
         FROM table1
         OUTER |`,
-      basicResult[ContextType.Undefined].zeroTables
+      basicResult[ContextType.Keywords].zeroTables
     );
     runQueryTest(
       `SELECT table1.a, table1.b
         FROM table1
         INNER JOI|`,
-      basicResult[ContextType.Undefined].zeroTables
+      basicResult[ContextType.Keywords].zeroTables
     );
   });
 

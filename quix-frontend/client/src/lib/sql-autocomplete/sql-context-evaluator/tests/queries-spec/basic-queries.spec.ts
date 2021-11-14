@@ -3,11 +3,11 @@ import { basicResult } from '../result-options/basic-results';
 import { runQueryTest } from './utils';
 
 describe('Presto sql context evaluator: When receiving a basic query', () => {
-  runQueryTest('', basicResult[ContextType.Undefined].zeroTables);
-  runQueryTest(' ', basicResult[ContextType.Undefined].zeroTables);
-  runQueryTest('SELECT 1', basicResult[ContextType.Undefined].zeroTables);
-  runQueryTest('SE|LECT 1', basicResult[ContextType.Undefined].zeroTables);
-  runQueryTest('SELECT| 1', basicResult[ContextType.Undefined].zeroTables);
+  runQueryTest('', basicResult[ContextType.Keywords].zeroTables);
+  runQueryTest(' ', basicResult[ContextType.Keywords].zeroTables);
+  runQueryTest('SELECT 1', basicResult[ContextType.Keywords].zeroTables);
+  runQueryTest('SE|LECT 1', basicResult[ContextType.Keywords].zeroTables);
+  runQueryTest('SELECT| 1', basicResult[ContextType.Keywords].zeroTables);
   runQueryTest('SELECT 1|', basicResult[ContextType.Column].zeroTables);
 
   describe('and cursor after "SELECT" keyword', () => {
@@ -59,11 +59,11 @@ describe('Presto sql context evaluator: When receiving a basic query', () => {
     );
     runQueryTest(
       'SELECT foo, bar FROM table1, table2 as tbl2 GROUP |',
-      basicResult[ContextType.Undefined].zeroTables
+      basicResult[ContextType.Keywords].zeroTables
     );
     runQueryTest(
       'SELECT foo, bar FROM table1, table2 as tbl2 GROUP B|',
-      basicResult[ContextType.Undefined].zeroTables
+      basicResult[ContextType.Keywords].zeroTables
     );
   });
 
@@ -82,11 +82,11 @@ describe('Presto sql context evaluator: When receiving a basic query', () => {
     );
     runQueryTest(
       'SELECT foo, bar FROM table1, table2 as tbl2 ORDER |',
-      basicResult[ContextType.Undefined].zeroTables
+      basicResult[ContextType.Keywords].zeroTables
     );
     runQueryTest(
       'SELECT foo, bar FROM table1, table2 as tbl2 ORDER B|',
-      basicResult[ContextType.Undefined].zeroTables
+      basicResult[ContextType.Keywords].zeroTables
     );
   });
 
