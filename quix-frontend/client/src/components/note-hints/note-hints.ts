@@ -8,6 +8,7 @@ export default () => () => ({
   link: {
     pre(scope: any) {
       scope.ctrlKey = navigator.platform === 'MacIntel' ? 'Command' : 'Ctrl';
+      scope.autocompleteKey = navigator.platform === 'MacIntel' ? 'Option' : 'Ctrl';
     }
   }
 });
