@@ -86,5 +86,5 @@ export async function setupCompleters(
     acceptEmptyString: true,
   });
 
-  editorInstance.addOnDemandCompleter(/[\s]+/, completerFn as any);
+  // editorInstance.addOnDemandCompleter(/[\s]+/, completerFn as any);
 }
