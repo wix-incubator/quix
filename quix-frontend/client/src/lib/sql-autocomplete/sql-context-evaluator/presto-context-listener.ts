@@ -11,6 +11,7 @@ export class PrestoContextListener extends SqlBaseListener {
   private insidePrestoWithFlag: boolean;
   private missingJoin: boolean = false;
   private missingBy: boolean = false;
+  private readonly fromAfterSelectErrorCase: boolean = false;
   private readonly withNodes: any[] = [];
 
   setIdentifier(value: string) {
@@ -62,6 +63,12 @@ export class PrestoContextListener extends SqlBaseListener {
     }
   }
 
+  enterQuerySpecification(ctx: any) {
+    if (!this.nodeFound){
+      console.log(ctx);
+    }
+  }
+
   enterColumnReference(ctx: any) {
     if (!this.nodeFound && !this.missingBy) {
       this.contextType = ContextType.Column;
@@ -77,13 +84,15 @@ export class PrestoContextListener extends SqlBaseListener {
   }
 
   enterSelectSingle(ctx: any) {
-    if (!this.nodeFound) {
+    if (!this.nodeFound && !this.fromAfterSelectErrorCase) {
       this.contextType = ContextType.Column;
     }
   }
 
   exitSelectSingle(ctx: any) {
     if (!this.nodeFound) {
+      this.contextType = ContextType.Keywords;
+    } else if (ctx.parentCtx.children.length === 2) {
       this.contextType = ContextType.Keywords;
     }
   }
