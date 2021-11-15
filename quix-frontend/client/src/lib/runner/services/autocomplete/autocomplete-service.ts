@@ -35,43 +35,52 @@ export async function setupCompleters(
 
   editorInstance.setLiveAutocompletion(true);
 
-  const keywordsCompletions = getKeywordsCompletions();
-
   const completerFn = async (prefix: string, session: IEditSession) => {
     const { query, position } = getQueryAndCursorPositionFromEditor(
       editorInstance,
       session
     );
+
     const queryContext: QueryContext = evaluateContextFromPosition(
       query,
       position
     );
-    const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
-      queryContext
-    );
 
-    const [keywords, completions] = await Promise.all([
-      keywordsCompletions,
-      contextCompletions,
-    ]);
+    const sortByValueLexicographicOrder = (
+      a: AceCompletion,
+      b: AceCompletion
+    ) => a.value.localeCompare(b.value);
 
-    const sortByValueLexicographicOrder = (a: AceCompletion, b: AceCompletion) =>
-      a.value.localeCompare(b.value);
+    let completions: AceCompletion[];
 
-    let all =
-      queryContext.contextType === ContextType.Keywords
-        ? keywords
-        : queryContext.contextType === ContextType.Undefined
-        ? [
-            ...completions.sort(sortByValueLexicographicOrder),
-            ...keywords.sort(sortByValueLexicographicOrder),
-          ]
-        : completions;
+    switch (queryContext.contextType) {
+      case ContextType.Keywords:
+        completions = getKeywordsCompletions();
+        break;
+      case ContextType.Undefined:
+        const keywordsCompletions = getKeywordsCompletions();
+        const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
+          queryContext
+        );
+        const [keywords, entityCompletions] = await Promise.all([
+          keywordsCompletions,
+          contextCompletions,
+        ]);
+        completions = [
+          ...entityCompletions.sort(sortByValueLexicographicOrder),
+          ...keywords.sort(sortByValueLexicographicOrder),
+        ];
+        break;
+      default:
+        completions = await sqlAutocompleter.getCompletionItemsFromQueryContext(
+          queryContext
+        );
+    }
 
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();
 
-      all = all.reduce((resultArr: AceCompletion[], completionItem) => {
+      completions = completions.reduce((resultArr: AceCompletion[], completionItem) => {
         const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
 
         if (indexes.length > 0) {
@@ -88,8 +97,8 @@ export async function setupCompleters(
     }
 
     return queryContext.contextType === ContextType.Undefined
-      ? all
-      : all.sort(sortByValueLexicographicOrder);
+      ? completions
+      : completions.sort(sortByValueLexicographicOrder);
   };
 
   editorInstance.addOnDemandCompleter(/[\w.]+/, completerFn as any, {
