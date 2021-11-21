@@ -4,6 +4,13 @@ import {
 } from '../../language-parsers/presto-grammar';
 import { ContextType } from './types';
 
+/**
+ * A listener to parse an Antlr4 syntax tree for presto grammar.
+ * To use the listener first set an identifier and than use the DEFAULT.walk method in Antlr4.
+ * The listener collects data that defines the query context based on the identifier location in the tree.
+ *  
+ * @extends {SqlBaseListener} Auto-generated listener by Antlr4 for presto grammar
+ */
 export class PrestoContextListener extends SqlBaseListener {
   private identifier: string;
   private nodeFound: any;
@@ -17,19 +24,37 @@ export class PrestoContextListener extends SqlBaseListener {
     this.identifier = value;
   }
 
-  getWithNodes() {
+  /**
+   * @returns {any[]} an array of NamedQueryNode (which defines WITH table) that collected 
+   * during the 'walk' over the Antlr4 tree.
+   */
+  getWithNodes(): any[] {
     return this.withNodes;
   }
 
-  getNodeFound() {
+  /**
+   * @returns {any} the tree node that matches the identifier during the 'walk' over the Antlr4 tree.
+   */
+  getNodeFound(): any {
     return this.nodeFound;
   }
 
-  getContextType() {
+  /**
+   * The context type is evaluated based on the node found during the 'walk' over the Antlr4 tree.
+   *
+   * @returns {ContextType} context type
+   */
+  getContextType(): ContextType {
     return (this.nodeFound && this.contextType) ?? ContextType.Undefined;
   }
 
-  getQuerySpecificationNode() {
+  /**
+   * Using the node found (which indicates the position to evaluate the context) finds
+   * the next querySpecificationNode up the tree.
+   *
+   * @returns {any} querySpecificationNode
+   */
+  getQuerySpecificationNode(): any {
     let currentNode = this.nodeFound;
     let querySpecificationNode: any;
 
@@ -62,13 +87,13 @@ export class PrestoContextListener extends SqlBaseListener {
     }
   }
 
-  enterColumnReference(ctx: any) {
+  enterColumnReference(_ctx: any) {
     if (!this.nodeFound && !this.missingBy) {
       this.contextType = ContextType.Column;
     }
   }
 
-  exitColumnReference(ctx: any) {
+  exitColumnReference(_ctx: any) {
     if (!this.nodeFound) {
       this.contextType = ContextType.Undefined;
     }
@@ -76,25 +101,25 @@ export class PrestoContextListener extends SqlBaseListener {
     this.missingBy = false;
   }
 
-  enterSelectSingle(ctx: any) {
+  enterSelectSingle(_ctx: any) {
     if (!this.nodeFound) {
       this.contextType = ContextType.Column;
     }
   }
 
-  exitSelectSingle(ctx: any) {
+  exitSelectSingle(_ctx: any) {
     if (!this.nodeFound) {
       this.contextType = ContextType.Undefined;
     }
   }
 
-  enterJoinCriteria(ctx: any) {
+  enterJoinCriteria(_ctx: any) {
     if (!this.nodeFound) {
       this.contextType = ContextType.Column;
     }
   }
 
-  exitJoinCriteria(ctx: any) {
+  exitJoinCriteria(_ctx: any) {
     if (!this.nodeFound) {
       this.contextType = ContextType.Undefined;
     }
@@ -127,13 +152,13 @@ export class PrestoContextListener extends SqlBaseListener {
     }
   }
 
-  enterTableName(ctx: any) {
+  enterTableName(_ctx: any) {
     if (!this.nodeFound && !this.missingJoin) {
       this.contextType = ContextType.Table;
     }
   }
 
-  exitTableName(ctx: any) {
+  exitTableName(_ctx: any) {
     if (!this.nodeFound) {
       this.contextType = ContextType.Undefined;
     }
@@ -141,11 +166,11 @@ export class PrestoContextListener extends SqlBaseListener {
     this.missingJoin = false;
   }
 
-  enterPresto_with(ctx: any) {
+  enterPresto_with(_ctx: any) {
     this.insidePrestoWithFlag = true;
   }
 
-  exitPresto_with(ctx: any) {
+  exitPresto_with(_ctx: any) {
     this.insidePrestoWithFlag = false;
   }
 

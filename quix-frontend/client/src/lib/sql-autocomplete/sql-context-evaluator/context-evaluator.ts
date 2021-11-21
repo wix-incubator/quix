@@ -5,6 +5,14 @@ import { getTableInfoFromRelationNode } from './tree-analyzer';
 import { analyzeNamedQueryNode } from './with-clause-analyzer';
 import { createPrestoSyntaxTree } from '../../language-parsers/sql-parser/parser';
 
+/**
+ * Takes query and identifier and returns the context of the given identifier in the query. 
+ * 
+ * @param   {string} input sql query
+ * @param   {string} identifier to evaluate
+ *
+ * @returns {QueryContext} the evaluated context.
+ */
 export const evaluateContext = (
   input: string,
   identifier: string
@@ -13,6 +21,14 @@ export const evaluateContext = (
   return getContextFromSyntaxTree(prestoSyntaxTree, identifier);
 };
 
+/**
+ * Takes antlr syntax tree and identifier and returns the context of the given identifier in the tree.
+ *
+ * @param   {any} tree antlr syntax tree
+ * @param   {string} identifier to evaluate
+ *
+ * @returns {QueryContext} the evaluated context type and the tables info that defines the query.
+ */
 const getContextFromSyntaxTree = (
   tree: any,
   identifier: string
@@ -25,7 +41,9 @@ const getContextFromSyntaxTree = (
 
   const queryTables: TableInfo[] =
     contextType === ContextType.Column
-      ? evaluateQueryTablesInfo(prestoContextListener.getQuerySpecificationNode())
+      ? evaluateQueryTablesInfo(
+          prestoContextListener.getQuerySpecificationNode()
+        )
       : [];
 
   const withTablesInfo: TableInfo[] = evaluateWithTablesInfo(
@@ -45,6 +63,14 @@ const getContextFromSyntaxTree = (
   };
 };
 
+/**
+ * Takes querySpecificationNode and evaluate all is 'relation' childrens.
+ * Creates for each relation TableInfo that defines the relation properties.
+ *
+ * @param   {any} querySpecificationNode antlr tree node
+ *
+ * @returns {TableInfo[]} TableInfo array.
+ */
 const evaluateQueryTablesInfo = (querySpecificationNode: any): TableInfo[] => {
   return querySpecificationNode
     ?.relation()
@@ -54,18 +80,39 @@ const evaluateQueryTablesInfo = (querySpecificationNode: any): TableInfo[] => {
     }, []);
 };
 
+/**
+ * Takes array of namedQueryNodes and creates TableInfo that defines the 
+ * WITH table properties for each namedQueryNode.
+ *
+ * @param   {any[]} namedQueries array of antlr tree node
+ *
+ * @returns {TableInfo[]} TableInfo array.
+ */
 const evaluateWithTablesInfo = (namedQueries: any[]): TableInfo[] => {
   return namedQueries.reduce((accumulator: TableInfo[], withNode: any) => {
     return accumulator.concat(analyzeNamedQueryNode(withNode));
   }, []);
 };
 
+/**
+ * Takes 2 TableInfo array, one of regular query and one for the WITH tables
+ * and merge them according to the context type. 
+ * During the merge, all the regular tables and the table references are replaced with their 
+ * corresponding WITH tables, if exists one.
+ * 
+ * @param   {ContextType} contextType
+ * @param   {TableInfo[]} queryTablesInfo
+ * @param   {TableInfo[]} withTablesInfo
+ * @param   {string} identifier
+ *
+ * @returns {TableInfo[]} a new TableInfo array with the results of the merge and filter.
+ */
 const mergeAndFilterResults = (
   contextType: ContextType,
   queryTablesInfo: TableInfo[],
   withTablesInfo: TableInfo[],
   identifier: string
-) => {
+): TableInfo[] => {
   const mergedTableInfoResults: TableInfo[] = [];
   const withTablesMap = new Map<string, TableInfo>(
     withTablesInfo.map((table) => {
@@ -99,6 +146,15 @@ const mergeAndFilterResults = (
   return mergedTableInfoResults;
 };
 
+/**
+ * Replace all the table references of a given TableInfo with their 
+ * corresponding WITH tables info, if exists one.
+ * For each such table, replaces the references and adds the columns of 
+ * the WITH table to the given table recursively.
+ * 
+ * @param   {TableInfo} table
+ * @param   {Map<string, TableInfo>} withMap
+ */
 const replaceTableRefsAndWithTables = (
   table: TableInfo,
   withMap: Map<string, TableInfo>

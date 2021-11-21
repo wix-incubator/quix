@@ -7,6 +7,13 @@ import {
 import { QueryDetails, TableInfo, TableType } from './types';
 import { createNewTableInfoObj } from './utils';
 
+/**
+ * Takes NamedQueryNode (which defines WITH table) and analyzes its properties using the tree-analyzer.
+ *  
+ * @param   {any} namedQueryNode
+ *
+ * @returns {TableInfo} the WITH table details as table info
+ */
 export const analyzeNamedQueryNode = (namedQueryNode: any): TableInfo => {
   const currentTableInfo: TableInfo = createNewTableInfoObj({
     name: getWithClauseName(namedQueryNode),
@@ -25,10 +32,23 @@ export const analyzeNamedQueryNode = (namedQueryNode: any): TableInfo => {
   return currentTableInfo;
 };
 
+/**
+ * @param   {any} namedQueryNode
+ *
+ * @returns {string} name
+ */
 const getWithClauseName = (namedQueryNode: any): string => {
   return namedQueryNode.identifier().getText();
 };
 
+/**
+ * In cases where the column names are defined along with the table name, an array of columns names will be returned.
+ * For example: WITH foo(bar, goo) as (SELECT a, b FROM c)
+ * 
+ * @param   {any} namedQueryNode
+ *
+ * @returns {string[]} columns names
+ */
 const getColumnAliases = (namedQueryNode: any): string[] => {
   const columnsAlias: string[] = [];
 

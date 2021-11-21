@@ -27,6 +27,14 @@ describe('Presto sql context evaluator: When receiving a basic query', () => {
       'SELECT |, foo FROM table1, table2, table3 WHERE foo = "value"',
       basicResult[ContextType.Column].threeExternalTables
     );
+    runQueryTest(
+      'SELECT |, foo FROM (table1), table2 as tbl2 WHERE foo = "value"',
+      basicResult[ContextType.Column].twoExternalTablesAndAlias
+    );
+    runQueryTest(
+      'SELECT foo,| FROM (((table1))) WHERE foo = "value"',
+      basicResult[ContextType.Column].oneExternalTable
+    );
   });
 
   describe('and the cursor is after "FROM" keyword', () => {
@@ -301,8 +309,3 @@ describe('Presto sql context evaluator: When receiving a basic query', () => {
   });
 });
 
-describe('Presto sql context evaluator: When receiving "INSERT INTO" query and cursor inside parentheses', () => {
-  /*
-   * TODO
-   */
-});
