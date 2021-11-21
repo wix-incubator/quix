@@ -1,11 +1,19 @@
 import { QueryDetails, TableInfo, TableType } from './types';
 import { createNewTableInfoObj } from './utils';
 
+/**
+ * Recuresive function which takes a relationNode and returns a TableInfo array
+ * that defines the relation properties considering sub-relations.
+ *
+ * @param   {any} relationNode
+ *
+ * @returns {TableInfo[]} TableInfo array
+ */
 export const getTableInfoFromRelationNode = (
   relationNode: any
 ): TableInfo[] => {
   if (relationNode.relation) {
-    // when use 'JOIN' keyword -> analyze all relations
+    // when using 'JOIN' keyword -> split and analyze all sub-relations
     return relationNode
       .relation()
       ?.reduce((accumulator: TableInfo[], subRelation: any) => {
@@ -17,6 +25,7 @@ export const getTableInfoFromRelationNode = (
   const relationPrimaryNode = aliasedRelationNode.relationPrimary();
 
   if (relationPrimaryNode.relation) {
+    // dealing with nested parentheses, for example: SELECT * FROM ((some_table))
     return getTableInfoFromRelationNode(relationPrimaryNode.relation());
   }
 
@@ -31,6 +40,7 @@ export const getTableInfoFromRelationNode = (
   });
 
   if (currentTableInfo.type === TableType.Nested && relationPrimaryNode.query) {
+    // evaluate the nested query and merge it with the currentTableInfo
     const nestedQueryDetails: QueryDetails = getQueryDetailsFromQuerySpecificationNode(
       getNextQuerySpecificationNode(relationNode)
     );
@@ -40,6 +50,14 @@ export const getTableInfoFromRelationNode = (
   return [currentTableInfo];
 };
 
+/**
+ * Recuresive function which takes a querySpecificationNode and returns a QueryDetails
+ * that defines all the query properties considering tables and columns.
+ *
+ * @param   {any} querySpecificationNode
+ *
+ * @returns {QueryDetails} query properties
+ */
 export const getQueryDetailsFromQuerySpecificationNode = (
   querySpecificationNode: any
 ): QueryDetails => {
@@ -47,6 +65,7 @@ export const getQueryDetailsFromQuerySpecificationNode = (
   const columns: string[] = [];
   let selectAll: boolean = false;
 
+  // evaluate all relations after FROM clause
   querySpecificationNode
     ?.relation()
     .forEach((relation: any) =>
@@ -55,6 +74,7 @@ export const getQueryDetailsFromQuerySpecificationNode = (
 
   const prefixToReplace = createRegexNameFilter(tables);
 
+  // evaluate all columns after SELECT clause
   querySpecificationNode
     ?.selectItem()
     .forEach((selectItem: any) =>
@@ -70,7 +90,14 @@ export const getQueryDetailsFromQuerySpecificationNode = (
   return { tables, columns, selectAll };
 };
 
-const createRegexNameFilter = (tables: TableInfo[]) => {
+/**
+ * Takes TableInfo array and creates a RegExp to match all tables aliases/names in the given array.
+ *
+ * @param   {TableInfo[]} tables
+ *
+ * @returns {RegExp} Regular expression of all tables aliases/names
+ */
+const createRegexNameFilter = (tables: TableInfo[]): RegExp => {
   const tablesNames = tables.reduce((names, table) => {
     const name = table.alias || table.name;
     if (name) {
@@ -84,10 +111,18 @@ const createRegexNameFilter = (tables: TableInfo[]) => {
     : undefined;
 };
 
+/**
+ * Takes QueryDetails and aggregates it into a given TableInfo.
+ *
+ * @param   {QueryDetails} queryDetails
+ * @param   {TableInfo} tableInfo
+ *
+ * @return {void}
+ */
 export const aggregateQueryDetailsAndTableInfo = (
   queryDetails: QueryDetails,
   tableInfo: TableInfo
-) => {
+): void => {
   queryDetails.tables.forEach((table: TableInfo) => {
     if (queryDetails.selectAll) {
       if (table.type === TableType.External) {
@@ -104,7 +139,14 @@ export const aggregateQueryDetailsAndTableInfo = (
   tableInfo.columns.push(...queryDetails.columns);
 };
 
-export const getNextQuerySpecificationNode = (currentNode: any) => {
+/**
+ * Takes any Antlr4 tree node and advances it to the next QuerySpecificationNode down the tree.
+ *
+ * @param {any} currentNode
+ *
+ * @return {any} querySpecificationNode
+ */
+export const getNextQuerySpecificationNode = (currentNode: any): any => {
   if (!(currentNode?.children?.length > 0)) {
     return null;
   }
@@ -116,7 +158,8 @@ export const getNextQuerySpecificationNode = (currentNode: any) => {
   nextNode = nextNode?.query ? nextNode.query() : nextNode;
   nextNode = nextNode?.queryNoWith ? nextNode.queryNoWith() : nextNode;
   nextNode = nextNode?.queryTerm ? nextNode.queryTerm() : nextNode;
-  nextNode = nextNode?.queryTerm ? nextNode.queryTerm()[0] : nextNode; // when use 'UNION' keyword -> analyze the first table
+  // when use 'UNION' keyword -> analyze the first table
+  nextNode = nextNode?.queryTerm ? nextNode.queryTerm()[0] : nextNode;
   nextNode = nextNode?.queryPrimary ? nextNode.queryPrimary() : nextNode;
 
   return nextNode?.querySpecification
