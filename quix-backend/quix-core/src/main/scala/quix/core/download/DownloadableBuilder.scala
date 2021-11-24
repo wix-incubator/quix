@@ -1,14 +1,15 @@
 package quix.core.download
 
-import java.io.OutputStream
+import com.opencsv.CSVWriter
+import monix.eval.Task
+import quix.api.v1.execute.{Builder => _, _}
+import quix.api.v2.execute._
+import quix.core.executions.DelegatingBuilder
+
+import java.io.{BufferedWriter, OutputStream, OutputStreamWriter}
 import java.nio.file.{Files, Paths}
 import java.util.concurrent.ConcurrentHashMap
 import java.util.zip.GZIPOutputStream
-
-import monix.eval.Task
-import quix.api.v1.execute.{Batch, BatchColumn, Consumer, Download, ExecutionEvent}
-import quix.api.v2.execute._
-import quix.core.executions.DelegatingBuilder
 
 class DownloadableBuilder[Code](delegate: Builder,
                                 downloadConfig: DownloadConfig,
@@ -74,14 +75,11 @@ class DownloadableBuilder[Code](delegate: Builder,
 
   def use(subQueryId: String, rows: Seq[Seq[Any]]): Task[Unit] = Task {
     val stream = openStreams.get(subQueryId)
+    val writer = new CSVWriter(new BufferedWriter(new OutputStreamWriter(stream, "UTF-8")))
 
     if (rows.nonEmpty && stream != null) {
-      val string = rows
-        .map(row => row.map(CsvUtils.quote))
-        .map(row => row.mkString(","))
-        .mkString("", "\n", "\n")
-
-      stream.write(string.getBytes("UTF-8"))
+      rows.foreach(row => writer.writeNext(row.toArray.map(_.toString), true))
+      writer.flush()
     }
   }
 

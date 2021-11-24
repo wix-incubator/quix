@@ -41,7 +41,10 @@ class DownloadControllerTest extends E2EContext {
 
     val response = getResponse("/api/download/query-id-1")
 
-    assertThat(response.body, Matchers.is("\"_col0\"\n\"1\"\n"))
+    assertThat(response.body, Matchers.is(
+      """"_col0"
+        |"1"
+        |""".stripMargin))
   }
 
   @Test
@@ -58,8 +61,29 @@ class DownloadControllerTest extends E2EContext {
     listener.await("""{"event":"query-download","data":{"id":"query-id-2","url":"/api/download/query-id-2"}}""")
     val second = getResponse("/api/download/query-id-2")
 
-    assertThat(first.body, Matchers.is("\"foo\"\n\"1\"\n"))
-    assertThat(second.body, Matchers.is("\"bar\"\n\"2\"\n"))
+    assertThat(first.body, Matchers.is(
+      """"foo"
+        |"1"
+        |""".stripMargin))
+    assertThat(second.body, Matchers.is(
+      """"bar"
+        |"2"
+        |""".stripMargin))
+  }
+
+  @Test
+  def sendSingleQueryWithQuotedJson(): Unit = {
+    executor.withResults(List(List("""{"k1":1,"k2":2}""")), columns = List("data"), queryId = "query-id-3")
+    val listener = runAndDownload("select data", "presto-prod")
+
+    listener.await("""{"event":"query-download","data":{"id":"query-id-3","url":"/api/download/query-id-3"}}""")
+
+    val response = getResponse("/api/download/query-id-3")
+
+    assertThat(response.body, Matchers.is(
+      """"data"
+        |"{""k1"":1,""k2"":2}"
+        |""".stripMargin))
   }
 
 }
