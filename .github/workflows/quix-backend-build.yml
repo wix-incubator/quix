@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        scala_version: ['2.12.14', '2.13.6']
+        scala_version: ['2.12.15', '2.13.7']
     steps:
     - name: Checkout
       uses: actions/checkout@v1
@@ -25,7 +25,7 @@ jobs:
       working-directory: ./quix-backend
       run: |
         sbt ++${{matrix.scala_version}} -v -Dfile.encoding=UTF-8 test publishM2
-        if [[ ${{matrix.scala_version}} = '2.12.14' ]]
+        if [[ ${{matrix.scala_version}} = '2.12.15' ]]
         then
           mvn --quiet -f quix-webapps/quix-web-spring/pom.xml test
         fi
