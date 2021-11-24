@@ -76,6 +76,9 @@ lazy val quixCore = (project in file("quix-core"))
     // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3
     libraryDependencies += "com.amazonaws" % "aws-java-sdk-s3" % "1.11.728",
 
+    // https://mvnrepository.com/artifact/com.opencsv/opencsv
+    libraryDependencies += "com.opencsv" % "opencsv" % "5.5.2",
+
     libraryDependencies ++= loggingDeps,
     libraryDependencies ++= specs2Deps,
 
