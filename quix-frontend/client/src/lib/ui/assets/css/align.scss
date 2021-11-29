@@ -20,3 +20,7 @@
 .bi-align--bottom {
   @include flex(row, flex-end !important);
 }
+
+.bi-align--top {
+  @include flex(row, flex-start !important);
+}
