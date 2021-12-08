@@ -1,44 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {makeStyles} from '@material-ui/core/styles';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import Icon from '@material-ui/core/Icon';
 import _ from 'lodash';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import {Highlighter} from '../../lib/ui/components/Highlighter';
 import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
 import {MenuItem} from '../../lib/ui/components/dropdown/MenuItem';
-
-const useStyles = makeStyles({
-  treeItemRoot: {
-    fontFamily: 'Open Sans',
-  },
-  text: {
-    height: '35px',
-  },
-  label: {
-    overflow: 'auto',
-    paddingRight: '5px',
-    paddingLeft: '2px',
-  },
-  group: {
-    marginLeft: 0,
-  },
-  selected: {
-    backgroundColor: 'red',
-  },
-  iconSm: {
-    marginRight: '5px',
-    marginTop: '3px',
-  },
-  textIcon: {
-    marginRight: '5px',
-    marginLeft: '10px',
-  },
-  moreVert: {
-    fontSize: '30px',
-  }
-});
 
 export interface Node {
   id: string;
@@ -78,8 +42,6 @@ const InnerTreeItem = ({
     onTransformChildNodes,
     onTransformChildNodesLazy,
   }: TreeItemProps) => {
-  const classes = useStyles();
-
   const [node] = useState<Node>(initialNode);
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -121,27 +83,27 @@ const InnerTreeItem = ({
 
   const preIcon = (
     isLoading ? 
-      <span className={'bi-align ' + classes.iconSm}>
+      <span className="bi-align">
         <span data-hook="tree-item-loading-icon" className="bi-align bi-spinner--xs">
         </span>
       </span>
     : Array.isArray(node.children) ?
         expanded ?
-          <ArrowDropDownIcon data-hook="tree-item-opened-icon" className={'bi-icon--sm ' + classes.iconSm} />
-        : <ArrowRightIcon data-hook="tree-item-closed-icon" className={'bi-icon--sm ' + classes.iconSm} />
+        <i className="bi-icon--sm bi-action" data-hook="tree-item-opened-icon">expand_more</i>
+        : <i className="bi-icon--sm bi-action" data-hook="tree-item-closed-icon">expand_less</i>
       : null
   )
 
   const describeIcon = (
     node.textIcon ?
-      <div className={'bi-text--sm ng-binding ng-scope ' + classes.textIcon}>{node.textIcon}</div>
-    : <Icon className={'bi-icon--xs ' + classes.iconSm} >{node.icon || 'hourglass_empty'}</Icon>
+    <div className="bi-text--sm">{node.textIcon}</div>
+    : <i className="bi-icon--xs">{node.icon || 'hourglass_empty'}</i>
   )
 
   const menu = (
     menuOptions[node.type] ?
       <Dropdown
-        icon={<MoreVertIcon classes={{root: classes.moreVert}} className={'bi-action'} />}
+        icon={<i className="bi-icon--sm bi-action">more_vert</i>}
         placement='bottom-end'
       >
         {menuOptions[node.type].map((moreOption, index) => 
@@ -169,10 +131,10 @@ const InnerTreeItem = ({
   }
 
   return (
-    <div>
-      <div className={`bi-align bi-hover bi-fade-in bi-pointer fe-item-depth-${path.length} ${classes.treeItemRoot}`}>
+    <div className="bi-s-v">
+      <div className={`bi-align bi-hover bi-fade-in bi-pointer fe-item-depth-${path.length}`}>
         <div
-          className={'bi-align bi-r-h bi-text--ellipsis bi-grow bi-text ' + classes.text}
+          className="bi-align bi-r-h bi-text--ellipsis bi-grow bi-text bi-s-h--x05"
           onClick={() => onClick()}
         >
           {preIcon}
