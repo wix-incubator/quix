@@ -1,77 +1,44 @@
-import React, {useEffect, useRef} from 'react';
-import Popper, {PopperPlacementType} from '@material-ui/core/Popper';
-import { Grow, Paper, ClickAwayListener, MenuList } from '@material-ui/core';
+import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+import { usePopper } from 'react-popper';
+import { Placement } from '@popperjs/core';
 
-interface IDropdownProps {
-  icon?: React.ReactNode;
-  placement: PopperPlacementType;
+interface InjectedDropdownProps {
+  options: JSX.Element[];
 }
 
-
-export const Dropdown: React.FunctionComponent<IDropdownProps> = ({
-  children,
-  icon,
-  placement,
-}) => {
-
-  const refElement = useRef(null);
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  }
-
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-  };
-
-  const escFunction = (e) => {
-    if (e.keyCode === 27) {
-      handleClose();
-    }
-  }
-
-  useEffect(() => {
-    document.addEventListener('keydown', escFunction, false);
-
-    return () => {
-      document.removeEventListener('keydown', escFunction, false);
-    };
-  }, []);
-  
-  const open = Boolean(anchorEl);
-
-  if (!Array.isArray(children)) {
-    children = [children];
-  }
+export const Dropdown = (
+  Element: JSX.Element,
+  OptionsWrapper: React.ComponentType<InjectedDropdownProps>,
+  options: JSX.Element[],
+  isOpen: boolean,
+  spanClass?: string,
+  placement?: Placement,
+) => {
+  const [referenceElement, setReferenceElement] = useState(null);
+  const [referenceOptions, setReferenceOptions] = useState(null);
+  const { styles, attributes } = usePopper(referenceElement, referenceOptions, {
+    placement: placement || 'bottom-start',
+    strategy: 'fixed',
+  });
 
   return (
     <>
-      {
-        icon &&
-          <span ref={refElement} onClick={handleClick} className="bi-align">
-            {icon}
-          </span>
-      }
-      <Popper open={open} anchorEl={anchorEl} transition placement={placement}>
-        {({ TransitionProps, placement: placementProp }) => (
-          <Grow
-            {...TransitionProps}
-            style={{
-              transformOrigin:
-                placementProp === 'bottom' ? 'center top' : 'center bottom'
-            }}
-          >
-            <Paper>
-              <ClickAwayListener onClickAway={() => handleClose()}>
-                <MenuList>
-                  {children}
-                </MenuList>
-              </ClickAwayListener>
-            </Paper>
-          </Grow>
-        )}
-      </Popper>
+      <span className={spanClass || ''} ref={setReferenceElement as any}>
+        {Element}
+      </span>
+      {isOpen
+        ? ReactDOM.createPortal(
+            <div
+              style={styles.popper}
+              {...attributes.popper}
+              ref={setReferenceOptions as any}
+            >
+              <OptionsWrapper options={options} />
+            </div>,
+            document.querySelector('body') as any,
+          )
+        : null}
     </>
-  )
-}
+  );
+};

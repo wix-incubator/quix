@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import _ from 'lodash';
 import {Highlighter} from '../../lib/ui/components/Highlighter';
-import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
-import {MenuItem} from '../../lib/ui/components/dropdown/MenuItem';
+import {Dropdown} from '../../lib/ui/components/dropdown_old/Dropdown';
+import {MenuItem} from '../../lib/ui/components/dropdown_old/MenuItem';
 
 export interface Node {
   id: string;
@@ -81,7 +81,7 @@ const InnerTreeItem = ({
     }
   }
 
-  const preIcon = (
+  const preIcon = (_onClick: () => void) => (
     isLoading ? 
       <span className="bi-align">
         <span data-hook="tree-item-loading-icon" className="bi-align bi-spinner--xs">
@@ -89,8 +89,8 @@ const InnerTreeItem = ({
       </span>
     : Array.isArray(node.children) ?
         expanded ?
-        <i className="bi-icon--sm bi-action" data-hook="tree-item-opened-icon">expand_more</i>
-        : <i className="bi-icon--sm bi-action" data-hook="tree-item-closed-icon">expand_less</i>
+        <i onClick={_onClick} className="bi-icon--sm bi-action" data-hook="tree-item-opened-icon">arrow_right</i>
+        : <i onClick={_onClick} className="bi-icon--sm bi-action" data-hook="tree-item-closed-icon">arrow_drop_down</i>
       : null
   )
 
@@ -131,21 +131,28 @@ const InnerTreeItem = ({
   }
 
   return (
-    <div className="bi-s-v">
-      <div className={`bi-align bi-hover bi-fade-in bi-pointer fe-item-depth-${path.length}`}>
+    <li>
+      <div className={`fe-item bi-spread bi-fade-in bi-hover bi-muted fe-item-depth-${path.length} ui-droppable-disabled`}>
         <div
-          className="bi-align bi-r-h bi-text--ellipsis bi-grow bi-text bi-s-h--x05"
-          onClick={() => onClick()}
-        >
-          {preIcon}
-          {describeIcon}
+        className="bi-align bi-grow">
+          {preIcon(onClick)}
+          <span className="fe-item-name bi-r-h bi-spread bi-pointer">
+            <span
+              onClick={onClick}
+              className="bi-s-h--x05 bi-align bi-grow"
+            >
+              <span className="fe-icon-container">
+                {describeIcon}
+              </span>
+              <span className="bi-text--ellipsis">
+              {getText()}
+              </span>
+            </span>
 
-          <span data-hook="tree-item-content" className="bi-text--ellipsis">
-            {getText()}
+            {menu}
+
           </span>
         </div>
-
-        {menu}
       </div>
       {
         expanded && !isLoading ? 
@@ -165,7 +172,7 @@ const InnerTreeItem = ({
           )
         : null
       }
-    </div>
+    </li>
   )
 }
 

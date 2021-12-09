@@ -15,5 +15,10 @@ quix-file-explorer {
       padding-left: $i * 12px + 6px;
       padding-right: 3px;
     }
+
+    .fe-item {
+      transition: border-color .2s;
+      border-left: 2px solid transparent;
+    }
   }
 }

@@ -1,0 +1,13 @@
+.bi-input-wrapper {
+  padding: 0px 10px !important;
+
+  .bi-input-no-border {
+    border: 0;
+    outline: none;
+    cursor: inherit;
+    font: inherit;
+    color: inherit;
+    width: 100%;
+    height: 100%;
+  }
+}

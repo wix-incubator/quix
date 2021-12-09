@@ -6,9 +6,10 @@ import {Table} from '../../lib/ui/components/table/Table';
 import {useViewState} from '../../services/hooks';
 import {usersTableFields} from './users-table-fields';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
-import Input from '../../lib/ui/components/Input';
+import {Input} from '../../lib/ui/components/input/Input';
 import {FilterInitialState, InitialState, EmptyState, ErrorState} from '../../lib/ui/components/states';
 import {debounceAsync} from '../../utils';
+import './users.scss';
 
 export interface UsersProps {
   users: IUser[];
@@ -125,9 +126,8 @@ export function Users(props: UsersProps) {
   }
 
   const renderFilter = () => (
-    <div>
+    <div className="bi-theme--lighter bi-transparent">
       <Input
-        disableUnderline
         onChange={handleEmailFilterChange}
         placeholder="Filter users by email"
         data-hook="users-filter-users-input"
