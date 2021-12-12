@@ -9,8 +9,8 @@ import { debounceAsync } from '../../utils';
 import makePagination from '../../lib/ui/components/hoc/makePagination';
 import { Table } from '../../lib/ui/components/table/Table';
 import { Highlighter } from '../../lib/ui/components/Highlighter';
-import Input from '../../lib/ui/components/Input';
-import Select from '../../lib/ui/components/Select';
+import { Input } from '../../lib/ui/components/input/Input';
+import { Autocomplete } from '../../lib/ui/components/autocomplete/Autocomplete';
 import { FilterInitialState, InitialState, EmptyState, ErrorState } from '../../lib/ui/components/states';
 
 export interface HistoryProps {
@@ -38,11 +38,12 @@ const States = [
 ];
 
 export function History(props: HistoryProps) {
-  const { error, onHistoryClicked, loadMore, user, getUsers } = props;
+  const { error, onHistoryClicked, loadMore, user, getUsers: storageGetUsers } = props;
   const [stateData, viewState] = useViewState(States, {
     rows: [],
     size: 0,
     userFilter: user.getEmail(),
+    users: [],
     queryFilter: '',
     errorMessage: '',
   });
@@ -56,6 +57,13 @@ export function History(props: HistoryProps) {
         query: stateData.queryFilter
       }
     });
+  }
+
+  const getUsers = () => {
+    if (!stateData.users.length) {
+      (storageGetUsers as any)().
+        then((users: User[]) => viewState.update({users}));
+    }
   }
 
   useEffect(() => {
@@ -116,20 +124,20 @@ export function History(props: HistoryProps) {
 
   const renderFilters = () => (
     <div className="hc-filters bi-theme--lighter bi-align bi-s-h--x15">
-      <Select
-        Highlighter={Highlighter}
-        defaultLabel={user}
-        options={getUsers}
+      <Autocomplete
+        options={stateData.users}
+        state={stateData.users.length ? 'Content' : 'Loading'}
+        value={user.getEmail()}
+        onInputFocus={() => getUsers()}
         title="email"
-        primaryLabel="All users"
-        onOptionChange={handleUserFilterChange}
+        primaryOption={{email: "All users"}}
+        onSelect={handleUserFilterChange}
         inputDataHook="history-filter-user-select"
         liDataHook="history-filter-user-select-option"
       />
 
       <Input
-        fullWidth={true}
-        disableUnderline
+        className="bi-grow"
         onChange={handleQueryFilterChange}
         placeholder="Filter query"
         data-hook="history-filter-query-input"

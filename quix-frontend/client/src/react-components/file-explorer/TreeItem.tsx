@@ -1,44 +1,8 @@
-import React, {useEffect, useState} from 'react';
-import {makeStyles} from '@material-ui/core/styles';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import Icon from '@material-ui/core/Icon';
+import React, {useEffect, useRef, useState} from 'react';
 import _ from 'lodash';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 import {Highlighter} from '../../lib/ui/components/Highlighter';
 import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
-import {MenuItem} from '../../lib/ui/components/dropdown/MenuItem';
-
-const useStyles = makeStyles({
-  treeItemRoot: {
-    fontFamily: 'Open Sans',
-  },
-  text: {
-    height: '35px',
-  },
-  label: {
-    overflow: 'auto',
-    paddingRight: '5px',
-    paddingLeft: '2px',
-  },
-  group: {
-    marginLeft: 0,
-  },
-  selected: {
-    backgroundColor: 'red',
-  },
-  iconSm: {
-    marginRight: '5px',
-    marginTop: '3px',
-  },
-  textIcon: {
-    marginRight: '5px',
-    marginLeft: '10px',
-  },
-  moreVert: {
-    fontSize: '30px',
-  }
-});
+import {useOutsideAlerter} from '../../services/hooks';
 
 export interface Node {
   id: string;
@@ -78,12 +42,14 @@ const InnerTreeItem = ({
     onTransformChildNodes,
     onTransformChildNodesLazy,
   }: TreeItemProps) => {
-  const classes = useStyles();
-
   const [node] = useState<Node>(initialNode);
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [clickedFirstTime, setClickedFirstTime] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const iconRef = useRef(null);
+  const menuWrapperRef = useRef(null);
+  useOutsideAlerter([iconRef, menuWrapperRef], () => setIsOpen(false));
 
   useEffect(() => {
     if (!node.lazy && expandAllNodes) {
@@ -119,40 +85,57 @@ const InnerTreeItem = ({
     }
   }
 
-  const preIcon = (
+  const preIcon = (_onClick: () => void) => (
     isLoading ? 
-      <span className={'bi-align ' + classes.iconSm}>
+      <span className="bi-align">
         <span data-hook="tree-item-loading-icon" className="bi-align bi-spinner--xs">
         </span>
       </span>
     : Array.isArray(node.children) ?
         expanded ?
-          <ArrowDropDownIcon data-hook="tree-item-opened-icon" className={'bi-icon--sm ' + classes.iconSm} />
-        : <ArrowRightIcon data-hook="tree-item-closed-icon" className={'bi-icon--sm ' + classes.iconSm} />
+        <i onClick={_onClick} className="bi-action bi-icon--sm" data-hook="tree-item-opened-icon">arrow_right</i>
+        : <i onClick={_onClick} className="bi-action bi-icon--sm" data-hook="tree-item-closed-icon">arrow_drop_down</i>
       : null
   )
 
   const describeIcon = (
     node.textIcon ?
-      <div className={'bi-text--sm ng-binding ng-scope ' + classes.textIcon}>{node.textIcon}</div>
-    : <Icon className={'bi-icon--xs ' + classes.iconSm} >{node.icon || 'hourglass_empty'}</Icon>
+    <div className="bi-text--sm">{node.textIcon}</div>
+    : <i className="bi-icon--xs">{node.icon || 'hourglass_empty'}</i>
   )
 
   const menu = (
     menuOptions[node.type] ?
-      <Dropdown
-        icon={<MoreVertIcon classes={{root: classes.moreVert}} className={'bi-action'} />}
-        placement='bottom-end'
-      >
-        {menuOptions[node.type].map((moreOption, index) => 
-          <MenuItem
-            key={index}
-            text={moreOption.title}
-            onClick={() => onMenuClick(node, index, path)}
-          />
-        )}
-        
-      </Dropdown>
+    <Dropdown
+      OptionsWrapper={({options}: any) =>
+        <ul
+          ref={menuWrapperRef}
+          className="bi-dropdown-menu bi-tree-item-dropdown bi-fade-in"
+        >
+          {options}
+        </ul>
+      }
+      ReferenceElement={
+        <i className="bi-action bi-icon"
+          ref={iconRef}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          more_vert
+        </i>}
+      isOpen={isOpen}
+      options={menuOptions[node.type].map((moreOption, index) => 
+        <li
+          key={moreOption.title}
+          onClick={() => {
+            onMenuClick(node, index, path);
+            setIsOpen(false);
+          }}
+        >
+          {moreOption.title}
+        </li>
+      )}
+      placement="bottom-end"
+    />
       : null
   )
 
@@ -169,41 +152,50 @@ const InnerTreeItem = ({
   }
 
   return (
-    <div>
-      <div className={`bi-align bi-hover bi-fade-in bi-pointer fe-item-depth-${path.length} ${classes.treeItemRoot}`}>
+    <li>
+      <div className={`fe-item bi-spread bi-fade-in bi-hover bi-muted fe-item-depth-${path.length} ui-droppable-disabled`}>
         <div
-          className={'bi-align bi-r-h bi-text--ellipsis bi-grow bi-text ' + classes.text}
-          onClick={() => onClick()}
-        >
-          {preIcon}
-          {describeIcon}
+        className="bi-align bi-grow">
+          {preIcon(onClick)}
+          <span className="bi-r-h bi-spread bi-pointer">
+            <span
+              onClick={onClick}
+              className="fe-item-name bi-s-h--x05 bi-align bi-grow bi-text--ellipsis"
+            >
+              <span className="fe-icon-container">
+                {describeIcon}
+              </span>
+              <span data-hook="tree-item-content" className="bi-text--ellipsis">
+              {getText()}
+              </span>
+            </span>
 
-          <span data-hook="tree-item-content" className="bi-text--ellipsis">
-            {getText()}
+            {menu}
+
           </span>
         </div>
-
-        {menu}
       </div>
-      {
-        expanded && !isLoading ? 
-          node.children?.map(childNode =>
-            childNode.id &&
-            <InnerTreeItem
-              key={childNode.id}
-              menuOptions={menuOptions}
-              node={childNode}
-              onTransformChildNodes={onTransformChildNodes}
-              onTransformChildNodesLazy={onTransformChildNodesLazy}
-              onMenuClick={onMenuClick}
-              path={[...path, node.id]}
-              expandAllNodes={!clickedFirstTime ? expandAllNodes : false}
-              highlight={highlight}
-            />
-          )
-        : null
-      }
-    </div>
+      <ul>
+        {
+          expanded && !isLoading ? 
+            node.children?.map(childNode =>
+              childNode.id &&
+              <InnerTreeItem
+                key={childNode.id}
+                menuOptions={menuOptions}
+                node={childNode}
+                onTransformChildNodes={onTransformChildNodes}
+                onTransformChildNodesLazy={onTransformChildNodesLazy}
+                onMenuClick={onMenuClick}
+                path={[...path, node.id]}
+                expandAllNodes={!clickedFirstTime ? expandAllNodes : false}
+                highlight={highlight}
+              />
+            )
+          : null
+        }
+      </ul>
+    </li>
   )
 }
 

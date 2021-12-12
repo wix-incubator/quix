@@ -114,7 +114,7 @@ export const FileExplorer = (props: FileExplorerProps) => {
   };
 
   return (
-    <div className="bi-muted">
+    <ul className="fe-folders">
       {
         innerTree.length !== 0 ?
         innerTree.map((sub, index) => (
@@ -133,6 +133,6 @@ export const FileExplorer = (props: FileExplorerProps) => {
           />
         )) : null
       }
-    </div>
+    </ul>
   )
 }
