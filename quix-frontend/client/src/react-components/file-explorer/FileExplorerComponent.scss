@@ -1,6 +1,7 @@
 @import '../../lib/ui/assets/css/def/state.def';
 @import '../../lib/ui/assets/css/def/colors.def';
 @import '../../lib/ui/assets/css/text.scss';
+@import '../../lib/file-explorer/directives/file-explorer.scss';
 
 quix-file-explorer {
   .bi-spinner--xs {
@@ -16,10 +17,13 @@ quix-file-explorer {
       padding-left: $i * 12px + 6px;
       padding-right: 3px;
     }
+  }
 
-    .fe-item {
-      transition: border-color .2s;
-      border-left: 2px solid transparent;
+  .fe-item {
+    border-left: 2px solid transparent;
+    transition: border-color .2s;
+    &:hover {
+      border-color: $primary;
     }
   }
 }
