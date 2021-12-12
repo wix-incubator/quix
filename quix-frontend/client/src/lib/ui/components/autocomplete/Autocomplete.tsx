@@ -92,7 +92,7 @@ export const Autocomplete = (props: AutocompleteProps) => {
     }
   });
 
-  const dropdownList = ({ options }: any) => (
+  const DropdownList = ({ options }: any) => (
     <ul
       onScroll={onScroll}
       className={`${
@@ -104,8 +104,8 @@ export const Autocomplete = (props: AutocompleteProps) => {
   );
 
   return <Dropdown
-    ReferenceElement={input}
-    OptionsWrapper={dropdownList}
+    element={input}
+    OptionsWrapper={DropdownList}
     options={dropdownOptions}
     isOpen={open}
     spanClass={props.classes?.wrapper}

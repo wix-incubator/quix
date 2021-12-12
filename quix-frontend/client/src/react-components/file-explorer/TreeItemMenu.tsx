@@ -32,7 +32,7 @@ export const TreeItemMenu = ({
           {options}
         </ul>
       }
-      ReferenceElement={
+      element={
         <i className="bi-action bi-icon"
           ref={iconRef}
           onClick={() => setIsOpen(!isOpen)}
