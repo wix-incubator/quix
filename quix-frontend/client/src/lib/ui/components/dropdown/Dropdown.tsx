@@ -3,18 +3,27 @@ import ReactDOM from 'react-dom';
 import { usePopper } from 'react-popper';
 import { Placement } from '@popperjs/core';
 
-interface InjectedDropdownProps {
-  options: JSX.Element[];
-}
-
-export const Dropdown = (
-  Element: JSX.Element,
+interface DropdownProps {
+  ReferenceElement: JSX.Element,
   OptionsWrapper: React.ComponentType<InjectedDropdownProps>,
   options: JSX.Element[],
   isOpen: boolean,
   spanClass?: string,
   placement?: Placement,
-) => {
+}
+
+interface InjectedDropdownProps {
+  options: JSX.Element[],
+}
+
+export const Dropdown = ({
+  ReferenceElement,
+  OptionsWrapper,
+  options,
+  isOpen,
+  spanClass,
+  placement,
+}: DropdownProps) => {
   const [referenceElement, setReferenceElement] = useState(null);
   const [referenceOptions, setReferenceOptions] = useState(null);
   const { styles, attributes } = usePopper(referenceElement, referenceOptions, {
@@ -25,7 +34,7 @@ export const Dropdown = (
   return (
     <>
       <span className={spanClass || ''} ref={setReferenceElement as any}>
-        {Element}
+        {ReferenceElement}
       </span>
       {isOpen
         ? ReactDOM.createPortal(

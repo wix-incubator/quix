@@ -1,6 +1,6 @@
 {
   "name": "@wix/quix-client",
-  "version": "1.0.106",
+  "version": "1.0.107",
   "license": "MIT",
   "description": "Presto-based notebook manager",
   "author": {
@@ -55,9 +55,6 @@
     "yoshi": "^3.23.0"
   },
   "dependencies": {
-    "@material-ui/core": "^4.11.0",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.56",
     "@popperjs/core": "^2.11.0",
     "@wix/quix-shared": "^1.0.14",
     "angular": "^1.7.9",

@@ -103,11 +103,10 @@ export const Autocomplete = (props: AutocompleteProps) => {
     </ul>
   );
 
-  return Dropdown(
-    input,
-    dropdownList,
-    dropdownOptions,
-    open,
-    props.classes?.input,
-  );
+  return <Dropdown
+    ReferenceElement={input}
+    OptionsWrapper={dropdownList}
+    options={dropdownOptions}
+    isOpen={open}
+  />;
 };

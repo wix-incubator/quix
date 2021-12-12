@@ -10,6 +10,7 @@ quix-file-explorer {
     }
     margin-right: 3px;
   }
+
   @for $i from 0 through 3 {
     .fe-item-depth-#{$i} {
       padding-left: $i * 12px + 6px;
@@ -21,4 +22,9 @@ quix-file-explorer {
       border-left: 2px solid transparent;
     }
   }
+}
+
+.bi-tree-item-dropdown {
+  background-color: white;
+  min-width: 200px;
 }
