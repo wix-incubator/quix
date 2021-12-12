@@ -1,53 +1,88 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { usePopper } from 'react-popper';
 import { Placement } from '@popperjs/core';
+import { isNil } from 'lodash'
+import { useOutsideAlerter } from '../../../../services/hooks';
 
 interface DropdownProps {
-  element: JSX.Element,
-  OptionsWrapper: React.ComponentType<InjectedDropdownProps>,
-  options: JSX.Element[],
-  isOpen: boolean,
-  spanClass?: string,
+  toggle: JSX.Element,
+  options: any[],
+  isOpen?: boolean,
+  classes?: {
+    inputWrapper?: string;
+  },
   placement?: Placement,
+  children?(options: any[]): JSX.Element;
+  states?: {
+    toggle?: {
+      onClick?: boolean;
+      onKeyDown?: boolean;
+      onFocus?: boolean;
+    };
+    list?: {
+      onClick?: boolean;
+    };
+  }
 }
 
-interface InjectedDropdownProps {
-  options: JSX.Element[],
+const createDropdownHelperIfNotExist = () => {
+  if (!document.querySelector('.bi-dropdown-helper')) {
+    const element = document.createElement('div');
+    element.className = 'bi-dropdown-helper';
+    document.body.appendChild(element);
+  }
 }
 
 export const Dropdown = ({
-  element,
-  OptionsWrapper,
+  toggle,
   options,
   isOpen,
-  spanClass,
+  classes,
   placement,
+  children,
+  states,
 }: DropdownProps) => {
-  const [_referenceElement, setReferenceElement] = useState(null);
-  const [referenceOptions, setReferenceOptions] = useState(null);
-  const { styles, attributes } = usePopper(_referenceElement, referenceOptions, {
+  createDropdownHelperIfNotExist();
+  const isOpenDefined = !isNil(isOpen);
+
+  const [_isOpen, setIsOpen] = useState(false);
+  const referenceToggle = useRef(null);
+  const referenceOptions = useRef(null);
+
+  useOutsideAlerter([referenceToggle, referenceOptions], () => setIsOpen(false));
+  const { styles, attributes } = usePopper(referenceToggle.current, referenceOptions.current, {
     placement: placement || 'bottom-start',
     strategy: 'fixed',
   });
 
   return (
     <>
-      <span className={spanClass || ''} ref={setReferenceElement as any}>
-        {element}
+      <span
+        className={classes?.inputWrapper || ''}
+        ref={referenceToggle}
+        onClick={() => setIsOpen(isNil(states?.toggle?.onClick) ? !_isOpen : states?.toggle?.onClick)}
+        onKeyDown={() => setIsOpen(isNil(states?.toggle?.onKeyDown) ? true : states?.toggle?.onKeyDown)}
+        onFocus={() => setIsOpen(isNil(states?.toggle?.onFocus) ? true : states?.toggle?.onFocus)}
+        
+      >
+        {toggle}
       </span>
-      {isOpen
-        ? ReactDOM.createPortal(
-            <div
-              style={styles.popper}
-              {...attributes.popper}
-              ref={setReferenceOptions as any}
+        {ReactDOM.createPortal(
+          <div
+            style={styles.popper}
+            {...attributes.popper}
+            ref={referenceOptions}
+            onClick={() => setIsOpen(isNil(states?.list?.onClick) ? false : states?.list?.onClick)}
             >
-              <OptionsWrapper options={options} />
-            </div>,
-            document.querySelector('body') as any,
-          )
-        : null}
+            {
+              (isOpenDefined ? isOpen : _isOpen) ?
+                children(options)
+                : null
+            }
+          </div>,
+            document.querySelector('.bi-dropdown-helper') as any,
+          )}
     </>
   );
 };

@@ -4,7 +4,7 @@ export const useOutsideAlerter = (refs: React.MutableRefObject<any>[], onClickOu
   useEffect(() => {
     const handler = (event: any) => {
       const inside = [];
-      refs.filter(ref => ref.current).forEach(ref => {
+      refs.filter(ref => ref?.current).forEach(ref => {
         const parent = $(ref.current.parentElement);
         const target = $(event.target);
 
@@ -15,7 +15,7 @@ export const useOutsideAlerter = (refs: React.MutableRefObject<any>[], onClickOu
         }
       });
 
-      if (inside.every(i => !i)) {
+      if (inside.length && inside.every(i => !i)) {
         onClickOutside();
       }
     }

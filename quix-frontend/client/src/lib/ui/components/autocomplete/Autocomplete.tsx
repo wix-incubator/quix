@@ -7,9 +7,9 @@ import './autocomplete.scss';
 
 export const Autocomplete = (props: AutocompleteProps) => {
   const [
-    { title, inputValue, placeholder, open },
+    { title, inputValue, placeholder },
     viewState,
-    { onScroll, onValueChange, onValueSelect, getItems, setIsOpen },
+    { onScroll, onValueChange, onValueSelect, getItems },
   ] = useAutocomplete(props);
 
   const inputClassName = `bi-pointer${
@@ -18,8 +18,6 @@ export const Autocomplete = (props: AutocompleteProps) => {
 
   const input = props.RenderInput ? (
     <props.RenderInput
-      setIsOpen={setIsOpen}
-      open={open}
       onValueChange={onValueChange}
       inputValue={inputValue}
       onInputFocus={props.onInputFocus}
@@ -32,11 +30,7 @@ export const Autocomplete = (props: AutocompleteProps) => {
       className={inputClassName}
       placeholder={placeholder}
       onChange={(e) => onValueChange(e.target.value)}
-      onBlur={() => setIsOpen(false)}
-      onClick={() => setIsOpen(true)}
-      onKeyDown={() => setIsOpen(true)}
       onFocus={() => {
-        setIsOpen(true);
         props.onInputFocus && props.onInputFocus();
       }}
       endAdornment={<i className="bi-icon bi-muted">keyboard_arrow_down</i>}
@@ -44,7 +38,7 @@ export const Autocomplete = (props: AutocompleteProps) => {
     />
   );
 
-  const dropdownOptions = getItems().map((option) => {
+  const optionHtml = (option: any) => {
     if (props.primaryOption && option[title] === props.primaryOption[title]) {
       return (
         <li
@@ -90,24 +84,27 @@ export const Autocomplete = (props: AutocompleteProps) => {
       default:
         return <> </>;
     }
-  });
+  }
 
-  const DropdownList = ({ options }: any) => (
+  return <Dropdown
+    toggle={input}
+    options={getItems()}
+    classes={{inputWrapper: props.classes?.wrapper}}
+    states={{
+      toggle: {
+        onClick: true
+      }
+    }}
+  >
+    {(options) => 
     <ul
       onScroll={onScroll}
       className={`${
         props.classes?.list || ''
       } bi-autocomplete-list bi-dropdown-menu`}
     >
-      {options}
+      {options.map(optionHtml)}
     </ul>
-  );
-
-  return <Dropdown
-    element={input}
-    OptionsWrapper={DropdownList}
-    options={dropdownOptions}
-    isOpen={open}
-    spanClass={props.classes?.wrapper}
-  />;
+    }
+  </Dropdown>;
 };

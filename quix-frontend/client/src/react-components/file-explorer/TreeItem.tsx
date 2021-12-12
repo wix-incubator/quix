@@ -45,7 +45,6 @@ const InnerTreeItem = ({
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [clickedFirstTime, setClickedFirstTime] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     if (!node.lazy && expandAllNodes) {
@@ -103,10 +102,8 @@ const InnerTreeItem = ({
   const menu = (
     menuOptions[node.type] ?
       <TreeItemMenu
-        isOpen={isOpen}
         menuOptions={menuOptions[node.type]}
         onMenuClick={(index) => onMenuClick(node, index, path)}
-        setIsOpen={setIsOpen}
       />
       : null
   )
