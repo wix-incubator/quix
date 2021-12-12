@@ -165,7 +165,7 @@ const InnerTreeItem = ({
               <span className="fe-icon-container">
                 {describeIcon}
               </span>
-              <span className="bi-text--ellipsis">
+              <span data-hook="tree-item-content" className="bi-text--ellipsis">
               {getText()}
               </span>
             </span>
