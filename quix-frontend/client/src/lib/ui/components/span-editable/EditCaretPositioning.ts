@@ -1,3 +1,4 @@
+/* tslint:disable:no-conditional-assignment */
 // Allows save cursor position after rerendering
 // https://stackoverflow.com/a/55887417/8557614
 

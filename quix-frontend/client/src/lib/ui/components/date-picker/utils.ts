@@ -1,3 +1,5 @@
+/* tslint:disable:no-non-null-assertion */
+
 export const getKeyByValue = (object: Record<string, any>, value: string) => {
   return Object.keys(object).find((key) => object[key] === value);
 };

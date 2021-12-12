@@ -1,4 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* tslint:disable:no-non-null-assertion */
+
 import { useEffect } from 'react';
 import moment, { Moment } from 'moment';
 import _ from 'lodash';
@@ -16,11 +18,11 @@ export interface Range {
 
 type DateRanges = Record<string, any>;
 type DatePickerTypes = 'Range';
-export type OnChangeDatePickerProps = {
+export interface OnChangeDatePickerProps {
   selectedDates: Moment[];
   label?: string;
   isEqualToCustomRange: boolean;
-};
+}
 
 export interface DatePickerProps {
   title?: string;
@@ -157,7 +159,7 @@ export const useDatePicker = (
   const getLabel = () => {
     if (stateData.isEqualToCustomRange) {
       return stateData.customRangeLabel;
-    } else {
+    } 
       if (stateData.selectedDates.length === 0) {
         switch (viewState.get()) {
           case 'Range':
@@ -166,10 +168,10 @@ export const useDatePicker = (
           default:
             return '';
         }
-      } else {
+      } 
         return formatDate(stateData.selectedDates, props.dateFormat);
-      }
-    }
+      
+    
   };
 
   const getInitialDates = () => {
@@ -177,9 +179,9 @@ export const useDatePicker = (
     if (stateData.customDates && initialDates?.period && customDates) {
       const key = getKeyByValue(customDates, initialDates.period);
       return stateData.customDates[key!];
-    } else {
+    } 
       return [moment(), moment()];
-    }
+    
   };
 
   return [stateData, { handleCallback, getLabel, getInitialDates }, viewState];

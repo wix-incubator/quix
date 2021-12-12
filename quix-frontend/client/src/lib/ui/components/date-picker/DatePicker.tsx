@@ -26,7 +26,7 @@ export const DatePicker = (props: DatePickerProps) => {
               alwaysShowCalendars: true,
             }}
             onCallback={(start, end, label) =>
-              handleCallback([start, end], label)
+              handleCallback([start, end] as any, label)
             }
           >
             <div
