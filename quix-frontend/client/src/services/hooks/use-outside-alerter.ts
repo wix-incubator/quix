@@ -2,28 +2,27 @@ import { useEffect } from 'react';
 
 export const useOutsideAlerter = (refs: React.MutableRefObject<any>[], onClickOutside:() => void) => {
   useEffect(() => {
-      /**
-       * Alert if clicked on outside of element
-       */
-      const handleClickOutside = (event: any) => {
-        const isOutside = [];
-        refs.forEach(ref => {
-            if (ref.current && !ref.current.contains(event.target)) {
-                isOutside.push(true);
-            } else {
-                isOutside.push(false);
-            }
-        });
-        if (isOutside.every(i => i)) {
-            onClickOutside();
-        }
-      }
+    const handler = (event: any) => {
+      const inside = [];
+      refs.filter(ref => ref.current).forEach(ref => {
+        const parent = $(ref.current.parentElement);
+        const target = $(event.target);
 
-      // Bind the event listener
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-          // Unbind the event listener on clean up
-          document.removeEventListener("mousedown", handleClickOutside);
-      };
+        if (!target.closest(parent).length || target.closest(event).length) {
+          inside.push(false);
+        } else {
+          inside.push(true);
+        }
+      });
+
+      if (inside.every(i => !i)) {
+        onClickOutside();
+      }
+    }
+
+    document.addEventListener("mousedown", handler);
+    return () => {
+      document.removeEventListener("mousedown", handler);
+    };
   }, [refs]);
 }
