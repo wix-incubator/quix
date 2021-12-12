@@ -108,5 +108,6 @@ export const Autocomplete = (props: AutocompleteProps) => {
     OptionsWrapper={dropdownList}
     options={dropdownOptions}
     isOpen={open}
+    spanClass={props.classes?.wrapper}
   />;
 };

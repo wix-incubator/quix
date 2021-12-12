@@ -8,7 +8,7 @@ import {
   useViewState,
   ViewStateActions,
 } from '../../../../services/hooks';
-import { getAmountAndUnitFromString, getKeyByValue } from './utils';
+import { getAmountAndUnitFromString, getKeyByValue } from './date-picker-utils';
 
 export interface Range {
   start: null | number;

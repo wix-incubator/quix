@@ -4,4 +4,3 @@ import 'jquery-ui/ui/widgets/resizable';
 
 import './components/date-picker/DatePicker';
 import './components/panel/Panel';
-import './components/span-editable/SpanEditable';
