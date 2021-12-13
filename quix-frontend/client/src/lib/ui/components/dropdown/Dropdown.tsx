@@ -9,9 +9,6 @@ interface DropdownProps {
   toggle(props: any): JSX.Element;
   options: any[],
   isOpen?: boolean,
-  classes?: {
-    inputWrapper?: string;
-  },
   placement?: Placement,
   children?(options: any[]): JSX.Element;
   states?: {
@@ -38,7 +35,6 @@ export const Dropdown = ({
   toggle,
   options,
   isOpen,
-  classes,
   placement,
   children,
   states,
@@ -63,8 +59,7 @@ export const Dropdown = ({
     <>
       {
         toggle({
-          className:classes?.inputWrapper || '',
-          ref:referenceToggle,
+          ref: referenceToggle,
           onClick:() => setIsOpen(isNil(states?.toggle?.onClick) ? !_isOpen : states?.toggle?.onClick),
           onKeyDown:() => setIsOpen(isNil(states?.toggle?.onKeyDown) ? true : states?.toggle?.onKeyDown),
           onFocus:() => setIsOpen(isNil(states?.toggle?.onFocus) ? true : states?.toggle?.onFocus),
