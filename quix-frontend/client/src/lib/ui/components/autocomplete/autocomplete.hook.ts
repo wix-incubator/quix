@@ -6,15 +6,6 @@ import {
   ViewStateActions,
 } from '../../../../services/hooks';
 
-export interface RenderInputProps {
-  setIsOpen(type: boolean): void;
-  open: boolean;
-  onValueChange(v: string): void;
-  inputValue: string;
-  onInputFocus?(): void;
-  readonly?: boolean;
-}
-
 export interface AutocompleteProps {
   title: string;
   options: any[];
@@ -35,7 +26,6 @@ export interface AutocompleteProps {
     listItem?: string;
     wrapper?: string;
   };
-  RenderInput?: React.ComponentType<RenderInputProps>;
   disableFreeWrite?: boolean;
   readonly?: boolean;
 }
@@ -47,7 +37,6 @@ interface StateData {
   filteredOptions: any[];
   placeholder?: string;
   selectedOption: any;
-  open: boolean;
 }
 
 interface Actions {
@@ -55,7 +44,6 @@ interface Actions {
   onValueChange(v: string): void;
   onValueSelect(primaryOption: any): void;
   getItems(): any[];
-  setIsOpen(type: boolean): void;
 }
 
 const formatInput = (props: AutocompleteProps): StateData => {
@@ -68,7 +56,6 @@ const formatInput = (props: AutocompleteProps): StateData => {
     placeholder: props.primaryOption
       ? props.primaryOption[props.title]
       : props.placeholder || 'Please select value',
-    open: false,
   };
 };
 
@@ -151,7 +138,6 @@ export const useAutocomplete = (
     viewState.update({
       selectedOption: option,
       inputValue: isPrimaryOption ? '' : option[stateData.title],
-      open: false,
     });
 
     props.onSelect(option);
@@ -174,18 +160,9 @@ export const useAutocomplete = (
       : stateData.currentOptions;
   };
 
-  const setIsOpen = (type: boolean) => {
-    if (
-      (!type && stateData.open === true) ||
-      (type && stateData.open === false)
-    ) {
-      viewState.update({ open: type });
-    }
-  };
-
   return [
     stateData,
     viewState,
-    { onScroll, onValueChange, onValueSelect, getItems, setIsOpen },
+    { onScroll, onValueChange, onValueSelect, getItems },
   ];
 };

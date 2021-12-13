@@ -7,44 +7,37 @@ import './autocomplete.scss';
 
 export const Autocomplete = (props: AutocompleteProps) => {
   const [
-    { title, inputValue, placeholder, open },
+    { title, inputValue, placeholder },
     viewState,
-    { onScroll, onValueChange, onValueSelect, getItems, setIsOpen },
+    { onScroll, onValueChange, onValueSelect, getItems },
   ] = useAutocomplete(props);
 
   const inputClassName = `bi-pointer${
     props.classes?.input ? ` ${props.classes?.input}` : ''
   }`;
 
-  const input = props.RenderInput ? (
-    <props.RenderInput
-      setIsOpen={setIsOpen}
-      open={open}
-      onValueChange={onValueChange}
-      inputValue={inputValue}
-      onInputFocus={props.onInputFocus}
-    />
-  ) : (
+  const renderInput = (p: any) => (
     <Input
+      {...p}
       readonly={props.readonly}
       disableFreeWrite={props.disableFreeWrite}
       data-hook={props.inputDataHook}
       className={inputClassName}
       placeholder={placeholder}
-      onChange={(e) => onValueChange(e.target.value)}
-      onBlur={() => setIsOpen(false)}
-      onClick={() => setIsOpen(true)}
-      onKeyDown={() => setIsOpen(true)}
+      onChange={(e) => {
+        onValueChange(e.target.value);
+        p.onChange && p.onChange();
+      }}
       onFocus={() => {
-        setIsOpen(true);
         props.onInputFocus && props.onInputFocus();
+        p.onFocus && p.onFocus();
       }}
       endAdornment={<i className="bi-icon bi-muted">keyboard_arrow_down</i>}
       value={inputValue}
     />
   );
 
-  const dropdownOptions = getItems().map((option) => {
+  const optionHtml = (option: any) => {
     if (props.primaryOption && option[title] === props.primaryOption[title]) {
       return (
         <li
@@ -57,6 +50,12 @@ export const Autocomplete = (props: AutocompleteProps) => {
     }
 
     switch (viewState.get()) {
+      case 'Error':
+        return (
+          <li key="autocomplete_error" className="bi-text--sm">
+            <span>Error occured</span>
+          </li>
+        );
       case 'Loading':
         return (
           <li key="autocomplete_loading" className="bi-center bi-fade-in">
@@ -90,24 +89,26 @@ export const Autocomplete = (props: AutocompleteProps) => {
       default:
         return <> </>;
     }
-  });
-
-  const dropdownList = ({ options }: any) => (
-    <ul
-      onScroll={onScroll}
-      className={`${
-        props.classes?.list || ''
-      } bi-autocomplete-list bi-dropdown-menu`}
-    >
-      {options}
-    </ul>
-  );
+  }
 
   return <Dropdown
-    ReferenceElement={input}
-    OptionsWrapper={dropdownList}
-    options={dropdownOptions}
-    isOpen={open}
-    spanClass={props.classes?.wrapper}
-  />;
+    toggle={renderInput}
+    options={getItems()}
+    states={{
+      toggle: {
+        onClick: true
+      }
+    }}
+  >
+    {(options) => 
+      <ul
+        onScroll={onScroll}
+        className={`${
+          props.classes?.list || ''
+        } bi-autocomplete-list bi-dropdown-menu`}
+      >
+        {options.map(optionHtml)}
+      </ul>
+    }
+  </Dropdown>;
 };

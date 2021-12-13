@@ -1,8 +1,7 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import _ from 'lodash';
+import {TreeItemMenu} from './TreeItemMenu';
 import {Highlighter} from '../../lib/ui/components/Highlighter';
-import {Dropdown} from '../../lib/ui/components/dropdown/Dropdown';
-import {useOutsideAlerter} from '../../services/hooks';
 
 export interface Node {
   id: string;
@@ -26,7 +25,7 @@ interface TreeItemProps {
   path: string[];
   highlight: string;
   expandAllNodes: boolean;
-  onMenuClick(node: Node, menuTypeIndex: number, path: string[]): void;
+  onMenuClick(node: Node, option: { title: string }, path: string[]): void;
   onTransformChildNodes(node: Node, path: string[]): Node;
   onTransformChildNodesLazy(node: Node, path: string[]): Promise<Node>;
 }
@@ -46,10 +45,6 @@ const InnerTreeItem = ({
   const [isLoading, setIsLoading] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [clickedFirstTime, setClickedFirstTime] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  const iconRef = useRef(null);
-  const menuWrapperRef = useRef(null);
-  useOutsideAlerter([iconRef, menuWrapperRef], () => setIsOpen(false));
 
   useEffect(() => {
     if (!node.lazy && expandAllNodes) {
@@ -106,36 +101,10 @@ const InnerTreeItem = ({
 
   const menu = (
     menuOptions[node.type] ?
-    <Dropdown
-      OptionsWrapper={({options}: any) =>
-        <ul
-          ref={menuWrapperRef}
-          className="bi-dropdown-menu bi-tree-item-dropdown bi-fade-in"
-        >
-          {options}
-        </ul>
-      }
-      ReferenceElement={
-        <i className="bi-action bi-icon"
-          ref={iconRef}
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          more_vert
-        </i>}
-      isOpen={isOpen}
-      options={menuOptions[node.type].map((moreOption, index) => 
-        <li
-          key={moreOption.title}
-          onClick={() => {
-            onMenuClick(node, index, path);
-            setIsOpen(false);
-          }}
-        >
-          {moreOption.title}
-        </li>
-      )}
-      placement="bottom-end"
-    />
+      <TreeItemMenu
+        menuOptions={menuOptions[node.type]}
+        onMenuClick={(option) => onMenuClick(node, option, path)}
+      />
       : null
   )
 
