@@ -6,15 +6,17 @@ import {TreeItem, Node} from './TreeItem';
 
 const EXPAND_ALL_NODES_LIMIT = 3000;
 
+interface MenuOptionProps {
+  title: string;
+  action(sub: Tree, path: string[]): void;
+}
+
 export interface FileExplorerProps {
   tree: Tree[] | Tree;
   onTransformNode(node: Tree, path: string[]): Tree;
   onFetchChildren?(node: Tree, path: string[]): Promise<Tree[]>;
   menuOptions: {
-    [key:string]: {
-      title: string;
-      action(sub: Tree, path: string[]): void;
-    }[];
+    [key:string]: MenuOptionProps[];
   };
   expandedNodes: boolean;
   highlight: string;
@@ -109,8 +111,8 @@ export const FileExplorer = (props: FileExplorerProps) => {
     return currentNode;
   }
 
-  const onMenuClick = (subNode: Node, menuIndex: number, path: string[], node: Node) => {
-    props.menuOptions[subNode.type][menuIndex].action(node, [...path, subNode.id]);
+  const onMenuClick = (subNode: Node, option: { title: string }, path: string[], node: Node) => {
+    (option as MenuOptionProps).action(node, [...path, subNode.id])
   };
 
   return (
@@ -122,7 +124,7 @@ export const FileExplorer = (props: FileExplorerProps) => {
             key={sub.id}
             node={sub}
             menuOptions={props.menuOptions}
-            onMenuClick={(subNode, menuIndex, path) => onMenuClick(subNode, menuIndex, path, sub)}
+            onMenuClick={(subNode, option, path) => onMenuClick(subNode, option, path, sub)}
             onTransformChildNodesLazy={(subNode, path) => transformLazy(index, subNode, path)}
             onTransformChildNodes={(subNode, path) => transform(index, subNode, path)}
             expandAllNodes={

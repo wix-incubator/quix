@@ -94,7 +94,6 @@ export const Autocomplete = (props: AutocompleteProps) => {
   return <Dropdown
     toggle={renderInput}
     options={getItems()}
-    classes={{inputWrapper: props.classes?.wrapper}}
     states={{
       toggle: {
         onClick: true

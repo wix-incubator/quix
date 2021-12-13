@@ -25,7 +25,7 @@ interface TreeItemProps {
   path: string[];
   highlight: string;
   expandAllNodes: boolean;
-  onMenuClick(node: Node, menuTypeIndex: number, path: string[]): void;
+  onMenuClick(node: Node, option: { title: string }, path: string[]): void;
   onTransformChildNodes(node: Node, path: string[]): Node;
   onTransformChildNodesLazy(node: Node, path: string[]): Promise<Node>;
 }
@@ -103,7 +103,7 @@ const InnerTreeItem = ({
     menuOptions[node.type] ?
       <TreeItemMenu
         menuOptions={menuOptions[node.type]}
-        onMenuClick={(index) => onMenuClick(node, index, path)}
+        onMenuClick={(option) => onMenuClick(node, option, path)}
       />
       : null
   )

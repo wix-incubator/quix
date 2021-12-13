@@ -5,7 +5,9 @@ interface TreeItemMenuProps {
   menuOptions: {
     title: string;
   }[];
-  onMenuClick(index: number): void;
+  onMenuClick(option: {
+    title: string;
+  }): void;
 }
 
 
@@ -25,11 +27,11 @@ export const TreeItemMenu = ({
     >
       {(options) => 
         <ul className="bi-dropdown-menu bi-tree-item-dropdown bi-fade-in">
-          {options.map((option, index) => 
+          {options.map((option) => 
             <li
               key={option.title}
               onClick={() => {
-                onMenuClick(index);
+                onMenuClick(option);
               }}
             >
               {option.title}
