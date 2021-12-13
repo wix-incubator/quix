@@ -1,2 +1,2 @@
-export * from './use-outside-alerter';
+export * from './with-outside-click';
 export * from './use-view-state';

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { usePopper } from 'react-popper';
 import { Placement } from '@popperjs/core';
 import { isNil } from 'lodash'
-import { useOutsideAlerter } from '../../../../services/hooks';
+import { withOutsideClick } from '../../../../services/hooks';
 
 interface DropdownProps {
   toggle(props: any): JSX.Element;
@@ -17,17 +17,6 @@ interface DropdownProps {
       onKeyDown?: boolean;
       onFocus?: boolean;
     };
-    list?: {
-      onClick?: boolean;
-    };
-  }
-}
-
-const createDropdownHelperIfNotExist = () => {
-  if (!document.querySelector('.bi-dropdown-helper')) {
-    const element = document.createElement('div');
-    element.className = 'bi-dropdown-helper';
-    document.body.appendChild(element);
   }
 }
 
@@ -39,7 +28,6 @@ export const Dropdown = ({
   children,
   states,
 }: DropdownProps) => {
-  createDropdownHelperIfNotExist();
   const isOpenDefined = !isNil(isOpen);
 
   const [_isOpen, setIsOpen] = useState(false);
@@ -50,7 +38,7 @@ export const Dropdown = ({
     placement: placement || 'bottom-start',
     strategy: 'fixed',
   });
-  useOutsideAlerter([referenceToggle, referenceOptions], () => {
+  withOutsideClick([referenceToggle], () => {
     forceUpdate();
     setIsOpen(false);
   });
@@ -71,7 +59,6 @@ export const Dropdown = ({
           style={styles.popper}
           {...attributes.popper}
           ref={referenceOptions}
-          onClick={() => setIsOpen(isNil(states?.list?.onClick) ? false : states?.list?.onClick)}
           >
           {
             (isOpenDefined ? isOpen : _isOpen) ?
@@ -81,7 +68,7 @@ export const Dropdown = ({
               : null
           }
         </div>,
-          document.querySelector('.bi-dropdown-helper') as any,
+          document.querySelector('body') as any,
         )
       }
     </>

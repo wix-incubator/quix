@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export const useOutsideAlerter = (refs: React.MutableRefObject<any>[], onClickOutside:() => void) => {
+export const withOutsideClick = (refs: React.MutableRefObject<any>[], onClickOutside:() => void) => {
   useEffect(() => {
     const handler = (event: any) => {
       const inside = [];
@@ -20,9 +20,9 @@ export const useOutsideAlerter = (refs: React.MutableRefObject<any>[], onClickOu
       }
     }
 
-    document.addEventListener("mousedown", handler);
+    document.addEventListener("click", handler);
     return () => {
-      document.removeEventListener("mousedown", handler);
+      document.removeEventListener("click", handler);
     };
   }, [refs]);
 }
