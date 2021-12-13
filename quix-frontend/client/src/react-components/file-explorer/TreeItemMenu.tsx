@@ -26,7 +26,7 @@ export const TreeItemMenu = ({
       options={menuOptions}
     >
       {(options) => 
-        <ul className="bi-dropdown-menu bi-tree-item-dropdown bi-fade-in">
+        <ul className="bi-dropdown-menu bi-tree-item-dropdown">
           {options.map((option) => 
             <li
               key={option.title}

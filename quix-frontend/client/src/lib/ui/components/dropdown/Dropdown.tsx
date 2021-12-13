@@ -75,7 +75,9 @@ export const Dropdown = ({
           >
           {
             (isOpenDefined ? isOpen : _isOpen) ?
-              children(options)
+              <div className="bi-fade-in">
+                {children(options)}
+              </div>
               : null
           }
         </div>,
