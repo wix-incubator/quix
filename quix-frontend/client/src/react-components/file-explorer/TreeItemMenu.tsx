@@ -24,6 +24,7 @@ export const TreeItemMenu = ({
         </i>}
       placement="bottom-end"
       options={menuOptions}
+      dynamicWidth={false}
     >
       {(options) => 
         <ul className="bi-dropdown-menu bi-tree-item-dropdown">

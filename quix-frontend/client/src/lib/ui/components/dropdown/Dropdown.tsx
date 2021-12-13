@@ -7,9 +7,9 @@ import { withOutsideClick } from '../../../../services/hooks';
 
 interface DropdownProps {
   toggle(props: any): JSX.Element;
-  options: any[],
-  isOpen?: boolean,
-  placement?: Placement,
+  options: any[];
+  isOpen?: boolean;
+  placement?: Placement;
   children?(options: any[]): JSX.Element;
   states?: {
     toggle?: {
@@ -17,8 +17,24 @@ interface DropdownProps {
       onKeyDown?: boolean;
       onFocus?: boolean;
     };
-  }
+  };
+  dynamicWidth?: boolean;
 }
+
+const sameWidth = {
+  name: 'sameWidth',
+  enabled: true,
+  phase: 'beforeWrite' as any,
+  requires: ['computeStyles'],
+  fn: ({ state }) => {
+    state.styles.popper.width = `${state.rects.reference.width}px`;
+  },
+  effect: ({ state }) => {
+    state.elements.popper.style.width = `${
+      state.elements.reference.offsetWidth
+    }px`;
+  }
+};
 
 export const Dropdown = ({
   toggle,
@@ -27,6 +43,7 @@ export const Dropdown = ({
   placement,
   children,
   states,
+  dynamicWidth = true,
 }: DropdownProps) => {
   const isOpenDefined = !isNil(isOpen);
 
@@ -37,6 +54,7 @@ export const Dropdown = ({
   const { styles, attributes, forceUpdate } = usePopper(referenceToggle.current, referenceOptions.current, {
     placement: placement || 'bottom-start',
     strategy: 'fixed',
+    modifiers: dynamicWidth ? [sameWidth] : [],
   });
   withOutsideClick([referenceToggle], () => {
     forceUpdate();
