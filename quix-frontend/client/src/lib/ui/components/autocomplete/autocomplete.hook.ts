@@ -6,13 +6,6 @@ import {
   ViewStateActions,
 } from '../../../../services/hooks';
 
-export interface RenderInputProps {
-  onValueChange(v: string): void;
-  inputValue: string;
-  onInputFocus?(): void;
-  readonly?: boolean;
-}
-
 export interface AutocompleteProps {
   title: string;
   options: any[];
@@ -33,7 +26,6 @@ export interface AutocompleteProps {
     listItem?: string;
     wrapper?: string;
   };
-  RenderInput?: React.ComponentType<RenderInputProps>;
   disableFreeWrite?: boolean;
   readonly?: boolean;
 }

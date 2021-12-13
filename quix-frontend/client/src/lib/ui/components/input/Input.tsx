@@ -12,14 +12,14 @@ interface InputProps
   readonly?: boolean;
 }
 
-export const Input = ({
+export const Input = React.forwardRef(({
   className,
   startAdornment,
   endAdornment,
   disableFreeWrite,
   readonly,
   ...p
-}: InputProps) => {
+}: InputProps, ref) => {
   const _readonly = disableFreeWrite || readonly;
 
   if (startAdornment || endAdornment) {
@@ -28,7 +28,10 @@ export const Input = ({
     }${className ? ` ${className}` : ''}`;
 
     return (
-      <div className={_wrapperClassName}>
+      <div
+        ref={ref as any}
+        className={_wrapperClassName}
+      >
         {startAdornment}
         <input
           readOnly={_readonly}
@@ -45,5 +48,5 @@ export const Input = ({
   const _className = className
     ? `bi-input ${readonly ? 'bi-disabled' : ''}${className}`
     : 'bi-input';
-  return <input readOnly={_readonly} className={_className} {...p} />;
-};
+  return <input ref={ref as any} readOnly={_readonly} className={_className} {...p} />;
+});

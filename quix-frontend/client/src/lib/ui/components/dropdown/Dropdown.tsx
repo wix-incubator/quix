@@ -6,7 +6,7 @@ import { isNil } from 'lodash'
 import { useOutsideAlerter } from '../../../../services/hooks';
 
 interface DropdownProps {
-  toggle: JSX.Element,
+  toggle(props: any): JSX.Element;
   options: any[],
   isOpen?: boolean,
   classes?: {
@@ -50,39 +50,43 @@ export const Dropdown = ({
   const referenceToggle = useRef(null);
   const referenceOptions = useRef(null);
 
-  useOutsideAlerter([referenceToggle, referenceOptions], () => setIsOpen(false));
-  const { styles, attributes } = usePopper(referenceToggle.current, referenceOptions.current, {
+  const { styles, attributes, forceUpdate } = usePopper(referenceToggle.current, referenceOptions.current, {
     placement: placement || 'bottom-start',
     strategy: 'fixed',
+  });
+  useOutsideAlerter([referenceToggle, referenceOptions], () => {
+    forceUpdate();
+    setIsOpen(false);
   });
 
   return (
     <>
-      <span
-        className={classes?.inputWrapper || ''}
-        ref={referenceToggle}
-        onClick={() => setIsOpen(isNil(states?.toggle?.onClick) ? !_isOpen : states?.toggle?.onClick)}
-        onKeyDown={() => setIsOpen(isNil(states?.toggle?.onKeyDown) ? true : states?.toggle?.onKeyDown)}
-        onFocus={() => setIsOpen(isNil(states?.toggle?.onFocus) ? true : states?.toggle?.onFocus)}
-        
-      >
-        {toggle}
-      </span>
-        {ReactDOM.createPortal(
-          <div
-            style={styles.popper}
-            {...attributes.popper}
-            ref={referenceOptions}
-            onClick={() => setIsOpen(isNil(states?.list?.onClick) ? false : states?.list?.onClick)}
-            >
-            {
-              (isOpenDefined ? isOpen : _isOpen) ?
-                children(options)
-                : null
-            }
-          </div>,
-            document.querySelector('.bi-dropdown-helper') as any,
-          )}
+      {
+        toggle({
+          className:classes?.inputWrapper || '',
+          ref:referenceToggle,
+          onClick:() => setIsOpen(isNil(states?.toggle?.onClick) ? !_isOpen : states?.toggle?.onClick),
+          onKeyDown:() => setIsOpen(isNil(states?.toggle?.onKeyDown) ? true : states?.toggle?.onKeyDown),
+          onFocus:() => setIsOpen(isNil(states?.toggle?.onFocus) ? true : states?.toggle?.onFocus),
+        })
+      }
+      {
+        ReactDOM.createPortal(
+        <div
+          style={styles.popper}
+          {...attributes.popper}
+          ref={referenceOptions}
+          onClick={() => setIsOpen(isNil(states?.list?.onClick) ? false : states?.list?.onClick)}
+          >
+          {
+            (isOpenDefined ? isOpen : _isOpen) ?
+              children(options)
+              : null
+          }
+        </div>,
+          document.querySelector('.bi-dropdown-helper') as any,
+        )
+      }
     </>
   );
 };

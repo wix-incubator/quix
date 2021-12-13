@@ -16,8 +16,8 @@ export const TreeItemMenu = ({
 
   return (
     <Dropdown
-      toggle={
-        <i className="bi-action bi-icon">
+      toggle={(p) => 
+        <i {...p} className="bi-action bi-icon">
           more_vert
         </i>}
       placement="bottom-end"

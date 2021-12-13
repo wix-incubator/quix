@@ -16,22 +16,21 @@ export const Autocomplete = (props: AutocompleteProps) => {
     props.classes?.input ? ` ${props.classes?.input}` : ''
   }`;
 
-  const input = props.RenderInput ? (
-    <props.RenderInput
-      onValueChange={onValueChange}
-      inputValue={inputValue}
-      onInputFocus={props.onInputFocus}
-    />
-  ) : (
+  const renderInput = (p: any) => (
     <Input
+      {...p}
       readonly={props.readonly}
       disableFreeWrite={props.disableFreeWrite}
       data-hook={props.inputDataHook}
       className={inputClassName}
       placeholder={placeholder}
-      onChange={(e) => onValueChange(e.target.value)}
+      onChange={(e) => {
+        onValueChange(e.target.value);
+        p.onChange && p.onChange();
+      }}
       onFocus={() => {
         props.onInputFocus && props.onInputFocus();
+        p.onFocus && p.onFocus();
       }}
       endAdornment={<i className="bi-icon bi-muted">keyboard_arrow_down</i>}
       value={inputValue}
@@ -51,6 +50,12 @@ export const Autocomplete = (props: AutocompleteProps) => {
     }
 
     switch (viewState.get()) {
+      case 'Error':
+        return (
+          <li key="autocomplete_error" className="bi-text--sm">
+            <span>Error occured</span>
+          </li>
+        );
       case 'Loading':
         return (
           <li key="autocomplete_loading" className="bi-center bi-fade-in">
@@ -87,7 +92,7 @@ export const Autocomplete = (props: AutocompleteProps) => {
   }
 
   return <Dropdown
-    toggle={input}
+    toggle={renderInput}
     options={getItems()}
     classes={{inputWrapper: props.classes?.wrapper}}
     states={{
@@ -97,14 +102,14 @@ export const Autocomplete = (props: AutocompleteProps) => {
     }}
   >
     {(options) => 
-    <ul
-      onScroll={onScroll}
-      className={`${
-        props.classes?.list || ''
-      } bi-autocomplete-list bi-dropdown-menu`}
-    >
-      {options.map(optionHtml)}
-    </ul>
+      <ul
+        onScroll={onScroll}
+        className={`${
+          props.classes?.list || ''
+        } bi-autocomplete-list bi-dropdown-menu`}
+      >
+        {options.map(optionHtml)}
+      </ul>
     }
   </Dropdown>;
 };
