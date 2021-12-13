@@ -2,10 +2,10 @@ import React from 'react';
 import './input.scss';
 
 interface InputProps
-  extends React.DetailedHTMLProps<
+  extends Partial<React.DetailedHTMLProps<
     React.InputHTMLAttributes<HTMLInputElement>,
     HTMLInputElement
-  > {
+  >> {
   startAdornment?: JSX.Element;
   endAdornment?: JSX.Element;
   disableFreeWrite?: boolean;

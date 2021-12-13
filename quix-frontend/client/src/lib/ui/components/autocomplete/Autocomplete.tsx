@@ -68,7 +68,6 @@ export const Autocomplete = (props: AutocompleteProps) => {
             key={`autocomplete_${
               props.optionKey ? props.optionKey(option) : option[title]
             }`}
-            onMouseDown={(e) => e.preventDefault()}
             onClick={() => onValueSelect(option)}
             className={props.classes?.listItem || ''}
             data-hook={props.liDataHook}
