@@ -67,12 +67,12 @@ class PythonExecutorTest extends SpecWithJUnit with MustMatchers {
     builder.build().head.map(_.toString.toInt) must_=== List(1, 2)
   }
 
-
   "use packages for installing new packages " in new ctx {
     executor.execute(script(
       code =
         """packages.install('pipdate')
           |packages.install('ujson')
+          |packages.install('packaging')
           |
           |import pipdate
           |import ujson
@@ -100,5 +100,14 @@ class PythonExecutorTest extends SpecWithJUnit with MustMatchers {
           |""".stripMargin), builder).runSyncUnsafe()
 
     builder.logs must contain("123")
+  }
+
+  "_get_user() should return current user " in new ctx {
+    executor.execute(script(
+      code =
+        """print(_get_user())
+          |""".stripMargin), builder).runSyncUnsafe()
+
+    builder.logs must contain(user.email)
   }
 }

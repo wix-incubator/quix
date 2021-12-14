@@ -83,8 +83,18 @@ class PythonExecutor(config: PythonConfig = PythonConfig()) extends Executor wit
          |
          |""".stripMargin
 
+    def get_current_user =
+      s"""
+         |def _get_user():
+         |    user = '${query.user.email}'
+         |    if (user):
+         |        return user
+         |    else:
+         |        return 'quix-python-executor'
+         |
+         |""".stripMargin
 
-    envSetup + quixSetup + config.additionalCode + query.text
+    envSetup + quixSetup + get_current_user +  config.additionalCode + query.text
   }
 
   def prepareGateway(process: PythonRunningProcess, query: SubQuery): Task[GatewayServer] = {
