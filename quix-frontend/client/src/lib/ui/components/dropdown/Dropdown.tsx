@@ -4,6 +4,7 @@ import { usePopper } from 'react-popper';
 import { Placement } from '@popperjs/core';
 import { isNil } from 'lodash'
 import { withOutsideClick } from '../../../../services/hooks';
+import './dropdown.scss';
 
 interface DropdownProps {
   toggle(props: any): JSX.Element;
@@ -80,7 +81,7 @@ export const Dropdown = ({
           >
           {
             (isOpenDefined ? isOpen : _isOpen) ?
-              <div className="bi-fade-in">
+              <div className="bi-fade-in bi-theme--lighter bi-dropdown-content">
                 {children(options)}
               </div>
               : null

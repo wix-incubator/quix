@@ -27,7 +27,7 @@ export const TreeItemMenu = ({
       dynamicWidth={false}
     >
       {(options) => 
-        <ul className="bi-dropdown-menu bi-tree-item-dropdown">
+        <ul className="bi-dropdown-menu">
           {options.map((option) => 
             <li
               key={option.title}

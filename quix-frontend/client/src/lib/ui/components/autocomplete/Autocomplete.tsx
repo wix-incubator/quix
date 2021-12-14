@@ -3,7 +3,6 @@ import { AutocompleteProps, useAutocomplete } from './autocomplete.hook';
 import { Input } from '../input/Input';
 import { Dropdown } from '../dropdown/Dropdown';
 import { Highlighter } from '../Highlighter';
-import './autocomplete.scss';
 
 export const Autocomplete = (props: AutocompleteProps) => {
   const [
@@ -104,7 +103,7 @@ export const Autocomplete = (props: AutocompleteProps) => {
         onScroll={onScroll}
         className={`${
           props.classes?.list || ''
-        } bi-autocomplete-list bi-dropdown-menu`}
+        } bi-dropdown-menu`}
       >
         {options.map(optionHtml)}
       </ul>
