@@ -11,6 +11,7 @@ export const hooks = {
         pre: new SyncWaterfallHook(['res', 'app', 'store', 'engine', 'id']),
         post: new SyncWaterfallHook(['res', 'app', 'store', 'engine', 'id']),
       },
+      viz: new SyncWaterfallHook(['app', 'store', 'engine']),
     },
     config: {
       editor: {

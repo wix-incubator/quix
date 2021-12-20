@@ -97,18 +97,24 @@ function kill(scope, notify = false) {
 
 function renderResult(scope, queryScope, query, tableFormatter, transclude) {
   if (!transclude.isSlotFilled('result')) {
+    queryScope.options = scope.options;
     queryScope.query = query;
     queryScope.tableFormatter = tableFormatter;
 
     return inject('$compile')(`
       <bi-viz
         class="bi-c-h bi-grow"
+        type="{{::options.vizType}}"
         data="query.getResults().buffer"
         table-data="query.getResults()"
         fields="query.getRawFields()"
         table-fields="query.getFields()"
         is-partial="query.running"
-        bv-options="::{picker: true}"
+        bv-options="::{
+          picker: options.vizPicker,
+          filter: options.vizFilter,
+          types: options.vizTypes
+        }"
         table-formatter="tableFormatter()"
         $state="$state"
       ></bi-viz>
@@ -224,6 +230,10 @@ export default () => {
             type: 'presto',
             buttonText: 'Run',
             disableCustomActions: false,
+            vizType: 'table',
+            vizTypes: [],
+            vizPicker: true,
+            vizFilter: true,
             autoRun: false,
             showEditor: true,
           }, true)
