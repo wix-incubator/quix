@@ -1,9 +1,5 @@
 import {initNgScope, inject, srv} from '../../../core';
 import {default as createRunner} from '../../services/runner-service';
-import { hooks } from '../../../../hooks';
-import { App } from '../../../../lib/app';
-import { Store } from '../../../../lib/store';
-import { pluginManager } from '../../../../plugins';
 
 import template from './runner.html';
 import './runner.scss';
@@ -99,23 +95,26 @@ function kill(scope, notify = false) {
   scope.vm.runner.toggle(false);
 }
 
-function renderResult(app, store, engine, scope, queryScope, query, tableFormatter, transclude) {
+function renderResult(scope, queryScope, query, tableFormatter, transclude) {
   if (!transclude.isSlotFilled('result')) {
+    queryScope.options = scope.options;
     queryScope.query = query;
     queryScope.tableFormatter = tableFormatter;
-
-    const additionalVizOptions = hooks.note.results.viz.call([], app, store, engine) || {};
-    const bvOptions = JSON.stringify({picker: true, ...additionalVizOptions});
 
     return inject('$compile')(`
       <bi-viz
         class="bi-c-h bi-grow"
+        type="{{::options.vizType}}"
         data="query.getResults().buffer"
         table-data="query.getResults()"
         fields="query.getRawFields()"
         table-fields="query.getFields()"
         is-partial="query.running"
-        bv-options="::${bvOptions}"
+        bv-options="::{
+          picker: options.vizPicker,
+          filter: options.vizFilter,
+          types: options.vizTypes
+        }"
         table-formatter="tableFormatter()"
         $state="$state"
       ></bi-viz>
@@ -195,7 +194,7 @@ export class RunnerComponentInstance extends srv.eventEmitter.EventEmitter {
   }
 }
 
-export default (app: App, store: Store) => {
+export default () => {
   return {
     restrict: 'E',
     template,
@@ -231,6 +230,10 @@ export default (app: App, store: Store) => {
             type: 'presto',
             buttonText: 'Run',
             disableCustomActions: false,
+            vizType: 'table',
+            vizTypes: [],
+            vizPicker: true,
+            vizFilter: true,
             autoRun: false,
             showEditor: true,
           }, true)
@@ -302,8 +305,7 @@ export default (app: App, store: Store) => {
           initRunner(scope, instance);
         }
 
-        const plugin = pluginManager.module('note').plugin(scope.type);
-        scope.renderResult = (queryScope, query) => ({html: renderResult(app, store, plugin.getEngine(), scope, queryScope, query, scope.tableFormatter, transclude)});
+        scope.renderResult = (queryScope, query) => ({html: renderResult(scope, queryScope, query, scope.tableFormatter, transclude)});
 
         scope.onLoad({instance});
 
