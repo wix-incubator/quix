@@ -20,6 +20,7 @@ interface DropdownProps {
     };
   };
   dynamicWidth?: boolean;
+  readonly?: boolean;
 }
 
 const sameWidth = {
@@ -45,6 +46,7 @@ export const Dropdown = ({
   children,
   states,
   dynamicWidth = true,
+  readonly,
 }: DropdownProps) => {
   const isOpenDefined = !isNil(isOpen);
 
@@ -73,7 +75,7 @@ export const Dropdown = ({
         })
       }
       {
-        ReactDOM.createPortal(
+        readonly ? null : ReactDOM.createPortal(
         <div
           style={styles.popper}
           {...attributes.popper}

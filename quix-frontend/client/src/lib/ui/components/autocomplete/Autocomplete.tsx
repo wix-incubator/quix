@@ -90,6 +90,7 @@ export const Autocomplete = (props: AutocompleteProps) => {
   }
 
   return <Dropdown
+    readonly={props.readonly}
     toggle={renderInput}
     options={getItems()}
     states={{
