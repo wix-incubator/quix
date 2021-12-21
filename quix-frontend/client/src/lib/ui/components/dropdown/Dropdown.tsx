@@ -60,7 +60,7 @@ export const Dropdown = ({
     modifiers: dynamicWidth ? [sameWidth] : [],
   });
   withOutsideClick([referenceToggle], () => {
-    forceUpdate();
+    forceUpdate && forceUpdate();
     setIsOpen(false);
   });
 
