@@ -21,11 +21,10 @@ export const Input = React.forwardRef(({
   ...p
 }: InputProps, ref) => {
   const _readonly = disableFreeWrite || readonly;
+  const additionalClasses = `${readonly ? ' bi-disabled' : ''}${className ? ` ${className}` : ''}`
 
   if (startAdornment || endAdornment) {
-    const _wrapperClassName = `bi-input bi-input-wrapper bi-align bi-space-h${
-      readonly ? ' bi-disabled' : ''
-    }${className ? ` ${className}` : ''}`;
+    const _wrapperClassName = 'bi-input bi-input-wrapper bi-align' + additionalClasses;
 
     return (
       <div
@@ -45,8 +44,6 @@ export const Input = React.forwardRef(({
     );
   }
 
-  const _className = className
-    ? `bi-input ${readonly ? 'bi-disabled' : ''}${className}`
-    : 'bi-input';
+  const _className = 'bi-input' + additionalClasses;
   return <input ref={ref as any} readOnly={_readonly} className={_className} {...p} />;
 });
