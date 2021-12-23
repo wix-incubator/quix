@@ -1,4 +1,4 @@
-import {intersection} from 'lodash';
+import {difference, intersection} from 'lodash';
 import {initNgScope, inject} from '../../../core';
 import {IFieldCategories} from '../../services/chart/chart-conf';
 import {categorizeFields} from '../../services/chart/chart-utils';
@@ -15,6 +15,10 @@ function getVizTypes({dimensions, values, all}: IFieldCategories, types: string[
 
   if (values.length > 0 && dimensions.length > 0) {
     res.push('pie');
+  }
+
+  if (!difference(['pathString', 'count'], all).length) {
+    res.push('sankey', 'funnel');
   }
 
   return types.length ? intersection(types, res) : res;
