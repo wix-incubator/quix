@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect } from 'react';
-import { isEqual, isNil } from 'lodash';
+import { isEqual } from 'lodash';
 import {
   useViewState,
   ViewStateActions,
@@ -12,10 +12,12 @@ export interface AutocompleteProps {
   optionKey?(option: any): string;
   state?: string;
   getMore?(): void;
-  value?: string;
+  defaultValue?: string;
   onChange?(value: string): void;
   onInputFocus?(): void;
   onSelect(option: any): void;
+  setTitleOnValueChange?(value: string): string;
+  setTitleOnValueSelect?(value: string): string;
   placeholder?: string;
   inputDataHook?: string;
   liDataHook?: string;
@@ -49,7 +51,7 @@ interface Actions {
 const formatInput = (props: AutocompleteProps): StateData => {
   return {
     title: props.title,
-    inputValue: props.value || '',
+    inputValue: props.defaultValue || '',
     filteredOptions: props.options,
     currentOptions: props.getMore ? props.options : props.options.slice(0, 50),
     selectedOption: {},
@@ -70,8 +72,8 @@ export const useAutocomplete = (
   );
 
   useEffect(() => {
-    viewState.update({ inputValue: props.value });
-  }, [props.value]);
+    viewState.update({ inputValue: props.defaultValue });
+  }, [props.defaultValue]);
 
   useEffect(() => {
     const state = props.state || 'Content';
@@ -80,7 +82,6 @@ export const useAutocomplete = (
     viewState.set(state, {
       filteredOptions: options,
       currentOptions: props.getMore ? options : options.slice(0, 50),
-      inputValue: isNil(props.value) ? stateData.inputValue : props.value,
     });
   }, [props.state, props.options]);
 
@@ -116,17 +117,18 @@ export const useAutocomplete = (
       const _filteredOptions = props.options.filter((option) =>
         option[stateData.title].includes(v),
       );
+      const inputValue = props.setTitleOnValueChange ? props.setTitleOnValueChange(v) : v;
       if (!_filteredOptions.length) {
         viewState.set('Empty', {
           filteredOptions: [],
           currentOptions: [],
-          inputValue: v,
+          inputValue,
         });
       } else {
         viewState.set('Content', {
           filteredOptions: _filteredOptions,
           currentOptions: _filteredOptions.slice(0, 50),
-          inputValue: v,
+          inputValue,
         });
       }
     }
@@ -137,7 +139,7 @@ export const useAutocomplete = (
 
     viewState.update({
       selectedOption: option,
-      inputValue: isPrimaryOption ? '' : option[stateData.title],
+      inputValue: isPrimaryOption ? '' : props.setTitleOnValueSelect ? props.setTitleOnValueSelect(option[stateData.title]) : option[stateData.title],
     });
 
     props.onSelect(option);

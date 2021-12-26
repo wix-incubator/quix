@@ -127,7 +127,7 @@ export function History(props: HistoryProps) {
       <Autocomplete
         options={stateData.users}
         state={stateData.users.length ? 'Content' : 'Loading'}
-        value={user.getEmail()}
+        defaultValue={user.getEmail()}
         onInputFocus={() => getUsers()}
         title="email"
         primaryOption={{email: "All users"}}

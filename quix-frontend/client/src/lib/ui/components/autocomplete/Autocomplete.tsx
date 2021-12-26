@@ -27,7 +27,8 @@ export const Autocomplete = (props: AutocompleteProps) => {
         onValueChange(e.target.value);
         p.onChange && p.onChange();
       }}
-      onFocus={() => {
+      onFocus={(e, ref) => {
+        ref.current.select();
         props.onInputFocus && props.onInputFocus();
         p.onFocus && p.onFocus();
       }}
