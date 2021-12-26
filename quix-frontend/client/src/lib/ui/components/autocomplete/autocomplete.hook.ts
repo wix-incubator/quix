@@ -139,7 +139,7 @@ export const useAutocomplete = (
 
     viewState.update({
       selectedOption: option,
-      inputValue: isPrimaryOption ? '' : props.setTitleOnValueSelect ? props.setTitleOnValueSelect(option) : option,
+      inputValue: isPrimaryOption ? '' : props.setTitleOnValueSelect ? props.setTitleOnValueSelect(option) : option[stateData.title],
     });
 
     props.onSelect(option);
