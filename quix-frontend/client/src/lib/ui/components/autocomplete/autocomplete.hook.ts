@@ -17,7 +17,7 @@ export interface AutocompleteProps {
   onInputFocus?(): void;
   onSelect(option: any): void;
   setTitleOnValueChange?(value: string): string;
-  setTitleOnValueSelect?(value: string): string;
+  setTitleOnValueSelect?(option: any): string;
   placeholder?: string;
   inputDataHook?: string;
   liDataHook?: string;
@@ -139,7 +139,7 @@ export const useAutocomplete = (
 
     viewState.update({
       selectedOption: option,
-      inputValue: isPrimaryOption ? '' : props.setTitleOnValueSelect ? props.setTitleOnValueSelect(option[stateData.title]) : option[stateData.title],
+      inputValue: isPrimaryOption ? '' : props.setTitleOnValueSelect ? props.setTitleOnValueSelect(option) : option,
     });
 
     props.onSelect(option);
