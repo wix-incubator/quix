@@ -6,12 +6,19 @@ import { Highlighter } from '../Highlighter';
 
 export const Autocomplete = (props: AutocompleteProps) => {
   const [
-    { title, inputValue, placeholder },
+    { title, inputValue, placeholder, inputValid },
     viewState,
-    { onScroll, onValueChange, onValueSelect, getItems },
+    {
+      onScroll,
+      onValueChange,
+      onValueSelect,
+      getItems,
+      onInputFocus,
+      onInputBlur,
+    },
   ] = useAutocomplete(props);
 
-  const inputClassName = `bi-pointer${
+  const inputClassName = `bi-pointer ${inputValid ? '' : ' bi-border-invalid'}${
     props.classes?.input ? ` ${props.classes?.input}` : ''
   }`;
 
@@ -27,11 +34,8 @@ export const Autocomplete = (props: AutocompleteProps) => {
         onValueChange(e.target.value);
         p.onChange && p.onChange();
       }}
-      onFocus={(e, ref) => {
-        ref.current.select();
-        props.onInputFocus && props.onInputFocus();
-        p.onFocus && p.onFocus();
-      }}
+      onFocus={(e, ref) => onInputFocus(e, p, ref)}
+      onBlur={(e) => onInputBlur(e, p)}
       endAdornment={<i className="bi-icon bi-muted">keyboard_arrow_down</i>}
       value={inputValue}
     />
@@ -45,7 +49,9 @@ export const Autocomplete = (props: AutocompleteProps) => {
           className="bi-muted"
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => onValueSelect(option)}
-        >{option[title]}</li>
+        >
+          {option[title]}
+        </li>
       );
     }
 
@@ -74,9 +80,9 @@ export const Autocomplete = (props: AutocompleteProps) => {
           >
             {option.render ? (
               option.render(inputValue)
-            ) : 
+            ) : (
               <Highlighter term={option[title]} filter={inputValue} />
-            }
+            )}
           </li>
         );
       case 'Empty':
@@ -88,27 +94,27 @@ export const Autocomplete = (props: AutocompleteProps) => {
       default:
         return <> </>;
     }
-  }
+  };
 
-  return <Dropdown
-    readonly={props.readonly}
-    toggle={renderInput}
-    options={getItems()}
-    states={{
-      toggle: {
-        onClick: true
-      }
-    }}
-  >
-    {(options) => 
-      <ul
-        onScroll={onScroll}
-        className={`${
-          props.classes?.list || ''
-        } bi-dropdown-menu`}
-      >
-        {options.map(optionHtml)}
-      </ul>
-    }
-  </Dropdown>;
+  return (
+    <Dropdown
+      readonly={props.readonly}
+      toggle={renderInput}
+      options={getItems()}
+      states={{
+        toggle: {
+          onClick: true,
+        },
+      }}
+    >
+      {(options) => (
+        <ul
+          onScroll={onScroll}
+          className={`${props.classes?.list || ''} bi-dropdown-menu`}
+        >
+          {options.map(optionHtml)}
+        </ul>
+      )}
+    </Dropdown>
+  );
 };

@@ -36,6 +36,8 @@ interface StateData {
   title: string;
   currentOptions: any[];
   inputValue: string;
+  inputValid: boolean;
+  inputValueChanged: boolean;
   filteredOptions: any[];
   placeholder?: string;
   selectedOption: any;
@@ -46,12 +48,24 @@ interface Actions {
   onValueChange(v: string): void;
   onValueSelect(primaryOption: any): void;
   getItems(): any[];
+  onInputFocus(
+    e: any,
+    p: any,
+    ref?: React.MutableRefObject<HTMLInputElement>,
+  ): void;
+  onInputBlur(
+    e: any,
+    p: any,
+    ref?: React.MutableRefObject<HTMLInputElement>,
+  ): void;
 }
 
 const formatInput = (props: AutocompleteProps): StateData => {
   return {
     title: props.title,
     inputValue: props.defaultValue || '',
+    inputValueChanged: false,
+    inputValid: true,
     filteredOptions: props.options,
     currentOptions: props.getMore ? props.options : props.options.slice(0, 50),
     selectedOption: {},
@@ -72,18 +86,19 @@ export const useAutocomplete = (
   );
 
   useEffect(() => {
-    viewState.update({ inputValue: props.defaultValue });
-  }, [props.defaultValue]);
-
-  useEffect(() => {
     const state = props.state || 'Content';
     const options = props.options;
+    const currentOptions = props.getMore ? options : options.slice(0, 50);
+    const inputValue = stateData.inputValueChanged
+      ? stateData.inputValue
+      : props.defaultValue;
 
     viewState.set(state, {
       filteredOptions: options,
-      currentOptions: props.getMore ? options : options.slice(0, 50),
+      currentOptions,
+      inputValue,
     });
-  }, [props.state, props.options]);
+  }, [props.state, props.options, props.defaultValue]);
 
   const onScroll = (UIElement: any) => {
     const element = UIElement.target;
@@ -113,33 +128,51 @@ export const useAutocomplete = (
       props.onChange(v);
     }
 
+    const inputValue = props.setTitleOnValueChange
+      ? props.setTitleOnValueChange(v)
+      : v;
+
     if (!props.getMore) {
       const _filteredOptions = props.options.filter((option) =>
         option[stateData.title].includes(v),
       );
-      const inputValue = props.setTitleOnValueChange ? props.setTitleOnValueChange(v) : v;
       if (!_filteredOptions.length) {
         viewState.set('Empty', {
           filteredOptions: [],
           currentOptions: [],
           inputValue,
+          inputValueChanged: true,
         });
       } else {
         viewState.set('Content', {
           filteredOptions: _filteredOptions,
           currentOptions: _filteredOptions.slice(0, 50),
           inputValue,
+          inputValueChanged: true,
         });
       }
+    } else {
+      viewState.update({
+        inputValue,
+        inputValueChanged: true,
+      });
     }
   };
 
   const onValueSelect = (option: any) => {
-    const isPrimaryOption = props.primaryOption && option[stateData.title] === props.primaryOption[stateData.title];
+    const isPrimaryOption =
+      props.primaryOption &&
+      option[stateData.title] === props.primaryOption[stateData.title];
 
     viewState.update({
       selectedOption: option,
-      inputValue: isPrimaryOption ? '' : props.setTitleOnValueSelect ? props.setTitleOnValueSelect(option) : option[stateData.title],
+      inputValue: isPrimaryOption
+        ? ''
+        : props.setTitleOnValueSelect
+        ? props.setTitleOnValueSelect(option)
+        : option[stateData.title],
+      inputValueChanged: true,
+      inputValid: true,
     });
 
     props.onSelect(option);
@@ -162,9 +195,41 @@ export const useAutocomplete = (
       : stateData.currentOptions;
   };
 
+  const onInputFocus = (
+    e: any,
+    p: any,
+    ref?: React.MutableRefObject<HTMLInputElement>,
+  ) => {
+    ref && ref.current.select();
+    props.onInputFocus && props.onInputFocus();
+    p.onFocus && p.onFocus();
+  };
+
+  const onInputBlur = (e: any, p: any) => {
+    let inputValue = props.defaultValue || '';
+    if (stateData.selectedOption && stateData.selectedOption[stateData.title]) {
+      inputValue = props.setTitleOnValueSelect
+        ? props.setTitleOnValueSelect(stateData.selectedOption)
+        : stateData.selectedOption[stateData.title];
+    }
+
+    viewState.update({
+      inputValid: (props.primaryOption?.[stateData.title] === inputValue) || inputValue === stateData.inputValue,
+    });
+
+    p.onInputBlur && p.onInputBlur();
+  };
+
   return [
     stateData,
     viewState,
-    { onScroll, onValueChange, onValueSelect, getItems },
+    {
+      onScroll,
+      onValueChange,
+      onValueSelect,
+      getItems,
+      onInputFocus,
+      onInputBlur,
+    },
   ];
 };
