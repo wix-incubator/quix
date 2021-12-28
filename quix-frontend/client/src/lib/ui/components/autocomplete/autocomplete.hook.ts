@@ -200,7 +200,7 @@ export const useAutocomplete = (
     p: any,
     ref?: React.MutableRefObject<HTMLInputElement>,
   ) => {
-    ref && ref.current.select();
+    !props.readonly && ref && ref.current.select();
     props.onInputFocus && props.onInputFocus();
     p.onFocus && p.onFocus();
   };
