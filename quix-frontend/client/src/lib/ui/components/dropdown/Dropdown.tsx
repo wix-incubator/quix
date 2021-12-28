@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { usePopper } from 'react-popper';
 import { Placement } from '@popperjs/core';
-import { isNil } from 'lodash'
+import { isNil } from 'lodash';
 import { withOutsideClick } from '../../../../services/hooks';
 import './dropdown.scss';
 
@@ -28,14 +28,12 @@ const sameWidth = {
   enabled: true,
   phase: 'beforeWrite' as any,
   requires: ['computeStyles'],
-  fn: ({ state }) => {
+  fn: ({ state }: any) => {
     state.styles.popper.width = `${state.rects.reference.width}px`;
   },
-  effect: ({ state }) => {
-    state.elements.popper.style.width = `${
-      state.elements.reference.offsetWidth
-    }px`;
-  }
+  effect: ({ state }: any) => {
+    state.elements.popper.style.width = `${state.elements.reference.offsetWidth}px`;
+  },
 };
 
 export const Dropdown = ({
@@ -54,44 +52,57 @@ export const Dropdown = ({
   const referenceToggle = useRef(null);
   const referenceOptions = useRef(null);
 
-  const { styles, attributes, forceUpdate } = usePopper(referenceToggle.current, referenceOptions.current, {
-    placement: placement || 'bottom-start',
-    strategy: 'fixed',
-    modifiers: dynamicWidth ? [sameWidth] : [],
-  });
+  const { styles, attributes, forceUpdate } = usePopper(
+    referenceToggle.current,
+    referenceOptions.current,
+    {
+      placement: placement || 'bottom-start',
+      strategy: 'fixed',
+      modifiers: dynamicWidth ? [sameWidth] : [],
+    },
+  );
   withOutsideClick([referenceToggle], () => {
     forceUpdate && forceUpdate();
-    setIsOpen(false);
+    setTimeout(() => setIsOpen(false), 0);
   });
 
   return (
     <>
-      {
-        toggle({
-          ref: referenceToggle,
-          onClick:() => setIsOpen(isNil(states?.toggle?.onClick) ? !_isOpen : states?.toggle?.onClick),
-          onKeyDown:() => setIsOpen(isNil(states?.toggle?.onKeyDown) ? true : states?.toggle?.onKeyDown),
-          onFocus:() => setIsOpen(isNil(states?.toggle?.onFocus) ? true : states?.toggle?.onFocus),
-        })
-      }
-      {
-        readonly ? null : ReactDOM.createPortal(
-        <div
-          style={styles.popper}
-          {...attributes.popper}
-          ref={referenceOptions}
-          >
-          {
-            (isOpenDefined ? isOpen : _isOpen) ?
-              <div className="bi-fade-in bi-theme--lighter bi-dropdown-content">
-                {children(options)}
-              </div>
-              : null
-          }
-        </div>,
-          document.querySelector('body') as any,
-        )
-      }
+      {toggle({
+        ref: referenceToggle,
+        onClick: () =>
+          setIsOpen(
+            isNil(states?.toggle?.onClick)
+              ? !_isOpen
+              : states?.toggle?.onClick,
+          ),
+        onKeyDown: () =>
+          setIsOpen(
+            isNil(states?.toggle?.onKeyDown)
+              ? true
+              : states?.toggle?.onKeyDown,
+          ),
+        onFocus: () =>
+          setIsOpen(
+            isNil(states?.toggle?.onFocus) ? true : states?.toggle?.onFocus,
+          ),
+      })}
+      {readonly
+        ? null
+        : ReactDOM.createPortal(
+            <div
+              style={styles.popper}
+              {...attributes.popper}
+              ref={referenceOptions}
+            >
+              {(isOpenDefined ? isOpen : _isOpen) ? (
+                <div className="bi-fade-in bi-theme--lighter bi-dropdown-content">
+                  {children(options)}
+                </div>
+              ) : null}
+            </div>,
+            document.querySelector('body') as any,
+          )}
     </>
   );
 };

@@ -214,7 +214,9 @@ export const useAutocomplete = (
     }
 
     viewState.update({
-      inputValid: (props.primaryOption?.[stateData.title] === inputValue) || inputValue === stateData.inputValue,
+      inputValid:
+        props.primaryOption?.[stateData.title] === inputValue ||
+        inputValue === stateData.inputValue,
     });
 
     p.onInputBlur && p.onInputBlur();
