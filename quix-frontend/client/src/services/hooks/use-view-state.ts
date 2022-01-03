@@ -23,8 +23,8 @@ export const useViewState = <S extends string, D>(
     {
       get: () => state,
       set: (s: S, d?: Partial<D>) =>
-        setState({ state: s, data: { ...data, ...d } }),
-      update: (d: Partial<D>) => setState({ state, data: { ...data, ...d } }),
+        setState((prevState) => ({ state: s, data: { ...prevState.data, ...d } })),
+      update: (d: Partial<D>) => setState((prevState) => ({ state, data: { ...prevState.data, ...d } })),
       is: (s: S) => s === state,
       min: (s: S) => states.indexOf(s) <= states.indexOf(state),
       after: (s: S) => states.indexOf(s) < states.indexOf(state),
