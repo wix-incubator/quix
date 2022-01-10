@@ -78,10 +78,12 @@ class DownloadableBuilder[Code](delegate: Builder,
     val writer = new CSVWriter(new BufferedWriter(new OutputStreamWriter(stream, "UTF-8")))
 
     if (rows.nonEmpty && stream != null) {
-      rows.foreach(row => writer.writeNext(row.toArray.map(_.toString), true))
+      rows.foreach(row => writer.writeNext(row.toArray.map(nullToEmpty), true))
       writer.flush()
     }
   }
+
+  def nullToEmpty(any: Any): String = if (any == null) "" else any.toString
 
   def close(subQueryId: String): Task[Unit] = {
     val path = Paths.get(downloadConfig.downloadDir, subQueryId)
