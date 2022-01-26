@@ -52,6 +52,25 @@ describe('Presto sql context evaluator: When receiving a basic query', () => {
     );
   });
 
+  describe('with comments in it', () => {
+    runQueryTest(
+      '/* comment */ SELECT foo,| FROM table1 WHERE foo = "value"',
+      basicResult[ContextType.Column].oneExternalTable
+    );
+    runQueryTest(
+      'SELECT foo, bar /* comment */ FROM | WHERE foo = "value"',
+      basicResult[ContextType.Table].zeroTables
+    );
+    runQueryTest(
+      'SELECT foo, bar FROM table1 GROUP BY | /* comment */',
+      basicResult[ContextType.Column].oneExternalTable
+    );
+    runQueryTest(
+      'SELECT foo, bar FROM table1, table2 /* comment */ WHERE |',
+      basicResult[ContextType.Column].twoExternalTables
+    );
+  });
+
   describe('and cursor after "GROUP BY" keyword', () => {
     runQueryTest(
       'SELECT foo, bar FROM table1 GROUP BY |',
