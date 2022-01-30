@@ -50,7 +50,7 @@ const createQueryToEvaluate = (
  * @returns {string} the input after removal
  */
 const removeLastPrefix = (input: string): string => {
-  const parts = input.match(/([\w._]+)|([\s,()=<>'`":;*!@#$%^&+-]+)/g);
+  const parts = input.match(/([\w._]+)|([\s,()=<>'`":;/*!@#$%^&+-]+)/g);
   if (parts[parts.length - 1].match(/([\w._]+)/)) {
     parts.pop();
   }
