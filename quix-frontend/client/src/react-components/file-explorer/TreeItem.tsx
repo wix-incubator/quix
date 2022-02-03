@@ -88,8 +88,8 @@ const InnerTreeItem = ({
       </span>
     : Array.isArray(node.children) ?
         expanded ?
-        <i onClick={_onClick} className="bi-action bi-icon--sm" data-hook="tree-item-opened-icon">arrow_right</i>
-        : <i onClick={_onClick} className="bi-action bi-icon--sm" data-hook="tree-item-closed-icon">arrow_drop_down</i>
+        <i onClick={_onClick} className="bi-action bi-icon--sm" data-hook="tree-item-opened-icon">arrow_drop_down</i>
+        : <i onClick={_onClick} className="bi-action bi-icon--sm" data-hook="tree-item-closed-icon">arrow_right</i>
       : null
   )
 
