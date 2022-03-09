@@ -80,9 +80,22 @@ export class NotePlugin implements EventBusPlugin {
             const model = convertDbNote(dbModel);
             const newModel = noteReducer(model, action);
             if (newModel && model !== newModel) {
-              return this.noteRepository.save(convertNoteToDb(newModel), {
-                reload: false,
-              });
+              try{
+                return this.noteRepository.save(convertNoteToDb(newModel), {
+                  reload: false,
+                });
+              }
+              catch (e){
+                console.log('*Test*\naction:\n', action);
+                console.log('Error:\n', e);
+                console.log('model:\n', model);
+                console.log('newModel:\n', newModel);
+                console.error('*Test*\naction:\n', action);
+                console.error('Error:\n', e);
+                console.error('model:\n', model);
+                console.error('newModel:\n', newModel);
+                throw e;
+              }
             }
           }
         }
