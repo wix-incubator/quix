@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   HttpCode,
+  Logger,
   Post,
   Query,
   UseGuards,
@@ -20,6 +21,8 @@ import {QuixEventBus} from '../event-sourcing/quix-event-bus';
 
 @Controller('/api/events')
 export class EventsController {
+  private readonly logger = new Logger(EventsController.name);
+
   constructor(
     private eventBus: QuixEventBus,
     private eventsService: EventsService,
@@ -42,9 +45,20 @@ export class EventsController {
         sessionId,
       };
     }
-    const result = Array.isArray(userAction)
-      ? await this.eventBus.emit(userAction.map(withUserInfo))
-      : await this.eventBus.emit(withUserInfo(userAction));
+
+    let result: IAction<IEventData, string> | IAction<IEventData, string>[] =
+      [];
+
+    try {
+      result = Array.isArray(userAction)
+        ? await this.eventBus.emit(userAction.map(withUserInfo))
+        : await this.eventBus.emit(withUserInfo(userAction));
+    } catch (e: any) {
+      this.logger.error(`got error in /api/events 
+      the error is ${e}
+      the action was ${JSON.stringify(userAction)}`);
+      throw e;
+    }
 
     return {
       reactions: Array.isArray(result) ? result : [],
