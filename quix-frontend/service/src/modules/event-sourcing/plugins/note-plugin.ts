@@ -59,51 +59,75 @@ export class NotePlugin implements EventBusPlugin {
     api.hooks.listen(
       QuixHookNames.PROJECTION,
       async (action: IAction<NoteActions>) => {
-        if (action.type === NoteActionTypes.addNote) {
-          const note = await noteReducer(undefined, action);
-          if (note) {
-            return this.noteRepository.insertNewWithRank(convertNoteToDb(note));
-          }
-          return;
-        }
-        const dbModel = await this.noteRepository.findOneOrFail(action.id);
+        let _model, _dbModel, _newModel;
 
-        switch (action.type) {
-          case NoteActionTypes.reorderNote: {
-            return this.noteRepository.reorder(dbModel, action.to);
+        try {
+          if (action.type === NoteActionTypes.addNote) {
+            const note = await noteReducer(undefined, action);
+            if (note) {
+              return this.noteRepository.insertNewWithRank(
+                convertNoteToDb(note),
+              );
+            }
+            return;
           }
+          const dbModel = await this.noteRepository.findOneOrFail(action.id);
+          _dbModel = dbModel;
 
-          case NoteActionTypes.deleteNote: {
-            return this.noteRepository.deleteOneAndOrderRank(dbModel);
-          }
+          switch (action.type) {
+            case NoteActionTypes.reorderNote: {
+              return this.noteRepository.reorder(dbModel, action.to);
+            }
 
-          default: {
-            const model = convertDbNote(dbModel);
-            const newModel = noteReducer(model, action);
-            if (newModel && model !== newModel) {
-              try{
+            case NoteActionTypes.deleteNote: {
+              return this.noteRepository.deleteOneAndOrderRank(dbModel);
+            }
+
+            default: {
+              const model = convertDbNote(dbModel);
+              const newModel = noteReducer(model, action);
+              _model = model;
+              _newModel = newModel;
+              if (newModel && model !== newModel) {
                 return this.noteRepository.save(convertNoteToDb(newModel), {
                   reload: false,
                 });
               }
-              catch (e){
-                const msg = `
-                *Test*
-                Action: ${action}
-                Error: ${e}
-                Model: ${model}
-                NewModel: ${newModel}
-                `;
-
-                console.log(msg);
-                console.error(msg);
-                this.logger.error(msg);
-                throw e;
-              }
             }
           }
+        } catch (e) {
+          this.log(action, e, _model, _dbModel, _newModel);
+          throw e;
         }
       },
     );
+  };
+
+  log = (
+    action: any,
+    e: any,
+    model: any = undefined,
+    dbModel: any = undefined,
+    newModel: any = undefined,
+  ) => {
+    const msg = `
+    +===*Test*===+
+
+    Action: ${JSON.stringify(action)}
+    +========+
+    Error: ${e}
+    +========+
+    Model: ${JSON.stringify(model)}
+    +========+
+    DbModel: ${JSON.stringify(dbModel)}
+    +========+
+    NewModel: ${JSON.stringify(newModel)}
+
+    +===*Test*===+
+    `;
+
+    console.log(msg);
+    console.error(msg);
+    this.logger.error(msg);
   };
 }
