@@ -1,4 +1,4 @@
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DbNote, NoteRepository, DbNotebook} from '../../../entities';
 import {
@@ -19,6 +19,7 @@ import {NotebookRepository} from '../../../entities/notebook/notebook.repository
 @Injectable()
 export class NotePlugin implements EventBusPlugin {
   name = 'note';
+  private logger = new Logger(NotePlugin.name);
 
   constructor(
     @InjectRepository(NoteRepository)
@@ -86,14 +87,17 @@ export class NotePlugin implements EventBusPlugin {
                 });
               }
               catch (e){
-                console.log('*Test*\naction:\n', action);
-                console.log('Error:\n', e);
-                console.log('model:\n', model);
-                console.log('newModel:\n', newModel);
-                console.error('*Test*\naction:\n', action);
-                console.error('Error:\n', e);
-                console.error('model:\n', model);
-                console.error('newModel:\n', newModel);
+                const msg = `
+                *Test*
+                Action: ${action}
+                Error: ${e}
+                Model: ${model}
+                NewModel: ${newModel}
+                `;
+
+                console.log(msg);
+                console.error(msg);
+                this.logger.error(msg);
                 throw e;
               }
             }
