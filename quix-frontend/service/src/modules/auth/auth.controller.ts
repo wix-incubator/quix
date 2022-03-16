@@ -28,7 +28,9 @@ export class AuthController {
   @UseGuards(AuthGuard)
   async getUser(@User() user: IExternalUser) {
     this.userService.doUserLogin(user).catch(e => {
-      this.logger.error('error updating user', e);
+      this.logger.error(`error updating user 
+      :: user :: ${user}
+      :: error :: ${e}`, e);
     });
 
     const count =

@@ -89,14 +89,16 @@ export class NotePlugin implements EventBusPlugin {
               _model = model;
               _newModel = newModel;
               if (newModel && model !== newModel) {
-                return this.noteRepository.save(convertNoteToDb(newModel), {
+                const returnValue = await this.noteRepository.save(convertNoteToDb(newModel), {
                   reload: false,
                 });
+                this.log(action, null ,returnValue, _model, _dbModel, _newModel);
+                return returnValue;
               }
             }
           }
         } catch (e) {
-          this.log(action, e, _model, _dbModel, _newModel);
+          this.log(action, e, null, _model, _dbModel, _newModel);
           throw e;
         }
       },
@@ -106,6 +108,7 @@ export class NotePlugin implements EventBusPlugin {
   log = (
     action: any,
     e: any,
+    returnValue: any,
     model: any = undefined,
     dbModel: any = undefined,
     newModel: any = undefined,
@@ -117,6 +120,8 @@ export class NotePlugin implements EventBusPlugin {
     +========+
     Error: ${e}
     +========+
+    SaveReturnValue: ${JSON.stringify(returnValue)}
+    +========+
     Model: ${JSON.stringify(model)}
     +========+
     DbModel: ${JSON.stringify(dbModel)}
@@ -126,8 +131,11 @@ export class NotePlugin implements EventBusPlugin {
     +===*Test*===+
     `;
 
-    console.log(msg);
-    console.error(msg);
-    this.logger.error(msg);
+    if(e !== null) {
+      this.logger.error(msg);
+    }
+    else{
+      this.logger.log(msg);
+    }
   };
 }
