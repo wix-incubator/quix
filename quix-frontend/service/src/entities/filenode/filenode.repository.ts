@@ -1,9 +1,9 @@
 import {
-  EntityRepository,
   Repository,
   SaveOptions,
   DeepPartial,
   EntityManager,
+  EntityRepository,
 } from 'typeorm';
 import {DbFileTreeNode} from './filenode.entity';
 import {dbConf} from '../../config/db-conf';
@@ -16,7 +16,7 @@ import {DbFavorites} from '../favorites/favorites.entity';
  * This custom repository saves a tree structure in sql, using path enumeration/materialized path.
  * We don't use the built in solution by typeorm as it doesn't support moving/deletions yet.
  */
-@EntityRepository(DbFileTreeNode)
+ @EntityRepository(DbFileTreeNode)
 export class FileTreeRepository extends Repository<DbFileTreeNode> {
   save(
     entities: DeepPartial<DbFileTreeNode>[],
@@ -53,7 +53,7 @@ export class FileTreeRepository extends Repository<DbFileTreeNode> {
     }
     const parentId = getParentId(item);
     if (parentId) {
-      return this.findOneOrFail(parentId)
+      return this.findOneOrFail({where: {id: parentId}})
         .then(parent => parent.mpath)
         .catch(() => {
           throw new Error(

@@ -1,13 +1,13 @@
 import cluster from 'cluster';
 import {QUIX_SCHEMA, CURRENT_QUIX_SCHEMA_VERSION} from '../consts';
-import {Connection} from 'typeorm';
+import {DataSource} from 'typeorm';
 import {DbMetadata} from '../entities/version-metadata.entity';
-import {Logger} from '@nestjs/common';
+import {ConsoleLogger} from '@nestjs/common';
 
-export async function checkSchemaVersion(conn: Connection, logger: Logger) {
+export async function checkSchemaVersion(conn: DataSource, logger: ConsoleLogger) {
   const result = await conn
     .getRepository(DbMetadata)
-    .findOne({name: QUIX_SCHEMA})
+    .findOne({where: {name: QUIX_SCHEMA}})
     .catch(e => {
       logger.error(e);
       return undefined;
@@ -21,9 +21,9 @@ export async function checkSchemaVersion(conn: Connection, logger: Logger) {
 }
 
 export async function createInitialSchemaIfNeeded(
-  conn: Connection,
+  conn: DataSource,
   dbName: string,
-  logger: Logger,
+  logger: ConsoleLogger,
 ) {
   try {
     const versionMetadataTableName = conn.getMetadata(DbMetadata).tableName;

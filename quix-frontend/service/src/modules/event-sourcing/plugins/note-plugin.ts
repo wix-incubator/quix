@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {Injectable, ConsoleLogger} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DbNote, NoteRepository, DbNotebook} from '../../../entities';
 import {
@@ -19,7 +19,7 @@ import {NotebookRepository} from '../../../entities/notebook/notebook.repository
 @Injectable()
 export class NotePlugin implements EventBusPlugin {
   name = 'note';
-  private logger = new Logger(NotePlugin.name);
+  private logger = new ConsoleLogger(NotePlugin.name);
 
   constructor(
     @InjectRepository(NoteRepository)
@@ -40,7 +40,7 @@ export class NotePlugin implements EventBusPlugin {
         switch (action.type) {
           case NoteActionTypes.addNote:
             entity = await this.notebookRepository.findOneOrFail(
-              action.note.notebookId,
+              {where: {id: action.note.notebookId}},
             );
 
             break;
@@ -48,7 +48,7 @@ export class NotePlugin implements EventBusPlugin {
           case NoteActionTypes.move:
           case NoteActionTypes.updateContent:
           case NoteActionTypes.updateName:
-            entity = await this.noteRepository.findOneOrFail(action.id);
+            entity = await this.noteRepository.findOneOrFail({where: {id: action.id}});
         }
         if (entity) {
           assertOwner(entity, action);
@@ -71,7 +71,7 @@ export class NotePlugin implements EventBusPlugin {
             }
             return;
           }
-          const dbModel = await this.noteRepository.findOneOrFail(action.id);
+          const dbModel = await this.noteRepository.findOneOrFail({where: { id: action.id}});
           _dbModel = dbModel;
 
           switch (action.type) {

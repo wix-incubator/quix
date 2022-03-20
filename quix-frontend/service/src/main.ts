@@ -8,7 +8,7 @@ import {createConnection} from 'typeorm';
 import {createMysqlConf} from './config/db-connection';
 import {getEnv} from './config/env/env';
 import {DbMetadata} from './entities/version-metadata.entity';
-import {Logger} from '@nestjs/common';
+import {ConsoleLogger} from '@nestjs/common';
 import {
   checkSchemaVersion,
   createInitialSchemaIfNeeded,
@@ -18,7 +18,7 @@ import {retry} from './utils/retry-promise';
 import {WsAdapter} from '@nestjs/platform-ws';
 
 async function bootstrap() {
-  const logger = new Logger();
+  const logger = new ConsoleLogger();
   const env = getEnv();
 
   if (isMasterProcess()) {

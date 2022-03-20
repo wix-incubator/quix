@@ -2,7 +2,7 @@ import {
   Body,
   Controller,
   HttpCode,
-  Logger,
+  ConsoleLogger,
   Post,
   Query,
   UseGuards,
@@ -21,7 +21,7 @@ import {QuixEventBus} from '../event-sourcing/quix-event-bus';
 
 @Controller('/api/events')
 export class EventsController {
-  private readonly logger = new Logger(EventsController.name);
+  private readonly logger = new ConsoleLogger(EventsController.name);
 
   constructor(
     private eventBus: QuixEventBus,

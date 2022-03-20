@@ -1,5 +1,5 @@
 import {Inject, Injectable, Optional} from '@nestjs/common';
-import {ConnectionOptions} from 'typeorm';
+import {DataSourceOptions} from 'typeorm';
 import * as dbConnection from './db-connection';
 import {EnvSettings, loadEnv, getEnv} from './env';
 import {ClientConfigHelper} from '@wix/quix-shared';
@@ -29,7 +29,7 @@ export abstract class ConfigService {
     return env.DbType;
   }
 
-  getDbConnection(entities: any[]): ConnectionOptions {
+  getDbConnection(entities: any[]): DataSourceOptions {
     switch (this.env.DbType) {
       case 'sqlite':
         return dbConnection.createInMemConf(entities, this.getEnvSettings());

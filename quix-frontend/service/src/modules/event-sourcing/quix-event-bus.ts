@@ -4,7 +4,7 @@ import {
   EventBusPlugin,
 } from './infrastructure/event-bus';
 
-import {Injectable, Inject, Logger} from '@nestjs/common';
+import {Injectable, Inject, ConsoleLogger} from '@nestjs/common';
 import {QuixHookNames} from './types';
 import {IActionStore, DbActionStore} from './infrastructure/action-store';
 import {NotebookPlugin} from './plugins/notebook-plugin';
@@ -21,7 +21,7 @@ import {EventsService} from './events.service';
 @Injectable()
 export class QuixEventBus<A extends IAction = IAction> {
   private bus: EventBus;
-  private logger = new Logger(QuixEventBus.name);
+  private logger = new ConsoleLogger(QuixEventBus.name);
 
   constructor(
     @Inject(DbActionStore) private actionStore: IActionStore,

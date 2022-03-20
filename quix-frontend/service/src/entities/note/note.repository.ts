@@ -4,14 +4,14 @@ import {DbNote} from './dbnote.entity';
 @EntityRepository(DbNote)
 export class NoteRepository extends Repository<DbNote> {
   async insertNewWithRank(note: DbNote) {
-    const currentCount = await this.count({notebookId: note.notebookId});
+    const currentCount = await this.count({where: {notebookId: note.notebookId}});
     note.rank = currentCount;
     return this.insert(note);
   }
 
   async deleteOneAndOrderRank(item: string | DbNote) {
     const note =
-      typeof item === 'string' ? await this.findOneOrFail(item) : item;
+      typeof item === 'string' ? await this.findOneOrFail({where: {id: item}}) : item;
 
     return this.manager.transaction(async em => {
       await em

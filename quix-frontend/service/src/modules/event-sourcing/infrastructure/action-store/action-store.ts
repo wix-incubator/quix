@@ -45,7 +45,7 @@ export class DbActionStore implements IActionStore {
     const ids = !!aggId ? (Array.isArray(aggId) ? aggId : [aggId]) : undefined;
     const results = await (!ids
       ? this.repo.find()
-      : this.repo.find({id: In(ids)}));
+      : this.repo.find({where: {id: In(ids)}}));
 
     return results.map(convertDbActionToAction);
   }

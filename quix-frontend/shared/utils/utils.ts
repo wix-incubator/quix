@@ -1,4 +1,4 @@
-import {findIndex} from 'lodash';
+import {findIndex, cloneDeep} from 'lodash';
 
 export const replaceWith = (collection: any[], predicate: Record<string, any>, value: (current: any) => any) => {
   const index = findIndex(collection, predicate);
@@ -9,5 +9,5 @@ export const replaceWith = (collection: any[], predicate: Record<string, any>, v
 
   collection.splice(index, 1, value(collection[index]));
 
-  return [...collection];
+  return cloneDeep(collection);
 }

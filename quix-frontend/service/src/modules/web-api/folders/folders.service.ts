@@ -19,6 +19,7 @@ export class FoldersService {
     @InjectEntityManager()
     private entityManager: EntityManager,
   ) {
+    // TODO: make it work
     this.fileTreeRepo = this.entityManager.getCustomRepository(
       FileTreeRepository,
     );

@@ -66,14 +66,13 @@ export class TrashBinPlugin implements EventBusPlugin {
   ) {
     const deletedNotebook = await this.em.findOneOrFail(
       DbDeletedNotebook,
-      action.id,
+      {where: {id: action.id}},
     );
 
-    const folder = await this.em.findOneOrFail(DbFolder, {
-      id: (action as any).folderId,
-    });
+    
+    const folder = await this.em.findOneOrFail(DbFolder, {where: {id: (action as any).folderId}});
 
-    const folderNode = await this.fileTreeNodeRepo.findOneOrFail(folder.id);
+    const folderNode = await this.fileTreeNodeRepo.findOneOrFail({where: {id: folder.id}});
     const path = folderNode.mpath.split('.').map(n => ({id: n, name: ''}));
 
     const notebook = convertDbNotebook(
@@ -104,7 +103,7 @@ export class TrashBinPlugin implements EventBusPlugin {
   }
 
   private async addNotebook(notebookId: string, user: string, userId?: string) {
-    const notebook = await this.em.findOneOrFail(DbNotebook, notebookId);
+    const notebook = await this.em.findOneOrFail(DbNotebook, {where: {id: notebookId}});
     const deletedNotebook = {
       ...convertDbNotebook(notebook),
       dateDeleted: Date.now(),
@@ -126,7 +125,7 @@ export class TrashBinPlugin implements EventBusPlugin {
   async addFolderReactions(
     action: IAction<TrashBinActionTypes, string>,
   ): Promise<any> {
-    const node = await this.fileTreeNodeRepo.findOneOrFail({id: action.id});
+    const node = await this.fileTreeNodeRepo.findOneOrFail({where: {id: action.id}});
     const children = await this.fileTreeNodeRepo.getDeepChildren(node, this.em);
     const notebooks = children
       .filter(c => c.type === FileType.notebook)
@@ -160,7 +159,7 @@ export class TrashBinPlugin implements EventBusPlugin {
       ),
     ];
 
-    const notes = await this.em.find(DbNote, {notebookId: action.id});
+    const notes = await this.em.find(DbNote, {where: {notebookId: action.id}});
 
     result = [
       ...result,

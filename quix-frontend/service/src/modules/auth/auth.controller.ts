@@ -1,7 +1,7 @@
 import {
   Controller,
   Get,
-  Logger,
+  ConsoleLogger,
   Query,
   Res,
   Req,
@@ -17,7 +17,7 @@ import {DeletedNotebooksService} from '../web-api/deleted-notebooks/deleted-note
 
 @Controller('/api/')
 export class AuthController {
-  private readonly logger = new Logger(AuthController.name);
+  private readonly logger = new ConsoleLogger(AuthController.name);
   constructor(
     private readonly authService: LoginService,
     private readonly userService: UsersService,

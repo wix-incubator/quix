@@ -129,10 +129,10 @@ describe('event sourcing', () => {
           createNotebookAction,
         ]);
 
-        expect(await driver.fileTreeRepo.find({notebookId})).toHaveLength(1);
+        expect(await driver.fileTreeRepo.find({where: { notebookId }})).toHaveLength(1);
         await driver.emitAsUser(eventBus, [addToTrashBinAction]);
 
-        expect(await driver.fileTreeRepo.find({notebookId})).toHaveLength(0);
+        expect(await driver.fileTreeRepo.find({where: { notebookId }})).toHaveLength(0);
       });
     });
 
@@ -190,7 +190,7 @@ describe('event sourcing', () => {
         ]);
 
         subFolders.forEach(async folderId => {
-          const folder = await driver.folderRepo.findOne({id: folderId});
+          const folder = await driver.folderRepo.findOne({where: { id: folderId}});
           expect(folder).toBeUndefined();
         });
       });
@@ -204,7 +204,7 @@ describe('event sourcing', () => {
         ]);
 
         [...subFolders, ...notebooksIds].forEach(async nodeId => {
-          const node = await driver.fileTreeRepo.findOne({id: nodeId});
+          const node = await driver.fileTreeRepo.findOne({where: { id: nodeId }});
           expect(node).toBeUndefined();
         });
       });
@@ -293,7 +293,7 @@ describe('event sourcing', () => {
           permanentlyDeleteTrashBinAction,
         ]);
 
-        const notes = await driver.noteRepo.find({notebookId});
+        const notes = await driver.noteRepo.find({where: { notebookId}});
         expect(notes).toHaveLength(0);
       });
     });
@@ -841,7 +841,7 @@ describe('event sourcing', () => {
     });
   });
 
-  describe('error handling::', () => {
+  describe.only('error handling::', () => {
     it('should throw an error on invalid action', async () => {
       const error = await driver
         .emitAsUser(eventBus, [{type: 'foo'}])

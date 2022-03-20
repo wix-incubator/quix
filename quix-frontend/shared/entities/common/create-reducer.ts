@@ -1,3 +1,4 @@
+import {cloneDeep} from 'lodash';
 import {Reducer, BaseAction, AnyAction} from './common-types';
 import {replaceWith} from '../../utils/utils';
 
@@ -77,7 +78,7 @@ const listReducer = <T extends {id: string}, A extends BaseAction = AnyAction>(
     switch (actionType) {
       case 'create':
         state = !state && options.createIfNull ? [] : state;
-        return state && [...state, entityReducer(undefined, action) as T];
+        return state && [cloneDeep(state), entityReducer(undefined, action) as T];
       case 'delete':
         if (options.delete) {
           return state && state.filter(item => item.id !== action.id);

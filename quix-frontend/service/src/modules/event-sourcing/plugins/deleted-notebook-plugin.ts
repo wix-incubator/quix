@@ -37,7 +37,7 @@ export class DeletedNotebookPlugin implements EventBusPlugin {
           case DeletedNotebookActionTypes.deleteDeletedNotebook: {
             const deletedNotebook = await this.em.findOneOrFail(
               DbDeletedNotebook,
-              action.id,
+              {where: {id: action.id}},
             );
             assertOwner(deletedNotebook, action);
             break;
@@ -62,7 +62,7 @@ export class DeletedNotebookPlugin implements EventBusPlugin {
     const dbModel =
       action.type === DeletedNotebookActionTypes.createDeletedNotebook
         ? undefined
-        : await entityManager.findOne(DbDeletedNotebook, action.id);
+        : await entityManager.findOne(DbDeletedNotebook, {where: {id: action.id}});
     const model = dbModel ? convertDbDeletedNotebook(dbModel) : undefined;
 
     const newModel = deletedNotebookReducer(model, action);

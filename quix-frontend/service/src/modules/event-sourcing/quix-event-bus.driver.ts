@@ -19,7 +19,7 @@ import {
   DbDeletedNotebook,
 } from '../../entities';
 import {MockDataBuilder} from '../../../test/builder';
-import {Connection, Repository} from 'typeorm';
+import {DataSource, Repository} from 'typeorm';
 import {EventSourcingModule} from './event-sourcing.module';
 import {DbAction} from './infrastructure/action-store/entities/db-action.entity';
 import {QuixEventBus} from './quix-event-bus';
@@ -40,7 +40,7 @@ export class QuixEventBusDriver {
     public fileTreeRepo: Repository<DbFileTreeNode>,
     public favoritesRepo: Repository<DbFavorites>,
     public userRepo: Repository<DbUser>,
-    private conn: Connection,
+    private conn: DataSource,
     private configService: ConfigService,
     private defaultUserId: string,
   ) {
@@ -90,7 +90,7 @@ export class QuixEventBusDriver {
     const favoritesRepo: Repository<DbFavorites> = getRepository(DbFavorites);
 
     const userRepo: Repository<DbUser> = getRepository(DbUser);
-    const conn: Connection = module.get(getConnectionToken());
+    const conn: DataSource = module.get(getConnectionToken());
     const configService: ConfigService = module.get(ConfigService);
 
     return new QuixEventBusDriver(
@@ -125,12 +125,12 @@ export class QuixEventBusDriver {
     return {
       and: {
         expectToBeDefined: async () => {
-          const notebook = await this.notebookRepo.findOneOrFail(id);
+          const notebook = await this.notebookRepo.findOneOrFail({where: {id}});
           expect(notebook).toBeDefined();
           return notebook;
         },
         expectToBeUndefined: async () => {
-          const notebook = await this.notebookRepo.findOne(id);
+          const notebook = await this.notebookRepo.findOne({where: {id}});
           expect(notebook).not.toBeDefined();
           return undefined;
         },
@@ -143,13 +143,13 @@ export class QuixEventBusDriver {
       and: {
         expectToBeDefined: async () => {
           const deletedNotebook = await this.deletedNotebookRepo.findOneOrFail(
-            id,
+            {where: {id}},
           );
           expect(deletedNotebook).toBeDefined();
           return deletedNotebook;
         },
         expectToBeUndefined: async () => {
-          const deletedNotebook = await this.deletedNotebookRepo.findOne(id);
+          const deletedNotebook = await this.deletedNotebookRepo.findOne({where: {id}});
           expect(deletedNotebook).not.toBeDefined();
           return undefined;
         },
@@ -162,9 +162,11 @@ export class QuixEventBusDriver {
       and: {
         expectToBeDefined: async () => {
           const favorite = await this.favoritesRepo.findOneOrFail({
+            where: {
             entityId,
             entityType,
             owner,
+            }
           });
 
           expect(favorite).toBeDefined();
@@ -173,9 +175,11 @@ export class QuixEventBusDriver {
         },
         expectToBeUndefined: async () => {
           const favorite = await this.favoritesRepo.findOne({
+            where: {
             entityId,
             entityType,
             owner,
+          }
           });
 
           expect(favorite).not.toBeDefined();
@@ -187,18 +191,16 @@ export class QuixEventBusDriver {
   }
 
   async getNotebookWithNotes(id: string) {
-    const notebook = (await this.notebookRepo.findOne(id, {
-      relations: ['notes'],
-    }))!;
+    const notebook = (await this.notebookRepo.findOne({where: {id}, relations: ['notes']}))!;
     return notebook;
   }
 
   async getNote(id: string) {
-    return this.noteRepo.findOne(id);
+    return this.noteRepo.findOne({where: { id }});
   }
 
   async getNotesForNotebook(notebookId: string) {
-    return this.noteRepo.find({notebookId});
+    return this.noteRepo.find({where: { notebookId }});
   }
 
   async getUsers() {

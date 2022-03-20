@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {Injectable, ConsoleLogger} from '@nestjs/common';
 import {QuixEventBus} from '../../modules/event-sourcing/quix-event-bus';
 import {Repository} from 'typeorm';
 import {DbUser} from '../../entities';
@@ -11,7 +11,7 @@ import {UserActions, createUser} from '@wix/quix-shared/entities/user';
 
 @Injectable()
 export class UsersService {
-  private logger = new Logger('UsersService');
+  private logger = new ConsoleLogger('UsersService');
 
   constructor(
     @InjectRepository(DbUser) private userRepo: Repository<DbUser>,
@@ -19,7 +19,7 @@ export class UsersService {
   ) {}
 
   async doUserLogin(userFromLogin: IExternalUser) {
-    const user = await this.userRepo.findOne({id: userFromLogin.email});
+    const user = await this.userRepo.findOne({where: {id: userFromLogin.email}});
     if (!user) {
       await this.doFirstTimeLogin(userFromLogin);
     } else {

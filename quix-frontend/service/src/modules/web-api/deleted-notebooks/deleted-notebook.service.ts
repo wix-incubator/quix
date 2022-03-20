@@ -29,6 +29,6 @@ export class DeletedNotebooksService {
   }
 
   async getCountDeletedNotebooksForUser(user: string): Promise<number> {
-    return await this.deletedNotebooksRepo.count({owner: user});
+    return await this.deletedNotebooksRepo.count({where: {owner: user}});
   }
 }

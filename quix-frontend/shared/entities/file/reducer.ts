@@ -1,4 +1,4 @@
-import {last, remove} from 'lodash';
+import {last, remove, cloneDeep} from 'lodash';
 import {createReducer, composeReducers, createListReducer, createClientReducer, createClientListReducer} from '../common/create-reducer';
 import {INotebook, clientNotebookReducer} from '../notebook';
 import {createFile} from './file';
@@ -14,8 +14,11 @@ const moveFile = (files: IFile[], id: string, path: IFilePathItem[]) => {
     if (file.type === FileType.folder) {
       files.filter(f =>
         // tslint:disable-next-line: no-non-null-assertion
-        f.path.length && last(f.path)!.id === id).forEach(f => 
-          moveFile(files, f.id, [...path, {id: file.id, name: file.name}]));
+        f.path.length && last(f.path)!.id === id).forEach(f => {
+          const p = cloneDeep(path);
+          p.push({id: file.id, name: file.name});
+          return moveFile(files, f.id, p);
+        })
     }
   }
 
@@ -59,9 +62,9 @@ export const clientFileListReducer = composeReducers(
   ((state: IFile[], action: any) => {
     switch (action.type) {
       case FileActionTypes.moveFile:
-        return state && [...moveFile(state, action.id, action.path)];
+        return state && cloneDeep(moveFile(state, action.id, action.path));
       case FileActionTypes.deleteFile:
-        return state && [...deleteFile(state, action.id)];
+        return state && cloneDeep(deleteFile(state, action.id));
       default: 
     }
 

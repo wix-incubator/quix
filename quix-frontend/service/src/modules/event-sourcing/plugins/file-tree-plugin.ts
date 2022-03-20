@@ -57,7 +57,7 @@ export class FileTreePlugin implements EventBusPlugin {
 
             const parentPath = last(file.path);
             const parent = parentPath
-              ? await this.fileTreeNodeRepo.findOneOrFail({id: parentPath.id})
+              ? await this.fileTreeNodeRepo.findOneOrFail({where: { id: parentPath.id}})
               : undefined;
 
             if (parent) {
@@ -73,7 +73,7 @@ export class FileTreePlugin implements EventBusPlugin {
           }
 
           case FileActionTypes.deleteFile: {
-            const node = await this.fileTreeNodeRepo.findOneOrFail(action.id);
+            const node = await this.fileTreeNodeRepo.findOneOrFail({where: { id: action.id}});
             assertOwner(node, action);
             assertNodeNotNotebook(
               node,
@@ -86,7 +86,7 @@ export class FileTreePlugin implements EventBusPlugin {
           }
 
           case FileActionTypes.moveFile: {
-            const node = await this.fileTreeNodeRepo.findOneOrFail(action.id);
+            const node = await this.fileTreeNodeRepo.findOneOrFail({where: { id: action.id}});
             assertOwner(node, action);
             assertNodeNotNotebook(
               node,
@@ -133,9 +133,7 @@ export class FileTreePlugin implements EventBusPlugin {
 
           case FileActionTypes.updateName: {
             const {id} = action;
-            const folder = await this.folderRepo.findOneOrFail(id, {
-              loadRelationIds: true,
-            });
+            const folder = await this.folderRepo.findOneOrFail({where: {id}, loadRelationIds: true});
 
             folder.name = action.name;
             return this.folderRepo.save(folder, {reload: false});
@@ -153,7 +151,7 @@ export class FileTreePlugin implements EventBusPlugin {
             const {id, path} = action;
             const parent = lastAndAssertExist(path, action);
             const parentNode = await this.fileTreeNodeRepo.findOneOrFail(
-              parent.id,
+              {where: {id: parent.id}},
             );
             const fileNode: DbFileTreeNode = hookApi.context.get().fileNode;
             return this.fileTreeNodeRepo.moveTree(fileNode, parentNode);

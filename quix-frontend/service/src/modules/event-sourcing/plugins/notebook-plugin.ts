@@ -47,7 +47,7 @@ export class NotebookPlugin implements EventBusPlugin {
           case NotebookActionTypes.updateName:
           case NotebookActionTypes.deleteNotebook:
           case NotebookActionTypes.deleteNotebookNotes: {
-            const notebook = await this.em.findOneOrFail(DbNotebook, action.id);
+            const notebook = await this.em.findOneOrFail(DbNotebook, {where: {id: action.id}});
             assertOwner(notebook, action);
             break;
           }
@@ -75,7 +75,7 @@ export class NotebookPlugin implements EventBusPlugin {
     const dbModel =
       action.type === NotebookActionTypes.createNotebook
         ? undefined
-        : await tm.findOne(DbNotebook, action.id);
+        : await tm.findOne(DbNotebook, {where: {id: action.id}});
 
     const model = dbModel ? convertDbNotebook(dbModel) : undefined;
 
@@ -116,9 +116,8 @@ export class NotebookPlugin implements EventBusPlugin {
         node.type = FileType.notebook;
         node.parent = parent ? new DbFileTreeNode(parent.id) : undefined;
 
-        return tm
-          .getCustomRepository(FileTreeRepository)
-          .save(node, {reload: false});
+        const fileTreeRepo = tm.getRepository<DbFileTreeNode>(FileTreeRepository);
+        return fileTreeRepo.save(node, {reload: false});
       }
     }
   }

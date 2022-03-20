@@ -1,4 +1,4 @@
-import {ConnectionOptions} from 'typeorm';
+import {DataSourceOptions} from 'typeorm';
 import {EnvSettings} from './env';
 import {isTsNode} from './utils';
 
@@ -7,7 +7,7 @@ type ClassConstructor = new (...args: any[]) => any;
 export const createInMemConf = (
   entities: ClassConstructor[] | string[],
   settings: EnvSettings,
-): ConnectionOptions => {
+): DataSourceOptions => {
   return {
     type: 'sqljs',
     synchronize: settings.AutoMigrateDb,
@@ -20,7 +20,7 @@ export const createInMemConf = (
 export const createMysqlConf = (
   entities: ClassConstructor[] | string[],
   settings: EnvSettings,
-): ConnectionOptions => {
+): DataSourceOptions => {
   return {
     type: 'mysql',
     host: settings.DbHost,

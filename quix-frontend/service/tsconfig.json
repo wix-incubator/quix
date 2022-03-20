@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     "module": "commonjs",
     "declaration": true,
     "removeComments": true,
@@ -17,6 +18,10 @@
     "typeRoots": [
       "./node_modules/@types",
       "./src/types/3rd-party"
+    ],
+    "lib": [
+      "es2016",
+      "ESNext",
     ]
   },
   "references": [

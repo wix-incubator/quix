@@ -2,7 +2,7 @@
 import 'reflect-metadata';
 import {Test, TestingModule} from '@nestjs/testing';
 import {AppModule} from './../src/app.module';
-import {INestApplication, Logger} from '@nestjs/common';
+import {INestApplication} from '@nestjs/common';
 import {ConfigService, EnvSettings} from '../src/config';
 import nock from 'nock';
 import {IExternalUser} from '../src/modules/auth/types';
