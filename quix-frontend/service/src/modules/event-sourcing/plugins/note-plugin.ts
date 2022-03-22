@@ -89,9 +89,12 @@ export class NotePlugin implements EventBusPlugin {
               _model = model;
               _newModel = newModel;
               if (newModel && model !== newModel) {
-                return this.noteRepository.save(convertNoteToDb(newModel), {
-                  reload: false,
-                });
+                return await this.noteRepository.save(
+                  convertNoteToDb(newModel),
+                  {
+                    reload: false,
+                  },
+                );
               }
             }
           }
@@ -126,8 +129,6 @@ export class NotePlugin implements EventBusPlugin {
     +===*Test*===+
     `;
 
-    console.log(msg);
-    console.error(msg);
     this.logger.error(msg);
   };
 }
