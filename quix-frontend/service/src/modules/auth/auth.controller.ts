@@ -29,7 +29,7 @@ export class AuthController {
   async getUser(@User() user: IExternalUser) {
     this.userService.doUserLogin(user).catch(e => {
       this.logger.error(`error updating user 
-      :: user :: ${user}
+      :: user :: ${JSON.stringify(user)}
       :: error :: ${e}`, e);
     });
 

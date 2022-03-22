@@ -39,7 +39,7 @@ export class DbActionStore implements IActionStore {
       .updateEntity(false)
       .execute()
       .catch((e) => {
-        this.logger.log(`got error with insert action: ${JSON.stringify(actions)}
+        this.logger.error(`got error with insert action: ${JSON.stringify(actions)}
         the error was ${e}`)
         throw e;
       });
