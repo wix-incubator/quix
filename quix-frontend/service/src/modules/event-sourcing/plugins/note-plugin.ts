@@ -92,7 +92,7 @@ export class NotePlugin implements EventBusPlugin {
                 const returnValue = await this.noteRepository.save(convertNoteToDb(newModel), {
                   reload: false,
                 });
-                this.log(action, null ,returnValue, _model, _dbModel, _newModel);
+                // this.log(action, null ,returnValue, _model, _dbModel, _newModel);
                 return returnValue;
               }
             }

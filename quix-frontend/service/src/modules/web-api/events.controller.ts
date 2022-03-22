@@ -56,7 +56,7 @@ export class EventsController {
     } catch (e: any) {
       this.logger.error(`got error in /api/events 
       :: error :: ${e}
-      :: user :: ${user}
+      :: user :: ${JSON.stringify(user)}
       :: session :: ${sessionId}
       :: action :: ${JSON.stringify(userAction)}`);
       throw e;

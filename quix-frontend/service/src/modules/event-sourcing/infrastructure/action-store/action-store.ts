@@ -3,7 +3,7 @@ import {IAction} from '../types';
 import {DbAction} from './entities/db-action.entity';
 import {IActionStore, IDBAction} from './types';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Injectable} from '@nestjs/common';
+import {Injectable, Logger} from '@nestjs/common';
 
 const convertDbActionToAction = (input: IDBAction): IAction => {
   const {data, ...rest} = input;
@@ -24,18 +24,26 @@ const convertActionToDbAction = (input: IAction): IDBAction => {
 
 @Injectable()
 export class DbActionStore implements IActionStore {
+  logger = new Logger(DbActionStore.name);
+
   constructor(@InjectRepository(DbAction) private repo: Repository<DbAction>) {}
 
   async pushAction(action: IAction | IAction[]) {
     const actions: IAction[] = Array.isArray(action) ? action : [action];
 
-    // not using simple .insert() or .save() to suppress excessive select typeorm does
+    // not using simple .insert() or .save() to suppress excessive select typeorm does   
     await this.repo
       .createQueryBuilder()
       .insert()
       .values(actions.map(convertActionToDbAction))
       .updateEntity(false)
-      .execute();
+      .execute()
+      .catch((e) => {
+        this.logger.log(`got error with insert action: ${JSON.stringify(actions)}
+        the error was ${e}`)
+        throw e;
+      });
+
     // await this.repo.insert(actions.map(convertActionToDbAction));
     return actions;
   }
