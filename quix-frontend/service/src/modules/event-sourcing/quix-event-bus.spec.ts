@@ -519,6 +519,74 @@ describe('event sourcing', () => {
       expect(notebook.notes![0].textContent).toBe('select foo from bar');
     });
 
+    describe('note update', () => {
+      beforeEach(async () => {
+        await driver.emitAsUser(eventBus, [
+          createNotebookAction,
+          addNoteAction,
+        ]);
+      });
+
+      it.each([
+        ['content', () => NoteActions.updateContent(note.id, 'content')],
+        [
+          'richContent',
+          () => NoteActions.updateContent(note.id, '\n', {rich: 'content'}),
+        ],
+        ['name', () => NoteActions.updateName(note.id, 'name')],
+      ])(
+        'should not update %s when there are no changes',
+        async (_text, createAction) => {
+          const action = createAction();
+
+          await driver.emitAsUser(eventBus, [action]);
+          const firstNote = await driver.getNote(note.id);
+
+          await new Promise(resolve => setTimeout(resolve, 1000));
+
+          await driver.emitAsUser(eventBus, [action]);
+          const secondNote = await driver.getNote(note.id);
+
+          expect(firstNote?.dateUpdated).toBe(secondNote?.dateUpdated);
+        },
+      );
+
+      it.each([
+        [
+          'content',
+          () => NoteActions.updateContent(note.id, 'content'),
+          () => NoteActions.updateContent(note.id, 'different'),
+        ],
+        [
+          'richContent',
+          () => NoteActions.updateContent(note.id, '\n', {rich: 'content'}),
+          () => NoteActions.updateContent(note.id, '\n', {content: 'rich'}),
+        ],
+        [
+          'name',
+          () => NoteActions.updateContent(note.id, 'name'),
+          () => NoteActions.updateContent(note.id, 'different'),
+        ],
+      ])(
+        'should update %s when there are changes',
+        async (_text, createFirstAction, createSecondAction) => {
+          await driver.emitAsUser(eventBus, [createFirstAction()]);
+
+          const firstNote = await driver.getNote(note.id);
+
+          await new Promise(resolve => setTimeout(resolve, 1000));
+
+          await driver.emitAsUser(eventBus, [createSecondAction()]);
+
+          const secondNote = await driver.getNote(note.id);
+
+          expect(secondNote?.dateUpdated).toBeGreaterThan(
+            firstNote!.dateUpdated,
+          );
+        },
+      );
+    });
+
     it('move note between notebook', async () => {
       await driver.emitAsUser(eventBus, [createNotebookAction, addNoteAction]);
       const [secondNotebookId, createNotebookAction2] =

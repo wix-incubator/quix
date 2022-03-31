@@ -6,6 +6,7 @@ import {
   convertNoteToDb,
 } from '../../../entities/note/dbnote.entity';
 import {
+  IBaseNote,
   NoteActions,
   NoteActionTypes,
   noteReducer,
@@ -15,6 +16,7 @@ import {QuixHookNames} from '../types';
 import {IAction} from '../infrastructure/types';
 import {extractEventNames, assertOwner} from './utils';
 import {NotebookRepository} from '../../../entities/notebook/notebook.repository';
+import {isEqual, omit} from 'lodash';
 
 @Injectable()
 export class NotePlugin implements EventBusPlugin {
@@ -59,76 +61,62 @@ export class NotePlugin implements EventBusPlugin {
     api.hooks.listen(
       QuixHookNames.PROJECTION,
       async (action: IAction<NoteActions>) => {
-        let _model, _dbModel, _newModel;
-
-        try {
-          if (action.type === NoteActionTypes.addNote) {
-            const note = await noteReducer(undefined, action);
-            if (note) {
-              return this.noteRepository.insertNewWithRank(
-                convertNoteToDb(note),
-              );
-            }
-            return;
+        if (action.type === NoteActionTypes.addNote) {
+          const note = await noteReducer(undefined, action);
+          if (note) {
+            return this.noteRepository.insertNewWithRank(convertNoteToDb(note));
           }
-          const dbModel = await this.noteRepository.findOneOrFail(action.id);
-          _dbModel = dbModel;
+          return;
+        }
 
-          switch (action.type) {
-            case NoteActionTypes.reorderNote: {
-              return this.noteRepository.reorder(dbModel, action.to);
-            }
+        const dbModel = await this.noteRepository.findOneOrFail(action.id);
 
-            case NoteActionTypes.deleteNote: {
-              return this.noteRepository.deleteOneAndOrderRank(dbModel);
-            }
+        switch (action.type) {
+          case NoteActionTypes.reorderNote: {
+            return this.noteRepository.reorder(dbModel, action.to);
+          }
 
-            default: {
-              const model = convertDbNote(dbModel);
-              const newModel = noteReducer(model, action);
-              _model = model;
-              _newModel = newModel;
-              if (newModel && model !== newModel) {
-                return await this.noteRepository.save(
-                  convertNoteToDb(newModel),
-                  {
-                    reload: false,
-                  },
-                );
-              }
+          case NoteActionTypes.deleteNote: {
+            return this.noteRepository.deleteOneAndOrderRank(dbModel);
+          }
+          default: {
+            const model = convertDbNote(dbModel);
+            const newModel = noteReducer(model, action);
+
+            if (newModel && this.modelHasChanged(action, model, newModel)) {
+              return await this.noteRepository.save(convertNoteToDb(newModel), {
+                reload: false,
+              });
             }
           }
-        } catch (e) {
-          this.log(action, e, _model, _dbModel, _newModel);
-          throw e;
         }
       },
     );
   };
 
-  log = (
-    action: any,
-    e: any,
-    model: any = undefined,
-    dbModel: any = undefined,
-    newModel: any = undefined,
+  modelHasChanged = (
+    action: IAction<NoteActions>,
+    model: IBaseNote,
+    newModel: IBaseNote,
   ) => {
-    const msg = `
-    +===*Test*===+
+    switch (action.type) {
+      case NoteActionTypes.updateContent: {
+        const contentChanged =
+          newModel.content && model.content !== newModel.content;
+        const richContentChanged =
+          newModel.richContent &&
+          !isEqual(model.richContent, newModel.richContent);
 
-    Action: ${JSON.stringify(action)}
-    +========+
-    Error: ${e}
-    +========+
-    Model: ${JSON.stringify(model)}
-    +========+
-    DbModel: ${JSON.stringify(dbModel)}
-    +========+
-    NewModel: ${JSON.stringify(newModel)}
+        return contentChanged || richContentChanged;
+      }
 
-    +===*Test*===+
-    `;
-
-    this.logger.error(msg);
+      case NoteActionTypes.move:
+      case NoteActionTypes.updateName: {
+        const valuesToOmit = ['dateUpdated', 'content', 'richContent'];
+        const modelToCompare = omit(model, valuesToOmit);
+        const newModelToCompare = omit(newModel, valuesToOmit);
+        return !isEqual(modelToCompare, newModelToCompare);
+      }
+    }
   };
 }
