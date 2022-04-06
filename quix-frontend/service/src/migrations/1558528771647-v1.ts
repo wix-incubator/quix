@@ -19,10 +19,10 @@ export class v11558528771647 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
-        await queryRunner.query("ALTER TABLE `notes` DROP FOREIGN KEY `FK_d84382f58ca053c3532fe78b05b`");
-        await queryRunner.query("ALTER TABLE `tree_nodes` DROP FOREIGN KEY `FK_cf0b457e67294f4b11555684416`");
-        await queryRunner.query("ALTER TABLE `tree_nodes` DROP FOREIGN KEY `FK_88797ade322e1717a3824fa0eca`");
-        await queryRunner.query("ALTER TABLE `tree_nodes` DROP FOREIGN KEY `FK_8aff7aa6aa930ffd5f259b27da7`");
+        // await queryRunner.query("ALTER TABLE `notes` DROP FOREIGN KEY `FK_d84382f58ca053c3532fe78b05b`");
+        // await queryRunner.query("ALTER TABLE `tree_nodes` DROP FOREIGN KEY `FK_cf0b457e67294f4b11555684416`");
+        // await queryRunner.query("ALTER TABLE `tree_nodes` DROP FOREIGN KEY `FK_88797ade322e1717a3824fa0eca`");
+        // await queryRunner.query("ALTER TABLE `tree_nodes` DROP FOREIGN KEY `FK_8aff7aa6aa930ffd5f259b27da7`");
         await queryRunner.query("DROP INDEX `IDX_28d49fb1d1f565ea98929f69a0` ON `actions`");
         await queryRunner.query("DROP INDEX `IDX_733a22dda689fe10e5fa29d93f` ON `actions`");
         await queryRunner.query("DROP TABLE `actions`");

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ ! -f .quixroot ]; then
-  echo "This script must be run from quix root folder"
+  echo "This script must be run from quix/quix-frontend/service folder"
   exit -1
 fi
 

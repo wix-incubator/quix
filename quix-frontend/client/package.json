@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.0",
-    "@wix/quix-shared": "^1.0.14",
+    "@wix/quix-shared": "^1.0.15",
     "angular": "^1.7.9",
     "angular-dragdrop": "^1.0.13",
     "angular-resource": "^1.7.9",

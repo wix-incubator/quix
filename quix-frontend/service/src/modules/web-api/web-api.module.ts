@@ -29,7 +29,7 @@ import {EventsGateway} from './events.gateway';
 import {AutocompleteService} from './autocomplete/autocomplete.service';
 import {AutocompleteController} from './autocomplete/autocomplete.controller';
 import {DeletedNotebooksService} from './deleted-notebooks/deleted-notebook.service';
-import { QuixEventBus } from '../event-sourcing/quix-event-bus';
+import {QuixEventBus} from '../event-sourcing/quix-event-bus';
 
 @Module({
   imports: [
