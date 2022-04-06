@@ -8,11 +8,11 @@ export class v51634023683491 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE \`quix\`.\`notes\` DROP FOREIGN KEY \`FK_d84382f58ca053c3532fe78b05b\``,
+      `ALTER TABLE \`notes\` DROP FOREIGN KEY \`FK_d84382f58ca053c3532fe78b05b\``,
     );
 
     await queryRunner.query(
-      `CREATE TABLE \`quix\`.\`deleted_notebooks\` (\`id\` varchar(36) NOT NULL, \`name\` varchar(512) NOT NULL, \`owner\` varchar(64) NOT NULL, \`date_updated\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`date_created\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`date_deleted\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`json_content\` json NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
+      `CREATE TABLE \`deleted_notebooks\` (\`id\` varchar(36) NOT NULL, \`name\` varchar(512) NOT NULL, \`owner\` varchar(64) NOT NULL, \`date_updated\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), \`date_created\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`date_deleted\` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), \`json_content\` json NULL, PRIMARY KEY (\`id\`)) ENGINE=InnoDB`,
     );
 
     const manager = queryRunner.manager;
@@ -24,9 +24,9 @@ export class v51634023683491 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP TABLE \`quix\`.\`deleted_notebooks\``);
+    await queryRunner.query(`DROP TABLE \`deleted_notebooks\``);
     await queryRunner.query(
-      `ALTER TABLE \`quix\`.\`notes\` ADD CONSTRAINT \`FK_d84382f58ca053c3532fe78b05b\` FOREIGN KEY (\`notebookId\`) REFERENCES \`quix\`.\`notebooks\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`,
+      `ALTER TABLE \`notes\` ADD CONSTRAINT \`FK_d84382f58ca053c3532fe78b05b\` FOREIGN KEY (\`notebookId\`) REFERENCES \`quix\`.\`notebooks\`(\`id\`) ON DELETE CASCADE ON UPDATE NO ACTION`,
     );
 
     const manager = queryRunner.manager;
