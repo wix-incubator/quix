@@ -110,8 +110,7 @@ export class NotePlugin implements EventBusPlugin {
         return contentChanged || richContentChanged;
       }
 
-      case NoteActionTypes.move:
-      case NoteActionTypes.updateName: {
+      default: {
         const valuesToOmit = ['dateUpdated', 'content', 'richContent'];
         const modelToCompare = omit(model, valuesToOmit);
         const newModelToCompare = omit(newModel, valuesToOmit);
