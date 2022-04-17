@@ -1,4 +1,4 @@
-import {Injectable, Logger} from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {DbNote, NoteRepository, DbNotebook} from '../../../entities';
 import {
@@ -21,7 +21,6 @@ import {isEqual, omit} from 'lodash';
 @Injectable()
 export class NotePlugin implements EventBusPlugin {
   name = 'note';
-  private logger = new Logger(NotePlugin.name);
 
   constructor(
     @InjectRepository(NoteRepository)
