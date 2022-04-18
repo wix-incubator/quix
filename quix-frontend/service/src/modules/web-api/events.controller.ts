@@ -54,11 +54,7 @@ export class EventsController {
         ? await this.eventBus.emit(userAction.map(withUserInfo))
         : await this.eventBus.emit(withUserInfo(userAction));
     } catch (e: any) {
-      this.logger.error(`got error in /api/events 
-      :: error :: ${e}
-      :: user :: ${JSON.stringify(user)}
-      :: session :: ${sessionId}
-      :: action :: ${JSON.stringify(userAction)}`);
+      this.logger.error('error emitting event', e);
       throw e;
     }
 
