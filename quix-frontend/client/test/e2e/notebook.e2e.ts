@@ -207,7 +207,7 @@ describe('Notebook ::', () => {
             await runnerTestkit.clickRun();
 
             const consoleResultTestkit = driver.createTestkit(ConsoleResultTestkit);
-            expect(await consoleResultTestkit.getTimestampsCount()).to.equal(1);
+            expect(await consoleResultTestkit.getTimestampsCount()).to.equal(2);
             expect(await consoleResultTestkit.getValueRowsCount()).to.equal(4);
           });
         });
