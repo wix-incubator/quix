@@ -190,6 +190,7 @@ describe('Notebook ::', () => {
           expect(await actionsTestkit.isDeleteEnabled()).to.be.false;
         });
       });
+
       describe('Result ::', () => {
         describe('Console ::', () => {
           it('should merge lines with same timestamp into group', async () => {

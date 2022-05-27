@@ -1,6 +1,6 @@
 <div class="bi-c bi-theme--darker" data-hook="console-result"> 
   <div 
-    ng-if="!$last && isTimestampVisible(row.timestamp, $index, $first, $last)"
+    ng-if="isTimestampVisible(row.timestamp, $index, $first, $last)"
     ng-repeat-start="row in query.getResults().buffer"
     class="console-result-timestamp bi-s-v--x2"
     data-hook="console-result-timestamp"
