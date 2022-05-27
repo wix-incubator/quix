@@ -190,6 +190,7 @@ describe('Notebook ::', () => {
           expect(await actionsTestkit.isDeleteEnabled()).to.be.false;
         });
       });
+
       describe('Result ::', () => {
         describe('Console ::', () => {
           it('should merge lines with same timestamp into group', async () => {
@@ -206,7 +207,7 @@ describe('Notebook ::', () => {
             await runnerTestkit.clickRun();
 
             const consoleResultTestkit = driver.createTestkit(ConsoleResultTestkit);
-            expect(await consoleResultTestkit.getTimestampsCount()).to.equal(1);
+            expect(await consoleResultTestkit.getTimestampsCount()).to.equal(2);
             expect(await consoleResultTestkit.getValueRowsCount()).to.equal(4);
           });
         });

@@ -46,7 +46,7 @@ function initResultEvents(runner: Runner) {
   });
 
   events.register('query-details', data => {
-    runner.getState().getQueryById(data.id).setTitle(data.code);
+    runner.getState().getQueryById(data.id).setTitle(data.id);
 
     return data;
   });
