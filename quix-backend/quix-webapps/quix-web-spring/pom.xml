@@ -24,7 +24,7 @@
         <typesafe.config.version>1.4.0</typesafe.config.version>
         <wix.embedded.mysql.version>4.6.1</wix.embedded.mysql.version>
         <async.http.version>2.10.4</async.http.version>
-        <mysql.version>8.0.18</mysql.version>
+        <mysql.version>8.0.28</mysql.version>
         <spring.jdbc.version>5.2.2.RELEASE</spring.jdbc.version>
         <scalatest.version>3.1.0</scalatest.version>
     </properties>
