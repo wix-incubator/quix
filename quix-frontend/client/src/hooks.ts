@@ -2,6 +2,9 @@ import {SyncHook, AsyncSeriesHook, SyncWaterfallHook} from 'tapable';
 
 export const hooks = {
   bootstrap: new SyncHook(['appBuilder']),
+  app: {
+    stateChange: new SyncHook(['app', 'state', 'params', 'previousState'])
+  },
   note: {
     plugin: new SyncWaterfallHook(['app', 'store', 'engine', 'id']),
     import: new AsyncSeriesHook(['app', 'store', 'note', 'value']),

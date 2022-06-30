@@ -4,6 +4,7 @@ import Navigator from './navigator';
 import {User} from './user';
 import {login} from './sso';
 import {Options} from '../types';
+import { hooks } from '../../../hooks';
 
 export interface IMenuItem {
   name: string;
@@ -48,6 +49,10 @@ export class App<Config = any> {
 
   init(modules: string[] = []) {
     this.ngModule = angular.module(this.id, ['bi.app'].concat(modules));
+    this.navigator.on('stateChangeSuccess', (name, params, fromState) => {
+      hooks.app.stateChange.call(this, name, params, fromState);
+    });
+
     return this;
   }
 
