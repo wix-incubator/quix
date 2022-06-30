@@ -30,9 +30,9 @@ export const addRunner = (app: App, store: Store, id: string, runner: Runner, no
     } else {
       browserNotificationsManager.notify('runnerError', note, notebook);
     }
+    
+    hooks.note.runFinish.call(app, store, note, runner);
   });
-  
-  hooks.note.runFinish.call(app, store, note, runner);
 
   runners.set(id, runner);
 }
