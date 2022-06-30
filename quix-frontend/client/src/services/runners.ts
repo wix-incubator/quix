@@ -21,6 +21,7 @@ const computeFinishState = (runner: Runner) => {
 }
 
 export const addRunner = (app: App, store: Store, id: string, runner: Runner, note: INote, notebook: INotebook) => {
+  hooks.note.runStart.call(app, store, note, runner);
   runner.on('finish', (r: Runner) => {
     const status = computeFinishState(r);
 
@@ -30,7 +31,7 @@ export const addRunner = (app: App, store: Store, id: string, runner: Runner, no
       browserNotificationsManager.notify('runnerError', note, notebook);
     }
   });
-
+  
   hooks.note.runFinish.call(app, store, note, runner);
 
   runners.set(id, runner);

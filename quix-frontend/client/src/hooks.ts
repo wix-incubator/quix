@@ -5,6 +5,7 @@ export const hooks = {
   note: {
     plugin: new SyncWaterfallHook(['app', 'store', 'engine', 'id']),
     import: new AsyncSeriesHook(['app', 'store', 'note', 'value']),
+    runStart: new SyncHook(['app', 'store', 'note', 'runner']),
     runFinish: new SyncHook(['app', 'store', 'note', 'runner']),
     results: {
       formatters: {
