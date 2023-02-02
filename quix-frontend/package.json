@@ -2,7 +2,7 @@
   "name": "quix-frontend",
   "private": true,
   "devDependencies": {
-    "lerna": "^3.22.1"
+    "lerna": "^6.4.1"
   },
   "scripts": {
     "version": "lerna --version",
