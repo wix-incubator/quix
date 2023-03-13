@@ -4,10 +4,10 @@
 [![Quix Backend Build](https://github.com/wix/quix/actions/workflows/quix-backend-build.yml/badge.svg?branch=master)](https://github.com/wix/quix/actions/workflows/quix-backend-build.yml)
 [![Quix Frontend Build & Publish](https://github.com/wix/quix/actions/workflows/quix-frontend-publish.yml/badge.svg)](https://github.com/wix/quix/actions/workflows/quix-frontend-publish.yml) [![Quix Documentation Publish](https://github.com/wix/quix/actions/workflows/quix-documentation-publish.yml/badge.svg)](https://github.com/wix/quix/actions/workflows/quix-documentation-publish.yml)
 
-Quix is an easy-to-use notebook manager with support for [Presto](https://wix.github.io/quix/docs/presto), [Athena](https://wix.github.io/quix/docs/athena), [BigQuery](https://wix.github.io/quix/docs/bigquery), [MySQL](https://wix.github.io/quix/docs/mysql), [PostgreSQL](https://wix.github.io/quix/docs/postgresql), [ClickHouse](https://wix.github.io/quix/docs/clickhouse) and more.
+Quix is an easy-to-use notebook manager with support for [Presto](https://wix-incubator.github.io/quix/docs/presto), [Athena](https://wix-incubator.github.io/quix/docs/athena), [BigQuery](https://wix-incubator.github.io/quix/docs/bigquery), [MySQL](https://wix-incubator.github.io/quix/docs/mysql), [PostgreSQL](https://wix-incubator.github.io/quix/docs/postgresql), [ClickHouse](https://wix-incubator.github.io/quix/docs/clickhouse) and more.
 
 * [Online demo](https://quix-demo.io/)
-* [Installation](https://wix.github.io/quix/docs/installation)
+* [Installation](https://wix-incubator.github.io/quix/docs/installation)
 
 ## Intro
 Check out these blog posts introducing Quix on Wix Engineering Blog : 
@@ -24,7 +24,7 @@ curl https://raw.githubusercontent.com/wix/quix/master/env-example -o .env
 docker-compose up
 ```
 
-Be sure to check the [full installation notes](https://wix.github.io/quix/docs/installation) on how to edit the `.env` file to add more data sources, turn on multi-user mode and customize your deployment.
+Be sure to check the [full installation notes](https://wix-incubator.github.io/quix/docs/installation) on how to edit the `.env` file to add more data sources, turn on multi-user mode and customize your deployment.
 
 For support please contact us via [oss@wix.com](mailto:oss@wix.com).
 
