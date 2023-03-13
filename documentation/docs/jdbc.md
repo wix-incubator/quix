@@ -26,9 +26,9 @@ You will be able to execute multiple queries in parallel, explore the db tree, v
 ## Setup
 To setup jdbc note you have to perform the following two steps :
 
-### 1. Add new jdbc dependency to [Dockerfile](https://github.com/wix/quix/blob/master/quix-backend/Dockerfile)
+### 1. Add new jdbc dependency to [Dockerfile](https://github.com/wix-incubator/quix/blob/master/quix-backend/Dockerfile)
 Right now quix is pre-bundled with several populat jdbc drivers. If your driver is missing from the list, 
-you should edit the [Dockerfile](https://github.com/wix/quix/blob/master/quix-backend/Dockerfile) and 
+you should edit the [Dockerfile](https://github.com/wix-incubator/quix/blob/master/quix-backend/Dockerfile) and 
 add a line that will download the driver and another line to push it into `quix.jar` file 
 
 

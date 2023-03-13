@@ -33,7 +33,7 @@ object PrestoSqlOps {
     StatementSplitter trims all leading whitespaces, which makes it hard
     to mark correct line in case of presto error
 
-    see https://github.com/wix/quix/issues/58 for more details
+    see https://github.com/wix-incubator/quix/issues/58 for more details
    */
   def recoverLeadingSpaces(original: String, trimmed: String): String = {
     val index = original.indexOf(trimmed)
