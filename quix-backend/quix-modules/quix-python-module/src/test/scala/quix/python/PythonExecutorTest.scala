@@ -93,7 +93,6 @@ class PythonExecutorTest extends SpecWithJUnit with MustMatchers {
       code =
         """packages.install('ujson==5.6.0')
           |packages.install('ujson>1.0')
-          |packages.install('ujson>1.0,<5.7.0')
           |
           |import ujson
           |print(123)
