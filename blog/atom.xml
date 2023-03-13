@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://wix.github.io/quix/blog</id>
+    <title>Quix Blog</title>
+    <updated>2019-11-25T06:00:00.000Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://wix.github.io/quix/blog"/>
+    <subtitle>The best place to stay up-to-date with the latest Quix news and events.</subtitle>
+    <logo>https://wix.github.io/quix/img/favicon.ico</logo>
+    <rights>© 2023 Wix.com, Inc</rights>
+    <entry>
+        <title type="html"><![CDATA[First release]]></title>
+        <id>https://wix.github.io/quix/blog/2019/11/25/first-release.html</id>
+        <link href="https://wix.github.io/quix/blog/2019/11/25/first-release.html"/>
+        <updated>2019-11-25T06:00:00.000Z</updated>
+        <summary type="html"><![CDATA[<p>Quix is a notebook manager that focuses on ease of use and shareability.<br> It aims to be a shared space for your company's BI insights and know-how.</p> <p>Since the official announcement this summer and following the requests from our first users we added su...</p>]]></summary>
+        <author>
+            <name>Quix Team</name>
+        </author>
+    </entry>
+</feed>

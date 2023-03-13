@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>About · Quix</title><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="generator" content="Docusaurus"/><meta name="description" content="Quix is an easy-to-use notebook manager with support for [Presto](/quix/docs/presto), [Athena](/quix/docs/athena), [BigQuery](/quix/docs/bigquery), [MySQL](/quix/docs/mysql), [PostgreSQL](/quix/docs/postgresql), [ClickHouse](/quix/docs/clickhouse), [Amazon Redshift](/quix/docs/redshift) and more."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="About · Quix"/><meta property="og:type" content="website"/><meta property="og:url" content="https://wix.github.io/quix/"/><meta property="og:description" content="Quix is an easy-to-use notebook manager with support for [Presto](/quix/docs/presto), [Athena](/quix/docs/athena), [BigQuery](/quix/docs/bigquery), [MySQL](/quix/docs/mysql), [PostgreSQL](/quix/docs/postgresql), [ClickHouse](/quix/docs/clickhouse), [Amazon Redshift](/quix/docs/redshift) and more."/><meta property="og:image" content="https://wix.github.io/quix/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://wix.github.io/quix/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/quix/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://wix.github.io/quix/blog/atom.xml" title="Quix Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://wix.github.io/quix/blog/feed.xml" title="Quix Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/quix/js/scrollSpy.js"></script><link rel="stylesheet" href="/quix/css/main.css"/><script src="/quix/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/quix/"><img class="logo" src="/quix/img/favicon.ico" alt="Quix"/><h2 class="headerTitleWithLogo">Quix</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/quix/docs/installation" target="_self">Docs</a></li><li class=""><a href="/quix/blog/" target="_self">Blog</a></li><li class=""><a href="https://github.com/wix-incubator/quix" target="_self">GitHub</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Introduction</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul class=""><li class="navListItem navListItemActive"><a class="navItem" href="/quix/docs/about">About</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/architecture">Architecture</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Getting Started</h3><ul class=""><li class="navListItem"><a class="navItem" href="/quix/docs/installation">Installation</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Supported datasources</h3><ul class=""><li class="navListItem"><a class="navItem" href="/quix/docs/athena">Athena</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/bigquery">BigQuery</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/clickhouse">ClickHouse</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/jdbc">Jdbc</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/mariadb">MariaDB</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/mysql">MySQL</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/oracle">Oracle</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/postgresql">PostgreSQL</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/presto">Presto</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/python">Python</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/redshift">Redshift</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">About</h1></header><article><div><span><p>Quix is an easy-to-use notebook manager with support for <a href="/quix/docs/presto">Presto</a>, <a href="/quix/docs/athena">Athena</a>, <a href="/quix/docs/bigquery">BigQuery</a>, <a href="/quix/docs/mysql">MySQL</a>, <a href="/quix/docs/postgresql">PostgreSQL</a>, <a href="/quix/docs/clickhouse">ClickHouse</a>, <a href="/quix/docs/redshift">Amazon Redshift</a> and more.</p>
+<ul>
+<li><a href="https://quix-demo.io/">Demo</a></li>
+<li><a href="/quix/docs/installation">Installation</a></li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="quick-start"></a><a href="#quick-start" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Quick start</h2>
+<p>Using docker-compose, this will run Quix with a MySQL container and an example Presto installation. Quix will run in a single-user mode without authentication.</p>
+<pre><code class="hljs css language-bash">mkdir quix &amp;&amp; <span class="hljs-built_in">cd</span> quix
+curl https://raw.githubusercontent.com/wix/quix/master/docker-compose.prebuilt.yml -o docker-compose.yml
+curl https://raw.githubusercontent.com/wix/quix/master/env-example -o .env
+docker-compose up
+</code></pre>
+<p>Be sure to check the <a href="/quix/docs/installation">full installation notes</a> on how to edit the <code>.env</code> file to add more data sources, turn on multi-user mode and customize your deployment.</p>
+<p>For support please conatct us via <a href="mailto:oss@wix.com">oss@wix.com</a>.</p>
+<h2><a class="anchor" aria-hidden="true" id="main-features"></a><a href="#main-features" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Main features</h2>
+<ul>
+<li><a href="#management">Query management</a> - organize your notebooks in folders for easy access and sharing</li>
+<li><a href="#visualizations">Visualizations</a> - quickly plot time and bar series (more visualizations to follow)</li>
+<li><a href="#explorer">DB Explorer</a> - explore your data sources</li>
+<li>Search - search notes of all users</li>
+</ul>
+<h4><a class="anchor" aria-hidden="true" id="management"></a><a href="#management" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Management</h4>
+<p><img src="/quix/docs/assets/management.gif" alt=""></p>
+<h4><a class="anchor" aria-hidden="true" id="visualizations"></a><a href="#visualizations" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Visualizations</h4>
+<p><img src="/quix/docs/assets/chart.gif" alt=""></p>
+<h4><a class="anchor" aria-hidden="true" id="explorer"></a><a href="#explorer" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Explorer</h4>
+<p><img src="/quix/docs/assets/db.gif" alt=""></p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-next button" href="/quix/docs/architecture"><span>Architecture</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#quick-start">Quick start</a></li><li><a href="#main-features">Main features</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/quix/" class="nav-home"><img src="/quix/img/favicon.ico" alt="Quix"/></a><div><h5>Docs</h5><a href="/quix/docs/about.html#quick-start">Quick Start</a><a href="/quix/docs/installation.html">Installation</a></div><div><h5>Social</h5><a href="/quix/blog">Blog</a><a class="github-button" href="https://github.com/wix-incubator/quix" data-icon="octicon-star" data-count-href="/wix/quix/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Quix</a></div><div><h5>Contact Us</h5><a href="mailto:oss@wix.com">By Email</a></div></section><section class="copyright">© 2023 Wix.com, Inc</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '706ea6606dcf22ab4091945383d0cff9',
+                indexName: 'quix',
+                inputSelector: '#search_input_react'
+              });
+            </script></body></html>

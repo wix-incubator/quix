@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Installation · Quix</title><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="generator" content="Docusaurus"/><meta name="description" content="## Requirements"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Installation · Quix"/><meta property="og:type" content="website"/><meta property="og:url" content="https://wix.github.io/quix/"/><meta property="og:description" content="## Requirements"/><meta property="og:image" content="https://wix.github.io/quix/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><meta name="twitter:image" content="https://wix.github.io/quix/img/undraw_tweetstorm.svg"/><link rel="shortcut icon" href="/quix/img/favicon.ico"/><link rel="stylesheet" href="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.css"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><link rel="alternate" type="application/atom+xml" href="https://wix.github.io/quix/blog/atom.xml" title="Quix Blog ATOM Feed"/><link rel="alternate" type="application/rss+xml" href="https://wix.github.io/quix/blog/feed.xml" title="Quix Blog RSS Feed"/><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/quix/js/scrollSpy.js"></script><link rel="stylesheet" href="/quix/css/main.css"/><script src="/quix/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/quix/"><img class="logo" src="/quix/img/favicon.ico" alt="Quix"/><h2 class="headerTitleWithLogo">Quix</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive siteNavItemActive"><a href="/quix/docs/installation" target="_self">Docs</a></li><li class=""><a href="/quix/blog/" target="_self">Blog</a></li><li class=""><a href="https://github.com/wix-incubator/quix" target="_self">GitHub</a></li><li class="navSearchWrapper reactNavSearchWrapper"><input type="text" id="search_input_react" placeholder="Search" title="Search"/></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Getting Started</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul class=""><li class="navListItem"><a class="navItem" href="/quix/docs/about">About</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/architecture">Architecture</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Getting Started</h3><ul class=""><li class="navListItem navListItemActive"><a class="navItem" href="/quix/docs/installation">Installation</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Supported datasources</h3><ul class=""><li class="navListItem"><a class="navItem" href="/quix/docs/athena">Athena</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/bigquery">BigQuery</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/clickhouse">ClickHouse</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/jdbc">Jdbc</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/mariadb">MariaDB</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/mysql">MySQL</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/oracle">Oracle</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/postgresql">PostgreSQL</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/presto">Presto</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/python">Python</a></li><li class="navListItem"><a class="navItem" href="/quix/docs/redshift">Redshift</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Installation</h1></header><article><div><span><h2><a class="anchor" aria-hidden="true" id="requirements"></a><a href="#requirements" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Requirements</h2>
+<ul>
+<li><a href="https://www.docker.com/products">Docker</a></li>
+<li><a href="https://docs.docker.com/compose/install/">Docker Compose</a></li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="running"></a><a href="#running" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Running</h2>
+<p>Run Docker Compose:</p>
+<pre><code class="hljs"><span class="hljs-attribute">docker-compose up</span>
+</code></pre>
+<p>The initial run of the <code>docker-compose up</code> command will take care of all the dependencies, like MySQL, Presto, Maven, etc, will install all necessary Quix components and create a web-accessible Quix instance.
+You will need an <code>.env</code> file to run it. We will configure it in the next step.</p>
+<p>To access Quix, navigate to:<br>
+<code>http://localhost:3000</code></p>
+<h2><a class="anchor" aria-hidden="true" id="clone-repository"></a><a href="#clone-repository" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Clone repository</h2>
+<pre><code class="hljs">git <span class="hljs-keyword">clone</span> <span class="hljs-title">https</span>://github.com/wix-incubator/quix.git
+</code></pre>
+<h2><a class="anchor" aria-hidden="true" id="configuration"></a><a href="#configuration" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Configuration</h2>
+<p>Most of the configuration you'll need is done through environment variables. docker-compose can load environment-variables easily through a <code>.env</code> file.
+You should rename our <a href="https://github.com/wix-incubator/quix/blob/master/env-example">env-example</a> file to <code>.env</code>, and modify it's values as needed.</p>
+<h4><a class="anchor" aria-hidden="true" id="presto"></a><a href="#presto" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Presto</h4>
+<p>By default, Quix works with demo Presto instance that runs inside Docker Compose.<br>
+To work with your real Presto DB, change <code>PRESTO_API</code> environment variable.</p>
+<p>Note that you need to specify full URL, including protocol, port and API version:</p>
+<ul>
+<li><p>MODULES_PRESTO_API - <code>http://presto.my.domain:8181/v1</code></p>
+<p>If you're running Presto locally, use the following instead of <code>localhost</code>:</p>
+<ul>
+<li>Your internal IP</li>
+<li>Or <code>host.docker.internal</code> (macOS only)</li>
+</ul></li>
+</ul>
+<h4><a class="anchor" aria-hidden="true" id="db"></a><a href="#db" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>DB</h4>
+<p>Quix also uses MySQL to store notebooks and other application data. The default docker-compose uses a mysql container, so no further setup is needed.
+As an alternative, you can also use an external MySQL database, by specifying some of the following variables:</p>
+<ul>
+<li><p>DB_NAME - defaults to <code>quix</code>, must exist</p></li>
+<li><p>DB_USER - defaults to <code>root</code></p></li>
+<li><p>DB_PASS - defaults to empty password</p></li>
+<li><p>DB_HOST - defaults to <code>db</code></p></li>
+<li><p>DB_PORT - defaults to <code>3306</code></p></li>
+<li><p>DB_AUTO_MIGRATE - this sets the <a href="https://typeorm.io/#/connection-options">TypeORM</a> <code>synchronize</code> flag. Defaults to <code>false</code>. You probably only want to set this when running locally for development or if you don't care at all about your data.</p></li>
+</ul>
+<h4><a class="anchor" aria-hidden="true" id="user-authentication"></a><a href="#user-authentication" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>User authentication</h4>
+<p>Quix can work in two modes: multi-user mode, authenticated with <a href="https://console.developers.google.com/apis/credentials">Google OAuth</a>, or in a single-user mode. This is controlled by the following variables:</p>
+<ul>
+<li>AUTH_TYPE - can be <code>fake</code> or <code>google</code>. Defaults to <code>fake</code> (single-user mode).</li>
+</ul>
+<p>If you use Google OAuth, you must supply the clientId and the secret:</p>
+<ul>
+<li>GOOGLE_SSO_CLIENT_ID</li>
+<li>GOOGLE_SSO_SECRET</li>
+</ul>
+<p>Other variables related to authentication:</p>
+<ul>
+<li>AUTH_COOKIE - defaults to <code>__quix</code>. When using <code>google</code> auth, must be provided.</li>
+<li>AUTH_SECRET - the encryption key for the cookie. Must be provided.</li>
+<li>COOKIE_MAX_AGE - should be in seconds, default is 30 days.</li>
+</ul>
+<h4><a class="anchor" aria-hidden="true" id="configuration-for-custom-deployment"></a><a href="#configuration-for-custom-deployment" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Configuration for custom deployment</h4>
+<p>Running quix with <code>docker-compose</code> should &quot;just work&quot;, but when deploying quix, there are a couple more variables you might want to change:</p>
+<ul>
+<li>BACKEND_INTERNAL_URL - An address + port number (no protocol) where you have the backend service deployed and accessible to the frontend service.</li>
+<li>BACKEND_PUBLIC_URL - An address + port number (no protocol) to the backend service, made accessible to user's browser. In most scenarios, it's value is the same as <code>BACKEND_INTERNAL_URL</code>.</li>
+<li>ENABLE_APPMETRICS - Set this variable if you want to enable <a href="https://github.com/RuntimeTools/appmetrics-dash">appmetrics-dash</a>.</li>
+<li>APPMETRICS_PORT - The port where appmetrics dashboard will be exposed.</li>
+</ul>
+<h2><a class="anchor" aria-hidden="true" id="upgrading-quix"></a><a href="#upgrading-quix" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Upgrading Quix</h2>
+<p>This takes into account a <code>docker-compose</code> setup. Extrapolate as needed if you have some other custom deployment.</p>
+<ol>
+<li>Backup your data, if possible.</li>
+<li>Download an updated <code>docker-compose.yml</code> or <code>docker-compose.prebuilt.yml</code>. If you are not using the prebuilt images, you need to run <code>docker-compose build</code>.</li>
+<li>Stop the frontend and backend services - <code>docker-compose stop backend frontend</code>.</li>
+<li>Make sure all your environment variables are exported correctly in your current shell, specifically all the <code>DB_*</code> variables.</li>
+<li>Run DB migrations: <code>docker-compose run --no-deps --rm frontend scripts/run_migrations.sh</code>.</li>
+<li>Start services again <code>docker-compose up -d</code>.</li>
+</ol>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/quix/docs/architecture"><span class="arrow-prev">← </span><span>Architecture</span></a><a class="docs-next button" href="/quix/docs/athena"><span>Athena</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#requirements">Requirements</a></li><li><a href="#running">Running</a></li><li><a href="#clone-repository">Clone repository</a></li><li><a href="#configuration">Configuration</a></li><li><a href="#upgrading-quix">Upgrading Quix</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/quix/" class="nav-home"><img src="/quix/img/favicon.ico" alt="Quix"/></a><div><h5>Docs</h5><a href="/quix/docs/about.html#quick-start">Quick Start</a><a href="/quix/docs/installation.html">Installation</a></div><div><h5>Social</h5><a href="/quix/blog">Blog</a><a class="github-button" href="https://github.com/wix-incubator/quix" data-icon="octicon-star" data-count-href="/wix/quix/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Quix</a></div><div><h5>Contact Us</h5><a href="mailto:oss@wix.com">By Email</a></div></section><section class="copyright">© 2023 Wix.com, Inc</section></footer></div><script type="text/javascript" src="https://cdn.jsdelivr.net/docsearch.js/1/docsearch.min.js"></script><script>
+                document.addEventListener('keyup', function(e) {
+                  if (e.target !== document.body) {
+                    return;
+                  }
+                  // keyCode for '/' (slash)
+                  if (e.keyCode === 191) {
+                    const search = document.getElementById('search_input_react');
+                    search && search.focus();
+                  }
+                });
+              </script><script>
+              var search = docsearch({
+                
+                apiKey: '706ea6606dcf22ab4091945383d0cff9',
+                indexName: 'quix',
+                inputSelector: '#search_input_react'
+              });
+            </script></body></html>
