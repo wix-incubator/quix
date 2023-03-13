@@ -9,8 +9,8 @@ lazy val publishSettings = Seq(
   publishMavenStyle := true,
   ThisBuild / pomExtra :=
     <scm>
-      <url>https://github.com/wix/quix.git</url>
-      <connection>scm:git:https://github.com/wix/quix.git</connection>
+      <url>https://github.com/wix-incubator/quix.git</url>
+      <connection>scm:git:https://github.com/wix-incubator/quix.git</connection>
     </scm>
       <developers>
         <developer>
@@ -33,7 +33,7 @@ lazy val baseSettings =
     compileOptions ++
     Seq(
       organization := "com.wix",
-      homepage := Some(url("https://github.com/wix/quix")),
+      homepage := Some(url("https://github.com/wix-incubator/quix")),
       licenses := Seq("MIT" -> url("https://opensource.org/licenses/MIT"))
     )
 

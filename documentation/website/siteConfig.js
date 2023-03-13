@@ -44,7 +44,7 @@ const siteConfig = {
   headerLinks: [
     {doc: 'installation', label: 'Docs'},
     {blog: true, label: 'Blog'},
-    {href: 'https://github.com/wix/quix', label: 'GitHub'},
+    {href: 'https://github.com/wix-incubator/quix', label: 'GitHub'},
   ],
 
   // If you have users set above, you add it here:
@@ -103,7 +103,7 @@ const siteConfig = {
 
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...
-  repoUrl: 'https://github.com/wix/quix',
+  repoUrl: 'https://github.com/wix-incubator/quix',
 };
 
 module.exports = siteConfig;
