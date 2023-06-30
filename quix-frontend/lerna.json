@@ -5,6 +5,5 @@
     "service"
   ],
   "version": "independent",
-  "npmClient": "npm",
-  "useWorkspaces": false
+  "npmClient": "npm"
 }
