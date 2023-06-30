@@ -81,6 +81,11 @@ bi-runner {
       display: flex;
       height: 300px;
       flex-direction: column;
+
+      .bi-empty-state-content.bi-danger {
+        white-space: pre-wrap;
+        overflow-y: auto;
+      }
     }
 
     &.br-result-with-tabs {

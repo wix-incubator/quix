@@ -21,7 +21,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export const MockNoteContent = {
   success: 'do success',
-  error: 'do permission error',
+  error: 'do error',
   permissionError: 'do permission error',
   sql: 'do SQL',
 };
@@ -102,15 +102,12 @@ const mocks = {
           name: 'Runnable (permission error)',
           content: MockNoteContent.permissionError,
         }),
-        createMockNote(id, { id: `${noteId++}`, content: 'select 1' }),
         createMockNote(id, {
           id: `${noteId++}`,
           name: 'Runnable SQL+JSON Result (Timeout)',
           content: MockNoteContent.sql,
           type: 'python',
         }),
-        createMockNote(id, { id: `${noteId++}` }),
-        createMockNote(id, { id: `${noteId++}` }),
       ],
       {
         id,
