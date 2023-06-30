@@ -56,7 +56,16 @@ const failEvents = [
   {event: 'query-details', data: {id: '20190506_152226_00201_xps63', 'code': 'select a'}},
   {event: 'percentage', data: {id: '20190506_152226_00201_xps63', 'percentage': 0}},
   {event: 'percentage', data: {id: '20190506_152226_00201_xps63', 'percentage': 0}},
-  {event: 'error', data: {id: '20190506_152226_00201_xps63', 'message': 'line 1:8: Column \'a\' cannot be resolved'}},
+  {event: 'error', data: {id: '20190506_152226_00201_xps63', 'message': `UnknownException(UnknownException exception, code: 1002, host: foo.goo.net, port: 3000; Code: 20. DB::Exception: Syntax error: failed at position 249 ('a') (line 8, col 5): a,
+  b,
+  c
+FROM
+  foo.goo
+WHERE
+(1 = 0 or toDateTime(a) > now() - INTERVAL 1 DAY)
+  AND b = 'ERROR'
+ . Expected one of: token, Comma, FROM, PREWHERE, WHERE, GROUP BY, WITH, HAVING, WINDOW, ORDER BY, LIMIT, OFFSET, SETTINGS, UNION, EXCEPT, INTERSECT, INTO OUTFILE, FORMAT, end of query. (SYNTAX_ERROR) (version 1.1.1 (official build))
+)`}},
   {event: 'query-end', data: {id: '20190506_152226_00201_xps63'}},
   {event: 'end', data: {id: '274370d2-6755-4d3c-8248-b573a63523d2'}}
 ];
