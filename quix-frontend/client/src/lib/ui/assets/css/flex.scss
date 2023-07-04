@@ -28,6 +28,12 @@
   min-width: 0;
 }
 
+.bi-sidebar-override {
+  .bi-c {
+    min-width: unset !important;
+  }
+}
+
 .bi-c-h {
   @include flex(column);
 
