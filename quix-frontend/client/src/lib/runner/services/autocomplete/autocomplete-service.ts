@@ -8,7 +8,7 @@ import {
   getKeywordsCompletions,
   getQueryAndCursorPositionFromEditor,
 } from './autocomplete-utils';
-import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
+import { IDbInfoConfig , DbInfoService } from '../../../sql-autocomplete/db-info';
 import {
   ContextType,
   evaluateContextFromPosition,
@@ -16,7 +16,7 @@ import {
 } from '../../../sql-autocomplete/sql-context-evaluator';
 import { SqlAutocompleter } from '../../../sql-autocomplete/adapter/sql-autocomplete-adapter';
 import { IEditSession } from 'brace';
-import { setupOldCompleter } from './old-autocomplete-service';
+// import { setupOldCompleter } from './old-autocomplete-service';
 
 /* tslint:disable:no-shadowed-variable */
 export async function setupCompleters(
@@ -25,12 +25,12 @@ export async function setupCompleters(
   apiBasePath = '',
   dbInfoService?: IDbInfoConfig
 ) {
-  if (!dbInfoService) {
-    setupOldCompleter(editorInstance, type, apiBasePath);
-    return;
-  }
+  // if (!dbInfoService) {
+  //   setupOldCompleter(editorInstance, type, apiBasePath);
+  //   return;
+  // }
 
-  // dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
+   dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
   const sqlAutocompleter = new SqlAutocompleter(dbInfoService, type);
 
   editorInstance.setLiveAutocompletion(true);
