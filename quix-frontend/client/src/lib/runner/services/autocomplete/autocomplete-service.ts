@@ -46,15 +46,27 @@ export async function setupCompleters(
       query,
       position
     );
+    console.log("queryContext:" , queryContext)
     const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
       queryContext
     );
+    
+    const AllContextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getAllCompletionItemsFromQueryContextCollumn(
+      queryContext
+    );
 
-    const [keywords, completions] = await Promise.all([
-      keywordsCompletions,
+    const [newfunc, oldfunc] = await Promise.all([
+      AllContextCompletions,
       contextCompletions,
     ]);
 
+    const allOptions = newfunc.concat(oldfunc);
+
+    const [keywords, completions] = await Promise.all([
+      keywordsCompletions,
+      allOptions,
+    ]);
+    console.log("completions" , completions)
     let all =
       queryContext.contextType === ContextType.Undefined
         ? keywords
@@ -79,6 +91,19 @@ export async function setupCompleters(
       }, []);
     }
 
+    all.forEach(obj => {
+      if(obj.value.length>30)  {
+        obj.caption="..."+obj.value.substring(obj.value.length-27,obj.value.length)
+         const lowerCasedPrefix = prefix.trim().toLowerCase();
+        const indexes = findAllIndexOf(obj.caption, lowerCasedPrefix);
+        obj.matchMask= createMatchMask(
+          indexes,
+          lowerCasedPrefix.length
+        );
+      }
+    });
+
+    console.log("all" , all)
     return all.sort((a, b) => a.value.localeCompare(b.value));
   };
 

@@ -13,7 +13,7 @@ export interface TableInfo {
   type: TableType;
   name: string;
   alias: string;
-  columns: string[];
+  columns: object[];
   tableRefs: string[];
   selectAll: boolean;
 }
