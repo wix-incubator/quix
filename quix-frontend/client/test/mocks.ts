@@ -218,7 +218,8 @@ ORDER BY 1
     ];
   },
   '/api/db/:type/explore/:catalog/:schema/:table': ({ table }) => ({
-     children: [{name: { name: `column_of_${table}`, dataType: 'row(food row(asian row(sushi varchar,dimsum varchar),italian row(pizza varchar, pasta varchar)), movies row(action row(theMatrix varchar, braveHeart varchar), burekas row(charlie1.5 varchar, eskimoLimon varchar)), dddddd varchar, eeeeee varchar))' }}],
+     children: [{name: { name: `column_of_${table}`, dataType: 'row(food row(pizza varchar, pasta varchar))' }}],
+     //children: [{name: { name: `column_of_${table}`, dataType: 'row(food row(asian row(sushi varchar,dimsum varchar),italian row(pizza varchar, pasta varchar)), movies row(action row(theMatrix varchar, braveHeart varchar), burekas row(charlie1.5 varchar, eskimoLimon varchar)), dddddd varchar, eeeeee varchar))' }}],
     //children: [{name: { name: `column_of_${table}`, dataType: 'varchar' }}],
   }),
   '/api/db/:type/autocomplete': () => ({
