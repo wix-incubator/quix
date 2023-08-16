@@ -46,7 +46,6 @@ export async function setupCompleters(
       query,
       position
     );
-    console.log("queryContext:" , queryContext)
     const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
       queryContext
     );
@@ -66,7 +65,6 @@ export async function setupCompleters(
       keywordsCompletions,
       allOptions,
     ]);
-    console.log("completions" , completions)
     let all =
       queryContext.contextType === ContextType.Undefined
         ? keywords
@@ -91,10 +89,7 @@ export async function setupCompleters(
       }, []);
     }
 
-    console.log("all" , all)
-
     all.forEach(obj => {
-      console.log("obj" , obj)
       if(obj.value.length>30)  {
         obj.caption="..."+obj.value.substring(obj.value.length-27,obj.value.length)
         if(prefix) {
@@ -108,7 +103,6 @@ export async function setupCompleters(
       }
     });
 
-    console.log("all" , all)
     return all.sort((a, b) => a.value.localeCompare(b.value));
   };
 
