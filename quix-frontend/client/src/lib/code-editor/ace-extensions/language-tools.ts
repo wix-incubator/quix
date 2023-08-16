@@ -1227,7 +1227,7 @@ export const setupLanguageTools = (ace) => {
     text-shadow: 0 0 0.01em;\
 }\
 .ace_editor.ace_autocomplete {\
-    width: 280px;\
+    width: 330px;\
     z-index: 200000;\
     background: #fbfbfb;\
     color: #444;\
