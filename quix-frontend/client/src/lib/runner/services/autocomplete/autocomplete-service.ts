@@ -91,15 +91,20 @@ export async function setupCompleters(
       }, []);
     }
 
+    console.log("all" , all)
+
     all.forEach(obj => {
+      console.log("obj" , obj)
       if(obj.value.length>30)  {
         obj.caption="..."+obj.value.substring(obj.value.length-27,obj.value.length)
-         const lowerCasedPrefix = prefix.trim().toLowerCase();
-        const indexes = findAllIndexOf(obj.caption, lowerCasedPrefix);
-        obj.matchMask= createMatchMask(
+        if(prefix) {
+          const lowerCasedPrefix = prefix.trim().toLowerCase();
+          const indexes = findAllIndexOf(obj.caption, lowerCasedPrefix);
+          obj.matchMask= createMatchMask(
           indexes,
           lowerCasedPrefix.length
         );
+        }
       }
     });
 
