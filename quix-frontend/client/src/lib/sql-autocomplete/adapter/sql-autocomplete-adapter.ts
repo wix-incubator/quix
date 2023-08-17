@@ -56,35 +56,80 @@ export class SqlAutocompleter implements IAutocompleter {
   public async TranslateAndGetAllQueryContextColumns(tables: TableInfo[] , prefix: string | undefined) {
     const tablesPromises: Promise<TableInfo>[] = [];
     let options=[];
+    let searchMode
     let completionArray
+    let brokenPrefix = prefix.split('.');
+    let relevantPartOfPrefix = '';
+    let gotRelevantPartOfPrefix = false;
+    let found = false;
+    let start = '';
+    let searchFor = '';
+    brokenPrefix = brokenPrefix.filter(cell => cell !== '');
     for (const table of tables) {
       tablesPromises.push(this.extractTableColumns(table)); 
     }
      const extractedTables = await Promise.all(tablesPromises);
      for (const extractedTable of extractedTables) {
-       const { columns } = extractedTable;
+      const { columns } = extractedTable;
       columns.forEach((column) => {
+        if(!gotRelevantPartOfPrefix)  {
+          brokenPrefix.forEach(cell => {
+            if (found) {
+              relevantPartOfPrefix += cell + '.';
+          }
+          if (cell === column.name) {
+              found = true;
+              gotRelevantPartOfPrefix =true
+              relevantPartOfPrefix += cell + '.';
+          }
+          });
+          if(!prefix.endsWith('.')) {
+            searchMode = relevantPartOfPrefix.slice(0, -1);
+            const lastDotIndex: number = searchMode.lastIndexOf(".");
+            start = searchMode.slice(0, lastDotIndex + 1);
+            searchFor = searchMode.slice(lastDotIndex + 1);
+          }       
+        }
        if (typeof column.dataType === "string") {
-         column.dataType = trinoToJs(column.dataType, 0);
-    }
-    if (typeof column.dataType === "object")  {
+        column.dataType = trinoToJs(column.dataType, 0);
+      }
+      if (typeof column.dataType === "object")  {
       options = [...options , getObjectChildren(column.dataType , column.name)]
     }
       })
-     options= [].concat(...options);
-     options = options.filter(obj => obj.name.includes(prefix));       
-         completionArray = options.map(obj => ({
-          value: obj.name,
-          meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType, 
+    options= [].concat(...options);
+    if (start && searchFor) {
+      options = options.filter(obj => obj.name.includes(start));
+      options = options.filter(obj => {
+        const parts = obj.name.split('.');
+        const lastPart = parts[parts.length - 1];
+        const hasSearchFor = lastPart.split('').some(char => char === searchFor);
+        return hasSearchFor;
+    });
+    // set up caption correctly
+     completionArray = options.map(obj => ({
+          value: prefix.replace(searchMode, '') + obj.name,
+          meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType,
+          caption:  obj.name.slice(start.length)
         }));
+    } 
+    else {
+      relevantPartOfPrefix = findRelevantPartOfPrefix(tables , brokenPrefix)
+      console.log("relevantPartOfPrefix:" , relevantPartOfPrefix)
+      options = options.filter(obj => obj.name.includes(relevantPartOfPrefix));
+      console.log("options:" ,options)
+      completionArray = options.map(obj => ({
+          value: prefix.replace(relevantPartOfPrefix, '') + obj.name,
+          meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType,
+          //caption:  obj.name.replace(relevantPartOfPrefix, '')
+          //caption:  obj.name.slice(relevantPartOfPrefix.length)
+          caption:  obj.name.slice(relevantPartOfPrefix.length)
+        }));
+        completionArray = completionArray.filter(obj => !obj.caption.includes('.'));
+        console.log("completionArray" , completionArray)
+    }
   }
-  // completionArray.forEach((item) => {
-  //   if (item.value.includes(".dataType")) {
-  //     item.value = item.value.replace(".dataType", ""); //keep??
-  //   }
-  // });
   return completionArray;
- 
  }
 
   /**
@@ -101,32 +146,67 @@ export class SqlAutocompleter implements IAutocompleter {
    * @param {TableInfo[]} tables
    * @return {Promise<ICompleterItem[]>}
    */
-  private async getQueryContextColumns(tables: TableInfo[]) {
-    const columnsNamesMemory: Set<string> = new Set();
-   const columnsWithPrefixMemory: Set<string> = new Set();
-   const tablesPromises: Promise<TableInfo>[] = [];
-   for (const table of tables) {
-     tablesPromises.push(this.extractTableColumns(table)); 
-   }
-   const extractedTables = await Promise.all(tablesPromises);
-   for (const extractedTable of extractedTables) {
-     const { name, alias, columns, type } = extractedTable;
+  // private async getQueryContextColumns(tables: TableInfo[]) {
+  //   const columnsNamesMemory: Set<string> = new Set();
+  //  const columnsWithPrefixMemory: Set<string> = new Set();
+  //  const tablesPromises: Promise<TableInfo>[] = [];
+  //  for (const table of tables) {
+  //    tablesPromises.push(this.extractTableColumns(table)); 
+  //  }
+  //  const extractedTables = await Promise.all(tablesPromises);
+  //  for (const extractedTable of extractedTables) {
+  //    const { name, alias, columns, type } = extractedTable;
      
-       columns.forEach((column) => {
-        columnsNamesMemory.add(column instanceof Object ? column.name : column);
-         if (alias) {
-          columnsWithPrefixMemory.add(`${alias}.${column instanceof Object ? column.name : column}`);
-         } 
-         else if (name && (tables.length > 1 || type === TableType.Nested)) {
-          columnsWithPrefixMemory.add(`${name}.${column instanceof Object ? column.name : column}`);
-         }
-       });
-   }
-   return [
-     ...columnsNamesMemory,
-     ...columnsWithPrefixMemory,
-   ].map((completer) => this.createCompleterItem(completer, 'column')); 
-  }
+  //      columns.forEach((column) => {
+  //       columnsNamesMemory.add(column instanceof Object ? column.name : column);
+  //        if (alias) {
+  //         columnsWithPrefixMemory.add(`${alias}.${column instanceof Object ? column.name : column}`);
+  //        } 
+  //        else if (name && (tables.length > 1 || type === TableType.Nested)) {
+  //         columnsWithPrefixMemory.add(`${name}.${column instanceof Object ? column.name : column}`);
+  //        }
+  //      });
+  //  }
+  //  return [
+  //    ...columnsNamesMemory,
+  //    ...columnsWithPrefixMemory,
+  //  ].map((completer) => this.createCompleterItem(completer, 'column')); 
+  // }
+
+  private async getQueryContextColumns(tables: TableInfo[]) { //works great 1 dissappears!?!?!?
+    const columnsNamesMemory: Set<string> = new Set();
+    const columnsWithPrefixMemory: Set<string> = new Set();
+    const tablesPromises: Promise<TableInfo>[] = [];
+    for (const table of tables) {
+        tablesPromises.push(this.extractTableColumns(table));
+    }
+
+    const extractedTables = await Promise.all(tablesPromises);
+    const result: { meta: string ; value: string }[] = [];
+
+    for (const extractedTable of extractedTables) {
+        const { name, alias, columns } = extractedTable;
+
+        columns.forEach((column) => {
+          if(typeof column.dataType === 'string') {
+            column.dataType = trinoToJs(column.dataType, 0);
+          }
+            const meta = typeof column.dataType === 'object' ? 'object' : column.dataType;
+            const value = alias
+                ? `${alias}.${column instanceof Object ? column.name : column}`
+                : `${name}.${column instanceof Object ? column.name : column}`;
+
+            columnsNamesMemory.add(column instanceof Object ? column.name : column);
+            columnsWithPrefixMemory.add(value);
+
+            result.push({ meta, value });
+            result.push({ meta, value: column instanceof Object ? column.name : column });
+        });
+    }
+    return result;
+}
+
+
 
   /**
    * Extract the columns from the table
@@ -312,7 +392,7 @@ export function trinoToJs(trinoObjectAsString: string, index: number):  object|s
         }
         case SpecialCharacters.comma: {
           if (value === "") {
-            throw new Error(`Error at index: ${index}, type expected before comma`);
+            throw new Error(`Error at index: ${trinoObjectAsString.substring(index-5,index)}, type expected before comma`);
           }
           finalObject[key] = objectToInsert || value;
           key = "";
@@ -415,3 +495,32 @@ function checkKey(key: string,indexInOriginalString:number) {
 }
 
 
+function findRelevantPartOfPrefix(tables: any, brokenPrefix: string[]): string {
+  let relevantPartOfPrefix = '';
+  
+  for (const table of tables) {
+      for (const column of table.columns) {
+          let found = false;
+          let gotRelevantPartOfPrefix = false;
+
+          brokenPrefix.forEach(cell => {
+              if (found) {
+                  relevantPartOfPrefix += cell + '.';
+              }
+              if (!gotRelevantPartOfPrefix && cell === column.name) {
+                  found = true;
+                  gotRelevantPartOfPrefix = true;
+                  relevantPartOfPrefix += cell + '.';
+              }
+          });
+          if (relevantPartOfPrefix) {
+            break;
+          }
+      }
+      if (relevantPartOfPrefix) {
+        break;
+      }
+  }
+
+  return relevantPartOfPrefix;
+}

@@ -16,6 +16,7 @@ import {
 } from '../../../sql-autocomplete/sql-context-evaluator';
 import { SqlAutocompleter } from '../../../sql-autocomplete/adapter/sql-autocomplete-adapter';
 import { IEditSession } from 'brace';
+import { table } from 'console';
 // import { setupOldCompleter } from './old-autocomplete-service';
 
 /* tslint:disable:no-shadowed-variable */
@@ -26,11 +27,11 @@ export async function setupCompleters(
   dbInfoService?: IDbInfoConfig
 ) {
   // if (!dbInfoService) {
-  //   setupOldCompleter(editorInstance, type, apiBasePath);
+  //   setupOldCompleter(editorInstance, type, apiBasePath); // in order to run locally comment out
   //   return;
   // }
 
-   dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
+  dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
   const sqlAutocompleter = new SqlAutocompleter(dbInfoService, type);
 
   editorInstance.setLiveAutocompletion(true);
@@ -46,25 +47,23 @@ export async function setupCompleters(
       query,
       position
     );
-    const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
+
+    let contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
       queryContext
     );
-    
-    const AllContextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getAllCompletionItemsFromQueryContextCollumn(
-      queryContext
-    );
-
-    const [newfunc, oldfunc] = await Promise.all([
-      AllContextCompletions,
-      contextCompletions,
-    ]);
-
-    const allOptions = newfunc.concat(oldfunc);
+    const completions2 = contextCompletions;
+    const filteredCompletions : object[] = await completions2.filter(obj => obj.value.startsWith(queryContext.prefix));
+    if(filteredCompletions.length === 0) {
+      contextCompletions = sqlAutocompleter.getAllCompletionItemsFromQueryContextCollumn(
+            queryContext
+          );
+    }
 
     const [keywords, completions] = await Promise.all([
       keywordsCompletions,
-      allOptions,
+      contextCompletions,
     ]);
+
     let all =
       queryContext.contextType === ContextType.Undefined
         ? keywords
@@ -72,7 +71,23 @@ export async function setupCompleters(
 
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();
-
+      if(filteredCompletions.length === 0) {
+        if(prefix.endsWith('.'))  {
+          all = all.reduce((resultArr: AceCompletion[], completionItem) => {
+              completionItem.matchMask = createMatchMask(
+                [0],
+                lowerCasedPrefix.length
+              );
+              completionItem.score = 10000 - 0;
+              resultArr.push(completionItem);
+            return resultArr;
+          }, []);
+        }
+        else  {
+          // highlight correct and 
+        }
+      }
+      else  {
       all = all.reduce((resultArr: AceCompletion[], completionItem) => {
         const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
 
@@ -88,13 +103,17 @@ export async function setupCompleters(
         return resultArr;
       }, []);
     }
+    }
+
+    console.log("all2:" , all)
 
     all.forEach(obj => {
-      if(obj.value.length>30)  {
-        obj.caption="..."+obj.value.substring(obj.value.length-27,obj.value.length)
+      if(obj.caption.length>30)  {
+        obj.caption=obj.value.substring(0,28) + "..."
         if(prefix) {
           const lowerCasedPrefix = prefix.trim().toLowerCase();
           const indexes = findAllIndexOf(obj.caption, lowerCasedPrefix);
+          console.log("indexes:" , indexes)
           obj.matchMask= createMatchMask(
           indexes,
           lowerCasedPrefix.length
@@ -103,6 +122,7 @@ export async function setupCompleters(
       }
     });
 
+    console.log("all3:" , all)
     return all.sort((a, b) => a.value.localeCompare(b.value));
   };
 
