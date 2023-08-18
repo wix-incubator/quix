@@ -89,7 +89,11 @@ export const findAllIndexOf = (haystack: string, needle: string) => {
   const indexes: number[] = [];
   haystack = haystack.toLowerCase();
   needle = needle.toLowerCase();
-  
+  console.log("haystack: " , haystack)
+  console.log("needle: " , needle)
+  if(needle === "") {
+    return indexes;
+  }
   let index = 0;
   while (index !== -1) {
     index = haystack.indexOf(needle, index);
@@ -98,6 +102,6 @@ export const findAllIndexOf = (haystack: string, needle: string) => {
       index++;
     }
   }
-
+  console.log("!?!?!?!?")
   return indexes;
 };

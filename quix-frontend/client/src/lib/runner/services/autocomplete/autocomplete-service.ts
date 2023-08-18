@@ -92,6 +92,7 @@ export async function setupCompleters(
             const searchPart = relevantPartOfPrefix.replace(startOfSearch,'')
             console.log("completionItem.caption" , completionItem.caption)
             console.log("searchPart" , searchPart)
+            console.log("!!!!!!!!!!!!!" , searchPart)
             const indexes = findAllIndexOf(completionItem.caption , searchPart);
             console.log("indexes.length : " , indexes.length)
             if (indexes.length > 0) {
