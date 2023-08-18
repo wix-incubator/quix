@@ -1,5 +1,6 @@
 import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
+import { findRelevantPartOfPrefix ,SqlAutocompleter } from "../../../sql-autocomplete/adapter/sql-autocomplete-adapter";
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
 import {
@@ -14,9 +15,9 @@ import {
   evaluateContextFromPosition,
   QueryContext,
 } from '../../../sql-autocomplete/sql-context-evaluator';
-import { SqlAutocompleter } from '../../../sql-autocomplete/adapter/sql-autocomplete-adapter';
+// import { SqlAutocompleter } from '../../../sql-autocomplete/adapter/sql-autocomplete-adapter';
 import { IEditSession } from 'brace';
-import { table } from 'console';
+// import { table } from 'console';
 // import { setupOldCompleter } from './old-autocomplete-service';
 
 /* tslint:disable:no-shadowed-variable */
@@ -52,7 +53,7 @@ export async function setupCompleters(
       queryContext
     );
     const completions2 = contextCompletions;
-    const filteredCompletions : object[] = await completions2.filter(obj => obj.value.startsWith(queryContext.prefix));
+    const filteredCompletions : object[] =  (await completions2).filter(obj => obj.value.includes(queryContext.prefix));
     if(filteredCompletions.length === 0) {
       contextCompletions = sqlAutocompleter.getAllCompletionItemsFromQueryContextCollumn(
             queryContext
@@ -84,7 +85,28 @@ export async function setupCompleters(
           }, []);
         }
         else  {
-          // highlight correct and 
+          all = all.reduce((resultArr: AceCompletion[], completionItem) => {
+            const relevantPartOfPrefix = findRelevantPartOfPrefix(queryContext.tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
+            const lastDotIndex = relevantPartOfPrefix.lastIndexOf('.');
+            const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
+            const searchPart = relevantPartOfPrefix.replace(startOfSearch,'')
+            console.log("completionItem.caption" , completionItem.caption)
+            console.log("searchPart" , searchPart)
+            const indexes = findAllIndexOf(completionItem.caption , searchPart);
+            console.log("indexes.length : " , indexes.length)
+            if (indexes.length > 0) {
+              completionItem.matchMask = createMatchMask(
+                indexes,
+                searchPart.length
+              );
+              completionItem.score = 10000 - indexes[0];
+              resultArr.push(completionItem);
+            }
+            console.log("completionItem" , completionItem)
+            console.log("resultArr" , resultArr)
+            return resultArr;
+          }, []);
+          console.log("all!@#$%%:" , all)
         }
       }
       else  {
@@ -107,20 +129,20 @@ export async function setupCompleters(
 
     console.log("all2:" , all)
 
-    all.forEach(obj => {
-      if(obj.caption.length>30)  {
-        obj.caption=obj.value.substring(0,28) + "..."
-        if(prefix) {
-          const lowerCasedPrefix = prefix.trim().toLowerCase();
-          const indexes = findAllIndexOf(obj.caption, lowerCasedPrefix);
-          console.log("indexes:" , indexes)
-          obj.matchMask= createMatchMask(
-          indexes,
-          lowerCasedPrefix.length
-        );
-        }
-      }
-    });
+    // all.forEach(obj => {
+    //   if(obj.caption.length>30)  {
+    //     obj.caption=obj.value.substring(0,28) + "..."
+    //     if(prefix) {
+    //       const lowerCasedPrefix = prefix.trim().toLowerCase();
+    //       const indexes = findAllIndexOf(obj.caption, lowerCasedPrefix);
+    //       console.log("indexes:" , indexes)
+    //       obj.matchMask= createMatchMask(
+    //       indexes,
+    //       lowerCasedPrefix.length
+    //     );
+    //     }
+    //   }
+    // });
 
     console.log("all3:" , all)
     return all.sort((a, b) => a.value.localeCompare(b.value));

@@ -55,81 +55,88 @@ export class SqlAutocompleter implements IAutocompleter {
 
   public async TranslateAndGetAllQueryContextColumns(tables: TableInfo[] , prefix: string | undefined) {
     const tablesPromises: Promise<TableInfo>[] = [];
-    let options=[];
-    let searchMode
-    let completionArray
-    let brokenPrefix = prefix.split('.');
-    let relevantPartOfPrefix = '';
-    let gotRelevantPartOfPrefix = false;
-    let found = false;
-    let start = '';
-    let searchFor = '';
-    brokenPrefix = brokenPrefix.filter(cell => cell !== '');
+    // let options=[];
+    // let searchMode
+    // let completionArray
+    // let brokenPrefix = prefix.split('.');
+    // let relevantPartOfPrefix = '';
+    // let gotRelevantPartOfPrefix = false;
+    // let found = false;
+    // let start = '';
+    // let searchFor = '';
     for (const table of tables) {
       tablesPromises.push(this.extractTableColumns(table)); 
     }
      const extractedTables = await Promise.all(tablesPromises);
-     for (const extractedTable of extractedTables) {
-      const { columns } = extractedTable;
-      columns.forEach((column) => {
-        if(!gotRelevantPartOfPrefix)  {
-          brokenPrefix.forEach(cell => {
-            if (found) {
-              relevantPartOfPrefix += cell + '.';
-          }
-          if (cell === column.name) {
-              found = true;
-              gotRelevantPartOfPrefix =true
-              relevantPartOfPrefix += cell + '.';
-          }
-          });
-          if(!prefix.endsWith('.')) {
-            searchMode = relevantPartOfPrefix.slice(0, -1);
-            const lastDotIndex: number = searchMode.lastIndexOf(".");
-            start = searchMode.slice(0, lastDotIndex + 1);
-            searchFor = searchMode.slice(lastDotIndex + 1);
-          }       
-        }
-       if (typeof column.dataType === "string") {
-        column.dataType = trinoToJs(column.dataType, 0);
-      }
-      if (typeof column.dataType === "object")  {
-      options = [...options , getObjectChildren(column.dataType , column.name)]
+    if (prefix.endsWith('.')) {
+      const nextLevelCompletion = getNextLevel(extractedTables , prefix);
+      console.log("nextLevelCompletion:" , nextLevelCompletion)
+      return nextLevelCompletion;
     }
-      })
-    options= [].concat(...options);
-    if (start && searchFor) {
-      options = options.filter(obj => obj.name.includes(start));
-      options = options.filter(obj => {
-        const parts = obj.name.split('.');
-        const lastPart = parts[parts.length - 1];
-        const hasSearchFor = lastPart.split('').some(char => char === searchFor);
-        return hasSearchFor;
-    });
-    // set up caption correctly
-     completionArray = options.map(obj => ({
-          value: prefix.replace(searchMode, '') + obj.name,
-          meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType,
-          caption:  obj.name.slice(start.length)
-        }));
-    } 
-    else {
-      relevantPartOfPrefix = findRelevantPartOfPrefix(tables , brokenPrefix)
-      console.log("relevantPartOfPrefix:" , relevantPartOfPrefix)
-      options = options.filter(obj => obj.name.includes(relevantPartOfPrefix));
-      console.log("options:" ,options)
-      completionArray = options.map(obj => ({
-          value: prefix.replace(relevantPartOfPrefix, '') + obj.name,
-          meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType,
-          //caption:  obj.name.replace(relevantPartOfPrefix, '')
-          //caption:  obj.name.slice(relevantPartOfPrefix.length)
-          caption:  obj.name.slice(relevantPartOfPrefix.length)
-        }));
-        completionArray = completionArray.filter(obj => !obj.caption.includes('.'));
-        console.log("completionArray" , completionArray)
-    }
-  }
-  return completionArray;
+      const searchCompletion = getSearchCompletion(extractedTables , prefix);
+      console.log("searchCompletion: " , searchCompletion)
+      return searchCompletion ; 
+  //   brokenPrefix = brokenPrefix.filter(cell => cell !== '');
+  //    for (const extractedTable of extractedTables) {
+  //     const { columns } = extractedTable;
+  //     columns.forEach((column) => {
+  //       if(!gotRelevantPartOfPrefix)  {
+  //         brokenPrefix.forEach(cell => {
+  //           if (found) {
+  //             relevantPartOfPrefix += cell + '.';
+  //         }
+  //         if (cell === column.name) {
+  //             found = true;
+  //             gotRelevantPartOfPrefix =true
+  //             relevantPartOfPrefix += cell + '.';
+  //         }
+  //         });
+  //         if(!prefix.endsWith('.')) {
+  //           searchMode = relevantPartOfPrefix.slice(0, -1);
+  //           const lastDotIndex: number = searchMode.lastIndexOf(".");
+  //           start = searchMode.slice(0, lastDotIndex + 1);
+  //           searchFor = searchMode.slice(lastDotIndex + 1);
+  //         }       
+  //       }
+  //      if (typeof column.dataType === "string") {
+  //       column.dataType = trinoToJs(column.dataType, 0);
+  //     }
+  //     if (typeof column.dataType === "object")  {
+  //     options = [...options , getObjectChildren(column.dataType , column.name)]
+  //   }
+  //     })
+  //   options= [].concat(...options);
+  //   if (start && searchFor) {
+  //     options = options.filter(obj => obj.name.includes(start));
+  //     options = options.filter(obj => {
+  //       const parts = obj.name.split('.');
+  //       const lastPart = parts[parts.length - 1];
+  //       const hasSearchFor = lastPart.split('').some(char => char === searchFor);
+  //       return hasSearchFor;
+  //   });
+  //   // set up caption correctly
+  //    completionArray = options.map(obj => ({
+  //         value: prefix.replace(searchMode, '') + obj.name,
+  //         meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType,
+  //         caption:  obj.name.slice(start.length)
+  //       }));
+  //   } 
+  //   else {
+  //     relevantPartOfPrefix = findRelevantPartOfPrefix(tables , brokenPrefix)
+  //     console.log("relevantPartOfPrefix:" , relevantPartOfPrefix)
+  //     options = options.filter(obj => obj.name.includes(relevantPartOfPrefix));
+  //     console.log("options:" ,options)
+  //     completionArray = options.map(obj => ({
+  //         value: prefix.replace(relevantPartOfPrefix, '') + obj.name,
+  //         meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType,
+  //         caption:  obj.name.slice(relevantPartOfPrefix.length)
+  //       }));
+  //       completionArray = completionArray.filter(obj => !obj.caption.includes('.'));
+  //   }
+  // }
+  // console.log("completionArray!!!!!!!!!!" , completionArray)
+
+  // return completionArray;
  }
 
   /**
@@ -495,7 +502,7 @@ function checkKey(key: string,indexInOriginalString:number) {
 }
 
 
-function findRelevantPartOfPrefix(tables: any, brokenPrefix: string[]): string {
+export function findRelevantPartOfPrefix(tables: any, brokenPrefix: string[]): string {
   let relevantPartOfPrefix = '';
   
   for (const table of tables) {
@@ -523,4 +530,53 @@ function findRelevantPartOfPrefix(tables: any, brokenPrefix: string[]): string {
   }
 
   return relevantPartOfPrefix;
+}
+
+
+function getAllChildrenOfTables(tables: TableInfo[]): any {
+  let allChildren = []
+  for (const extractedTable of tables) {
+    const { columns } = extractedTable;
+      columns.forEach((column) => {
+        if (typeof column.dataType === "string") {
+          column.dataType = trinoToJs(column.dataType, 0);
+        }
+        if (typeof column.dataType === "object")  {
+          allChildren = allChildren.concat(getObjectChildren(column.dataType, column.name));
+        }
+  });
+}
+return allChildren;
+}
+
+function getSearchCompletion(tables: TableInfo[] , prefix: string | undefined):any {
+  const allChildren = getAllChildrenOfTables(tables);
+  const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
+  const lastDotIndex = relevantPartOfPrefix.lastIndexOf('.');
+  const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
+  const searchPart = relevantPartOfPrefix.replace(startOfSearch,'')
+  const filteredChildren = allChildren.filter(obj => {
+    return obj.name.startsWith(startOfSearch) && obj.name.includes(searchPart);
+  });
+  const completionArray = filteredChildren.map(obj => ({
+    value: prefix.replace(relevantPartOfPrefix, "") + obj.name,
+    meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType,
+    caption:  obj.name.replace(startOfSearch,"")
+  }));
+  return completionArray;
+}
+
+function getNextLevel(tables: TableInfo[] , prefix: string | undefined): any {
+  const allChildren = getAllChildrenOfTables(tables);
+  const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
+  const relevantChildren = allChildren.filter(obj => {
+  const dotCount = obj.name.split('.').length - 1;
+    return obj.name.includes(relevantPartOfPrefix) && dotCount === relevantPartOfPrefix.split('.').length - 1;
+  });
+  const completionArray = relevantChildren.map(obj => ({
+    value: prefix.replace(relevantPartOfPrefix, '') + obj.name,
+    meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType,
+    caption:  obj.name.slice(relevantPartOfPrefix.length)
+  }));
+  return completionArray
 }
