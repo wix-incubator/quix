@@ -556,8 +556,16 @@ function getSearchCompletion(tables: TableInfo[] , prefix: string | undefined):a
   const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
   const searchPart = relevantPartOfPrefix.replace(startOfSearch,'')
   const filteredChildren = allChildren.filter(obj => {
-    return obj.name.startsWith(startOfSearch) && obj.name.includes(searchPart); //not obj.name.includes(searchPart) something else 
-  });
+    const parts = obj.name.split('.');
+    if (parts.length > 1) {
+        const substringAfterFirstDot = parts.slice(1).join('.');
+        return obj.name.startsWith(startOfSearch) && substringAfterFirstDot.includes(searchPart);
+    }
+    return false;
+});
+  // const filteredChildren = allChildren.filter(obj => {
+  //   return obj.name.startsWith(startOfSearch) && obj.name.includes(searchPart); //not obj.name.includes(searchPart) something else 
+  // });
   const completionArray = filteredChildren.map(obj => ({
     value: prefix.replace(relevantPartOfPrefix, "") + obj.name,
     meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType,
