@@ -87,7 +87,6 @@ export async function setupCompleters(
         }
         else  {
           all = AddHighlightAndScoreInObjectSearch(all ,queryContext , prefix );
-          console.log("ALL1:" , all)
           // all = all.reduce((resultArr: AceCompletion[], completionItem) => {
           //   const relevantPartOfPrefix = findRelevantPartOfPrefix(queryContext.tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
           //   const lastDotIndex = relevantPartOfPrefix.lastIndexOf('.');
@@ -125,20 +124,11 @@ export async function setupCompleters(
     }
     }
 
-    // all.forEach(obj => {
-    //   if(obj.caption.length>30)  {
-    //     obj.caption=obj.value.substring(0,28) + "..."
-    //     if(prefix) {
-    //       const lowerCasedPrefix = prefix.trim().toLowerCase();
-    //       const indexes = findAllIndexOf(obj.caption, lowerCasedPrefix);
-    //       console.log("indexes:" , indexes)
-    //       obj.matchMask= createMatchMask(
-    //       indexes,
-    //       lowerCasedPrefix.length
-    //     );
-    //     }
-    //   }
-    // });
+    all.forEach(obj => {
+      if(obj.caption?.length>30)  {
+        obj.caption=obj.caption.substring(0,28) + "..."
+      }
+    });
 
     return all.sort((a, b) => a.value.localeCompare(b.value));
   };

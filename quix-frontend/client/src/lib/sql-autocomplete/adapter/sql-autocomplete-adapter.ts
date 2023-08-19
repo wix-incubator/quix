@@ -556,7 +556,7 @@ function getSearchCompletion(tables: TableInfo[] , prefix: string | undefined):a
   const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
   const searchPart = relevantPartOfPrefix.replace(startOfSearch,'')
   const filteredChildren = allChildren.filter(obj => {
-    return obj.name.startsWith(startOfSearch) && obj.name.includes(searchPart);
+    return obj.name.startsWith(startOfSearch) && obj.name.includes(searchPart); //not obj.name.includes(searchPart) something else 
   });
   const completionArray = filteredChildren.map(obj => ({
     value: prefix.replace(relevantPartOfPrefix, "") + obj.name,
