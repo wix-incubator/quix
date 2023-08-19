@@ -74,61 +74,56 @@ export async function setupCompleters(
       const lowerCasedPrefix = prefix.trim().toLowerCase();
       if(filteredCompletions.length === 0) {
         if(prefix.endsWith('.'))  {
-          all = all.reduce((resultArr: AceCompletion[], completionItem) => {
-              completionItem.matchMask = createMatchMask(
-                [0],
-                lowerCasedPrefix.length
-              );
-              completionItem.score = 10000 - 0;
-              resultArr.push(completionItem);
-            return resultArr;
-          }, []);
+           all = AddHighlightAndScoreAfterDotObject(all,[0],lowerCasedPrefix);
+          // all = all.reduce((resultArr: AceCompletion[], completionItem) => {
+          //     completionItem.matchMask = createMatchMask(
+          //       [0],
+          //       lowerCasedPrefix.length
+          //     );
+          //     completionItem.score = 10000 - 0;
+          //     resultArr.push(completionItem);
+          //   return resultArr;
+          // }, []);
         }
         else  {
-          all = all.reduce((resultArr: AceCompletion[], completionItem) => {
-            const relevantPartOfPrefix = findRelevantPartOfPrefix(queryContext.tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
-            const lastDotIndex = relevantPartOfPrefix.lastIndexOf('.');
-            const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
-            const searchPart = relevantPartOfPrefix.replace(startOfSearch,'')
-            console.log("completionItem.caption" , completionItem.caption)
-            console.log("searchPart" , searchPart)
-            console.log("!!!!!!!!!!!!!" , searchPart)
-            const indexes = findAllIndexOf(completionItem.caption , searchPart);
-            console.log("indexes.length : " , indexes.length)
-            if (indexes.length > 0) {
-              completionItem.matchMask = createMatchMask(
-                indexes,
-                searchPart.length
-              );
-              completionItem.score = 10000 - indexes[0];
-              resultArr.push(completionItem);
-            }
-            console.log("completionItem" , completionItem)
-            console.log("resultArr" , resultArr)
-            return resultArr;
-          }, []);
-          console.log("all!@#$%%:" , all)
+          all = AddHighlightAndScoreInObjectSearch(all ,queryContext , prefix );
+          console.log("ALL1:" , all)
+          // all = all.reduce((resultArr: AceCompletion[], completionItem) => {
+          //   const relevantPartOfPrefix = findRelevantPartOfPrefix(queryContext.tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
+          //   const lastDotIndex = relevantPartOfPrefix.lastIndexOf('.');
+          //   const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
+          //   const searchPart = relevantPartOfPrefix.replace(startOfSearch,'')
+          //   const indexes = findAllIndexOf(completionItem.caption , searchPart);
+          //   if (indexes.length > 0) {
+          //     completionItem.matchMask = createMatchMask(
+          //       indexes,
+          //       searchPart.length
+          //     );
+          //     completionItem.score = 10000 - indexes[0];
+          //     resultArr.push(completionItem);
+          //   }
+          //   return resultArr;
+          // }, []);
         }
       }
       else  {
-      all = all.reduce((resultArr: AceCompletion[], completionItem) => {
-        const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
+        all = AddHighlightAndScoreCollumSearch(all , lowerCasedPrefix)
+      // all = all.reduce((resultArr: AceCompletion[], completionItem) => {
+      //   const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
 
-        if (indexes.length > 0) {
-          completionItem.matchMask = createMatchMask(
-            indexes,
-            lowerCasedPrefix.length
-          );
-          completionItem.score = 10000 - indexes[0];
-          resultArr.push(completionItem);
-        }
+      //   if (indexes.length > 0) {
+      //     completionItem.matchMask = createMatchMask(
+      //       indexes,
+      //       lowerCasedPrefix.length
+      //     );
+      //     completionItem.score = 10000 - indexes[0];
+      //     resultArr.push(completionItem);
+      //   }
 
-        return resultArr;
-      }, []);
+      //   return resultArr;
+      // }, []);
     }
     }
-
-    console.log("all2:" , all)
 
     // all.forEach(obj => {
     //   if(obj.caption.length>30)  {
@@ -145,7 +140,6 @@ export async function setupCompleters(
     //   }
     // });
 
-    console.log("all3:" , all)
     return all.sort((a, b) => a.value.localeCompare(b.value));
   };
 
@@ -155,3 +149,52 @@ export async function setupCompleters(
 
   // editorInstance.addOnDemandCompleter(/[\s]+/, completerFn as any);
 }
+function AddHighlightAndScoreAfterDotObject(all: AceCompletion[], indexes: number[], lowerCasedPrefix: string): AceCompletion[] {
+  all = all.reduce((resultArr: AceCompletion[], completionItem) => {
+    completionItem.matchMask = createMatchMask(
+      indexes,
+      lowerCasedPrefix.length
+    );
+    completionItem.score = 10000 - 0;
+    resultArr.push(completionItem);
+  return resultArr;
+}, []);
+return all;
+}
+function AddHighlightAndScoreInObjectSearch(all: AceCompletion[], queryContext: any, prefix: string): AceCompletion[] {
+  all.reduce((resultArr: AceCompletion[], completionItem) => {
+    const relevantPartOfPrefix = findRelevantPartOfPrefix(queryContext.tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
+    const lastDotIndex = relevantPartOfPrefix.lastIndexOf('.');
+    const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
+    const searchPart = relevantPartOfPrefix.replace(startOfSearch,'')
+    const indexes = findAllIndexOf(completionItem.caption , searchPart);
+    if (indexes.length > 0) {
+      completionItem.matchMask = createMatchMask(
+        indexes,
+        searchPart.length
+      );
+      completionItem.score = 10000 - indexes[0];
+      resultArr.push(completionItem);
+    }
+    return resultArr;
+  }, []);
+return all;
+}
+function AddHighlightAndScoreCollumSearch(all: AceCompletion[] , lowerCasedPrefix : string): AceCompletion[] {
+  all.reduce((resultArr: AceCompletion[], completionItem) => {
+    const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
+
+    if (indexes.length > 0) {
+      completionItem.matchMask = createMatchMask(
+        indexes,
+        lowerCasedPrefix.length
+      );
+      completionItem.score = 10000 - indexes[0];
+      resultArr.push(completionItem);
+    }
+
+    return resultArr;
+  }, []);
+return all;
+}
+
