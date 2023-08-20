@@ -47,7 +47,7 @@ export class SqlAutocompleter implements IAutocompleter {
         return [];
     }
   }
-  public async getAllCompletionItemsFromQueryContextCollumn(queryContext: QueryContext) {
+  public async getAllCompletionItemsFromQueryContextCollumn(queryContext: any) {
     const { contextType } = queryContext;
     const complitionsArray = contextType === ContextType.Column ? this.translateAndGetAllQueryContextColumns(queryContext.tables ,queryContext.prefix) :[] ;
     return complitionsArray
@@ -101,9 +101,6 @@ export class SqlAutocompleter implements IAutocompleter {
             column.dataType = trinoToJs(column.dataType, 0);
           }
             const meta = typeof column.dataType === 'object' ? 'object' : column.dataType;
-            // const value = alias
-            //     ? `${alias}.${column instanceof Object ? column.name : column}`
-            //     : `${name}.${column instanceof Object ? column.name : column}`;
             const value = alias
                 ? `${alias}.${column instanceof Object ? column.name : column}`
                 : includeTablePrefix // Use conditional operator to decide whether to include the table prefix

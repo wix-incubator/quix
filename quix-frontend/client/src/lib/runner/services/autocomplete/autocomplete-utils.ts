@@ -100,6 +100,5 @@ export const findAllIndexOf = (haystack: string, needle: string) => {
       index++;
     }
   }
-  console.log("!?!?!?!?")
   return indexes;
 };

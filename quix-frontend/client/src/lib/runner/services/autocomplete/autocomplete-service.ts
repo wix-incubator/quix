@@ -75,53 +75,14 @@ export async function setupCompleters(
       if(filteredCompletions.length === 0) {
         if(prefix.endsWith('.'))  {
            all = AddHighlightAndScoreAfterDotObject(all,[0],lowerCasedPrefix);
-          // all = all.reduce((resultArr: AceCompletion[], completionItem) => {
-          //     completionItem.matchMask = createMatchMask(
-          //       [0],
-          //       lowerCasedPrefix.length
-          //     );
-          //     completionItem.score = 10000 - 0;
-          //     resultArr.push(completionItem);
-          //   return resultArr;
-          // }, []);
         }
         else  {
           all = AddHighlightAndScoreInObjectSearch(all ,queryContext , prefix );
-          // all = all.reduce((resultArr: AceCompletion[], completionItem) => {
-          //   const relevantPartOfPrefix = findRelevantPartOfPrefix(queryContext.tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
-          //   const lastDotIndex = relevantPartOfPrefix.lastIndexOf('.');
-          //   const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
-          //   const searchPart = relevantPartOfPrefix.replace(startOfSearch,'')
-          //   const indexes = findAllIndexOf(completionItem.caption , searchPart);
-          //   if (indexes.length > 0) {
-          //     completionItem.matchMask = createMatchMask(
-          //       indexes,
-          //       searchPart.length
-          //     );
-          //     completionItem.score = 10000 - indexes[0];
-          //     resultArr.push(completionItem);
-          //   }
-          //   return resultArr;
-          // }, []);
         }
       }
       else  {
         all = all.filter(obj => obj.value.includes(prefix));
         all = AddHighlightAndScoreCollumSearch(all , lowerCasedPrefix)
-      // all = all.reduce((resultArr: AceCompletion[], completionItem) => {
-      //   const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
-
-      //   if (indexes.length > 0) {
-      //     completionItem.matchMask = createMatchMask(
-      //       indexes,
-      //       lowerCasedPrefix.length
-      //     );
-      //     completionItem.score = 10000 - indexes[0];
-      //     resultArr.push(completionItem);
-      //   }
-
-      //   return resultArr;
-      // }, []);
     }
     }
 
@@ -191,86 +152,3 @@ function AddHighlightAndScoreCollumSearch(all: AceCompletion[] , lowerCasedPrefi
   }, []);
 return all;
 }
-
-
-
-// function routeToObject(prefix:string | undefined , table : {name: string, alias: string, columns:any }) : {pathToObject: string, objectItself: string, pathInObject:string ,data?:any} { //how to test?
-//   if(!prefix) {
-//     return {pathToObject: "" , objectItself : "" ,pathInObject: "" };
-//   }
-//   const tableName = table.name.split('.');
-//   const brokenPrefix = prefix.split('.');
-//   let PrefixData ;
-//   if (brokenPrefix.length > 0 && brokenPrefix[brokenPrefix.length - 1] === '') {
-//     brokenPrefix.pop();
-//   }
-//   switch (brokenPrefix[0]) {
-//     case tableName[0]:
-//       console.log("case1")
-//       PrefixData = getData(brokenPrefix[3],table);
-//       if(tableName[1] === brokenPrefix[1] && tableName[2] === brokenPrefix[2] && PrefixData) {
-//           return  convertToPath( brokenPrefix , 4)
-//         }
-//         else  {
-//           return {pathToObject: "" , objectItself : "" ,pathInObject: "" };
-//         }
-//     case table.alias:
-//       console.log("case2")
-//       //PrefixData = getData(brokenPrefix[1],table);
-//       console.log("PrefixData: " , PrefixData)
-//       console.log("tableName[1] " , tableName[1])
-//         //if(tableName[1] && PrefixData)  {
-//         if(tableName[1])  {
-//           console.log("in!!")
-//             return convertToPath( brokenPrefix , 2 )
-//         }
-//         else {
-//           return {pathToObject: "" , objectItself : "" ,pathInObject: "" , data:"" };
-//         }
-//     default:
-//       console.log("case3")
-//       for (const column of table.columns) {
-//         if (column.name === brokenPrefix[0] && column.dataType) {
-//           return {
-//             pathToObject: table.name,
-//             objectItself: brokenPrefix[0],
-//             pathInObject: brokenPrefix.slice(1).join('.'),
-//             data: column.dataType
-//           };
-//         }
-//       }
-
-//       break;
-//   }
-
-
-//   return {pathToObject: "" , objectItself : "" ,pathInObject: "" };
-// }
-
-// function convertToPath(brokenPrefix: string[], cutoff: number, data?: any): {pathToObject: string, objectItself: string, pathInObject:string, data: any} {
-//   const pathToObject = brokenPrefix.slice(0, cutoff - 1).join(".");
-//   const objectItself = brokenPrefix[cutoff - 1];
-//   const pathInObject = brokenPrefix.slice(cutoff).join(".");
-// return {
-//   pathToObject,
-//   objectItself,
-//   pathInObject,
-//   data : data
-// };
-// }
-
-// }
-
-
-// function getData(Column: string, table: { name: string; alias: string; columns: any; }): any {
-// for (const column of table.columns) {
-//   if (column.name === Column) {
-//     if (column.dataType instanceof Object) {
-//       return column.dataType;
-//     } else {
-//       return "";
-//     }
-//   }
-// }
-// return "";
-// }
