@@ -48,13 +48,12 @@ export async function setupCompleters(
       query,
       position
     );
-
     let contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
       queryContext
     );
-    const completions2 = contextCompletions;
-    const filteredCompletions : object[] =  (await completions2).filter(obj => obj.value.includes(queryContext.prefix));
-    if(filteredCompletions.length === 0) {
+    const filteredCompletions : object[] =  (await contextCompletions).filter(obj => obj.value.includes(prefix));
+    
+    if( filteredCompletions.length === 0 ) {
       contextCompletions = sqlAutocompleter.getAllCompletionItemsFromQueryContextCollumn(
             queryContext
           );
@@ -63,6 +62,7 @@ export async function setupCompleters(
     const [keywords, completions] = await Promise.all([
       keywordsCompletions,
       contextCompletions,
+
     ]);
 
     let all =
@@ -106,6 +106,7 @@ export async function setupCompleters(
         }
       }
       else  {
+        all = all.filter(obj => obj.value.includes(prefix));
         all = AddHighlightAndScoreCollumSearch(all , lowerCasedPrefix)
       // all = all.reduce((resultArr: AceCompletion[], completionItem) => {
       //   const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
@@ -128,6 +129,9 @@ export async function setupCompleters(
       if(obj.caption?.length>30)  {
         obj.caption=obj.caption.substring(0,28) + "..."
       }
+      if(!obj.caption && obj.value.length>30)  {
+        obj.caption=obj.value.substring(0,28) + "..."
+      }        
     });
 
     return all.sort((a, b) => a.value.localeCompare(b.value));
@@ -188,3 +192,85 @@ function AddHighlightAndScoreCollumSearch(all: AceCompletion[] , lowerCasedPrefi
 return all;
 }
 
+
+
+// function routeToObject(prefix:string | undefined , table : {name: string, alias: string, columns:any }) : {pathToObject: string, objectItself: string, pathInObject:string ,data?:any} { //how to test?
+//   if(!prefix) {
+//     return {pathToObject: "" , objectItself : "" ,pathInObject: "" };
+//   }
+//   const tableName = table.name.split('.');
+//   const brokenPrefix = prefix.split('.');
+//   let PrefixData ;
+//   if (brokenPrefix.length > 0 && brokenPrefix[brokenPrefix.length - 1] === '') {
+//     brokenPrefix.pop();
+//   }
+//   switch (brokenPrefix[0]) {
+//     case tableName[0]:
+//       console.log("case1")
+//       PrefixData = getData(brokenPrefix[3],table);
+//       if(tableName[1] === brokenPrefix[1] && tableName[2] === brokenPrefix[2] && PrefixData) {
+//           return  convertToPath( brokenPrefix , 4)
+//         }
+//         else  {
+//           return {pathToObject: "" , objectItself : "" ,pathInObject: "" };
+//         }
+//     case table.alias:
+//       console.log("case2")
+//       //PrefixData = getData(brokenPrefix[1],table);
+//       console.log("PrefixData: " , PrefixData)
+//       console.log("tableName[1] " , tableName[1])
+//         //if(tableName[1] && PrefixData)  {
+//         if(tableName[1])  {
+//           console.log("in!!")
+//             return convertToPath( brokenPrefix , 2 )
+//         }
+//         else {
+//           return {pathToObject: "" , objectItself : "" ,pathInObject: "" , data:"" };
+//         }
+//     default:
+//       console.log("case3")
+//       for (const column of table.columns) {
+//         if (column.name === brokenPrefix[0] && column.dataType) {
+//           return {
+//             pathToObject: table.name,
+//             objectItself: brokenPrefix[0],
+//             pathInObject: brokenPrefix.slice(1).join('.'),
+//             data: column.dataType
+//           };
+//         }
+//       }
+
+//       break;
+//   }
+
+
+//   return {pathToObject: "" , objectItself : "" ,pathInObject: "" };
+// }
+
+// function convertToPath(brokenPrefix: string[], cutoff: number, data?: any): {pathToObject: string, objectItself: string, pathInObject:string, data: any} {
+//   const pathToObject = brokenPrefix.slice(0, cutoff - 1).join(".");
+//   const objectItself = brokenPrefix[cutoff - 1];
+//   const pathInObject = brokenPrefix.slice(cutoff).join(".");
+// return {
+//   pathToObject,
+//   objectItself,
+//   pathInObject,
+//   data : data
+// };
+// }
+
+// }
+
+
+// function getData(Column: string, table: { name: string; alias: string; columns: any; }): any {
+// for (const column of table.columns) {
+//   if (column.name === Column) {
+//     if (column.dataType instanceof Object) {
+//       return column.dataType;
+//     } else {
+//       return "";
+//     }
+//   }
+// }
+// return "";
+// }

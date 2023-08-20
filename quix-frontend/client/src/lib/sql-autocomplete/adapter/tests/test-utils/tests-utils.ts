@@ -16,6 +16,8 @@ export const runAdapterGetCompletersTest = (
 
   it(`test #${testnumber} should return comleters = ${expected}`, async () => {
     const completers = await autocomp.getCompletionItemsFromQueryContext(queryContext);
+    console.log("completers: " , completers)
+    console.log("expected: " , expected)
     expect(completers).to.be.deep.equal(expected);
   });
 };
