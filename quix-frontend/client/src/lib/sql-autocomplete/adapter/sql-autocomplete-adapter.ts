@@ -109,12 +109,41 @@ export class SqlAutocompleter implements IAutocompleter {
 
             columnsNamesMemory.add(column instanceof Object ? column.name : column);
             columnsWithPrefixMemory.add(value);
-
-            result.push({ meta, value });
-            result.push({ meta, value: column instanceof Object ? column.name : column });
+            if (typeof column  === 'string') {
+              result.push({ value : column , meta: 'column' });
+              if(alias) {
+                result.push({ value : `${alias}.${column}` , meta: 'column' });
+              }
+              else {
+                if (extractedTable.name)  {
+                  result.push({ value : `${extractedTable.name}.${column}` , meta: 'column' });
+                }
+              }
+            }
+            else {
+              result.push({ meta, value });
+              result.push({ meta, value: column instanceof Object ? column.name : column });
+            }
         });
     }
-    return result;
+    const finalArray = this.removeDuplicates(result)
+
+    return finalArray;
+}
+private removeDuplicates(arr: any[]): any[] {
+  const seen = new Set<string>();
+  const uniqueArray: any[] = [];
+
+  for (const obj of arr) {
+      const objKey = `${obj.meta}-${obj.value}-${obj.caption}`;
+
+      if (!seen.has(objKey)) {
+          seen.add(objKey);
+          uniqueArray.push(obj);
+      }
+  }
+
+  return uniqueArray;
 }
 
 
@@ -454,7 +483,7 @@ function getSearchCompletion(tables: TableInfo[] , prefix: string | undefined):a
     return [];
   }
   const allChildren = getAllChildrenOfTables(tables);
-  const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
+  const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')).slice(0, -1);
   if( !relevantPartOfPrefix )  {
     return []
   }
