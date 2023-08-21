@@ -109,21 +109,32 @@ export class SqlAutocompleter implements IAutocompleter {
 
             columnsNamesMemory.add(column instanceof Object ? column.name : column);
             columnsWithPrefixMemory.add(value);
-            if (typeof column  === 'string') {
-              result.push({ value : column , meta: 'column' });
-              if(alias) {
-                result.push({ value : `${alias}.${column}` , meta: 'column' });
+            // if (typeof column  === 'string') {
+            //   result.push({ value : column , meta: 'column' });
+            //   if(alias) {
+            //     result.push({ value : `${alias}.${column}` , meta: 'column' });
+            //   }
+            //   else {
+            //     if (extractedTable.name)  {
+            //       result.push({ value : `${extractedTable.name}.${column}` , meta: 'column' });
+            //     }
+            //   }
+            // }
+            // else {
+            //   result.push({ meta, value });
+            //   result.push({ meta, value: column instanceof Object ? column.name : column });
+            // }
+            if (typeof column === 'string') {
+              result.push({ value: column, meta: 'column' });
+              if (alias || (extractedTable.name && !alias)) {
+                const prefix = alias || extractedTable.name;
+                result.push({ value: `${prefix}.${column}`, meta: 'column' });
               }
-              else {
-                if (extractedTable.name)  {
-                  result.push({ value : `${extractedTable.name}.${column}` , meta: 'column' });
-                }
-              }
-            }
-            else {
+            } else {
               result.push({ meta, value });
               result.push({ meta, value: column instanceof Object ? column.name : column });
             }
+            
         });
     }
     const finalArray = this.removeDuplicates(result)
@@ -433,7 +444,7 @@ function checkKey(key: string,indexInOriginalString:number) {
 
 export function findRelevantPartOfPrefix(tables: any, brokenPrefix: string[]): string {
   let relevantPartOfPrefix = '';
-  
+
   for (const table of tables) {
       for (const column of table.columns) {
           let found = false;
