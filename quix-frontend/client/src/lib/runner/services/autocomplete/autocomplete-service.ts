@@ -18,7 +18,7 @@ import {
 // import { SqlAutocompleter } from '../../../sql-autocomplete/adapter/sql-autocomplete-adapter';
 import { IEditSession } from 'brace';
 // import { table } from 'console';
-// import { setupOldCompleter } from './old-autocomplete-service';
+import { setupOldCompleter } from './old-autocomplete-service';
 
 /* tslint:disable:no-shadowed-variable */
 export async function setupCompleters(
@@ -27,10 +27,10 @@ export async function setupCompleters(
   apiBasePath = '',
   dbInfoService?: IDbInfoConfig
 ) {
-  // if (!dbInfoService) {
-  //   setupOldCompleter(editorInstance, type, apiBasePath); // in order to run locally comment out
-  //   return;
-  // }
+  if (!dbInfoService) {
+    setupOldCompleter(editorInstance, type, apiBasePath); // in order to run locally comment out
+    return;
+  }
 
   dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
   const sqlAutocompleter = new SqlAutocompleter(dbInfoService, type);
@@ -62,7 +62,6 @@ export async function setupCompleters(
     const [keywords, completions] = await Promise.all([
       keywordsCompletions,
       contextCompletions,
-
     ]);
 
     let all =
@@ -74,7 +73,7 @@ export async function setupCompleters(
       const lowerCasedPrefix = prefix.trim().toLowerCase();
       if(filteredCompletions.length === 0) {
         if(prefix.endsWith('.'))  {
-           all = AddHighlightAndScoreAfterDotObject(all,[0],lowerCasedPrefix);
+           all = AddHighlightAndScoreAfterDotObject(all,[0],"");
         }
         else  {
           all = AddHighlightAndScoreInObjectSearch(all ,queryContext , prefix );
@@ -87,14 +86,14 @@ export async function setupCompleters(
     }
 
     all.forEach(obj => {
-      if(obj.caption?.length>30)  {
-        obj.caption=obj.caption.substring(0,28) + "..."
+      if(obj.caption?.length>60)  {
+        obj.caption=obj.caption.substring(0,57) + "..."
       }
-      if(!obj.caption && obj.value.length>30)  {
-        obj.caption=obj.value.substring(0,28) + "..."
+      if(!obj.caption && obj.value.length>60)  {
+        obj.caption=obj.value.substring(0,57) + "..."
       }        
     });
-
+    
     return all.sort((a, b) => a.value.localeCompare(b.value));
   };
 
@@ -108,7 +107,7 @@ function AddHighlightAndScoreAfterDotObject(all: AceCompletion[], indexes: numbe
   all = all.reduce((resultArr: AceCompletion[], completionItem) => {
     completionItem.matchMask = createMatchMask(
       indexes,
-      lowerCasedPrefix.length
+      100
     );
     completionItem.score = 10000 - 0;
     resultArr.push(completionItem);
@@ -121,7 +120,7 @@ function AddHighlightAndScoreInObjectSearch(all: AceCompletion[], queryContext: 
     const relevantPartOfPrefix = findRelevantPartOfPrefix(queryContext.tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
     const lastDotIndex = relevantPartOfPrefix.lastIndexOf('.');
     const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
-    const searchPart = relevantPartOfPrefix.replace(startOfSearch,'')
+    const searchPart = relevantPartOfPrefix.replace(startOfSearch,'');
     const indexes = findAllIndexOf(completionItem.caption , searchPart);
     if (indexes.length > 0) {
       completionItem.matchMask = createMatchMask(

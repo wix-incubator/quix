@@ -56,7 +56,7 @@ export class SqlAutocompleter implements IAutocompleter {
   public async translateAndGetAllQueryContextColumns(tables: TableInfo[] , prefix: string | undefined) {
     const tablesPromises: Promise<TableInfo>[] = [];
     for (const table of tables) {
-      tablesPromises.push(this.extractTableColumns(table)); 
+      tablesPromises.push(this.extractTableColumns(table));  ///?????
     }
      const extractedTables = await Promise.all(tablesPromises);
     if (prefix.endsWith('.')) {
@@ -91,7 +91,7 @@ export class SqlAutocompleter implements IAutocompleter {
     }
 
     const extractedTables = await Promise.all(tablesPromises);
-    const result: { meta: string ; value: string }[] = [];
+    const result: { meta: string ; value: string ; dataType?: any}[] = [];
 
     for (const extractedTable of extractedTables) {
         const { name, alias, columns } = extractedTable;
@@ -100,30 +100,15 @@ export class SqlAutocompleter implements IAutocompleter {
           if(typeof column.dataType === 'string') {
             column.dataType = trinoToJs(column.dataType, 0);
           }
-            const meta = typeof column.dataType === 'object' ? 'object' : column.dataType;
+            const meta = typeof column.dataType === 'object' ? 'row' : column.dataType;
             const value = alias
                 ? `${alias}.${column instanceof Object ? column.name : column}`
-                : includeTablePrefix // Use conditional operator to decide whether to include the table prefix
+                : includeTablePrefix
                     ? `${name}.${column instanceof Object ? column.name : column}`
                     : column instanceof Object ? column.name : column;
 
             columnsNamesMemory.add(column instanceof Object ? column.name : column);
             columnsWithPrefixMemory.add(value);
-            // if (typeof column  === 'string') {
-            //   result.push({ value : column , meta: 'column' });
-            //   if(alias) {
-            //     result.push({ value : `${alias}.${column}` , meta: 'column' });
-            //   }
-            //   else {
-            //     if (extractedTable.name)  {
-            //       result.push({ value : `${extractedTable.name}.${column}` , meta: 'column' });
-            //     }
-            //   }
-            // }
-            // else {
-            //   result.push({ meta, value });
-            //   result.push({ meta, value: column instanceof Object ? column.name : column });
-            // }
             if (typeof column === 'string') {
               result.push({ value: column, meta: 'column' });
               if (alias || (extractedTable.name && !alias)) {
@@ -177,10 +162,9 @@ private removeDuplicates(arr: any[]): any[] {
         this.config.getColumnsByTable(catalog, schema, tableName, this.type)
       );
     }
-
     const columnsByTables = await Promise.all(columnsByTablesPromises);
     for (const columnsByTable of columnsByTables) {
-      table.columns.push(...columnsByTable.map((column) => column.name));
+      table.columns.push(...columnsByTable.map((column) => column)); //changed from column.name to column
     }
 
     return table;
@@ -494,6 +478,7 @@ function getSearchCompletion(tables: TableInfo[] , prefix: string | undefined):a
     return [];
   }
   const allChildren = getAllChildrenOfTables(tables);
+  console.log("allChildren: " ,  allChildren)
   const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')).slice(0, -1);
   if( !relevantPartOfPrefix )  {
     return []
@@ -504,19 +489,17 @@ function getSearchCompletion(tables: TableInfo[] , prefix: string | undefined):a
   const filteredChildren = allChildren.filter(obj => {
   const nameInLowerCase = obj.name.toLowerCase();
   const parts = nameInLowerCase.split('.');
-  // const parts = obj.name.split('.');
     if (parts.length > 1) {
         const substringAfterFirstDot = parts.slice(1).join('.');
         const criteria = checkCriteria(substringAfterFirstDot , searchPart.toLowerCase())
-        return obj.name.startsWith(startOfSearch) && substringAfterFirstDot.includes(searchPart.toLowerCase()) && criteria ;
+        return obj.name.includes(startOfSearch) && substringAfterFirstDot.includes(searchPart.toLowerCase()) && criteria ;
     }
     return false;
 });
-
   const completionArray = filteredChildren.map(obj => ({
-    value: prefix.replace(relevantPartOfPrefix, "") + obj.name,
-    meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType,
-    caption:  obj.name.replace(startOfSearch,"")
+    value: obj.name,
+    meta : typeof obj.dataType === 'object' ? 'row' : obj.dataType,
+    caption:  obj.name.slice( startOfSearch.length )
   }));
   return completionArray;
 }
@@ -526,27 +509,28 @@ function getNextLevel(tables: TableInfo[] , prefix: string | undefined): any {
   const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
   const relevantChildren = allChildren.filter(obj => {
   const dotCount = obj.name.split('.').length - 1;
-    return obj.name.includes(relevantPartOfPrefix) && dotCount === relevantPartOfPrefix.split('.').length - 1;
+    return obj.name.startsWith(relevantPartOfPrefix) && dotCount === relevantPartOfPrefix.split('.').length - 1;
   });
   const completionArray = relevantChildren.map(obj => ({
     value: prefix.replace(relevantPartOfPrefix, '') + obj.name,
-    meta : typeof obj.dataType === 'object' ? 'object' : obj.dataType,
+    meta : typeof obj.dataType === 'object' ? 'row' : obj.dataType,
     caption:  obj.name.slice(relevantPartOfPrefix.length)
   }));
   return completionArray
 }
+
 function checkCriteria(substringAfterFirstDot, searchPart) {
-  const index = substringAfterFirstDot.indexOf(searchPart);
-
-  if (index !== -1) {
-      const restOfString = substringAfterFirstDot.substring(index + searchPart.length);
-
-      if (restOfString.includes(".")) {
-          return false;
+  const lastDotIndex = substringAfterFirstDot.lastIndexOf(".");
+  
+  if (lastDotIndex !== -1) {
+      const partAfterLastDot = substringAfterFirstDot.substring(lastDotIndex + 1);
+      if (partAfterLastDot.includes(searchPart)) {
+          return true;
       }
+  } else if (substringAfterFirstDot.includes(searchPart)) {
       return true;
   }
-
+  
   return false;
 }
 
