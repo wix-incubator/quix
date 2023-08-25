@@ -478,7 +478,6 @@ function getSearchCompletion(tables: TableInfo[] , prefix: string | undefined):a
     return [];
   }
   const allChildren = getAllChildrenOfTables(tables);
-  console.log("allChildren: " ,  allChildren)
   const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')).slice(0, -1);
   if( !relevantPartOfPrefix )  {
     return []
@@ -491,15 +490,17 @@ function getSearchCompletion(tables: TableInfo[] , prefix: string | undefined):a
   const parts = nameInLowerCase.split('.');
     if (parts.length > 1) {
         const substringAfterFirstDot = parts.slice(1).join('.');
-        const criteria = checkCriteria(substringAfterFirstDot , searchPart.toLowerCase())
-        return obj.name.includes(startOfSearch) && substringAfterFirstDot.includes(searchPart.toLowerCase()) && criteria ;
+        const criteria = checkCriteria(substringAfterFirstDot , searchPart.toLowerCase());
+        const flterIfInDiffrenCollumn = obj.name.startsWith(prefix.split('.')[0]);
+        return obj.name.includes(startOfSearch) && substringAfterFirstDot.includes(searchPart.toLowerCase()) && criteria && flterIfInDiffrenCollumn ;
     }
     return false;
 });
+const prefixUntilLastDot = extractPrefixUntilLastDot(prefix) ;
   const completionArray = filteredChildren.map(obj => ({
     value: obj.name,
     meta : typeof obj.dataType === 'object' ? 'row' : obj.dataType,
-    caption:  obj.name.slice( startOfSearch.length )
+    caption:  obj.name.slice( prefixUntilLastDot.length +1)
   }));
   return completionArray;
 }
@@ -534,3 +535,13 @@ function checkCriteria(substringAfterFirstDot, searchPart) {
   return false;
 }
 
+function extractPrefixUntilLastDot(inputString) {
+  const lastDotIndex = inputString.lastIndexOf(".");
+  
+  if (lastDotIndex !== -1) {
+      const prefix = inputString.substring(0, lastDotIndex);
+      return prefix;
+  }
+  
+  return inputString;
+}

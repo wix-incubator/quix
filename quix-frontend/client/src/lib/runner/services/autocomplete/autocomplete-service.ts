@@ -93,7 +93,6 @@ export async function setupCompleters(
         obj.caption=obj.value.substring(0,57) + "..."
       }        
     });
-    
     return all.sort((a, b) => a.value.localeCompare(b.value));
   };
 
@@ -115,6 +114,7 @@ function AddHighlightAndScoreAfterDotObject(all: AceCompletion[], indexes: numbe
 }, []);
 return all;
 }
+
 function AddHighlightAndScoreInObjectSearch(all: AceCompletion[], queryContext: any, prefix: string): AceCompletion[] {
   all.reduce((resultArr: AceCompletion[], completionItem) => {
     const relevantPartOfPrefix = findRelevantPartOfPrefix(queryContext.tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
@@ -134,6 +134,7 @@ function AddHighlightAndScoreInObjectSearch(all: AceCompletion[], queryContext: 
   }, []);
 return all;
 }
+
 function AddHighlightAndScoreCollumSearch(all: AceCompletion[] , lowerCasedPrefix : string): AceCompletion[] {
   all.reduce((resultArr: AceCompletion[], completionItem) => {
     const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
