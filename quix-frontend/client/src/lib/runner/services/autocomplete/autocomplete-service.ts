@@ -50,13 +50,11 @@ export async function setupCompleters(
       query,
       position
     );
-    console.log("1.0")
 
     let contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
       queryContext
     );
 
-    console.log("2.0")
 
 
     const filteredCompletions: object[] = (await contextCompletions).filter(obj => obj.value.includes(prefix));
@@ -103,7 +101,6 @@ export async function setupCompleters(
         obj.caption = obj.value.substring(0, 57) + "..."
       }
     });
-    console.log("all1:" , all)
     return all.sort((a, b) => a.value.localeCompare(b.value));
   };
 

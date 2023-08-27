@@ -29,16 +29,13 @@ export class SqlAutocompleter implements IAutocompleter {
    * @return {ICompleterItem[]}
    */
   public async getCompletionItemsFromQueryContext(queryContext: QueryContext) {
-    console.log("1.1")
     const { contextType, tables, prefix } = queryContext;
     switch (contextType) {
       case ContextType.Column:
         return this.getQueryContextColumns(tables);
       case ContextType.Table:
-        console.log("1.2")
         const tablesCompleters = this.getQueryContextTables(tables);
         if (prefix !== this.prefix) {
-          console.log("1.3")
           const [dbEntitiesCompleters, dbCompleters] = await Promise.all([
             this.getEntitiesCompletersFromDbBasedOnPrefix(prefix),
             this.searchEntitiesFromDb(prefix),
@@ -77,7 +74,6 @@ export class SqlAutocompleter implements IAutocompleter {
    * @return {ICompleterItem[]}
    */
   private getQueryContextTables(tables: TableInfo[]) {
-    console.log("1.1.1")
     return tables.map((table) => this.createCompleterItem(table.name, 'table'));
   }
 
@@ -181,7 +177,6 @@ private removeDuplicates(arr: any[]): any[] {
   }
 
   private async getEntitiesCompletersFromDbBasedOnPrefix(prefix: string) {
-    console.log("1.4")
     const prefixArray = prefix.split('.') || [];
     prefixArray.pop();
     prefix = prefixArray.join('.');

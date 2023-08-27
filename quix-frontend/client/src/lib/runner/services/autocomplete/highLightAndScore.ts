@@ -40,7 +40,6 @@ export function AddHighlightAndScoreInObjectSearch(all: AceCompletion[], queryCo
 }
 
 export function AddHighlightAndScoreCollumSearch(all: AceCompletion[], lowerCasedPrefix: string): AceCompletion[] {
-  console.log("in!!")
   all.reduce((resultArr: AceCompletion[], completionItem) => {
     const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
 
