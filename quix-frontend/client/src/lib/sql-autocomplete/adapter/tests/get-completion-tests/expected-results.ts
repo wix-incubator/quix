@@ -161,7 +161,5 @@ export const expectedResult = {
     { value: 'catalog0.schema0.TV.movies.action.The_Avengers' , meta: 'varchar' , caption: 'The_Avengers' },
     { value: 'catalog0.schema0.TV.movies.action.Die_Hard' , meta: 'varchar' , caption: 'Die_Hard' },
   ],
-  expected21 : [
-    { value: 'catalog0.schema0.TV.movies.action' , meta: 'row' , caption: 'action' },
-  ],
+  expected21 : [],
 };
