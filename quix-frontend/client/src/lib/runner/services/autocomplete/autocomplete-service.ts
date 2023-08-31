@@ -2,18 +2,19 @@ import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
 import { SqlAutocompleter } from "../../../sql-autocomplete/adapter/sql-autocomplete-adapter";
 import { 
-  AddHighlightAndScoreAfterDotObject, 
+  addHighlightAndScoreAfterDotObject, 
   filterAndAddHighlightAndForKeyWord,
-  AddHighlightAndScoreCollumSearch,
-  AddHighlightAndScoreInObjectSearch
-} from "./highLightAndScore";
+  addHighlightAndScoreCollumSearch,
+  addHighlightAndScoreInObjectSearch
+} from "./high_light_and_score";
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
 import {
   getKeywordsCompletions,
   getQueryAndCursorPositionFromEditor,
 } from './autocomplete-utils';
-import { IDbInfoConfig, DbInfoService } from '../../../sql-autocomplete/db-info';
+import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
+// import { DbInfoService } from '../../../sql-autocomplete/db-info';
 import {
   ContextType,
   evaluateContextFromPosition,
@@ -29,12 +30,13 @@ export async function setupCompleters(
   apiBasePath = '',
   dbInfoService?: IDbInfoConfig
 ) {
+  // in order to run locally comment out
   if (!dbInfoService) {
-    setupOldCompleter(editorInstance, type, apiBasePath); // in order to run locally comment out
+    setupOldCompleter(editorInstance, type, apiBasePath);
     return;
   }
 
-  dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
+  // dbInfoService = dbInfoService ?? new DbInfoService(type, apiBasePath);
   const sqlAutocompleter = new SqlAutocompleter(dbInfoService, type);
 
   editorInstance.setLiveAutocompletion(true);
@@ -55,20 +57,18 @@ export async function setupCompleters(
       queryContext
     );
 
-
-
-    const filteredCompletions: object[] = (await contextCompletions).filter(obj => obj.value.includes(prefix));
-
-    if (filteredCompletions.length === 0) {
-      contextCompletions = sqlAutocompleter.getAllCompletionItemsFromQueryContextCollumn(
-        queryContext
-      );
-    }
-
     const [keywords, completions] = await Promise.all([
       keywordsCompletions,
       contextCompletions,
     ]);
+
+    const filteredCompletions: object[] = completions.filter(obj => obj.value.includes(prefix));
+
+    if (filteredCompletions.length === 0) {
+      contextCompletions = sqlAutocompleter.getAllCompletionItemsFromQueryContextColumn(
+        queryContext
+      );
+    }
 
     let all =
       queryContext.contextType === ContextType.Undefined
@@ -79,26 +79,28 @@ export async function setupCompleters(
       const lowerCasedPrefix = prefix.trim().toLowerCase();
       if (filteredCompletions.length === 0) {
         if (prefix.endsWith('.')) {
-          all = AddHighlightAndScoreAfterDotObject(all, [0], "");
+          all = addHighlightAndScoreAfterDotObject(all, [0], "");
         }
         else {
-          queryContext.contextType === ContextType.Undefined
-        ? all = filterAndAddHighlightAndForKeyWord(all , lowerCasedPrefix)
-        : all = AddHighlightAndScoreInObjectSearch(all, queryContext, lowerCasedPrefix);
+          all = queryContext.contextType === ContextType.Undefined 
+          ? filterAndAddHighlightAndForKeyWord(all , lowerCasedPrefix) 
+          : addHighlightAndScoreInObjectSearch(all, queryContext, lowerCasedPrefix);
         }
       }
       else {
-        all = all.filter(obj => obj.value.includes(prefix));
-        all = AddHighlightAndScoreCollumSearch(all, lowerCasedPrefix)
+        const filterCompletions = all.filter(obj => obj.value.includes(prefix));
+        all = addHighlightAndScoreCollumSearch(filterCompletions, lowerCasedPrefix)
       }
     }
 
     all.forEach(obj => {
-      if (obj.caption?.length > 60) {
-        obj.caption = obj.caption.substring(0, 57) + "..."
+      const maxLengthOfString = 60;
+      const maxSubStringLength = 57;
+      if (obj.caption?.length > maxLengthOfString) {
+        obj.caption = obj.caption.substring(0, maxSubStringLength) + "..."
       }
-      if (!obj.caption && obj.value.length > 60) {
-        obj.caption = obj.value.substring(0, 57) + "..."
+      if (!obj.caption && obj.value.length > maxLengthOfString) {
+        obj.caption = obj.value.substring(0, maxSubStringLength) + "..."
       }
     });
     return all.sort((a, b) => a.value.localeCompare(b.value));

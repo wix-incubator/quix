@@ -63,35 +63,35 @@ else {
   switch (testnumber) {
     case 18:
       it(`test #${testnumber} should return comleters = ${expected}`, async () => {
-        const completers = await autocomp.getAllCompletionItemsFromQueryContextCollumn( queryContext );
+        const completers = await autocomp.getAllCompletionItemsFromQueryContextColumn( queryContext );
         expect(completers).to.be.deep.equal(expected);
       });
       break;
     case 19:
       it(`test #${testnumber} should return comleters = ${expected}`, async () => {
         queryContext.prefix = 'catalog0.schema0.TV.movies.'
-        const completers = await autocomp.getAllCompletionItemsFromQueryContextCollumn( queryContext );
+        const completers = await autocomp.getAllCompletionItemsFromQueryContextColumn( queryContext );
         expect(completers).to.be.deep.equal(expected);
       });
         break;
     case 20:
       it(`test #${testnumber} should return comleters = ${expected}`, async () => {
         queryContext.prefix = 'catalog0.schema0.TV.movies.action.'
-        const completers = await autocomp.getAllCompletionItemsFromQueryContextCollumn( queryContext );
+        const completers = await autocomp.getAllCompletionItemsFromQueryContextColumn( queryContext );
         expect(completers).to.be.deep.equal(expected);
       });
         break;
     case 21:
       it(`test #${testnumber} should return comleters = ${expected}`, async () => {
         queryContext.prefix = 'catalog0.schema0.TV.movies.acti'
-        const completers = await autocomp.getAllCompletionItemsFromQueryContextCollumn( queryContext );
+        const completers = await autocomp.getAllCompletionItemsFromQueryContextColumn( queryContext );
         expect(completers).to.be.deep.equal(expected);
       });
         break;
     case 22:
       it(`test #${testnumber} should return comleters = ${expected}`, async () => {
         queryContext.prefix = 'catalog0.schema0.TV.movies.funny'
-        const completers = await autocomp.getAllCompletionItemsFromQueryContextCollumn( queryContext );
+        const completers = await autocomp.getAllCompletionItemsFromQueryContextColumn( queryContext );
         expect(completers).to.be.deep.equal(expected);
       });
         break;

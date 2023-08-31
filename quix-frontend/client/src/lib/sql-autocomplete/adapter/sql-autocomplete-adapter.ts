@@ -48,24 +48,22 @@ export class SqlAutocompleter implements IAutocompleter {
         return [];
     }
   }
-  public async getAllCompletionItemsFromQueryContextCollumn(queryContext: any) {
+  public async getAllCompletionItemsFromQueryContextColumn(queryContext: any) {
     const { contextType } = queryContext;
     const complitionsArray = contextType === ContextType.Column ? this.translateAndGetAllQueryContextColumns(queryContext.tables ,queryContext.prefix) :[] ;
     return complitionsArray
   }
 
-  public async translateAndGetAllQueryContextColumns(tables: TableInfo[] , prefix: string | undefined) {
+  public async translateAndGetAllQueryContextColumns(tables: TableInfo[] , prefix?: string) {
     const tablesPromises: Promise<TableInfo>[] = [];
     for (const table of tables) {
       tablesPromises.push(this.extractTableColumns(table));
     }
      const extractedTables = await Promise.all(tablesPromises);
     if (prefix.endsWith('.')) {
-      const nextLevelCompletion = getNextLevel(extractedTables , prefix);
-      return nextLevelCompletion;
+      return getNextLevel(extractedTables , prefix);
     }
-      const searchCompletion = getSearchCompletion(extractedTables , prefix);
-      return searchCompletion ; 
+      return getSearchCompletion(extractedTables , prefix); 
  }
 
   /**
@@ -101,7 +99,8 @@ export class SqlAutocompleter implements IAutocompleter {
           if(typeof column.dataType === 'string') {
             column.dataType = trinoToJs(column.dataType, 0);
           }
-            const meta = typeof column.dataType === 'object' ? 'row' : column.dataType;
+          const objectInTrino = 'row';
+            const meta = typeof column.dataType === 'object' ? objectInTrino : column.dataType;
             const value = alias
                 ? `${alias}.${column instanceof Object ? column.name : column}`
                 : includeTablePrefix
@@ -123,9 +122,7 @@ export class SqlAutocompleter implements IAutocompleter {
             
         });
     }
-    const finalArray = this.removeDuplicates(result)
-
-    return finalArray;
+    return this.removeDuplicates(result)
 }
 
 private removeDuplicates(arr: any[]): any[] {
@@ -166,8 +163,8 @@ private removeDuplicates(arr: any[]): any[] {
     }
     const columnsByTables = await Promise.all(columnsByTablesPromises);
     for (const columnsByTable of columnsByTables) {
-      table.columns.push(...columnsByTable.map((column) => column)); //changed from column.name to column
-    }
+      table.columns.push(...columnsByTable);
+  }
 
     return table;
   }

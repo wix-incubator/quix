@@ -5,16 +5,29 @@ interface ObjectChild {
   dataType: any;
 }
 
+const enum StartingOptions {
+  Row = 'row(',
+  Map = 'map(',
+  Array = 'array(',
+  TimeStamp = 'timestamp(',
+}
+
+const enum SpecialCharacters {
+  OpenParenthesis = '(',
+  ClosedParenthesis = ')',
+  Comma = ',',
+  Space = ' ',
+}
+
 export function getObjectChildren(obj: Record<string, any>, parentName = ''): ObjectChild[] {
   const children: ObjectChild[] = [];
 
   for (const key in obj) {
+    const childName = parentName ? `${parentName}.${key}` : key;
     if (typeof obj[key] === 'object' && obj[key] !== null) {
-      const childName = parentName ? `${parentName}.${key}` : key;
       children.push({ name: childName, dataType: obj[key] });
       children.push(...getObjectChildren(obj[key], childName));
     } else {
-      const childName = parentName ? `${parentName}.${key}` : key;
       children.push({ name: childName, dataType: obj[key] });
     }
   }
@@ -25,33 +38,18 @@ export function getObjectChildren(obj: Record<string, any>, parentName = ''): Ob
   });
 }
 
-const enum StartingOptions {
-  row = "row(",
-  map = "map(",
-  array = "array(",
-  timestamp = "timestamp(",
-}
 
-const enum SpecialCharacters {
-  openParenthesis = "(",
-  closedParenthesis = ")",
-  comma = ',',
-  space = ' ',
-}
 
 export function trinoToJs(trinoObjectAsString: string, index: number):  object|string {
-  if (startsWithRow(trinoObjectAsString, index)) {
-    index += 4; // jump after "row("
-    return processRow(trinoObjectAsString, index);
+  if (trinoObjectAsString.startsWith(StartingOptions.Row , index)) {
+    return processRow(trinoObjectAsString, index + StartingOptions.Row.length);
   }
-  if (trinoObjectAsString.substring(index, index + 4) === StartingOptions.map) {
-    index = findClosingParentheses(trinoObjectAsString, index);
-    return "map";
+  if (trinoObjectAsString.startsWith(StartingOptions.Map, index )) {
+    return 'map';
   }
 
-  if (trinoObjectAsString.substring(index, index + 6) === StartingOptions.array) {
-    index = findClosingParentheses(trinoObjectAsString, index);
-    return "array";
+  if ( trinoObjectAsString.startsWith(StartingOptions.Array, index ) ) {
+    return 'array';
   }
     return trinoObjectAsString;
 }
@@ -61,11 +59,12 @@ export function processRow(trinoObjectAsString: string, index: number): object {
     let key = "";
     let value = "";
     let objectToInsert;
-    let firstword = true;
+    let isFirstWord = true;
+    const lengthOfSubstring = 5;
   
     while (index <= trinoObjectAsString.length) {
       switch (trinoObjectAsString.charAt(index)) {
-        case SpecialCharacters.openParenthesis: {
+        case SpecialCharacters.OpenParenthesis: {
           const start = findBeginningOfWord(trinoObjectAsString, index);
           const result = handleStartingOptions(trinoObjectAsString, start, index);
           objectToInsert = result.objectToInsert;
@@ -73,31 +72,31 @@ export function processRow(trinoObjectAsString: string, index: number): object {
           index = result.newIndex;
           break;
         }
-        case SpecialCharacters.closedParenthesis: {
-          checkKey(key, index);
+        case SpecialCharacters.ClosedParenthesis: {
+          validateKey(key, index);
           finalObject[key] = objectToInsert || value;
           return finalObject;
         }
-        case SpecialCharacters.comma: {
+        case SpecialCharacters.Comma: {
           if (value === "") {
-            throw new Error(`Error at index: ${trinoObjectAsString.substring(index-5,index)}, type expected before comma`);
+            throw new Error(`Error at index: ${trinoObjectAsString.substring(index-lengthOfSubstring,index)}, type expected before comma`);
           }
           finalObject[key] = objectToInsert || value;
           key = "";
           value = "";
           objectToInsert = undefined;
-          firstword = true;
+          isFirstWord = true;
           break;
         }
-        case SpecialCharacters.space: {
-          firstword = isComma(trinoObjectAsString, index);
+        case SpecialCharacters.Space: {
+          isFirstWord = trinoObjectAsString[index-1] === SpecialCharacters.Comma;
           break;
         }
         default: {
           const charIndex = trinoObjectAsString.charAt(index);
-          if (firstword) {
+          if (isFirstWord) {
             key += charIndex;
-            checkKey(key, index);
+            validateKey(key, index);
           } else {
             value += charIndex;
           }
@@ -109,31 +108,23 @@ export function processRow(trinoObjectAsString: string, index: number): object {
   }
 
 export function findBeginningOfWord(str: string, index: number): number {
-  while (index > 0 && str[index] !== ' ') {
+  while (index > 0 && str[index] !== SpecialCharacters.Space) {
     index--;
   }
   return index;
-}
-
-function isComma(trinoObjectAsString: string, counter: number): boolean {
-  return trinoObjectAsString.charAt(counter - 1) === SpecialCharacters.comma;
-}
-
-function startsWithRow(trinoObjectAsString: string, counter: number) {
-  return trinoObjectAsString.substring(counter, counter + 4) === StartingOptions.row;
 }
 
 function getOperator(trinoObjectAsString: string, start: number , end: number) {
   return trinoObjectAsString.substring(start+1, end+1); //we are in middle of string start is ' ' 
 }
 
-function findClosingParentheses(trinoObjectAsString: string, counter: number): number { //rename
+function findClosingParentheses(trinoObjectAsString: string, counter: number): number { 
   let parenthesis = 0;
   for (let i = counter; i < trinoObjectAsString.length; i++) {
-    if (trinoObjectAsString.charAt(i) === '(') {
+    if (trinoObjectAsString.charAt(i) === SpecialCharacters.OpenParenthesis) {
       parenthesis++;
     }
-    if (trinoObjectAsString.charAt(i) === ')') {
+    if (trinoObjectAsString.charAt(i) === SpecialCharacters.ClosedParenthesis) {
       parenthesis--;
     }
     if (parenthesis === 0) {
@@ -146,34 +137,36 @@ function findClosingParentheses(trinoObjectAsString: string, counter: number): n
 function handleStartingOptions(trinoObjectAsString: string, start: number, end: number) {
   let objectToInsert;
   let newIndex = end;
+  const rowLength = 3;
+  const lengthOfSubstring = 5;
 
   switch (getOperator(trinoObjectAsString, start, end)) {
-    case StartingOptions.row: {
-      objectToInsert = trinoToJs(trinoObjectAsString, end - 3);
+    case StartingOptions.Row: {
+      objectToInsert = trinoToJs(trinoObjectAsString, end - rowLength);
       newIndex = findClosingParentheses(trinoObjectAsString, end);
       break;
     }
-    case StartingOptions.map: {
+    case StartingOptions.Map: {
       newIndex = findClosingParentheses(trinoObjectAsString, end);
       return { objectToInsert, type: "map", newIndex };
     }
-    case StartingOptions.array: {
+    case StartingOptions.Array: {
       newIndex = findClosingParentheses(trinoObjectAsString, end);
       return { objectToInsert, type: "array", newIndex };
     }
-    case StartingOptions.timestamp:  {
+    case StartingOptions.TimeStamp:  {
       newIndex = findClosingParentheses(trinoObjectAsString, end);
       return { objectToInsert, type: "timeStamp", newIndex };
     }
     default : {
-      throw new Error(`Error at index: ${trinoObjectAsString.substring(end-5,end)}`);
+      throw new Error(`Error at index: ${trinoObjectAsString.substring(end-lengthOfSubstring,end)}`);
     }
   }
 
   return { objectToInsert, newIndex };
 }
 
-function checkKey(key: string,indexInOriginalString:number) {
+function validateKey(key: string,indexInOriginalString:number) {
   const invalidCharsInKey = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', ',', '.', ':', ';', ' ', '\t', '\n'];
   key.split('').forEach((char) => {
     if (invalidCharsInKey.includes(char)) {
@@ -183,7 +176,7 @@ function checkKey(key: string,indexInOriginalString:number) {
 }
 
 
-export function findRelevantPartOfPrefix(tables: any, brokenPrefix: string[]): string {
+export function findRelevantPartOfPrefix(tables: TableInfo[] , brokenPrefix: string[]): string {
   let relevantPartOfPrefix = '';
 
   for (const table of tables) {
@@ -202,11 +195,11 @@ export function findRelevantPartOfPrefix(tables: any, brokenPrefix: string[]): s
               }
           });
           if (relevantPartOfPrefix) {
-            break;
+            return relevantPartOfPrefix;
           }
       }
       if (relevantPartOfPrefix) {
-        break;
+        return relevantPartOfPrefix;
       }
   }
 
@@ -278,7 +271,7 @@ export function getNextLevel(tables: TableInfo[] , prefix: string | undefined): 
 }
 
 function checkCriteria(substringAfterFirstDot, searchPart) {
-  const lastDotIndex = substringAfterFirstDot.lastIndexOf(".");
+  const lastDotIndex = substringAfterFirstDot.lastIndexOf('.');
   
   if (lastDotIndex !== -1) {
       const partAfterLastDot = substringAfterFirstDot.substring(lastDotIndex + 1);
@@ -293,7 +286,7 @@ function checkCriteria(substringAfterFirstDot, searchPart) {
 }
 
 function extractPrefixUntilLastDot(inputString) {
-  const lastDotIndex = inputString.lastIndexOf(".");
+  const lastDotIndex = inputString.lastIndexOf('.');
   
   if (lastDotIndex !== -1) {
       const prefix = inputString.substring(0, lastDotIndex);

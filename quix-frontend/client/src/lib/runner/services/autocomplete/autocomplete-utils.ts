@@ -87,11 +87,12 @@ export const getQueryAndCursorPositionFromEditor = (
 
 export const findAllIndexOf = (haystack: string, needle: string) => {
   const indexes: number[] = [];
-  if( needle === "" ) {
+  if(needle === "") {
     return indexes;
   }
   haystack = haystack.toLowerCase();
   needle = needle.toLowerCase();
+
   let index = 0;
   while (index !== -1) {
     index = haystack.indexOf(needle, index);
@@ -100,5 +101,6 @@ export const findAllIndexOf = (haystack: string, needle: string) => {
       index++;
     }
   }
+  
   return indexes;
 };

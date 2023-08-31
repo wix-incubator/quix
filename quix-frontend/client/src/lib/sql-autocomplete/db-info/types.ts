@@ -1,10 +1,10 @@
 export interface BaseEntity {
   name: any;
-  type: any;
+  type: any ;
 }
 
 export interface Column extends BaseEntity {
-  dataType: any;
+  dataType: object | string;
 }
 
 export interface Table extends BaseEntity {
