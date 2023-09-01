@@ -1,11 +1,11 @@
 import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
 import { SqlAutocompleter } from "../../../sql-autocomplete/adapter/sql-autocomplete-adapter";
-import { 
-  addHighlightAndScoreAfterDotObject, 
-  filterAndAddHighlightAndForKeyWord,
-  addHighlightAndScoreCollumSearch,
-  addHighlightAndScoreInObjectSearch
+import {
+  matchMaskAndScoreAfterDotObject,
+  filterMatchMaskAndAddHighlightKeyWord,
+  matchMaskAndScoreCollumSearch,
+  matchMaskAndScoreInObjectSearch
 } from "./high_light_and_score";
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
@@ -44,6 +44,8 @@ export async function setupCompleters(
   const keywordsCompletions = getKeywordsCompletions();
 
   const completerFn = async (prefix: string, session: IEditSession) => {
+    let columnCompletions;
+
     const { query, position } = getQueryAndCursorPositionFromEditor(
       editorInstance,
       session
@@ -53,43 +55,49 @@ export async function setupCompleters(
       position
     );
 
-    let contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
+    const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
       queryContext
     );
 
     const [keywords, completions] = await Promise.all([
       keywordsCompletions,
-      contextCompletions,
+      contextCompletions
     ]);
 
     const filteredCompletions: object[] = completions.filter(obj => obj.value.includes(prefix));
-
-    if (filteredCompletions.length === 0) {
-      contextCompletions = sqlAutocompleter.getAllCompletionItemsFromQueryContextColumn(
+    const searchingInObject: Boolean = filteredCompletions.length === 0;
+    if (searchingInObject) {
+      columnCompletions = sqlAutocompleter.getCompletionItemsFromQueryContextColumn(
         queryContext
       );
+      [columnCompletions] = await Promise.all([columnCompletions]);
     }
 
-    let all =
-      queryContext.contextType === ContextType.Undefined
-        ? keywords
-        : completions;
-        
+
+
+    let all;
+    if (searchingInObject && columnCompletions) {
+      all = columnCompletions;
+    } else {
+      all = queryContext.contextType === ContextType.Undefined ? keywords : completions;
+    }
+
+
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();
-      if (filteredCompletions.length === 0) {
+      if (searchingInObject) {
         if (prefix.endsWith('.')) {
-          all = addHighlightAndScoreAfterDotObject(all, [0], "");
+          all = matchMaskAndScoreAfterDotObject(all, [0]);
         }
         else {
-          all = queryContext.contextType === ContextType.Undefined 
-          ? filterAndAddHighlightAndForKeyWord(all , lowerCasedPrefix) 
-          : addHighlightAndScoreInObjectSearch(all, queryContext, lowerCasedPrefix);
+          all = queryContext.contextType === ContextType.Undefined
+            ? filterMatchMaskAndAddHighlightKeyWord(all, lowerCasedPrefix)
+            : matchMaskAndScoreInObjectSearch(all, queryContext, lowerCasedPrefix);
         }
       }
       else {
         const filterCompletions = all.filter(obj => obj.value.includes(prefix));
-        all = addHighlightAndScoreCollumSearch(filterCompletions, lowerCasedPrefix)
+        all = matchMaskAndScoreCollumSearch(filterCompletions, lowerCasedPrefix)
       }
     }
 

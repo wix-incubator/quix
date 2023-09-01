@@ -6,7 +6,7 @@ import {
   TableInfo,
   TableType,
 } from '../sql-context-evaluator';
-import { trinoToJs, getNextLevel, getSearchCompletion} from "./sql-autocpmplete-adapter-utills";
+import { trinoToJs, getNextLevel, getSearchCompletion } from "./sql-autocomplete-adapter-utills";
 import { IDbInfoConfig } from '../db-info';
 import { BaseEntity, Column } from '../db-info/types';
 
@@ -48,23 +48,29 @@ export class SqlAutocompleter implements IAutocompleter {
         return [];
     }
   }
-  public async getAllCompletionItemsFromQueryContextColumn(queryContext: any) {
-    const { contextType } = queryContext;
-    const complitionsArray = contextType === ContextType.Column ? this.translateAndGetAllQueryContextColumns(queryContext.tables ,queryContext.prefix) :[] ;
-    return complitionsArray
+
+  public async getCompletionItemsFromQueryContextColumn(queryContext: QueryContext) {
+    return queryContext.contextType !== ContextType.Column ?
+      [] :
+       this.translateAndGetQueryContextColumns(queryContext.tables, queryContext.prefix);
   }
 
-  public async translateAndGetAllQueryContextColumns(tables: TableInfo[] , prefix?: string) {
+  public async translateAndGetQueryContextColumns(tables: TableInfo[], prefix?: string) {
+    const extractedTables = await this.extractColumnsFromTable(tables);
+    if (prefix.endsWith('.')) {
+      return getNextLevel(extractedTables, prefix);
+    }
+    return getSearchCompletion(extractedTables, prefix);
+  }
+
+  private async extractColumnsFromTable(tables: TableInfo[]) {
     const tablesPromises: Promise<TableInfo>[] = [];
     for (const table of tables) {
       tablesPromises.push(this.extractTableColumns(table));
     }
-     const extractedTables = await Promise.all(tablesPromises);
-    if (prefix.endsWith('.')) {
-      return getNextLevel(extractedTables , prefix);
-    }
-      return getSearchCompletion(extractedTables , prefix); 
- }
+    const extractedTables = await Promise.all(tablesPromises);
+    return extractedTables;
+  }
 
   /**
    * Extract the tables from the queryContext
@@ -80,66 +86,60 @@ export class SqlAutocompleter implements IAutocompleter {
    * @param {TableInfo[]} tables
    * @return {Promise<ICompleterItem[]>}
    */
-
   private async getQueryContextColumns(tables: TableInfo[]) {
-    const columnsNamesMemory: Set<string> = new Set();
-    const columnsWithPrefixMemory: Set<string> = new Set();
-    const tablesPromises: Promise<TableInfo>[] = [];
-    for (const table of tables) {
-        tablesPromises.push(this.extractTableColumns(table));
-    }
-
-    const extractedTables = await Promise.all(tablesPromises);
-    const result: { meta: string ; value: string ; dataType?: any}[] = [];
+    const extractedTables = await this.extractColumnsFromTable(tables);
+    const result: { meta: string; value: string; dataType?: any }[] = [];
 
     for (const extractedTable of extractedTables) {
-        const { name, alias, columns } = extractedTable;
-        const includeTablePrefix = tables.length > 1;
-        columns.forEach((column) => {
-          if(typeof column.dataType === 'string') {
-            column.dataType = trinoToJs(column.dataType, 0);
-          }
-          const objectInTrino = 'row';
-            const meta = typeof column.dataType === 'object' ? objectInTrino : column.dataType;
-            const value = alias
-                ? `${alias}.${column instanceof Object ? column.name : column}`
-                : includeTablePrefix
-                    ? `${name}.${column instanceof Object ? column.name : column}`
-                    : column instanceof Object ? column.name : column;
+      const { name, alias, columns } = extractedTable;
+      const includeTablePrefix = tables.length > 1;
+      columns.forEach((column) => {
+        if (typeof column.dataType === 'string') {
+          column.dataType = trinoToJs(column.dataType, 0);
+        }
+        const objectInTrino = 'row';
+        const meta = typeof column.dataType === 'object' ? objectInTrino : column.dataType;
+        const getColumnDisplayName = (inputColumn: Column) => {
+          return inputColumn instanceof Object ? inputColumn.name : inputColumn;
+        };
+        
+        const value = alias
+          ? `${alias}.${getColumnDisplayName(column)}`
+          : includeTablePrefix
+            ? `${name}.${getColumnDisplayName(column)}`
+            : getColumnDisplayName(column);
 
-            columnsNamesMemory.add(column instanceof Object ? column.name : column);
-            columnsWithPrefixMemory.add(value);
-            if (typeof column === 'string') {
-              result.push({ value: column, meta: 'column' });
-              if (alias || (extractedTable.name && !alias)) {
-                const prefix = alias || extractedTable.name;
-                result.push({ value: `${prefix}.${column}`, meta: 'column' });
-              }
-            } else {
-              result.push({ meta, value });
-              result.push({ meta, value: column instanceof Object ? column.name : column });
-            }
-            
-        });
+        if (typeof column === 'string') {
+          result.push({ value: column, meta: 'column' });
+          if (alias || extractedTable.name) {
+            const prefix = alias || extractedTable.name;
+            result.push({ value: `${prefix}.${column}`, meta: 'column' });
+          }
+        } else {
+          result.push({ meta, value });
+          result.push({ meta, value: column instanceof Object ? column.name : column });
+        }
+
+      });
     }
     return this.removeDuplicates(result)
-}
+  }
 
-private removeDuplicates(arr: any[]): any[] {
-  const seen = new Set<string>();
-  const uniqueArray: any[] = [];
+  private removeDuplicates(arr: any[]): any[] {
+    const seen = new Set<string>();
+    const uniqueArray: any[] = [];
 
-  for (const obj of arr) {
+    for (const obj of arr) {
       const objKey = `${obj.meta}-${obj.value}-${obj.caption}`;
 
       if (!seen.has(objKey)) {
-          seen.add(objKey);
-          uniqueArray.push(obj);
+        seen.add(objKey);
+        uniqueArray.push(obj);
       }
-  }
+    }
 
-  return uniqueArray;
-}
+    return uniqueArray;
+  }
 
 
 
@@ -164,7 +164,7 @@ private removeDuplicates(arr: any[]): any[] {
     const columnsByTables = await Promise.all(columnsByTablesPromises);
     for (const columnsByTable of columnsByTables) {
       table.columns.push(...columnsByTable);
-  }
+    }
 
     return table;
   }

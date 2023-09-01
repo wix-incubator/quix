@@ -166,14 +166,14 @@ function handleStartingOptions(trinoObjectAsString: string, start: number, end: 
   return { objectToInsert, newIndex };
 }
 
-function validateKey(key: string,indexInOriginalString:number) {
-  const invalidCharsInKey = ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', ',', '.', ':', ';', ' ', '\t', '\n'];
-  key.split('').forEach((char) => {
-    if (invalidCharsInKey.includes(char)) {
-      throw new Error(`Error at index: ${indexInOriginalString}, illegal key value ${char}`);
-    }
-  });
+function validateKey(key: string, indexInOriginalString: number) {
+  const regex = /^[^!@#$%^&*(),.:;\s\n]+$/;
+
+  if (!regex.test(key)) {
+      throw new Error(`Error at index: ${indexInOriginalString}, illegal key value`);
+  }
 }
+
 
 
 export function findRelevantPartOfPrefix(tables: TableInfo[] , brokenPrefix: string[]): string {
@@ -241,12 +241,12 @@ export function getSearchCompletion(tables: TableInfo[] , prefix: string | undef
     if (parts.length > 1) {
         const substringAfterFirstDot = parts.slice(1).join('.');
         const criteria = checkCriteria(substringAfterFirstDot , searchPart.toLowerCase());
-        const flterIfInDiffrenCollumn = obj.name.startsWith(prefix.split('.')[0]);
+        const flterIfInDiffrenCollumn = obj.name.startsWith(relevantPartOfPrefix.split('.')[0]);
         return obj.name.includes(startOfSearch) && substringAfterFirstDot.includes(searchPart.toLowerCase()) && criteria && flterIfInDiffrenCollumn ;
     }
     return false;
 });
-const prefixUntilLastDot = extractPrefixUntilLastDot(prefix) ;
+const prefixUntilLastDot = extractPrefixUntilLastDot(relevantPartOfPrefix) ;
   const completionArray = filteredChildren.map(obj => ({
     value: obj.name,
     meta : typeof obj.dataType === 'object' ? 'row' : obj.dataType,

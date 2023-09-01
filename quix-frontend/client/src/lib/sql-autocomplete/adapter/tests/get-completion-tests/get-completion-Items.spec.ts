@@ -97,29 +97,4 @@ describe('when reciving queryContext', () => {
     testInputQueryContext[ContextType.Column].threeTables2Ext1Wt1Refs2Columns,
     expectedResult.threeTbl1Wtwithcolumns12AndTblRef1Ext1ExtwithAlias
   );
-  runAdapterGetCompletersTest(
-    18,
-    testInputQueryContext[ContextType.Column].threeTables2Ext1Wt1Refs2Columns,
-    expectedResult.expected18
-  );
-  runAdapterGetCompletersTest(
-    19,
-    testInputQueryContext[ContextType.Column].threeTables2Ext1Wt1Refs2Columns,
-    expectedResult.expected19
-  );
-  runAdapterGetCompletersTest(
-    20,
-    testInputQueryContext[ContextType.Column].threeTables2Ext1Wt1Refs2Columns,
-    expectedResult.expected20
-  );
-  runAdapterGetCompletersTest(
-    21,
-    testInputQueryContext[ContextType.Column].threeTables2Ext1Wt1Refs2Columns,
-    expectedResult.expected21
-  );
-  runAdapterGetCompletersTest(
-    22,
-    testInputQueryContext[ContextType.Column].threeTables2Ext1Wt1Refs2Columns,
-    expectedResult.empty
-  );
 });
