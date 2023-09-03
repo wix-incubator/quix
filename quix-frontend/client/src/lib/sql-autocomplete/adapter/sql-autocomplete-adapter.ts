@@ -6,7 +6,8 @@ import {
   TableInfo,
   TableType,
 } from '../sql-context-evaluator';
-import { trinoToJs, getNextLevel, getSearchCompletion } from "./sql-autocomplete-adapter-utills";
+import { getNextLevel, getSearchCompletion } from "./sql-autocomplete-adapter-utills";
+import { trinoToJs } from "./trinoToJs";
 import { IDbInfoConfig } from '../db-info';
 import { BaseEntity, Column } from '../db-info/types';
 
@@ -52,7 +53,7 @@ export class SqlAutocompleter implements IAutocompleter {
   public async getCompletionItemsFromQueryContextColumn(queryContext: QueryContext) {
     return queryContext.contextType !== ContextType.Column ?
       [] :
-       this.translateAndGetQueryContextColumns(queryContext.tables, queryContext.prefix);
+      this.translateAndGetQueryContextColumns(queryContext.tables, queryContext.prefix);
   }
 
   public async translateAndGetQueryContextColumns(tables: TableInfo[], prefix?: string) {
@@ -87,6 +88,7 @@ export class SqlAutocompleter implements IAutocompleter {
    * @return {Promise<ICompleterItem[]>}
    */
   private async getQueryContextColumns(tables: TableInfo[]) {
+    let meta: string;
     const extractedTables = await this.extractColumnsFromTable(tables);
     const result: { meta: string; value: string; dataType?: any }[] = [];
 
@@ -94,20 +96,27 @@ export class SqlAutocompleter implements IAutocompleter {
       const { name, alias, columns } = extractedTable;
       const includeTablePrefix = tables.length > 1;
       columns.forEach((column) => {
-        if (typeof column.dataType === 'string') {
+        if (typeof column === 'object' && typeof column.dataType === 'string') {
           column.dataType = trinoToJs(column.dataType, 0);
         }
         const objectInTrino = 'row';
-        const meta = typeof column.dataType === 'object' ? objectInTrino : column.dataType;
-        const getColumnDisplayName = (inputColumn: Column) => {
+        if (typeof column === 'object' && 'dataType' in column) {
+          meta = typeof column.dataType === 'object' ? objectInTrino : column.dataType;
+        }
+
+        const getColumnDisplayName = (inputColumn: Column | string) => {
           return inputColumn instanceof Object ? inputColumn.name : inputColumn;
         };
-        
-        const value = alias
-          ? `${alias}.${getColumnDisplayName(column)}`
-          : includeTablePrefix
-            ? `${name}.${getColumnDisplayName(column)}`
-            : getColumnDisplayName(column);
+
+        let value: string = "22";
+        console.log("value: " , value)
+        if (alias) {
+          value = `${alias}.${getColumnDisplayName(column)}`;
+        } else if (includeTablePrefix) {
+          value = `${name}.${getColumnDisplayName(column)}`;
+        } else {
+          value = getColumnDisplayName(column);
+        }
 
         if (typeof column === 'string') {
           result.push({ value: column, meta: 'column' });

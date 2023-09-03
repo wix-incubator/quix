@@ -77,9 +77,9 @@ export async function setupCompleters(
 
     let all;
     if (searchingInObject && columnCompletions) {
-      all = columnCompletions;
+      all = queryContext.contextType === ContextType.Undefined ? keywords : columnCompletions;
     } else {
-      all = queryContext.contextType === ContextType.Undefined ? keywords : completions;
+      all = completions;
     }
 
 

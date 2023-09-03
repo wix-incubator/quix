@@ -1,3 +1,5 @@
+import { Column } from "../db-info";
+
 export enum TableType {
   External = 'External',
   Nested = 'Nested',
@@ -13,7 +15,7 @@ export interface TableInfo {
   type: TableType;
   name: string;
   alias: string;
-  columns: any[];
+  columns: (Column | string)[];
   tableRefs: string[];
   selectAll: boolean;
 }
