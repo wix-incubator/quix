@@ -25,35 +25,81 @@ export function getObjectChildren(obj: Record<string, any>, parentName = ''): Ob
   });
 }
 
-export function findRelevantPartOfPrefix(tables: TableInfo[] , brokenPrefix: string[]): string {
-  let relevantPartOfPrefix = '';
+// export function findRelevantPartOfPrefix(tables: TableInfo[] , brokenPrefix: string[]): string {
+//   let relevantPartOfPrefix = '';
+
+//   for (const table of tables) {
+//       for (const column of table.columns) {
+//           let found = false;
+//           let gotRelevantPartOfPrefix = false;
+
+//           brokenPrefix.forEach(cell => {
+//               if (found) {
+//                   relevantPartOfPrefix += cell + '.';
+//               }
+//               if (typeof column === 'object' && !gotRelevantPartOfPrefix && cell === column.name) {
+//                   found = true;
+//                   gotRelevantPartOfPrefix = true;
+//                   relevantPartOfPrefix += cell + '.';
+//               }
+//           });
+//           if (relevantPartOfPrefix) {
+//             return relevantPartOfPrefix;
+//           }
+//       }
+//       if (relevantPartOfPrefix) {
+//         return relevantPartOfPrefix;
+//       }
+//   }
+
+//   return relevantPartOfPrefix;
+// }
+
+export function findRelevantPartOfPrefix(tables: TableInfo[], brokenPrefix: string[]): string {
+  // Remove empty cells from brokenPrefix array
+  brokenPrefix = brokenPrefix.filter(cell => cell.trim() !== '');
+
+  const relevantPrefixes: string[] = [];
 
   for (const table of tables) {
-      for (const column of table.columns) {
-          let found = false;
-          let gotRelevantPartOfPrefix = false;
+    for (const column of table.columns) {
+      let found = false;
+      let gotRelevantPartOfPrefix = false;
+      let currentPrefix = '';
 
-          brokenPrefix.forEach(cell => {
-              if (found) {
-                  relevantPartOfPrefix += cell + '.';
-              }
-              if (typeof column === 'object' && !gotRelevantPartOfPrefix && cell === column.name) {
-                  found = true;
-                  gotRelevantPartOfPrefix = true;
-                  relevantPartOfPrefix += cell + '.';
-              }
-          });
-          if (relevantPartOfPrefix) {
-            return relevantPartOfPrefix;
-          }
+      brokenPrefix.forEach(cell => {
+        if (found) {
+          currentPrefix += cell + '.';
+        }
+        if (typeof column === 'object' && !gotRelevantPartOfPrefix && cell === column.name) {
+          found = true;
+          gotRelevantPartOfPrefix = true;
+          currentPrefix += cell + '.';
+        }
+      });
+
+      if (currentPrefix) {
+        relevantPrefixes.push(currentPrefix);
       }
-      if (relevantPartOfPrefix) {
-        return relevantPartOfPrefix;
-      }
+    }
   }
 
-  return relevantPartOfPrefix;
+  if (relevantPrefixes.length === 0) {
+    return ''; // No relevant prefixes found
+  }
+
+  // Find the longest relevant prefix
+  console.log("relevantPrefixes: " , relevantPrefixes)
+  let longestPrefix = relevantPrefixes[0];
+  for (const prefix of relevantPrefixes) {
+    if (prefix.length > longestPrefix.length) {
+      longestPrefix = prefix;
+    }
+  }
+
+  return longestPrefix
 }
+
 
 
 function getAllChildrenOfTables(tables: TableInfo[]): any {
@@ -78,6 +124,7 @@ export function getSearchCompletion(tables: TableInfo[] , prefix: string | undef
   }
   const allChildren = getAllChildrenOfTables(tables);
   const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')).slice(0, -1);
+  // const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')).slice(0, -1);
   if( !relevantPartOfPrefix )  {
     return []
   }
@@ -106,7 +153,8 @@ const prefixUntilLastDot = extractPrefixUntilLastDot(relevantPartOfPrefix) ;
 
 export function getNextLevel(tables: TableInfo[] , prefix: string | undefined): any {
   const allChildren = getAllChildrenOfTables(tables);
-  const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
+  // const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')).slice(0, -1); //if same problem for both change in function itself
+  const relevantPartOfPrefix = findRelevantPartOfPrefix(tables , prefix.split('.')); //if same problem for both change in function itself
   const relevantChildren = allChildren.filter(obj => {
   const dotCount = obj.name.split('.').length - 1;
     return obj.name.startsWith(relevantPartOfPrefix) && dotCount === relevantPartOfPrefix.split('.').length - 1;
