@@ -7,7 +7,8 @@ import { ICompleterItem as AceCompletion } from '../../../code-editor/services/c
 import { QueryContext } from '../../../sql-autocomplete/sql-context-evaluator';
 
 
-export function matchMaskAndScoreAfterDotObject(all: AceCompletion[], indexes: number[]): AceCompletion[] {
+export function enrichCompletionItemAfterDotObject(all: AceCompletion[]): AceCompletion[] {
+  const indexes = [0];
   const perfectScore = 10000;
   for (const completionItem of all) {
     completionItem.matchMask = createMatchMask(indexes, 0);
@@ -16,7 +17,7 @@ export function matchMaskAndScoreAfterDotObject(all: AceCompletion[], indexes: n
   return all;
 }
 
-export function matchMaskAndScoreInObjectSearch(all: AceCompletion[], queryContext: QueryContext, prefix: string): AceCompletion[] {
+export function enrichCompletionItemInObjectSearch(all: AceCompletion[], queryContext: QueryContext, prefix: string): AceCompletion[] {
   const resultArr: AceCompletion[] = [];
   const perfectScore = 10000;
 
@@ -34,7 +35,7 @@ export function matchMaskAndScoreInObjectSearch(all: AceCompletion[], queryConte
 }
 
 
-export function matchMaskAndScoreCollumSearch(all: AceCompletion[], lowerCasedPrefix: string): AceCompletion[] {
+export function enrichCompletionItemCollumSearch(all: AceCompletion[], lowerCasedPrefix: string): AceCompletion[] {
   const resultArr: AceCompletion[] = [];
   const perfectScore = 10000;
 
@@ -48,7 +49,7 @@ export function matchMaskAndScoreCollumSearch(all: AceCompletion[], lowerCasedPr
 
 // HOF - HIGH ORDER FUNCTION
 
-export function filterMatchMaskAndAddHighlightKeyWord(all: AceCompletion[], prefix: string): AceCompletion[] {
+export function enrichCompletionKeyWord(all: AceCompletion[], prefix: string): AceCompletion[] {
   const perfectScore = 10000;
   
   return all

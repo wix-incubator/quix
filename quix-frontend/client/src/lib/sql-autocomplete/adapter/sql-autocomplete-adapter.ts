@@ -1,3 +1,4 @@
+import { uniqBy } from 'lodash';
 import { ICompleterItem } from '../../code-editor/services/code-editor-completer';
 import { IAutocompleter } from './types';
 import {
@@ -10,6 +11,10 @@ import { getNextLevel, getSearchCompletion } from "./sql-autocomplete-adapter-ut
 import { trinoToJs } from "./trinoToJs";
 import { IDbInfoConfig } from '../db-info';
 import { BaseEntity, Column } from '../db-info/types';
+
+interface Result extends ICompleterItem {
+  dataType?: string | object
+}
 
 export class SqlAutocompleter implements IAutocompleter {
   private prefix: string;
@@ -90,7 +95,7 @@ export class SqlAutocompleter implements IAutocompleter {
   private async getQueryContextColumns(tables: TableInfo[]) {
     let meta: string;
     const extractedTables = await this.extractColumnsFromTable(tables);
-    const result: { meta: string; value: string; dataType?: any }[] = [];
+    const result: Result[] = [];
 
     for (const extractedTable of extractedTables) {
       const { name, alias, columns } = extractedTable;
@@ -127,29 +132,11 @@ export class SqlAutocompleter implements IAutocompleter {
           result.push({ meta, value });
           result.push({ meta, value: column instanceof Object ? column.name : column });
         }
-
       });
     }
-    return this.removeDuplicates(result)
+
+    return uniqBy(result, (obj) => `${obj.meta}-${obj.value}-${obj.caption}` )
   }
-
-  private removeDuplicates(arr: any[]): any[] {
-    const seen = new Set<string>();
-    const uniqueArray: any[] = [];
-
-    for (const obj of arr) {
-      const objKey = `${obj.meta}-${obj.value}-${obj.caption}`;
-
-      if (!seen.has(objKey)) {
-        seen.add(objKey);
-        uniqueArray.push(obj);
-      }
-    }
-
-    return uniqueArray;
-  }
-
-
 
   /**
    * Extract the columns from the table

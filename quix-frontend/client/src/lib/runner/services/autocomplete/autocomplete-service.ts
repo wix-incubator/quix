@@ -2,10 +2,10 @@ import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
 import { SqlAutocompleter } from "../../../sql-autocomplete/adapter/sql-autocomplete-adapter";
 import {
-  matchMaskAndScoreAfterDotObject,
-  filterMatchMaskAndAddHighlightKeyWord,
-  matchMaskAndScoreCollumSearch,
-  matchMaskAndScoreInObjectSearch
+  enrichCompletionItemAfterDotObject,
+  enrichCompletionKeyWord,
+  enrichCompletionItemCollumSearch,
+  enrichCompletionItemInObjectSearch
 } from "./high_light_and_score";
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
@@ -45,6 +45,7 @@ export async function setupCompleters(
 
   const completerFn = async (prefix: string, session: IEditSession) => {
     let nestedColumnCompletions;
+    let all;
 
     const { query, position } = getQueryAndCursorPositionFromEditor(
       editorInstance,
@@ -58,8 +59,6 @@ export async function setupCompleters(
     const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
       queryContext
     );
-
-
 
     const [keywords, completions] = await Promise.all([
       keywordsCompletions,
@@ -75,9 +74,6 @@ export async function setupCompleters(
       [nestedColumnCompletions] = await Promise.all([nestedColumnCompletions]);
     }
 
-
-
-    let all;
     if (searchInObject && nestedColumnCompletions) {
       all = queryContext.contextType === ContextType.Undefined ? keywords : nestedColumnCompletions;
     } else {
@@ -89,17 +85,17 @@ export async function setupCompleters(
       const lowerCasedPrefix = prefix.trim().toLowerCase();
       if (searchInObject) {
         if (prefix.endsWith('.')) {
-          all = matchMaskAndScoreAfterDotObject(all, [0]);
+          all = enrichCompletionItemAfterDotObject(all);
         }
         else {
           all = queryContext.contextType === ContextType.Undefined
-            ? filterMatchMaskAndAddHighlightKeyWord(all, lowerCasedPrefix)
-            : matchMaskAndScoreInObjectSearch(all, queryContext, lowerCasedPrefix);
+            ? enrichCompletionKeyWord(all, lowerCasedPrefix)
+            : enrichCompletionItemInObjectSearch(all, queryContext, lowerCasedPrefix);
         }
       }
       else {
         const filterCompletions = all.filter(obj => obj.value.includes(prefix));
-        all = matchMaskAndScoreCollumSearch(filterCompletions, lowerCasedPrefix)
+        all = enrichCompletionItemCollumSearch(filterCompletions, lowerCasedPrefix)
       }
     }
 
