@@ -108,7 +108,7 @@ export class SqlAutocompleter implements IAutocompleter {
           return inputColumn instanceof Object ? inputColumn.name : inputColumn;
         };
 
-        let value: string = "22";
+        let value: string;
         if (alias) {
           value = `${alias}.${getColumnDisplayName(column)}`;
         } else if (includeTablePrefix) {

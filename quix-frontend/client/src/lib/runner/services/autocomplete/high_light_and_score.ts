@@ -46,6 +46,7 @@ export function matchMaskAndScoreCollumSearch(all: AceCompletion[], lowerCasedPr
   return resultArr;
 }
 
+// HOF - HIGH ORDER FUNCTION
 
 export function filterMatchMaskAndAddHighlightKeyWord(all: AceCompletion[], prefix: string): AceCompletion[] {
   const perfectScore = 10000;

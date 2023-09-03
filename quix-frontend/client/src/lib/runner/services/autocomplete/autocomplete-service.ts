@@ -44,7 +44,7 @@ export async function setupCompleters(
   const keywordsCompletions = getKeywordsCompletions();
 
   const completerFn = async (prefix: string, session: IEditSession) => {
-    let columnCompletions;
+    let nestedColumnCompletions;
 
     const { query, position } = getQueryAndCursorPositionFromEditor(
       editorInstance,
@@ -59,25 +59,27 @@ export async function setupCompleters(
       queryContext
     );
 
+
+
     const [keywords, completions] = await Promise.all([
       keywordsCompletions,
       contextCompletions
     ]);
 
     const filteredCompletions: object[] = completions.filter(obj => obj.value.includes(prefix));
-    const searchingInObject: Boolean = filteredCompletions.length === 0;
-    if (searchingInObject) {
-      columnCompletions = sqlAutocompleter.getCompletionItemsFromQueryContextColumn(
+    const searchInObject: Boolean = filteredCompletions.length === 0;
+    if (searchInObject) {
+      nestedColumnCompletions = sqlAutocompleter.getCompletionItemsFromQueryContextColumn(
         queryContext
       );
-      [columnCompletions] = await Promise.all([columnCompletions]);
+      [nestedColumnCompletions] = await Promise.all([nestedColumnCompletions]);
     }
 
 
 
     let all;
-    if (searchingInObject && columnCompletions) {
-      all = queryContext.contextType === ContextType.Undefined ? keywords : columnCompletions;
+    if (searchInObject && nestedColumnCompletions) {
+      all = queryContext.contextType === ContextType.Undefined ? keywords : nestedColumnCompletions;
     } else {
       all = completions;
     }
@@ -85,7 +87,7 @@ export async function setupCompleters(
 
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();
-      if (searchingInObject) {
+      if (searchInObject) {
         if (prefix.endsWith('.')) {
           all = matchMaskAndScoreAfterDotObject(all, [0]);
         }
