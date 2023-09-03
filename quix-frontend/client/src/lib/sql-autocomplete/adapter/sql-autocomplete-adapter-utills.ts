@@ -89,7 +89,6 @@ export function findRelevantPartOfPrefix(tables: TableInfo[], brokenPrefix: stri
   }
 
   // Find the longest relevant prefix
-  console.log("relevantPrefixes: " , relevantPrefixes)
   let longestPrefix = relevantPrefixes[0];
   for (const prefix of relevantPrefixes) {
     if (prefix.length > longestPrefix.length) {
