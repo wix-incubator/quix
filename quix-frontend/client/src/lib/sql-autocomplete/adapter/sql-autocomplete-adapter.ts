@@ -109,7 +109,6 @@ export class SqlAutocompleter implements IAutocompleter {
         };
 
         let value: string = "22";
-        console.log("value: " , value)
         if (alias) {
           value = `${alias}.${getColumnDisplayName(column)}`;
         } else if (includeTablePrefix) {
