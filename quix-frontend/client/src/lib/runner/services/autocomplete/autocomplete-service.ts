@@ -4,9 +4,9 @@ import { SqlAutocompleter } from "../../../sql-autocomplete/adapter/sql-autocomp
 import {
   enrichCompletionItemAfterDotObject,
   enrichCompletionKeyWord,
-  enrichCompletionItemCollumSearch,
+  enrichCompletionItemColumSearch,
   enrichCompletionItemInObjectSearch
-} from "./high_light_and_score";
+} from "./highlight -and-score";
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
 import {
@@ -80,33 +80,29 @@ export async function setupCompleters(
       all = completions;
     }
 
-
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();
-      if (searchInObject) {
-        if (prefix.endsWith('.')) {
-          all = enrichCompletionItemAfterDotObject(all);
-        }
-        else {
-          all = queryContext.contextType === ContextType.Undefined
-            ? enrichCompletionKeyWord(all, lowerCasedPrefix)
-            : enrichCompletionItemInObjectSearch(all, queryContext, lowerCasedPrefix);
-        }
-      }
-      else {
+      if (queryContext.contextType === ContextType.Undefined) {
+        all = enrichCompletionKeyWord(all, lowerCasedPrefix);
+      } else if (searchInObject) {
+        all = prefix.endsWith('.')
+          ? enrichCompletionItemAfterDotObject(all)
+          : enrichCompletionItemInObjectSearch(all, queryContext, lowerCasedPrefix);
+      } else {
         const filterCompletions = all.filter(obj => obj.value.includes(prefix));
-        all = enrichCompletionItemCollumSearch(filterCompletions, lowerCasedPrefix)
+        all = enrichCompletionItemColumSearch(filterCompletions, lowerCasedPrefix);
       }
     }
 
+
     all.forEach(obj => {
-      const maxLengthOfString = 60;
-      const maxSubStringLength = 57;
-      if (obj.caption?.length > maxLengthOfString) {
-        obj.caption = obj.caption.substring(0, maxSubStringLength) + "..."
+      const maxCaptionLength = 60;
+      const maxDisplayLength = 57;
+      if (obj.caption?.length > maxCaptionLength) {
+        obj.caption = obj.caption.substring(0, maxDisplayLength) + "..."
       }
-      if (!obj.caption && obj.value.length > maxLengthOfString) {
-        obj.caption = obj.value.substring(0, maxSubStringLength) + "..."
+      if (!obj.caption && obj.value.length > maxCaptionLength) {
+        obj.caption = obj.value.substring(0, maxDisplayLength) + "..."
       }
     });
     return all.sort((a, b) => a.value.localeCompare(b.value));

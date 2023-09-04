@@ -1,6 +1,6 @@
 export interface BaseEntity {
   name: string;
-  type: string ;
+  type: string;
 }
 
 export interface Column extends BaseEntity {

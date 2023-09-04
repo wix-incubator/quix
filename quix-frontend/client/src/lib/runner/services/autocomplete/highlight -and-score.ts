@@ -6,57 +6,46 @@ import { findRelevantPartOfPrefix } from "../../../sql-autocomplete/adapter/sql-
 import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
 import { QueryContext } from '../../../sql-autocomplete/sql-context-evaluator';
 
+const PERFECT_SCORE = 10000;
 
 export function enrichCompletionItemAfterDotObject(all: AceCompletion[]): AceCompletion[] {
   const indexes = [0];
-  const perfectScore = 10000;
-  for (const completionItem of all) {
-    completionItem.matchMask = createMatchMask(indexes, 0);
-    completionItem.score = perfectScore;
-  }
-  return all;
+  return all.map(completionItem => ({
+    ...completionItem,
+    matchMask: createMatchMask(indexes, 0),
+    score: PERFECT_SCORE,
+  }));
 }
 
 export function enrichCompletionItemInObjectSearch(all: AceCompletion[], queryContext: QueryContext, prefix: string): AceCompletion[] {
-  const resultArr: AceCompletion[] = [];
-  const perfectScore = 10000;
-
-  for (const completionItem of all) {
+  return all.reduce((resultArr, completionItem) => {
     const relevantPartOfPrefix = findRelevantPartOfPrefix(queryContext.tables, prefix.split('.')).slice(0, -1);
     const lastDotIndex = relevantPartOfPrefix.lastIndexOf('.');
     const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
     const searchPart = relevantPartOfPrefix.replace(startOfSearch, '');
     const indexes = findAllIndexOf(completionItem.caption, searchPart);
     
-    updateCompletionItem(completionItem, indexes, searchPart, perfectScore, resultArr);
-  }
-
-  return resultArr;
+    updateCompletionItem(completionItem, indexes, searchPart, resultArr);
+    
+    return resultArr;
+  }, []);
 }
 
 
-export function enrichCompletionItemCollumSearch(all: AceCompletion[], lowerCasedPrefix: string): AceCompletion[] {
-  const resultArr: AceCompletion[] = [];
-  const perfectScore = 10000;
-
-  all.forEach(completionItem => {
+export function enrichCompletionItemColumSearch(all: AceCompletion[], lowerCasedPrefix: string): AceCompletion[] {
+  return all.reduce((resultArr, completionItem) => {
     const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
-    updateCompletionItem(completionItem, indexes, lowerCasedPrefix, perfectScore, resultArr);
-  });
-
-  return resultArr;
+    updateCompletionItem(completionItem, indexes, lowerCasedPrefix, resultArr);
+    return resultArr;
+  }, []);
 }
-
-// HOF - HIGH ORDER FUNCTION
 
 export function enrichCompletionKeyWord(all: AceCompletion[], prefix: string): AceCompletion[] {
-  const perfectScore = 10000;
-  
   return all
     .filter(obj => obj.value.toLowerCase().includes(prefix.toLowerCase()))
     .map(completionItem => {
       const indexes = findAllIndexOf(completionItem.value, prefix);
-      updateCompletionItem(completionItem, indexes, prefix, perfectScore, []);
+      updateCompletionItem(completionItem, indexes, prefix, []);
       return completionItem;
     });
 }
@@ -65,7 +54,6 @@ function updateCompletionItem(
   completionItem: AceCompletion,
   indexes: number[],
   searchPart: string,
-  perfectScore: number,
   resultArr: AceCompletion[]
 ): void {
   if (indexes.length > 0) {
@@ -73,7 +61,7 @@ function updateCompletionItem(
       indexes,
       searchPart.length
     );
-    completionItem.score = perfectScore - indexes[0];
+    completionItem.score = PERFECT_SCORE - indexes[0];
     resultArr.push(completionItem);
   }
 }

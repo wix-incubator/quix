@@ -148,18 +148,4 @@ export const expectedResult = {
     makeCompletionItem('tblAlias1.col1_of_extTbl1', 'varchar'),
     makeCompletionItem('tblAlias1.col2_of_extTbl1', 'varchar'),
   ],
-  expected18 : [
-    { value: 'catalog0.schema0.TV.movies' , meta: 'row' , caption: 'movies' },
-    { value: 'catalog0.schema0.TV.tvSeries' , meta: 'row' , caption: 'tvSeries' },
-  ],
-  expected19 : [
-    { value: 'catalog0.schema0.TV.movies.action' , meta: 'row' , caption: 'action' },
-    { value: 'catalog0.schema0.TV.movies.comedy' , meta: 'row' , caption: 'comedy' },
-  ],
-  expected20 : [
-    { value: 'catalog0.schema0.TV.movies.action.The_Dark_Knight' , meta: 'varchar' , caption: 'The_Dark_Knight' },
-    { value: 'catalog0.schema0.TV.movies.action.The_Avengers' , meta: 'varchar' , caption: 'The_Avengers' },
-    { value: 'catalog0.schema0.TV.movies.action.Die_Hard' , meta: 'varchar' , caption: 'Die_Hard' },
-  ],
-  expected21 : [],
 };

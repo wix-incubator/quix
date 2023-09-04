@@ -12,7 +12,7 @@ import { trinoToJs } from "./trinoToJs";
 import { IDbInfoConfig } from '../db-info';
 import { BaseEntity, Column } from '../db-info/types';
 
-interface Result extends ICompleterItem {
+interface ComplexCompleterItem extends ICompleterItem {
   dataType?: string | object
 }
 
@@ -56,9 +56,12 @@ export class SqlAutocompleter implements IAutocompleter {
   }
 
   public async getCompletionItemsFromQueryContextColumn(queryContext: QueryContext) {
-    return queryContext.contextType !== ContextType.Column ?
-      [] :
-      this.translateAndGetQueryContextColumns(queryContext.tables, queryContext.prefix);
+    switch (queryContext.contextType) {
+      case ContextType.Column:
+        return this.translateAndGetQueryContextColumns(queryContext.tables, queryContext.prefix);
+      default:
+        return [];
+    }    
   }
 
   public async translateAndGetQueryContextColumns(tables: TableInfo[], prefix?: string) {
@@ -74,8 +77,7 @@ export class SqlAutocompleter implements IAutocompleter {
     for (const table of tables) {
       tablesPromises.push(this.extractTableColumns(table));
     }
-    const extractedTables = await Promise.all(tablesPromises);
-    return extractedTables;
+    return Promise.all(tablesPromises);
   }
 
   /**
@@ -95,7 +97,7 @@ export class SqlAutocompleter implements IAutocompleter {
   private async getQueryContextColumns(tables: TableInfo[]) {
     let meta: string;
     const extractedTables = await this.extractColumnsFromTable(tables);
-    const result: Result[] = [];
+    const result: ComplexCompleterItem[] = [];
 
     for (const extractedTable of extractedTables) {
       const { name, alias, columns } = extractedTable;

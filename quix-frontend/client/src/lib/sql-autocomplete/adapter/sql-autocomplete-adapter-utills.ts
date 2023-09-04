@@ -25,36 +25,6 @@ export function getObjectChildren(obj: Record<string, any>, parentName = ''): Ob
   });
 }
 
-// export function findRelevantPartOfPrefix(tables: TableInfo[] , brokenPrefix: string[]): string {
-//   let relevantPartOfPrefix = '';
-
-//   for (const table of tables) {
-//       for (const column of table.columns) {
-//           let found = false;
-//           let gotRelevantPartOfPrefix = false;
-
-//           brokenPrefix.forEach(cell => {
-//               if (found) {
-//                   relevantPartOfPrefix += cell + '.';
-//               }
-//               if (typeof column === 'object' && !gotRelevantPartOfPrefix && cell === column.name) {
-//                   found = true;
-//                   gotRelevantPartOfPrefix = true;
-//                   relevantPartOfPrefix += cell + '.';
-//               }
-//           });
-//           if (relevantPartOfPrefix) {
-//             return relevantPartOfPrefix;
-//           }
-//       }
-//       if (relevantPartOfPrefix) {
-//         return relevantPartOfPrefix;
-//       }
-//   }
-
-//   return relevantPartOfPrefix;
-// }
-
 export function findRelevantPartOfPrefix(tables: TableInfo[], brokenPrefix: string[]): string {
   // Remove empty cells from brokenPrefix array
   brokenPrefix = brokenPrefix.filter(cell => cell.trim() !== '');
@@ -136,8 +106,8 @@ export function getSearchCompletion(tables: TableInfo[] , prefix: string | undef
     if (parts.length > 1) {
         const substringAfterFirstDot = parts.slice(1).join('.');
         const criteria = checkCriteria(substringAfterFirstDot , searchPart.toLowerCase());
-        const flterIfInDiffrenCollumn = obj.name.startsWith(relevantPartOfPrefix.split('.')[0]);
-        return obj.name.includes(startOfSearch) && substringAfterFirstDot.includes(searchPart.toLowerCase()) && criteria && flterIfInDiffrenCollumn ;
+        const filterIfInDifferentColumn = obj.name.startsWith(relevantPartOfPrefix.split('.')[0]);
+        return obj.name.includes(startOfSearch) && substringAfterFirstDot.includes(searchPart.toLowerCase()) && criteria && filterIfInDifferentColumn ;
     }
     return false;
 });
