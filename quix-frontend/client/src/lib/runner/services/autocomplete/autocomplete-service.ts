@@ -67,7 +67,7 @@ export async function setupCompleters(
           queryContext
         );
         break;
-      case ContextType.Column:
+      default:
         all = await sqlAutocompleter.getCompletionItemsFromQueryContext(
           queryContext
         );
@@ -78,7 +78,6 @@ export async function setupCompleters(
             queryContext
           );
         }
-        break;
     }
 
     if (prefix) {
