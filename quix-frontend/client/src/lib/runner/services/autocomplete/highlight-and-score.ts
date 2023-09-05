@@ -20,7 +20,7 @@ export function enrichCompletionItemAfterDotObject(all: AceCompletion[]): AceCom
 export function enrichCompletionItemInObjectSearch(all: AceCompletion[], queryContext: QueryContext, prefix: string): AceCompletion[] {
   return all.reduce((resultArr, completionItem) => {
     const relevantPartOfPrefix = findRelevantPartOfPrefix(queryContext.tables, prefix.split('.')).slice(0, -1);
-    const lastDotIndex = relevantPartOfPrefix.lastIndexOf('.');
+    const lastDotIndex = findLastDotIndex(relevantPartOfPrefix);
     const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
     const searchPart = relevantPartOfPrefix.replace(startOfSearch, '');
     const indexes = findAllIndexOf(completionItem.caption, searchPart);
@@ -64,4 +64,8 @@ function updateCompletionItem(
     completionItem.score = PERFECT_SCORE - indexes[0];
     resultArr.push(completionItem);
   }
+}
+
+export function findLastDotIndex(prefix:string):number {
+  return prefix.lastIndexOf('.');
 }

@@ -1,15 +1,16 @@
 import { CodeEditorInstance } from '../../../code-editor';
-import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
+// import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
 import { SqlAutocompleter } from "../../../sql-autocomplete/adapter/sql-autocomplete-adapter";
 import {
   enrichCompletionItemAfterDotObject,
   enrichCompletionKeyWord,
   enrichCompletionItemColumSearch,
   enrichCompletionItemInObjectSearch
-} from "./highlight -and-score";
+} from "./highlight-and-score";
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
 import {
+  createCaption,
   getKeywordsCompletions,
   getQueryAndCursorPositionFromEditor,
 } from './autocomplete-utils';
@@ -44,40 +45,40 @@ export async function setupCompleters(
   const keywordsCompletions = getKeywordsCompletions();
 
   const completerFn = async (prefix: string, session: IEditSession) => {
-    let nestedColumnCompletions;
     let all;
+    let searchInObject: Boolean;
 
     const { query, position } = getQueryAndCursorPositionFromEditor(
       editorInstance,
       session
     );
+
     const queryContext: QueryContext = evaluateContextFromPosition(
       query,
       position
     );
 
-    const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
-      queryContext
-    );
-
-    const [keywords, completions] = await Promise.all([
-      keywordsCompletions,
-      contextCompletions
-    ]);
-
-    const filteredCompletions: object[] = completions.filter(obj => obj.value.includes(prefix));
-    const searchInObject: Boolean = filteredCompletions.length === 0;
-    if (searchInObject) {
-      nestedColumnCompletions = sqlAutocompleter.getCompletionItemsFromQueryContextColumn(
-        queryContext
-      );
-      [nestedColumnCompletions] = await Promise.all([nestedColumnCompletions]);
-    }
-
-    if (searchInObject && nestedColumnCompletions) {
-      all = queryContext.contextType === ContextType.Undefined ? keywords : nestedColumnCompletions;
-    } else {
-      all = completions;
+    switch (queryContext.contextType) {
+      case ContextType.Undefined:
+        all = keywordsCompletions;
+        break;
+      case ContextType.Table:
+        all = await sqlAutocompleter.getCompletionItemsFromQueryContext(
+          queryContext
+        );
+        break;
+      case ContextType.Column:
+        all = await sqlAutocompleter.getCompletionItemsFromQueryContext(
+          queryContext
+        );
+        const filteredCompletions: object[] = all.filter(obj => obj.value.includes(prefix));
+        searchInObject = filteredCompletions.length === 0;
+        if (searchInObject) {
+          all = await sqlAutocompleter.getCompletionItemsFromQueryContextColumn(
+            queryContext
+          );
+        }
+        break;
     }
 
     if (prefix) {
@@ -89,22 +90,15 @@ export async function setupCompleters(
           ? enrichCompletionItemAfterDotObject(all)
           : enrichCompletionItemInObjectSearch(all, queryContext, lowerCasedPrefix);
       } else {
-        const filterCompletions = all.filter(obj => obj.value.includes(prefix));
-        all = enrichCompletionItemColumSearch(filterCompletions, lowerCasedPrefix);
+        all = enrichCompletionItemColumSearch(all, lowerCasedPrefix);
       }
     }
 
 
     all.forEach(obj => {
-      const maxCaptionLength = 60;
-      const maxDisplayLength = 57;
-      if (obj.caption?.length > maxCaptionLength) {
-        obj.caption = obj.caption.substring(0, maxDisplayLength) + "..."
-      }
-      if (!obj.caption && obj.value.length > maxCaptionLength) {
-        obj.caption = obj.value.substring(0, maxDisplayLength) + "..."
-      }
+      obj.caption = createCaption(obj.caption || obj.value);
     });
+
     return all.sort((a, b) => a.value.localeCompare(b.value));
   };
 

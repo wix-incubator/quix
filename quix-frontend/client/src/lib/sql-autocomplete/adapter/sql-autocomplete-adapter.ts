@@ -95,7 +95,6 @@ export class SqlAutocompleter implements IAutocompleter {
    * @return {Promise<ICompleterItem[]>}
    */
   private async getQueryContextColumns(tables: TableInfo[]) {
-    let meta: string;
     const extractedTables = await this.extractColumnsFromTable(tables);
     const result: ComplexCompleterItem[] = [];
 
@@ -106,8 +105,10 @@ export class SqlAutocompleter implements IAutocompleter {
         if (typeof column === 'object' && typeof column.dataType === 'string') {
           column.dataType = trinoToJs(column.dataType, 0);
         }
-        const objectInTrino = 'row';
+
+        let meta: string | undefined;
         if (typeof column === 'object' && 'dataType' in column) {
+          const objectInTrino = 'row';
           meta = typeof column.dataType === 'object' ? objectInTrino : column.dataType;
         }
 

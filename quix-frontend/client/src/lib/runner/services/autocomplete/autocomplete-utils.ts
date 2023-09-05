@@ -44,6 +44,18 @@ export const createMatchMask = (
   return res;
 };
 
+
+export function createCaption(str : string) {
+  const maxCaptionLength = 60;
+  const maxSubCaptionLength = 57;
+
+  if (str.length > maxCaptionLength) {
+    return str.substring(0, maxSubCaptionLength) + "...";
+  }
+
+  return str;
+}
+
 export const makeCompletionItem = (
   value: string,
   meta: string,
