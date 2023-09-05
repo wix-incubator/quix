@@ -1,4 +1,5 @@
 import {
+  createCaption,
   createMatchMask,
   findAllIndexOf,
 } from './autocomplete-utils';
@@ -32,22 +33,12 @@ export function enrichCompletionItemInObjectSearch(all: AceCompletion[], queryCo
 }
 
 
-export function enrichCompletionItemColumSearch(all: AceCompletion[], lowerCasedPrefix: string): AceCompletion[] {
+export function enrichCompletionItem(all: AceCompletion[], lowerCasedPrefix: string): AceCompletion[] {
   return all.reduce((resultArr, completionItem) => {
     const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
     updateCompletionItem(completionItem, indexes, lowerCasedPrefix, resultArr);
     return resultArr;
   }, []);
-}
-
-export function enrichCompletionKeyWord(all: AceCompletion[], prefix: string): AceCompletion[] {
-  return all
-    .filter(obj => obj.value.toLowerCase().includes(prefix.toLowerCase()))
-    .map(completionItem => {
-      const indexes = findAllIndexOf(completionItem.value, prefix);
-      updateCompletionItem(completionItem, indexes, prefix, []);
-      return completionItem;
-    });
 }
 
 function updateCompletionItem(
@@ -64,6 +55,7 @@ function updateCompletionItem(
     completionItem.score = PERFECT_SCORE - indexes[0];
     resultArr.push(completionItem);
   }
+    completionItem.caption = createCaption(completionItem.caption || completionItem.value);
 }
 
 export function findLastDotIndex(prefix:string):number {

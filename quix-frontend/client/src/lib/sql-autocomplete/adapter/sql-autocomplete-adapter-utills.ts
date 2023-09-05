@@ -19,11 +19,7 @@ export function getObjectChildren(obj: Record<string, any>, parentName = ''): Ob
       children.push({ name: childName, dataType: obj[key] });
     }
   }
-
-  return children.map(child => {
-    child.name = child.name.replace(/\.dataType$/, '');
-    return child;
-  });
+  return children;
 }
 
 export function findRelevantPartOfPrefix(tables: TableInfo[], brokenPrefix: string[]): string {
