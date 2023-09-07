@@ -43,7 +43,7 @@ export async function setupCompleters(
   const keywordsCompletions = getKeywordsCompletions();
 
   const completerFn = async (prefix: string, session: IEditSession) => {
-    let all;
+    let autocompletionSuggestions;
     let searchInObject: Boolean;
 
     const { query, position } = getQueryAndCursorPositionFromEditor(
@@ -58,22 +58,22 @@ export async function setupCompleters(
 
     switch (queryContext.contextType) {
       case ContextType.Undefined:
-        all = keywordsCompletions;
-        all = all.filter(obj => obj.value.toLowerCase().includes(prefix.toLowerCase()));
+        autocompletionSuggestions = keywordsCompletions;
+        autocompletionSuggestions = autocompletionSuggestions.filter(obj => obj.value.toLowerCase().includes(prefix.toLowerCase()));
         break;
       case ContextType.Table:
-        all = await sqlAutocompleter.getCompletionItemsFromQueryContext(
+        autocompletionSuggestions = await sqlAutocompleter.getCompletionItemsFromQueryContext(
           queryContext
         );
         break;
       default:
-        all = await sqlAutocompleter.getCompletionItemsFromQueryContext(
+        autocompletionSuggestions = await sqlAutocompleter.getCompletionItemsFromQueryContext(
           queryContext
         );
-        const filteredCompletions: object[] = all.filter(obj => obj.value.toLowerCase().includes(prefix));
+        const filteredCompletions: object[] = autocompletionSuggestions.filter(obj => obj.value.toLowerCase().includes(prefix));
         searchInObject = filteredCompletions.length === 0;
         if (searchInObject) {
-          all = await sqlAutocompleter.getCompletionItemsFromQueryContextColumn(
+          autocompletionSuggestions = await sqlAutocompleter.getCompletionItemsFromQueryContextColumn(
             queryContext
           );
         }
@@ -82,15 +82,15 @@ export async function setupCompleters(
     if (prefix) {
       const lowerCasedPrefix = prefix.trim().toLowerCase();
       if (queryContext.contextType === ContextType.Undefined || !searchInObject) {
-        all = enrichCompletionItem(all, lowerCasedPrefix);
+        autocompletionSuggestions = enrichCompletionItem(autocompletionSuggestions, lowerCasedPrefix);
       } else {
-        all = prefix.endsWith('.')
-          ? enrichCompletionItemAfterDotObject(all)
-          : enrichCompletionItemInObjectSearch(all, queryContext, lowerCasedPrefix);
+        autocompletionSuggestions = prefix.endsWith('.')
+          ? enrichCompletionItemAfterDotObject(autocompletionSuggestions)
+          : enrichCompletionItemInObjectSearch(autocompletionSuggestions, queryContext, lowerCasedPrefix);
       }
     }
 
-    return all.sort((a, b) => a.value.localeCompare(b.value));
+    return autocompletionSuggestions.sort((a, b) => a.value.localeCompare(b.value));
   };
 
   editorInstance.addOnDemandCompleter(/[\w.]+/, completerFn as any, {
