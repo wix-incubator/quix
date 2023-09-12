@@ -1,9 +1,7 @@
 import { expect } from 'chai';
 import { ICompleterItem } from '../../../../code-editor/services/code-editor-completer';
 import {
-  ContextType,
   QueryContext,
-  TableType,
 } from '../../../sql-context-evaluator';
 import { SqlAutocompleter } from '../../sql-autocomplete-adapter';
 import { MockDbInfoService } from './mock-db-config';

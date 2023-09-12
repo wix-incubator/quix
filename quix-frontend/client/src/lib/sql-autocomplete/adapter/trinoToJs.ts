@@ -78,7 +78,7 @@ export function processRow(trinoObjectAsString: string, index: number): object {
   return {};
 }
 
-export function findBeginningOfWord(str: string, index: number): number {
+function findBeginningOfWord(str: string, index: number): number {
   while (index > 0 && str[index] !== SpecialCharacters.Space) {
     index--;
   }
@@ -118,9 +118,9 @@ function handleStartingOptions(trinoObjectAsString: string, start: number, end: 
 }
 
 function validateKey(key: string, indexInOriginalString: number) {
-  const regex = /^[^!@#$%^&*(),.:;\s\n]+$/;
+  const forbiddenChars = /^[^!@#$%^&*(),.:;\s\n]+$/;
 
-  if (!regex.test(key)) {
+  if (!forbiddenChars.test(key)) {
       throw new Error(`Error at index: ${indexInOriginalString}, illegal key value`);
   }
 }

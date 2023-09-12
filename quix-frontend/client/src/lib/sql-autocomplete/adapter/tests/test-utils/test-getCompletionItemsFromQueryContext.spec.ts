@@ -48,7 +48,7 @@ describe('testing autoComplete for nested objects:   ', () => {
   }
   
 
-  it('should return movies and tv series for prefix catalog0.schema0.TV&Sports.TV.',async () => {
+  it('should return first level of nested object',async () => {
     queryContext.prefix= 'catalog0.schema0.TV&Sports.TV.'
     const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
     expect(completers).to.deep.equal( [
@@ -57,7 +57,7 @@ describe('testing autoComplete for nested objects:   ', () => {
     ] );
   });
 
-  it('should return action and comedy for prefix catalog0.schema0.TV&Sports.TV.movies.',async () => {
+  it('should return second level of nested object',async () => {
     queryContext.prefix= 'catalog0.schema0.TV&Sports.TV.movies.'
     const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
     expect(completers).to.deep.equal( [
@@ -66,7 +66,7 @@ describe('testing autoComplete for nested objects:   ', () => {
     ] );
   });
 
-  it('should return comedy, The_Dark_Knight and Die_Hard',async () => {
+  it('should return all options that include the letter d from the second layer and above',async () => {
     queryContext.prefix= 'catalog0.schema0.TV&Sports.TV.movies.d'
     const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
     expect(completers).to.deep.equal( [
@@ -76,7 +76,7 @@ describe('testing autoComplete for nested objects:   ', () => {
     ] );
   });
 
-  it('should return fastFood, asain and local for prefix catalog0.schema0.TV&Sports.TV.movies.',async () => {
+  it('should return second level of nested object but value begins with alias',async () => {
     queryContext.prefix= 'aliasName.food&countries.food.'
     const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
     expect(completers).to.deep.equal( [
@@ -85,7 +85,7 @@ describe('testing autoComplete for nested objects:   ', () => {
     ] );
   });
 
-  it('should return mcflurry for prefix aliasName.food&countries.food.rry',async () => {
+  it('should return options that include prefix rry in food column',async () => {
     queryContext.prefix= 'aliasName.food&countries.food.rry'
     const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
     expect(completers).to.deep.equal( [
@@ -93,13 +93,13 @@ describe('testing autoComplete for nested objects:   ', () => {
     ] );
   });
 
-  it('should return fastFood, asain and local for prefix catalog0.schema0.TV&Sports.TV.movies.',async () => {
+  it('should return options that include prefix rryyyy in food column',async () => {
     queryContext.prefix= 'aliasName.food&countries.food.rryyyy'
     const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
     expect(completers).to.deep.equal( [] );
   });
 
-  it('should return fastFood, asain and local for prefix catalog0.schema0.TV&Sports.TV.movies.',async () => {
+  it('should return options that include prefix Gan in fron 2nd layer and higher',async () => {
     queryContext.prefix= 'food&countries.countries.Gan'
     const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
     expect(completers).to.deep.equal( [

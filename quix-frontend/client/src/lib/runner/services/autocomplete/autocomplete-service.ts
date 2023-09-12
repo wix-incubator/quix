@@ -58,8 +58,7 @@ export async function setupCompleters(
 
     switch (queryContext.contextType) {
       case ContextType.Undefined:
-        autocompletionSuggestions = keywordsCompletions;
-        autocompletionSuggestions = autocompletionSuggestions.filter(obj => obj.value.toLowerCase().includes(prefix.toLowerCase()));
+        autocompletionSuggestions = keywordsCompletions.filter(obj => obj.value.toLowerCase().includes(prefix.toLowerCase()));
         break;
       case ContextType.Table:
         autocompletionSuggestions = await sqlAutocompleter.getCompletionItemsFromQueryContext(
