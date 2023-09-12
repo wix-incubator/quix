@@ -31,7 +31,7 @@ export function processRow(trinoObjectAsString: string, index: number): object {
   let value = "";
   let objectToInsert;
   let isFirstWord = true;
-  const lengthOfSubstring = 5;
+  const LENGTH_OF_SUBSTRING = 5;
 
   while (index <= trinoObjectAsString.length) {
     switch (trinoObjectAsString.charAt(index)) {
@@ -50,7 +50,7 @@ export function processRow(trinoObjectAsString: string, index: number): object {
       }
       case SpecialCharacters.Comma: {
         if (value === "") {
-          throw new Error(`Error at index: ${trinoObjectAsString.substring(index-lengthOfSubstring,index)}, type expected before comma`);
+          throw new Error(`Error at index: ${trinoObjectAsString.substring(index-LENGTH_OF_SUBSTRING,index)}, type expected before comma`);
         }
         finalObject[key] = objectToInsert || value;
         key = "";
