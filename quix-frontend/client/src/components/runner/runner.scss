@@ -3,4 +3,13 @@
 quix-runner {
   display: flex;
   flex-direction: column;
- }
+
+  .bi-link {
+    color: blue;
+
+    &:hover {
+      text-decoration: underline !important;
+      color: blue;
+    }
+  }
+}
