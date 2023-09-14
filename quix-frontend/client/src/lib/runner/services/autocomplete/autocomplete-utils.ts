@@ -51,10 +51,10 @@ export async function getSuggestions(queryContext, keywordsCompletions, sqlAutoc
   }
 
   return searchInObject
-    ? await sqlAutocompleter.getCompletionItemsFromQueryContextColumn(
+    ? sqlAutocompleter.getCompletionItemsFromQueryContextColumn(
       queryContext
     )
-    : await sqlAutocompleter.getCompletionItemsFromQueryContext(
+    : sqlAutocompleter.getCompletionItemsFromQueryContext(
       queryContext
     );
 
