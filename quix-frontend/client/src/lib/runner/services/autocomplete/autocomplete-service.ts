@@ -2,20 +2,19 @@ import { CodeEditorInstance } from '../../../code-editor';
 // import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
 import { SqlAutocompleter } from "../../../sql-autocomplete/adapter/sql-autocomplete-adapter";
 import {
-  enrichCompletionItemAfterDotObject,
-  enrichCompletionItem,
-  enrichCompletionItemInObjectSearch
+  highlightAndScore
 } from "./highlight-and-score";
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
 import {
   getKeywordsCompletions,
   getQueryAndCursorPositionFromEditor,
+  getSuggestions,
+  isSearchInObject,
 } from './autocomplete-utils';
 import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
 // import { DbInfoService } from '../../../sql-autocomplete/db-info';
 import {
-  ContextType,
   evaluateContextFromPosition,
   QueryContext,
 } from '../../../sql-autocomplete/sql-context-evaluator';
@@ -43,8 +42,6 @@ export async function setupCompleters(
   const keywordsCompletions = getKeywordsCompletions();
 
   const completerFn = async (prefix: string, session: IEditSession) => {
-    let autocompletionSuggestions;
-    let searchInObject: Boolean;
 
     const { query, position } = getQueryAndCursorPositionFromEditor(
       editorInstance,
@@ -56,37 +53,15 @@ export async function setupCompleters(
       position
     );
 
-    switch (queryContext.contextType) {
-      case ContextType.Undefined:
-        autocompletionSuggestions = keywordsCompletions.filter(obj => obj.value.toLowerCase().includes(prefix.toLowerCase()));
-        break;
-      case ContextType.Table:
-        autocompletionSuggestions = await sqlAutocompleter.getCompletionItemsFromQueryContext(
-          queryContext
-        );
-        break;
-      default:
-        autocompletionSuggestions = await sqlAutocompleter.getCompletionItemsFromQueryContext(
-          queryContext
-        );
-        const filteredCompletions: object[] = autocompletionSuggestions.filter(obj => obj.value.toLowerCase().includes(prefix));
-        searchInObject = filteredCompletions.length === 0;
-        if (searchInObject) {
-          autocompletionSuggestions = await sqlAutocompleter.getCompletionItemsFromQueryContextColumn(
-            queryContext
-          );
-        }
-    }
+    const searchInObject = await isSearchInObject(queryContext, sqlAutocompleter)
+    let autocompletionSuggestions = await getSuggestions(queryContext, keywordsCompletions, sqlAutocompleter, searchInObject);
 
     if (prefix) {
-      const lowerCasedPrefix = prefix.trim().toLowerCase();
-      if (queryContext.contextType === ContextType.Undefined || !searchInObject) {
-        autocompletionSuggestions = enrichCompletionItem(autocompletionSuggestions, lowerCasedPrefix);
-      } else {
-        autocompletionSuggestions = prefix.endsWith('.')
-          ? enrichCompletionItemAfterDotObject(autocompletionSuggestions)
-          : enrichCompletionItemInObjectSearch(autocompletionSuggestions, queryContext, lowerCasedPrefix);
-      }
+      autocompletionSuggestions = highlightAndScore(
+        autocompletionSuggestions,
+        queryContext,
+        searchInObject
+      )
     }
 
     return autocompletionSuggestions.sort((a, b) => a.value.localeCompare(b.value));
@@ -95,6 +70,5 @@ export async function setupCompleters(
   editorInstance.addOnDemandCompleter(/[\w.]+/, completerFn as any, {
     acceptEmptyString: true,
   });
-
   // editorInstance.addOnDemandCompleter(/[\s]+/, completerFn as any);
 }

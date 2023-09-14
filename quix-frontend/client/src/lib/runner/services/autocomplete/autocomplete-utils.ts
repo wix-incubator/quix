@@ -4,6 +4,7 @@ import { IEditSession } from 'brace';
 import { CodeEditorInstance } from '../../../code-editor';
 import { ICompleterItem } from '../../../code-editor/services/code-editor-completer';
 import { reservedPrestoWords } from '../../../sql-autocomplete/languge/reserved-words';
+import { ContextType } from '../../../sql-autocomplete/sql-context-evaluator/types';
 
 let keywords: ICompleterItem[];
 
@@ -44,8 +45,34 @@ export const createMatchMask = (
   return res;
 };
 
+export async function getSuggestions(queryContext, keywordsCompletions, sqlAutocompleter, searchInObject) {
+  if (queryContext.contextType === ContextType.Undefined) {
+    return keywordsCompletions.filter(obj => obj.value.toLowerCase().includes(queryContext.prefix.toLowerCase()));
+  }
 
-export function createCaption(str : string) {
+  return searchInObject
+    ? await sqlAutocompleter.getCompletionItemsFromQueryContextColumn(
+      queryContext
+    )
+    : await sqlAutocompleter.getCompletionItemsFromQueryContext(
+      queryContext
+    );
+
+}
+
+export async function isSearchInObject(queryContext, sqlAutocompleter) {
+  if (queryContext.contextType === ContextType.Column && queryContext.prefix) {
+    const completions = await sqlAutocompleter.getCompletionItemsFromQueryContext(
+      queryContext
+    )
+    const filteredCompletions: object[] = completions.filter(obj => obj.value.toLowerCase().includes(queryContext.prefix));
+    return filteredCompletions.length === 0;
+  }
+  return false
+}
+
+
+export function createCaption(str: string) {
   const maxCaptionLength = 60;
   const maxSubCaptionLength = 57;
 
@@ -99,7 +126,7 @@ export const getQueryAndCursorPositionFromEditor = (
 
 export const findAllIndexOf = (haystack: string, needle: string) => {
   const indexes: number[] = [];
-  if(needle === '') {
+  if (needle === '') {
     return indexes;
   }
   haystack = haystack.toLowerCase();
@@ -113,6 +140,6 @@ export const findAllIndexOf = (haystack: string, needle: string) => {
       index++;
     }
   }
-  
+
   return indexes;
 };
