@@ -7,13 +7,13 @@ import { MockDbInfoService } from "./mock-db-config";
 
 describe('testing autoComplete for nested objects:   ', () => {
   const config = new MockDbInfoService();
-  const autocomp = new SqlAutocompleter(config);
+  const completer = new SqlAutocompleter(config);
   const queryContext = {
     prefix : '',
     contextType: ContextType.Column,
     tables : [
       { type: TableType.External,
-        name: 'catalog0.schema0.TV&Sports',
+        name: 'catalog0.schema0.TVAndSports',
         alias: "",
         selectAll : false,
         tableRefs: [],
@@ -29,7 +29,7 @@ describe('testing autoComplete for nested objects:   ', () => {
         ]
       },
       { type: TableType.External,
-        name: 'catalog1.schema1.food&countries',
+        name: 'catalog1.schema1.foodAndcountries',
         alias: 'aliasName',
         selectAll : false,
         tableRefs: [],
@@ -49,26 +49,26 @@ describe('testing autoComplete for nested objects:   ', () => {
   
 
   it('should return first level of nested object',async () => {
-    queryContext.prefix= 'catalog0.schema0.TV&Sports.TV.'
-    const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
+    queryContext.prefix= 'catalog0.schema0.TVAndSports.TV.'
+    const completers = await getCompletions(queryContext , completer);
     expect(completers).to.deep.equal( [
-      { value: 'catalog0.schema0.TV&Sports.TV.movies', meta: 'row' , caption: 'movies' },
-      { value: 'catalog0.schema0.TV&Sports.TV.tvSeries', meta: 'row' , caption: 'tvSeries' },
+      { value: 'catalog0.schema0.TVAndSports.TV.movies', meta: 'row' , caption: 'movies' },
+      { value: 'catalog0.schema0.TVAndSports.TV.tvSeries', meta: 'row' , caption: 'tvSeries' },
     ] );
   });
 
   it('should return second level of nested object',async () => {
-    queryContext.prefix= 'catalog0.schema0.TV&Sports.TV.movies.'
-    const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
+    queryContext.prefix= 'catalog0.schema0.TVAndSports.TV.movies.'
+    const completers = await getCompletions(queryContext , completer);
     expect(completers).to.deep.equal( [
-      { value: 'catalog0.schema0.TV&Sports.TV.movies.action', meta: 'row' , caption: 'action' },
-      { value: 'catalog0.schema0.TV&Sports.TV.movies.comedy', meta: 'row' , caption: 'comedy' },
+      { value: 'catalog0.schema0.TVAndSports.TV.movies.action', meta: 'row' , caption: 'action' },
+      { value: 'catalog0.schema0.TVAndSports.TV.movies.comedy', meta: 'row' , caption: 'comedy' },
     ] );
   });
 
   it('should return all options that include the letter d from the second layer and above',async () => {
-    queryContext.prefix= 'catalog0.schema0.TV&Sports.TV.movies.d'
-    const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
+    queryContext.prefix= 'catalog0.schema0.TVAndSports.TV.movies.d'
+    const completers = await getCompletions(queryContext , completer);
     expect(completers).to.deep.equal( [
       { value: 'TV.movies.action.The_Dark_Knight', meta: 'varchar' , caption: 'action.The_Dark_Knight' },
       { value: 'TV.movies.action.Die_Hard', meta: 'varchar' , caption: 'action.Die_Hard' },
@@ -77,34 +77,40 @@ describe('testing autoComplete for nested objects:   ', () => {
   });
 
   it('should return second level of nested object but value begins with alias',async () => {
-    queryContext.prefix= 'aliasName.food&countries.food.'
-    const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
+    queryContext.prefix= 'aliasName.foodAndcountries.food.'
+    const completers = await getCompletions(queryContext , completer);
     expect(completers).to.deep.equal( [
-      { value: 'aliasName.food&countries.food.fastFood', meta: 'row' , caption: 'fastFood' },
-      { value: 'aliasName.food&countries.food.local', meta: 'row' , caption: 'local' },
+      { value: 'aliasName.foodAndcountries.food.fastFood', meta: 'row' , caption: 'fastFood' },
+      { value: 'aliasName.foodAndcountries.food.local', meta: 'row' , caption: 'local' },
     ] );
   });
 
   it('should return options that include prefix rry in food column',async () => {
-    queryContext.prefix= 'aliasName.food&countries.food.rry'
-    const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
+    queryContext.prefix= 'aliasName.foodAndcountries.food.rry'
+    const completers = await getCompletions(queryContext , completer);
     expect(completers).to.deep.equal( [
       { value: 'food.fastFood.mcDonalds.mcflurry', meta: 'varchar' , caption: 'fastFood.mcDonalds.mcflurry' },
     ] );
   });
 
   it('should return options that include prefix rryyyy in food column',async () => {
-    queryContext.prefix= 'aliasName.food&countries.food.rryyyy'
-    const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
+    queryContext.prefix= 'aliasName.foodAndcountries.food.rryyyy'
+    const completers = await getCompletions(queryContext , completer);
     expect(completers).to.deep.equal( [] );
   });
 
-  it('should return options that include prefix Gan in fron 2nd layer and higher',async () => {
-    queryContext.prefix= 'food&countries.countries.Gan'
-    const completers = await autocomp.getCompletionItemsFromQueryContextColumn( queryContext );
+  it('should return options that include prefix Gan in from 2nd layer and higher',async () => {
+    queryContext.prefix= 'foodAndcountries.countries.Gan'
+    const completers = await getCompletions(queryContext , completer);
     expect(completers).to.deep.equal( [
       { value: 'countries.israel.ramatGan', meta: 'varchar' , caption: 'israel.ramatGan' },
     ] );
   });
 
 });
+
+
+async function getCompletions(queryContext: { prefix: string; contextType: ContextType; tables: { type: TableType; name: string; alias: string; selectAll: boolean; tableRefs: never[]; columns: { name: string; dataType: string; }[]; }[]; }, completer: SqlAutocompleter) {
+  return completer.getCompletionItemsFromQueryContextColumn( queryContext );
+}
+

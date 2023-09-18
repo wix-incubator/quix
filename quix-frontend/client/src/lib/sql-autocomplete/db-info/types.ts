@@ -7,6 +7,10 @@ export interface Column extends BaseEntity {
   dataType: object | string;
 }
 
+export interface NestedColumn extends Column {
+  dataType: object;
+}
+
 export interface Table extends BaseEntity {
   children: Column[];
 }
