@@ -22,10 +22,7 @@ export function getObjectChildren(obj: Record<string, any>, parentName = ''): Ob
   return children;
 }
 
-export function findRelevantPartOfPrefix(tables: TableInfo[], brokenPrefix: string[]): string {
-  // Remove empty cells from brokenPrefix array
-  brokenPrefix = brokenPrefix.filter(cell => cell.trim() !== '');
-
+export function findColumnPathForPrefix(tables: TableInfo[], brokenPrefix: string[]): string {
   const relevantPrefixes: string[] = [];
 
   for (const table of tables) {
@@ -34,14 +31,14 @@ export function findRelevantPartOfPrefix(tables: TableInfo[], brokenPrefix: stri
       let gotRelevantPartOfPrefix = false;
       let currentPrefix = '';
 
-      brokenPrefix.forEach(cell => {
+      brokenPrefix.forEach(item => {
         if (found) {
-          currentPrefix += cell + '.';
+          currentPrefix += item + '.';
         }
-        if (typeof column === 'object' && !gotRelevantPartOfPrefix && cell === column.name) {
+        if (typeof column === 'object' && !gotRelevantPartOfPrefix && item === column.name) {
           found = true;
           gotRelevantPartOfPrefix = true;
-          currentPrefix += cell + '.';
+          currentPrefix += item + '.';
         }
       });
 
@@ -94,71 +91,60 @@ export function getSearchCompletion(tables: TableInfo[], prefix: string | undefi
   if (!prefix.includes('.')) {
     return [];
   }
-  const allChildren = getAllChildrenOfTables(tables);
-  const relevantPartOfPrefix = findRelevantPartOfPrefix(tables, prefix.split('.')).slice(0, -1);
-  if (!relevantPartOfPrefix) {
+  const columnPathForPrefix = findColumnPathForPrefix(tables, prefix.split('.')).slice(0, -1);
+  if (!columnPathForPrefix) {
     return []
   }
-  const lastDotIndex = findLastDotIndex(relevantPartOfPrefix);
-  const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
-  const searchPart = relevantPartOfPrefix.replace(startOfSearch, '')
-  const filteredChildren = allChildren.filter(obj => {
-    const lowerCasedName = obj.name.toLowerCase();
-    const parts = lowerCasedName.split('.');
-    if (parts.length > 1) {
-      const substringAfterFirstDot = parts.slice(1).join('.');
-      const criteria = checkCriteria(substringAfterFirstDot, searchPart.toLowerCase());
-      const filterIfInDifferentColumn = obj.name.startsWith(relevantPartOfPrefix.split('.')[0]);
-      return obj.name.includes(startOfSearch) && substringAfterFirstDot.includes(searchPart.toLowerCase()) && criteria && filterIfInDifferentColumn;
-    }
-    return false;
-  });
-  const prefixUntilLastDot = extractPrefixUntilLastDot(relevantPartOfPrefix);
-  const completionArray = filteredChildren.map(obj => ({
-    value: obj.name,
-    meta: typeof obj.dataType === 'object' ? 'row' : obj.dataType,
-    caption: obj.name.slice(prefixUntilLastDot.length + 1)
+  const filteredChildren = getAllChildrenOfTables(tables).filter(byPrefix(columnPathForPrefix));
+  const prefixUntilLastDot = extractPrefixUntilLastDot(columnPathForPrefix);
+  const completionArray = filteredChildren.map(({name,dataType}) => ({
+    value: name,
+    meta: typeof dataType === 'object' ? 'row' : dataType,
+    caption: name.slice(prefixUntilLastDot.length + 1)
   }));
   return completionArray;
 }
 
+function byPrefix(relevantPartOfPrefix: string) {
+  return ({name}) => {
+    const lastDotIndex = findLastDotIndex(relevantPartOfPrefix);
+    const startOfSearch = lastDotIndex >=0 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
+    const searchPart = relevantPartOfPrefix.replace(startOfSearch, '')
+    const lowerCasedName = name.toLowerCase();
+    const parts = lowerCasedName.split('.');
+    if (parts.length <= 1) { return false }
+    const substringAfterFirstDot = parts.slice(1).join('.');
+    const criteria = checkCriteria(substringAfterFirstDot, searchPart.toLowerCase());
+    const filterIfInDifferentColumn = name.startsWith(relevantPartOfPrefix.split('.')[0]);
+
+    return name.includes(startOfSearch) && substringAfterFirstDot.includes(searchPart.toLowerCase()) && criteria && filterIfInDifferentColumn;
+  };
+}
+
 export function getNextLevel(tables: TableInfo[], prefix: string | undefined): any {
-  const allChildren = getAllChildrenOfTables(tables);
-  const relevantPartOfPrefix = findRelevantPartOfPrefix(tables, prefix.split('.'));
-  const relevantChildren = allChildren.filter(obj => {
-    const dotCount = obj.name.split('.').length - 1;
-    return obj.name.startsWith(relevantPartOfPrefix) && dotCount === relevantPartOfPrefix.split('.').length - 1;
+  const columnPathForPrefix = findColumnPathForPrefix(tables, prefix.split('.')).slice(0, -1);
+  const relevantChildren = getAllChildrenOfTables(tables).filter(({name}) => {
+    const dotCount = name.split('.').length - 1;
+    return name.startsWith(columnPathForPrefix) && dotCount === columnPathForPrefix.split('.').length - 1;
   });
-  const completionArray = relevantChildren.map(obj => ({
-    value: prefix.replace(relevantPartOfPrefix, '') + obj.name,
-    meta: typeof obj.dataType === 'object' ? 'row' : obj.dataType,
-    caption: obj.name.slice(relevantPartOfPrefix.length)
+  const completionArray = relevantChildren.map(({name , dataType}) => ({
+    value: prefix.replace(columnPathForPrefix, '') + name,
+    meta: typeof dataType === 'object' ? 'row' : dataType,
+    caption: name.slice(columnPathForPrefix.length)
   }));
   return completionArray
 }
 
 function checkCriteria(substringAfterFirstDot, searchPart) {
   const lastDotIndex = findLastDotIndex(substringAfterFirstDot);
-
-  if (lastDotIndex !== -1) {
-    const partAfterLastDot = substringAfterFirstDot.substring(lastDotIndex + 1);
-    if (partAfterLastDot.includes(searchPart)) {
-      return true;
-    }
-  } else if (substringAfterFirstDot.includes(searchPart)) {
-    return true;
-  }
-
-  return false;
+  return lastDotIndex >= 0 ? substringAfterFirstDot.substring(lastDotIndex + 1).includes(searchPart) : substringAfterFirstDot.includes(searchPart);
 }
 
-function extractPrefixUntilLastDot(inputString) {
+
+function extractPrefixUntilLastDot(inputString:string) {
   const lastDotIndex = findLastDotIndex(inputString);
 
-  if (lastDotIndex !== -1) {
-    const prefix = inputString.substring(0, lastDotIndex);
-    return prefix;
-  }
-
-  return inputString;
+  return lastDotIndex >= 0 ?
+    inputString.substring(0, lastDotIndex) :
+    inputString
 }

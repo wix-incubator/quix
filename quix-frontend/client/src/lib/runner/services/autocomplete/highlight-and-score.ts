@@ -3,9 +3,9 @@ import {
   createMatchMask,
   findAllIndexOf,
 } from './autocomplete-utils';
-import { findRelevantPartOfPrefix } from "../../../sql-autocomplete/adapter/sql-autocomplete-adapter-utills";
+import { findColumnPathForPrefix } from "../../../sql-autocomplete/adapter/sql-autocomplete-adapter-utills";
 import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
-import { ContextType, QueryContext } from '../../../sql-autocomplete/sql-context-evaluator';
+import { QueryContext } from '../../../sql-autocomplete/sql-context-evaluator';
 
 const PERFECT_SCORE = 10000;
 
@@ -15,8 +15,7 @@ export function highlightAndScore(
   searchInObject
 ) {
   const lowerCasedPrefix = queryContext.prefix.trim().toLowerCase();
-  const isInObjectContext = queryContext.contextType !== ContextType.Undefined && searchInObject;
-  return isInObjectContext
+  return searchInObject
     ? enrichCompletionForObject(queryContext.prefix, autocompletionSuggestions, queryContext, lowerCasedPrefix)
     : enrichCompletionItem(autocompletionSuggestions, lowerCasedPrefix);
 }
@@ -38,10 +37,10 @@ function enrichCompletionForObject(prefix: string, autocompletionSuggestions: an
 
 function enrichCompletionItemInObjectSearch(all: AceCompletion[], queryContext: QueryContext, prefix: string): AceCompletion[] {
   return all.reduce((resultArr, completionItem) => {
-    const relevantPartOfPrefix = findRelevantPartOfPrefix(queryContext.tables, prefix.split('.')).slice(0, -1);
-    const lastDotIndex = findLastDotIndex(relevantPartOfPrefix);
-    const startOfSearch = lastDotIndex !== -1 ? relevantPartOfPrefix.slice(0, lastDotIndex + 1) : relevantPartOfPrefix;
-    const searchPart = relevantPartOfPrefix.replace(startOfSearch, '');
+    const columnPathForPrefix = findColumnPathForPrefix(queryContext.tables, prefix.split('.')).slice(0, -1);
+    const lastDotIndex = findLastDotIndex(columnPathForPrefix);
+    const startOfSearch = lastDotIndex >= 0 ? columnPathForPrefix.slice(0, lastDotIndex + 1) : columnPathForPrefix;
+    const searchPart = columnPathForPrefix.replace(startOfSearch, '');
     const indexes = findAllIndexOf(completionItem.caption, searchPart);
 
     updateCompletionItem(completionItem, indexes, searchPart, resultArr);

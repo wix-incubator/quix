@@ -65,7 +65,7 @@ export async function isSearchInObject(queryContext, sqlAutocompleter) {
     const completions = await sqlAutocompleter.getCompletionItemsFromQueryContext(
       queryContext
     )
-    const filteredCompletions: object[] = completions.filter(obj => obj.value.toLowerCase().includes(queryContext.prefix));
+    const filteredCompletions = completions.filter(c => c.value.toLowerCase().includes(queryContext.prefix));
     return filteredCompletions.length === 0;
   }
   return false
