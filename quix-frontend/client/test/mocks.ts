@@ -218,7 +218,14 @@ ORDER BY 1
     ];
   },
   '/api/db/:type/explore/:catalog/:schema/:table': ({ table }) => ({
-    children: [{ name: `column_of_${table}`, dataType: 'varchar' }],
+    children: [
+                {name: { name: `colA`, dataType: 'varchar' }},
+                {name: { name: `colB`, dataType: 'varchar' }},
+                {name: { name: `colC`, dataType: 'varchar' }},
+                {name: { name: `colD`, dataType: 'varchar' }},
+                {name: { name: `colSmallObject`, dataType: 'row(food row(pizza varchar, pasta varchar), drinks row(beer varchar, vodka varchar))' }},
+                {name: { name: `collBigObject`, dataType: 'row(movies row(action row(The_Dark_Knight varchar, Mad_Max varchar, Die_Hard varchar), comedy row(The_Big_Lebowski varchar, Superbad varchar, The_Grand_Budapest_Hotel varchar), drama row(The_Shawshank_Redemption varchar, Titanic varchar, Forrest_Gump varchar)), tvSeries row(HBO row(Game_of_Thrones varchar, The_Sopranos varchar, Westworld varchar), netflix row(Stranger_Things varchar, The_Crown varchar, Narcos varchar), amazon row(The_Boys varchar, Fleabag varchar, The_Marvelous_MrsMaisel varchar)))' }},
+              ],
   }),
   '/api/db/:type/autocomplete': () => ({
     catalogs: ['catalog', 'catalog2'],

@@ -4,7 +4,11 @@ export interface BaseEntity {
 }
 
 export interface Column extends BaseEntity {
-  dataType: string;
+  dataType: object | string;
+}
+
+export interface NestedColumn extends Column {
+  dataType: object;
 }
 
 export interface Table extends BaseEntity {

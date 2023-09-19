@@ -13,9 +13,8 @@ export const runAdapterGetCompletersTest = (
 ) => {
   const config = new MockDbInfoService();
   const autocomp = new SqlAutocompleter(config);
-
   it(`test #${testnumber} should return comleters = ${expected}`, async () => {
     const completers = await autocomp.getCompletionItemsFromQueryContext(queryContext);
     expect(completers).to.be.deep.equal(expected);
   });
-};
+}

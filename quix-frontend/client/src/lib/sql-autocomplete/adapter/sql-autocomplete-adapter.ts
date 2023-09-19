@@ -1,3 +1,4 @@
+import { uniqBy } from 'lodash';
 import { ICompleterItem } from '../../code-editor/services/code-editor-completer';
 import { IAutocompleter } from './types';
 import {
@@ -6,8 +7,14 @@ import {
   TableInfo,
   TableType,
 } from '../sql-context-evaluator';
+import { getNextLevel, getSearchCompletion } from "./sql-autocomplete-adapter-utills";
+import { trinoToJs } from "./trinoToJs";
 import { IDbInfoConfig } from '../db-info';
 import { BaseEntity, Column } from '../db-info/types';
+
+interface ComplexCompleterItem extends ICompleterItem {
+  dataType?: string | object
+}
 
 export class SqlAutocompleter implements IAutocompleter {
   private prefix: string;
@@ -48,6 +55,31 @@ export class SqlAutocompleter implements IAutocompleter {
     }
   }
 
+  public async getCompletionItemsFromQueryContextColumn(queryContext: QueryContext) {
+    switch (queryContext.contextType) {
+      case ContextType.Column:
+        return this.translateAndGetQueryContextColumns(queryContext.tables, queryContext.prefix);
+      default:
+        return [];
+    }    
+  }
+
+  public async translateAndGetQueryContextColumns(tables: TableInfo[], prefix?: string) {
+    const extractedTables = await this.extractColumnsFromTable(tables);
+    if (prefix.endsWith('.')) {
+      return getNextLevel(extractedTables, prefix);
+    }
+    return getSearchCompletion(extractedTables, prefix);
+  }
+
+  private async extractColumnsFromTable(tables: TableInfo[]) {
+    const tablesPromises: Promise<TableInfo>[] = [];
+    for (const table of tables) {
+      tablesPromises.push(this.extractTableColumns(table));
+    }
+    return Promise.all(tablesPromises);
+  }
+
   /**
    * Extract the tables from the queryContext
    * @param {TableInfo[]} tables
@@ -63,32 +95,50 @@ export class SqlAutocompleter implements IAutocompleter {
    * @return {Promise<ICompleterItem[]>}
    */
   private async getQueryContextColumns(tables: TableInfo[]) {
-    const columnsNamesMemory: Set<string> = new Set();
-    const columnsWithPrefixMemory: Set<string> = new Set();
-    const tablesPromises: Promise<TableInfo>[] = [];
-
-    for (const table of tables) {
-      tablesPromises.push(this.extractTableColumns(table));
-    }
-    const extractedTables = await Promise.all(tablesPromises);
+    const extractedTables = await this.extractColumnsFromTable(tables);
+    const result: ComplexCompleterItem[] = [];
 
     for (const extractedTable of extractedTables) {
-      const { name, alias, columns, type } = extractedTable;
+      const { name, alias, columns } = extractedTable;
+      const includeTablePrefix = tables.length > 1;
       columns.forEach((column) => {
-        columnsNamesMemory.add(column);
+        if (typeof column === 'object' && typeof column.dataType === 'string') {
+          column.dataType = trinoToJs(column.dataType, 0);
+        }
 
+        let meta: string | undefined;
+        if (typeof column === 'object' && 'dataType' in column) {
+          const objectInTrino = 'row';
+          meta = typeof column.dataType === 'object' ? objectInTrino : column.dataType;
+        }
+
+        const getColumnDisplayName = (inputColumn: Column | string) => {
+          return inputColumn instanceof Object ? inputColumn.name : inputColumn;
+        };
+
+        let value: string;
         if (alias) {
-          columnsWithPrefixMemory.add(`${alias}.${column}`);
-        } else if (name && (tables.length > 1 || type === TableType.Nested)) {
-          columnsWithPrefixMemory.add(`${name}.${column}`);
+          value = `${alias}.${getColumnDisplayName(column)}`;
+        } else if (includeTablePrefix) {
+          value = `${name}.${getColumnDisplayName(column)}`;
+        } else {
+          value = getColumnDisplayName(column);
+        }
+
+        if (typeof column === 'string') {
+          result.push({ value: column, meta: 'column' });
+          if (alias || extractedTable.name) {
+            const prefix = alias || extractedTable.name;
+            result.push({ value: `${prefix}.${column}`, meta: 'column' });
+          }
+        } else {
+          result.push({ meta, value });
+          result.push({ meta, value: column instanceof Object ? column.name : column });
         }
       });
     }
 
-    return [
-      ...columnsNamesMemory,
-      ...columnsWithPrefixMemory,
-    ].map((completer) => this.createCompleterItem(completer, 'column'));
+    return uniqBy(result, (obj) => `${obj.meta}-${obj.value}-${obj.caption}` )
   }
 
   /**
@@ -109,10 +159,9 @@ export class SqlAutocompleter implements IAutocompleter {
         this.config.getColumnsByTable(catalog, schema, tableName, this.type)
       );
     }
-
     const columnsByTables = await Promise.all(columnsByTablesPromises);
     for (const columnsByTable of columnsByTables) {
-      table.columns.push(...columnsByTable.map((column) => column.name));
+      table.columns.push(...columnsByTable);
     }
 
     return table;

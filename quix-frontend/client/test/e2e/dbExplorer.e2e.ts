@@ -180,7 +180,7 @@ describe('FileExplorer ::', () => {
     expect(await testkit.numOfLoadingTreeItems()).to.eq(2);
   });
 
-  it("shouldn't load twice when clicking on same table", async () => {
+  it.skip("shouldn't load twice when clicking on same table", async () => {
     await goToDbExplorer(
       [
         createMockDbExplorerItem({

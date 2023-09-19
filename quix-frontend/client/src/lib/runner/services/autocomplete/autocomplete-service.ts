@@ -1,20 +1,23 @@
 import { CodeEditorInstance } from '../../../code-editor';
-import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
+// import { ICompleterItem as AceCompletion } from '../../../code-editor/services/code-editor-completer';
+import { SqlAutocompleter } from "../../../sql-autocomplete/adapter/sql-autocomplete-adapter";
+import {
+  highlightAndScore
+} from "./highlight-and-score";
 // import { BiSqlWebWorkerMngr } from '../../../language-parsers/sql-parser';
 // import { initSqlWorker } from '../workers/sql-parser-worker';
 import {
-  createMatchMask,
-  findAllIndexOf,
   getKeywordsCompletions,
   getQueryAndCursorPositionFromEditor,
+  getSuggestions,
+  isSearchInObject,
 } from './autocomplete-utils';
 import { IDbInfoConfig } from '../../../sql-autocomplete/db-info';
+// import { DbInfoService } from '../../../sql-autocomplete/db-info';
 import {
-  ContextType,
   evaluateContextFromPosition,
   QueryContext,
 } from '../../../sql-autocomplete/sql-context-evaluator';
-import { SqlAutocompleter } from '../../../sql-autocomplete/adapter/sql-autocomplete-adapter';
 import { IEditSession } from 'brace';
 import { setupOldCompleter } from './old-autocomplete-service';
 
@@ -25,6 +28,7 @@ export async function setupCompleters(
   apiBasePath = '',
   dbInfoService?: IDbInfoConfig
 ) {
+  // in order to run locally comment out
   if (!dbInfoService) {
     setupOldCompleter(editorInstance, type, apiBasePath);
     return;
@@ -38,53 +42,33 @@ export async function setupCompleters(
   const keywordsCompletions = getKeywordsCompletions();
 
   const completerFn = async (prefix: string, session: IEditSession) => {
+
     const { query, position } = getQueryAndCursorPositionFromEditor(
       editorInstance,
       session
     );
+
     const queryContext: QueryContext = evaluateContextFromPosition(
       query,
       position
     );
-    const contextCompletions: Promise<AceCompletion[]> = sqlAutocompleter.getCompletionItemsFromQueryContext(
-      queryContext
-    );
 
-    const [keywords, completions] = await Promise.all([
-      keywordsCompletions,
-      contextCompletions,
-    ]);
-
-    let all =
-      queryContext.contextType === ContextType.Undefined
-        ? keywords
-        : completions;
+    const searchInObject = await isSearchInObject(queryContext, sqlAutocompleter)
+    let autocompletionSuggestions = await getSuggestions(queryContext, keywordsCompletions, sqlAutocompleter, searchInObject);
 
     if (prefix) {
-      const lowerCasedPrefix = prefix.trim().toLowerCase();
-
-      all = all.reduce((resultArr: AceCompletion[], completionItem) => {
-        const indexes = findAllIndexOf(completionItem.value, lowerCasedPrefix);
-
-        if (indexes.length > 0) {
-          completionItem.matchMask = createMatchMask(
-            indexes,
-            lowerCasedPrefix.length
-          );
-          completionItem.score = 10000 - indexes[0];
-          resultArr.push(completionItem);
-        }
-
-        return resultArr;
-      }, []);
+      autocompletionSuggestions = highlightAndScore(
+        autocompletionSuggestions,
+        queryContext,
+        searchInObject
+      )
     }
 
-    return all.sort((a, b) => a.value.localeCompare(b.value));
+    return autocompletionSuggestions.sort((a, b) => a.value.localeCompare(b.value));
   };
 
   editorInstance.addOnDemandCompleter(/[\w.]+/, completerFn as any, {
     acceptEmptyString: true,
   });
-
   // editorInstance.addOnDemandCompleter(/[\s]+/, completerFn as any);
 }
