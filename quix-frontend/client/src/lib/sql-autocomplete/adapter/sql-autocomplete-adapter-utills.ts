@@ -111,8 +111,7 @@ function byPrefix(relevantPartOfPrefix: string) {
   return ({ name }) => {
     const startOfSearch = findLastDotIndex(relevantPartOfPrefix) >= 0 ? relevantPartOfPrefix.slice(0, findLastDotIndex(relevantPartOfPrefix) + 1) : relevantPartOfPrefix;
     const searchPart = relevantPartOfPrefix.replace(startOfSearch, '')
-    const lowerCasedName = name.toLowerCase();
-    const parts = lowerCasedName.split('.');
+    const parts = name.toLowerCase().split('.');
 
     if (parts.length <= 1) { return false }
 
@@ -130,12 +129,11 @@ export function getNextLevel(tables: TableInfo[], prefix: string | undefined): a
     const dotCount = name.split('.').length - 1;
     return name.startsWith(columnPathForPrefix) && dotCount === columnPathForPrefix.split('.').length - 1;
   });
-  const completionArray = siblings.map(({ name, dataType }) => ({
+  return siblings.map(({ name, dataType }) => ({
     value: prefix.replace(columnPathForPrefix, '') + name,
     meta: typeof dataType === 'object' ? 'row' : dataType,
     caption: name.slice(columnPathForPrefix.length)
   }));
-  return completionArray
 }
 
 function doesSubstringMatchInHierarchy(substringAfterFirstDot, searchPart) {

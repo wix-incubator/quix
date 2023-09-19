@@ -1,6 +1,6 @@
 
 import { DbInfoService } from "../../../../sql-autocomplete/db-info";
-import { ContextType, TableType } from "../../../sql-context-evaluator";
+import { ContextType, QueryContext, TableType } from "../../../sql-context-evaluator";
 import { SqlAutocompleter } from '../../sql-autocomplete-adapter';
 import {expect} from 'chai';
 import { MockDbInfoService } from "./mock-db-config";
@@ -110,7 +110,7 @@ describe('testing autoComplete for nested objects:   ', () => {
 });
 
 
-async function getCompletions(queryContext: { prefix: string; contextType: ContextType; tables: { type: TableType; name: string; alias: string; selectAll: boolean; tableRefs: never[]; columns: { name: string; dataType: string; }[]; }[]; }, completer: SqlAutocompleter) {
+async function getCompletions(queryContext: QueryContext , completer: SqlAutocompleter) {
   return completer.getCompletionItemsFromQueryContextColumn( queryContext );
 }
 
