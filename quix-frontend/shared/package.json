@@ -1,6 +1,6 @@
 {
   "name": "@wix/quix-shared",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "license": "MIT",
   "description": "Presto-based notebook manager",
   "author": {
