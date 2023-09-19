@@ -11,6 +11,7 @@ export class DbAction<T = IEventData, N extends string = string>
   id!: string;
 
   @Column(dbConf.json)
+  // @ts-ignore
   data!: T;
 
   @Column(dbConf.shortTextField)

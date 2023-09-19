@@ -13,6 +13,7 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "strict": true,
+    "skipLibCheck": true,
     "importHelpers": true,
     "typeRoots": [
       "./node_modules/@types",
