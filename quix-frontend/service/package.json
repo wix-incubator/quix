@@ -57,7 +57,7 @@
     "tapable": "^1.1.1",
     "ts-node": "^7.0.1",
     "tsconfig-paths": "^3.8.0",
-    "typeorm": "^0.2.31",
+    "typeorm": "^0.2.32",
     "typescript": "^4.0.0",
     "uuid": "^3.3.2",
     "velocity": "^0.7.2",
