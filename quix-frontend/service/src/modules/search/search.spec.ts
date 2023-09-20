@@ -94,13 +94,16 @@ describe('Search', () => {
 
   const createRandomNotes = async (baseString = '', count = 5) => {
     const {id: notebookId} = await createNotebook();
-    return Promise.all(
-      range(count).map(() => {
-        return createNote(notebookId, {
-          textContent: baseString + chance.paragraph(),
-        });
-      }),
-    );
+    const notes = [];
+    // Due to usage of old TypeORM version, we can't use bulk insert. It can be changed since 0.2.45
+    for (let i = 0; i < count; i++) {
+      const note = await createNote(notebookId, {
+        textContent: baseString + chance.paragraph(),
+      });
+      notes.push(note);
+    }
+
+    return notes;
   };
 
   it('should return empty array for empty content', async () => {
