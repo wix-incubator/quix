@@ -40,6 +40,6 @@ jobs:
       
       - name: Publish
         if: github.ref == 'refs/heads/master'
-        run: lerna publish from-package --no-verify-access -y --loglevel=debug
+        run: lerna -v && lerna publish from-package --no-verify-access -y --loglevel=debug
         env: 
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
