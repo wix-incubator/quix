@@ -164,7 +164,6 @@ describe('Search', () => {
       textContent: 'select someColumn from someCatalog.someOtherTable',
     });
 
-    await noteRepo.save(note2);
     const [notes, length] = await searchService.search(`someCa`);
     const badResult = await searchService.search('randomKeyword');
     const [badNotes, badLength] = badResult;
