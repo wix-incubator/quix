@@ -30,7 +30,6 @@
     "link:shared": "cd ../shared && npm link && cd ../service && npm link @wix/quix-shared"
   },
   "dependencies": {
-    "@nest-middlewares/helmet": "^5.1.1",
     "@nestjs/common": "^7.0.0",
     "@nestjs/core": "^7.0.0",
     "@nestjs/jwt": "^7.0.0",
