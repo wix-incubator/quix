@@ -11,7 +11,8 @@
     "postinstall": "npm run bootstrap",
     "build": "lerna run build --parallel false --concurrency 1",
     "build:ci": "(cd service; npm run build)",
-    "clean": "lerna clean --yes"
+    "clean": "lerna clean --yes",
+    "test-publish": "lerna publish from-package --no-verify-access -y --loglevel=debug"
   },
   "workspaces": {
     "packages": [
