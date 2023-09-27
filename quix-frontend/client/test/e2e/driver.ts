@@ -66,7 +66,7 @@ export class Driver {
   }
 
   sleep(ms: number) {
-    return this.page.waitFor(ms);
+    return this.page.waitForTimeout(ms);
   }
 
   execute(fn: Function) {
