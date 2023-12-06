@@ -6,7 +6,6 @@
 
 Quix is an easy-to-use notebook manager with support for [Presto](https://wix-incubator.github.io/quix/docs/presto), [Athena](https://wix-incubator.github.io/quix/docs/athena), [BigQuery](https://wix-incubator.github.io/quix/docs/bigquery), [MySQL](https://wix-incubator.github.io/quix/docs/mysql), [PostgreSQL](https://wix-incubator.github.io/quix/docs/postgresql), [ClickHouse](https://wix-incubator.github.io/quix/docs/clickhouse) and more.
 
-* [Online demo](https://quix-demo.io/)
 * [Installation](https://wix-incubator.github.io/quix/docs/installation)
 
 ## Intro
