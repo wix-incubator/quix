@@ -21,7 +21,7 @@ export class NoteRepository extends Repository<DbNote> {
           rank: () => '`rank` - 1',
         })
         .where(`notebookId = :notebookId`, {notebookId: note.notebookId})
-        .andWhere(`rank > :rank`, {rank: note.rank})
+        .andWhere(`\`rank\` > :rank`, {rank: note.rank})
         .execute();
       await em.delete(DbNote, note.id);
     });
@@ -46,7 +46,8 @@ export class NoteRepository extends Repository<DbNote> {
             rank: () => '`rank` + 1',
           })
           .where(`notebookId = :notebookId`, {notebookId: note.notebookId})
-          .andWhere(`rank between :to and :from`, {from: from - 1, to})
+          .andWhere(`\`rank\` between :to and :from`, {from: from - 1, to})
+          
           .execute();
       } else if (from < to) {
         await em
@@ -56,7 +57,7 @@ export class NoteRepository extends Repository<DbNote> {
             rank: () => '`rank` - 1',
           })
           .where(`notebookId = :notebookId`, {notebookId: note.notebookId})
-          .andWhere(`rank between :from and :to`, {from: from + 1, to})
+          .andWhere(`\`rank\` between :from and :to`, {from: from + 1, to})
           .execute();
       }
 
