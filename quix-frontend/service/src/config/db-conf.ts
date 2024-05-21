@@ -2,7 +2,7 @@ import {ColumnOptions, PrimaryColumnOptions} from 'typeorm';
 import {getEnv} from './env/env';
 import {FileType} from '@wix/quix-shared/entities/file';
 import {ContentSearch, SearchTextType} from '@wix/quix-shared';
-import {escape} from 'mysql';
+import {escape} from 'mysql2';
 import {EntityType} from '../common/entity-type.enum';
 
 /* A compatibility layer between MySql and Sqlite (sqljs), should handle everything that typeorm doesn't handle for us */
