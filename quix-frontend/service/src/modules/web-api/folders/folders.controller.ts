@@ -30,6 +30,13 @@ export class FoldersController {
     return list;
   }
 
+  @Get('/user/:email/files')
+  async getUserFullTree(@Param('email') email: string) {
+    const list = await this.foldersService.getFilesForUser(email);
+
+    return list;
+  }
+
   @Get('files/:id')
   async getSpecificFolder(@Param('id') id: string) {
     const folder = this.foldersService.getFolder(id);

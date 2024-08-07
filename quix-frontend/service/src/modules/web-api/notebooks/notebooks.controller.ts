@@ -29,4 +29,18 @@ export class NotebookController {
 
     return notebook;
   }
+
+  @Get(':id/:email')
+  @UseGuards(AuthGuard)
+  async getUserNotebook(@Param('email') email: string, @Param('id') id: string) {
+    const notebook = await this.notebookService.getNotebook(email, id);
+
+    if (!notebook) {
+      throw new HttpException(`Can't find notebook`, HttpStatus.NOT_FOUND);
+    }
+
+    return notebook;
+  }
+
+
 }
