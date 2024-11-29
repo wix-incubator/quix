@@ -1,17 +1,13 @@
 package quix.core.results
 
-import java.util.UUID
-
-import monix.eval.Task
 import monix.execution.Scheduler
 import org.specs2.mutable.SpecWithJUnit
 import org.specs2.specification.Scope
 import quix.api.v1.execute.Batch._
 import quix.api.v1.execute._
 import quix.api.v1.users.User
-import quix.api.v2.execute.{Query, ImmutableSubQuery}
-
-import scala.collection.mutable.ListBuffer
+import quix.api.v2.execute.{ImmutableSubQuery, Query}
+import quix.core.utils.TestConsumer
 
 class MultiBuilderTest extends SpecWithJUnit {
 
@@ -19,7 +15,7 @@ class MultiBuilderTest extends SpecWithJUnit {
     val consumer = new TestConsumer[ExecutionEvent]
     val builder = new MultiBuilder(consumer)
     val query = ImmutableSubQuery("text", User("test"))
-    val execution = Query(Seq(query), canceled = query.canceled)
+    val execution = Query(List(query), canceled = query.canceled)
   }
 
   "MultiBuilder.start" should {
@@ -227,16 +223,4 @@ class MultiBuilderTest extends SpecWithJUnit {
     }
   }
 
-}
-
-class TestConsumer[T] extends Consumer[T] {
-  val payloads = ListBuffer.empty[T]
-
-  override def id: String = "id"
-
-  override def user: User = User("test")
-
-  override def write(payload: T): Task[Unit] = Task(payloads += payload)
-
-  override def close(): Task[Unit] = Task.unit
 }
