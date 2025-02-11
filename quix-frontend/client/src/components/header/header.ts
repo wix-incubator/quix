@@ -6,6 +6,7 @@ import { App } from '../../lib/app';
 import { IScope } from './header-types';
 import { HeaderMenu } from '../../config';
 import * as AppActions from '../../store/app/app-actions';
+import { hooks } from '../../hooks';
 
 const listenToNavChange = (scope: IScope, app: App, store: Store) => {
   const { navItems } = scope.vm;
@@ -47,6 +48,9 @@ export default (app: App, store: Store) => () => ({
             app.go(item.targetState, { id: null });
           }
         });
+
+      const additionalItems = hooks.header.additionalItems.call(app, store);
+      scope.vm.additionalItems = additionalItems || null;
 
       listenToNavChange(scope, app, store);
 
