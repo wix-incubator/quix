@@ -24,4 +24,7 @@ export const hooks = {
       }
     }
   },
+  header: {
+    additionalItems: new SyncWaterfallHook(['app', 'store']),
+  }
 };
