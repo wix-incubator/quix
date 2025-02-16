@@ -1,5 +1,6 @@
 import template from './header.html';
 import './header.scss';
+import { isArray } from 'lodash';
 import { initNgScope } from '../../lib/core';
 import { Store } from '../../lib/store';
 import { App } from '../../lib/app';
@@ -50,7 +51,7 @@ export default (app: App, store: Store) => () => ({
         });
 
       const additionalItems = hooks.header.additionalItems.call(app, store);
-      scope.vm.additionalItems = additionalItems || null;
+      scope.vm.additionalItems = isArray(additionalItems) ? additionalItems[0] : null;
 
       listenToNavChange(scope, app, store);
 
