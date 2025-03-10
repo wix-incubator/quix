@@ -1,0 +1,91 @@
+version: '3'
+services:
+  backend:
+    image: wixquix/quix-backend:release-v1
+    ports:
+      - "8081:8081"
+    depends_on:
+      - presto
+    env_file:
+      - .env
+    environment:
+      - MODULES
+      - AUTH_COOKIE
+      - AUTH_SECRET
+      - AUTH_TYPE
+  frontend:
+    image: wixquix/quix-frontend:release-v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+      - db
+    env_file:
+      - .env
+    environment:
+      - DB_NAME
+      - DB_USER
+      - DB_PASS
+      - DB_HOST
+      - DB_PORT
+      - BACKEND_INTERNAL_URL
+      - BACKEND_PUBLIC_URL
+      - GOOGLE_SSO_CLIENT_ID
+      - GOOGLE_SSO_SECRET
+      - AUTH_COOKIE
+      - AUTH_SECRET
+      - AUTH_TYPE
+      - APPMETRICS_PORT
+      - ENABLE_APPMETRICS
+      - MODULES
+  db:
+    image: "mysql:5.7"
+    restart: always
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "quix"
+    volumes:
+      - "db_volume:/var/lib/mysql"
+  presto:
+    image: "starburstdata/presto"
+    ports:
+      - "8181:8080"
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.1
+    container_name: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+      - 9300:9300
+    healthcheck:
+      test: curl -s http://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.5.1
+    container_name: kibana
+    environment:
+        - "xpack.monitoring.ui.container.elasticsearch.enabled=false"
+    ports: ['5601:5601']
+    depends_on: ['elasticsearch']
+    healthcheck:
+      test: curl -s http://localhost:5601 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  db_volume:
+  elasticsearch-data:
