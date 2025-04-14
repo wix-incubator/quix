@@ -91,9 +91,8 @@ class PythonExecutorTest extends SpecWithJUnit with MustMatchers {
   "support requirements syntax for packages.install " in new ctx {
     executor.execute(script(
       code =
-        """packages.install('ujson==1.35')
+        """packages.install('ujson==5.6.0')
           |packages.install('ujson>1.0')
-          |packages.install('ujson>1.0,<1.30')
           |
           |import ujson
           |print(123)

@@ -25,6 +25,7 @@ jobs:
     - name: Build and Test
       working-directory: ./quix-backend
       run: |
+        pip3 install py4j
         sbt ++${{matrix.scala_version}} -v -Dfile.encoding=UTF-8 test publishM2
         if [[ ${{matrix.scala_version}} = '2.12.17' ]]
         then
